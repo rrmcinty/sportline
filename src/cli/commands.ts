@@ -9,6 +9,7 @@ import { fetchOdds as fetchOddsNcaam, normalizeOdds as normalizeOddsNcaam } from
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import { fetchOdds as fetchOddsCfb, normalizeOdds as normalizeOddsCfb } from "../espn/cfb/odds.js";
 import { evaluateParlay, generateParlays, rankParlaysByEV, filterPositiveEV } from "../parlay/eval.js";
+import { getHomeWinModelProbabilities } from "../model/apply.js";
 import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
 
 /**
@@ -224,6 +225,12 @@ export async function cmdRecommend(
     }
 
     const allLegs: BetLeg[] = [];
+    let modelProbs: Map<string, number> | undefined;
+    try {
+      modelProbs = await getHomeWinModelProbabilities(sport, date);
+    } catch (err) {
+      // silently ignore model failure
+    }
 
     for (const comp of competitions) {
       try {
@@ -234,6 +241,22 @@ export async function cmdRecommend(
           comp.homeTeam.abbreviation || comp.homeTeam.name,
           comp.awayTeam.abbreviation || comp.awayTeam.name
         );
+
+        // If model probabilities available, override moneyline implied probabilities
+        if (modelProbs && modelProbs.has(comp.eventId)) {
+          const pHome = modelProbs.get(comp.eventId)!;
+          for (const leg of legs) {
+            if (leg.market === "moneyline") {
+              if (leg.team === "home") {
+                leg.impliedProbability = pHome;
+                leg.description = leg.description + " (model)";
+              } else if (leg.team === "away") {
+                leg.impliedProbability = 1 - pHome;
+                leg.description = leg.description + " (model)";
+              }
+            }
+          }
+        }
         allLegs.push(...legs);
       } catch (error) {
         console.warn(chalk.yellow(`⚠️  Failed to fetch odds for ${comp.eventId}`));
@@ -246,6 +269,11 @@ export async function cmdRecommend(
     }
 
     console.log(chalk.gray(`Found ${allLegs.length} betting opportunities across ${competitions.length} games`));
+    if (modelProbs) {
+      console.log(chalk.green.dim("Model probabilities applied to moneylines (home/away)"));
+    } else {
+      console.log(chalk.dim("Using vig-free market probabilities (no model override)"));
+    }
     console.log(chalk.dim(`Calculating expected value (EV) with fair probabilities...\n`));
 
     // Show best single bets first
