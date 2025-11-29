@@ -31,7 +31,11 @@ interface ESPNEvent {
       type: string;
       order: number;
       homeAway: "home" | "away";
+      winner?: boolean;
       team: {
+        $ref: string;
+      };
+      score?: {
         $ref: string;
       };
     }>;
@@ -42,6 +46,11 @@ interface ESPNEvent {
       fullName?: string;
     };
   }>;
+}
+
+interface ESPNScore {
+  value: number;
+  displayValue: string;
 }
 
 interface ESPNTeam {
@@ -139,6 +148,30 @@ async function fetchTeam(url: string): Promise<ESPNTeam> {
 }
 
 /**
+ * Fetch score details
+ */
+async function fetchScore(url: string): Promise<number | null> {
+  const cached = getCache<ESPNScore>(url);
+  if (cached) {
+    return cached.value;
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = (await response.json()) as ESPNScore;
+    setCache(url, data, 60 * 60 * 1000); // Cache scores for 1 hour
+    return data.value;
+  } catch (error) {
+    // Score not available yet
+    return null;
+  }
+}
+
+/**
  * Parse ESPN event into Competition
  */
 async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
@@ -154,10 +187,12 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
     return null;
   }
 
-  // Fetch team details
-  const [homeTeam, awayTeam] = await Promise.all([
+  // Fetch team details and scores in parallel
+  const [homeTeam, awayTeam, homeScore, awayScore] = await Promise.all([
     fetchTeam(homeCompetitor.team.$ref),
     fetchTeam(awayCompetitor.team.$ref),
+    homeCompetitor.score?.$ref ? fetchScore(homeCompetitor.score.$ref) : Promise.resolve(null),
+    awayCompetitor.score?.$ref ? fetchScore(awayCompetitor.score.$ref) : Promise.resolve(null),
   ]);
 
   return {
@@ -177,5 +212,7 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
     },
     status: "scheduled",
     venue: comp.venue?.fullName,
+    homeScore,
+    awayScore,
   };
 }

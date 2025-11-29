@@ -38,7 +38,18 @@
   - [x] Fetch real games for today (2 games found: BCU @ IU, NSU @ ARIZ)
   - [x] Evaluate sample parlays (conflict detection fixed)
   - [x] Confirm EV calculations
-\n+- [x] **Early CFB Integration**
+  - [x] Added `src/espn/cfb/events.ts` (CFB events fetcher)
+  - [x] Added `src/espn/cfb/odds.ts` (CFB odds fetcher + normalizer)
+  - [x] Added `--sport` flag to all CLI commands (`games`, `odds`, `recommend`, `bets`)
+  - [x] Added single-event EV display via new `bets` command
+
+ - [x] **Modeling Plan Initiated**
+  - [x] Added `MODEL_PLAN.md` outlining simple, interpretable models
+  - [x] Defined data/feature/model/evaluation pipeline and CLI design
+  - [x] Milestones set for NCAAM baseline → Stats/SoS → CFB baseline
+  - [x] Scaffolded CLI: `data ingest`, `model train`, `model predict`
+  - [x] Created SQLite schema and db utilities
+  - [x] Added better-sqlite3 dependency
   - [x] Added `src/espn/cfb/events.ts` (CFB events fetcher)
   - [x] Added `src/espn/cfb/odds.ts` (CFB odds fetcher + normalizer)
   - [x] Added `--sport` flag to all CLI commands (`games`, `odds`, `recommend`, `bets`)
@@ -52,7 +63,10 @@
   - [ ] Create usage guide
 
 ### 📋 Up Next
-- [ ] Refine ROI/EV presentation (show bookmaker margin explicitly)
+- [ ] Implement data ingest logic (fetch games/odds/stats → SQLite)
+- [ ] Build feature engineering pipeline (trends, stats, SoS)
+- [ ] Implement model training (logistic/linear regression + calibration)
+- [ ] Wire predictions into recommend command
 
 ### 🔮 Future (Phase 2+)
 - [ ] Full CFB rollout (bowl games, playoffs)

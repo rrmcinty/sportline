@@ -26,11 +26,18 @@ interface ESPNEvent {
       type: string;
       order: number;
       homeAway: "home" | "away";
+      winner?: boolean;
       team: { $ref: string };
+      score?: { $ref: string };
     }>;
     status: { $ref: string };
     venue?: { fullName?: string };
   }>;
+}
+
+interface ESPNScore {
+  value: number;
+  displayValue: string;
 }
 
 interface ESPNTeam { id: string; displayName: string; abbreviation?: string; }
@@ -95,6 +102,21 @@ async function fetchTeam(url: string): Promise<ESPNTeam> {
   return data;
 }
 
+async function fetchScore(url: string): Promise<number | null> {
+  const cached = getCache<ESPNScore>(url);
+  if (cached) return cached.value;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const data = (await response.json()) as ESPNScore;
+    setCache(url, data, 60 * 60 * 1000);
+    return data.value;
+  } catch (error) {
+    return null;
+  }
+}
+
 async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
   if (!event.competitions?.length) return null;
   const comp = event.competitions[0];
@@ -102,9 +124,11 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
   const awayCompetitor = comp.competitors.find(c => c.homeAway === "away");
   if (!homeCompetitor || !awayCompetitor) return null;
 
-  const [homeTeam, awayTeam] = await Promise.all([
+  const [homeTeam, awayTeam, homeScore, awayScore] = await Promise.all([
     fetchTeam(homeCompetitor.team.$ref),
-    fetchTeam(awayCompetitor.team.$ref)
+    fetchTeam(awayCompetitor.team.$ref),
+    homeCompetitor.score?.$ref ? fetchScore(homeCompetitor.score.$ref) : Promise.resolve(null),
+    awayCompetitor.score?.$ref ? fetchScore(awayCompetitor.score.$ref) : Promise.resolve(null),
   ]);
 
   return {
@@ -115,6 +139,8 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
     homeTeam: { id: homeTeam.id, name: homeTeam.displayName, abbreviation: homeTeam.abbreviation },
     awayTeam: { id: awayTeam.id, name: awayTeam.displayName, abbreviation: awayTeam.abbreviation },
     status: "scheduled", // could derive from status ref later
-    venue: comp.venue?.fullName
+    venue: comp.venue?.fullName,
+    homeScore,
+    awayScore,
   };
 }

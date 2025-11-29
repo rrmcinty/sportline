@@ -23,6 +23,8 @@ export interface Competition {
   awayTeam: Team;
   status: string;
   venue?: string;
+  homeScore?: number | null;
+  awayScore?: number | null;
 }
 
 export interface BetLeg {

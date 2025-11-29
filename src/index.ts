@@ -6,6 +6,9 @@
 
 import { Command } from "commander";
 import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets } from "./cli/commands.js";
+import { cmdDataIngest } from "./data/ingest.js";
+import { cmdModelTrain } from "./model/train.js";
+import { cmdModelPredict } from "./model/predict.js";
 import type { Sport } from "./models/types.js";
 
 function todayYYYYMMDD(): string {
@@ -83,6 +86,50 @@ program
       parseInt(options.maxLegs),
       parseInt(options.top)
     );
+  });
+
+// data ingest command
+program
+  .command("data")
+  .description("Data ingestion commands")
+  .command("ingest")
+  .description("Ingest historical game data for a sport/season")
+  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
+  .requiredOption("--season <year>", "Season year (e.g., 2025)")
+  .option("--from <date>", "Start date (YYYY-MM-DD)")
+  .option("--to <date>", "End date (YYYY-MM-DD)")
+  .action(async (options) => {
+    const sport: Sport = options.sport;
+    await cmdDataIngest(sport, parseInt(options.season), options.from, options.to);
+  });
+
+// model commands (parent + subcommands)
+const model = program
+  .command("model")
+  .description("Model training and prediction commands");
+
+model
+  .command("train")
+  .description("Train predictive model for a sport/season")
+  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
+  .requiredOption("--season <year>", "Season year (e.g., 2025)")
+  .option("--markets <markets>", "Markets to train (comma-separated)", "moneyline,spread,total")
+  .option("--calibrate <method>", "Calibration method (isotonic|platt)", "isotonic")
+  .action(async (options) => {
+    const sport: Sport = options.sport;
+    const markets = options.markets.split(",");
+    await cmdModelTrain(sport, parseInt(options.season), markets, options.calibrate);
+  });
+
+model
+  .command("predict")
+  .description("Generate predictions for upcoming games")
+  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
+  .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
+  .action(async (options) => {
+    const sport: Sport = options.sport;
+    const date = options.date || todayYYYYMMDD();
+    await cmdModelPredict(sport, date);
   });
 
 program.parse();
