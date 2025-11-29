@@ -50,7 +50,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   const allFeatures = computeFeatures(db, sport, model.season);
   const featureMap = new Map<number, number[]>();
   for (const f of allFeatures) {
-    featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage]);
+    featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5]);
   }
 
   // Query games matching date prefix
@@ -60,7 +60,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
 
   const probs = new Map<string, number>();
   for (const r of rows) {
-    const x = featureMap.get(r.id) || [0.5, 0.5, 0, 0, 1];
+    const x = featureMap.get(r.id) || [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0];
     const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
     probs.set(r.espn_event_id, sigmoid(z));
   }

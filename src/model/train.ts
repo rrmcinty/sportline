@@ -109,7 +109,11 @@ export async function cmdModelTrain(
           gf.awayWinRate5,
           gf.homeAvgMargin5,
           gf.awayAvgMargin5,
-          gf.homeAdvantage
+          gf.homeAdvantage,
+          gf.homeOppWinRate5,
+          gf.awayOppWinRate5,
+          gf.homeOppAvgMargin5,
+          gf.awayOppAvgMargin5
         ]);
         trainingData.labels.push(outcome);
       }
@@ -144,7 +148,7 @@ export async function cmdModelTrain(
 
     const model = {
       weights,
-      featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage"],
+      featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5"],
       sport,
       season,
       trainedAt: new Date().toISOString()

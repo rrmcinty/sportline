@@ -11,6 +11,10 @@ export interface GameFeatures {
   homeAvgMargin5: number;  // Last 5 games average margin
   awayAvgMargin5: number;
   homeAdvantage: number;  // 1 for home, 0 for neutral/away
+  homeOppWinRate5: number;  // Avg opponent win rate (SoS)
+  awayOppWinRate5: number;
+  homeOppAvgMargin5: number;  // Avg opponent margin (SoS quality)
+  awayOppAvgMargin5: number;
 }
 
 /**
@@ -34,7 +38,7 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
   const features: GameFeatures[] = [];
 
   // Build team performance history
-  const teamHistory = new Map<number, Array<{ date: string; margin: number; won: boolean }>>();
+  const teamHistory = new Map<number, Array<{ date: string; margin: number; won: boolean; oppTeamId: number }>>();
 
   for (const game of games) {
     const homeHistory = teamHistory.get(game.home_team_id) || [];
@@ -46,13 +50,23 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     const homeAvgMargin5 = computeAvgMargin(homeHistory, 5);
     const awayAvgMargin5 = computeAvgMargin(awayHistory, 5);
 
+    // Compute SoS: average opponent stats
+    const homeOppWinRate5 = computeOpponentAvgWinRate(homeHistory, teamHistory, 5);
+    const awayOppWinRate5 = computeOpponentAvgWinRate(awayHistory, teamHistory, 5);
+    const homeOppAvgMargin5 = computeOpponentAvgMargin(homeHistory, teamHistory, 5);
+    const awayOppAvgMargin5 = computeOpponentAvgMargin(awayHistory, teamHistory, 5);
+
     features.push({
       gameId: game.id,
       homeWinRate5,
       awayWinRate5,
       homeAvgMargin5,
       awayAvgMargin5,
-      homeAdvantage: 1  // Assume home advantage
+      homeAdvantage: 1,  // Assume home advantage
+      homeOppWinRate5,
+      awayOppWinRate5,
+      homeOppAvgMargin5,
+      awayOppAvgMargin5,
     });
 
     // Update history if game is complete
@@ -63,13 +77,15 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       homeHistory.push({
         date: game.date,
         margin: homeMargin,
-        won: homeMargin > 0
+        won: homeMargin > 0,
+        oppTeamId: game.away_team_id
       });
 
       awayHistory.push({
         date: game.date,
         margin: awayMargin,
-        won: awayMargin > 0
+        won: awayMargin > 0,
+        oppTeamId: game.home_team_id
       });
 
       teamHistory.set(game.home_team_id, homeHistory);
@@ -98,4 +114,50 @@ function computeAvgMargin(history: Array<{ margin: number }>, window: number): n
   const recent = history.slice(-window);
   const sum = recent.reduce((acc, g) => acc + g.margin, 0);
   return sum / recent.length;
+}
+
+/**
+ * Compute average opponent win rate (SoS)
+ */
+function computeOpponentAvgWinRate(
+  history: Array<{ oppTeamId: number }>,
+  teamHistory: Map<number, Array<{ won: boolean }>>,
+  window: number
+): number {
+  if (history.length === 0) return 0.5;
+  const recent = history.slice(-window);
+  let sumOppWinRate = 0;
+  let count = 0;
+  for (const game of recent) {
+    const oppHistory = teamHistory.get(game.oppTeamId);
+    if (oppHistory && oppHistory.length > 0) {
+      const oppWinRate = computeWinRate(oppHistory, 5);
+      sumOppWinRate += oppWinRate;
+      count++;
+    }
+  }
+  return count > 0 ? sumOppWinRate / count : 0.5;
+}
+
+/**
+ * Compute average opponent margin (SoS quality)
+ */
+function computeOpponentAvgMargin(
+  history: Array<{ oppTeamId: number }>,
+  teamHistory: Map<number, Array<{ margin: number }>>,
+  window: number
+): number {
+  if (history.length === 0) return 0;
+  const recent = history.slice(-window);
+  let sumOppMargin = 0;
+  let count = 0;
+  for (const game of recent) {
+    const oppHistory = teamHistory.get(game.oppTeamId);
+    if (oppHistory && oppHistory.length > 0) {
+      const oppMargin = computeAvgMargin(oppHistory, 5);
+      sumOppMargin += oppMargin;
+      count++;
+    }
+  }
+  return count > 0 ? sumOppMargin / count : 0;
 }

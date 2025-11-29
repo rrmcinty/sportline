@@ -89,7 +89,7 @@ export async function cmdModelPredict(
     for (const f of allFeatures) {
       featureMap.set(
         f.gameId,
-        [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage]
+        [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5]
       );
     }
 
@@ -113,7 +113,7 @@ export async function cmdModelPredict(
 
     const scored = rows
       .map((r) => {
-        const x = featureMap.get(r.game_id) || [0.5, 0.5, 0, 0, 1];
+        const x = featureMap.get(r.game_id) || [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0];
         const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
         const pHome = sigmoid(z);
         return { ...r, pHome };
