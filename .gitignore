@@ -4,3 +4,7 @@ dist/
 .DS_Store
 .cache/
 .env
+*.db
+*.db-shm
+*.db-wal
+data/
