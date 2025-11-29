@@ -11,14 +11,14 @@ npm install
 # Build
 npm run build
 
-# Fetch today's games
-node dist/index.js games --date 20251129
+# Fetch today's games (date defaults to today)
+node dist/index.js games
 
-# Show odds for a specific game
-node dist/index.js odds --event 401827111 --date 20251129
+# Show odds for a specific game (date defaults to today)
+node dist/index.js odds --event 401827111
 
-# Generate parlay recommendations
-node dist/index.js recommend --date 20251129 --stake 10 --min-legs 2 --max-legs 4 --top 10
+# Generate parlay recommendations (date defaults to today)
+node dist/index.js recommend --stake 10 --min-legs 2 --max-legs 4 --top 10
 ```
 
 ## Example Output
@@ -90,23 +90,23 @@ Top 5 recommendations:
 ## Commands
 
 ### `games`
-Fetch games for a specific date.
+Fetch games for a specific date (defaults to today if omitted).
 
 **Options:**
-- `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (required)
+- `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (optional)
 
 ### `odds`
-Import and display odds for a specific event.
+Import and display odds for a specific event (date defaults to today).
 
 **Options:**
 - `-e, --event <eventId>` - ESPN event ID (required)
-- `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (required)
+- `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (optional)
 
 ### `recommend`
-Generate and rank parlay recommendations by expected value.
+Generate and rank parlay recommendations by expected value (date defaults to today).
 
 **Options:**
-- `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (required)
+- `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (optional)
 - `-s, --stake <amount>` - Stake amount per parlay (default: 10)
 - `--min-legs <number>` - Minimum legs per parlay (default: 2)
 - `--max-legs <number>` - Maximum legs per parlay (default: 4)

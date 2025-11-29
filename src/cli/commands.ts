@@ -3,16 +3,36 @@
  */
 
 import chalk from "chalk";
-import { fetchEvents } from "../espn/ncaam/events.js";
-import { fetchOdds, normalizeOdds } from "../espn/ncaam/odds.js";
+import type { Sport } from "../models/types.js";
+import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
+import { fetchOdds as fetchOddsNcaam, normalizeOdds as normalizeOddsNcaam } from "../espn/ncaam/odds.js";
+import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
+import { fetchOdds as fetchOddsCfb, normalizeOdds as normalizeOddsCfb } from "../espn/cfb/odds.js";
 import { evaluateParlay, generateParlays, rankParlaysByEV, filterPositiveEV } from "../parlay/eval.js";
 import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
 
 /**
  * Fetch and display games for a date
  */
-export async function cmdGamesFetch(date: string): Promise<void> {
+function getFetchers(sport: Sport) {
+  if (sport === "cfb") {
+    return {
+      fetchEvents: fetchEventsCfb,
+      fetchOdds: fetchOddsCfb,
+      normalizeOdds: normalizeOddsCfb,
+    };
+  }
+  // default to ncaam
+  return {
+    fetchEvents: fetchEventsNcaam,
+    fetchOdds: fetchOddsNcaam,
+    normalizeOdds: normalizeOddsNcaam,
+  };
+}
+
+export async function cmdGamesFetch(sport: Sport, date: string): Promise<void> {
   try {
+    const { fetchEvents } = getFetchers(sport);
     const competitions = await fetchEvents(date);
 
     if (competitions.length === 0) {
@@ -30,7 +50,7 @@ export async function cmdGamesFetch(date: string): Promise<void> {
       console.log();
     }
 
-    console.log(chalk.dim(`💡 Tip: Use ${chalk.white('odds --event <eventId> --date <date>')} to see betting lines`));
+    console.log(chalk.dim(`💡 Tip: Use ${chalk.white('odds --sport ' + sport + ' --event <eventId> --date <date>')} to see betting lines`));
   } catch (error) {
     console.error(chalk.red("Error fetching games:"), error);
     process.exit(1);
@@ -40,9 +60,9 @@ export async function cmdGamesFetch(date: string): Promise<void> {
 /**
  * Fetch and display odds for an event
  */
-export async function cmdOddsImport(eventId: string, date: string): Promise<void> {
+export async function cmdOddsImport(sport: Sport, eventId: string, date: string): Promise<void> {
   try {
-    // First fetch the event to get team names
+    const { fetchEvents, fetchOdds, normalizeOdds } = getFetchers(sport);
     const competitions = await fetchEvents(date);
     const comp = competitions.find((c) => c.eventId === eventId);
 
@@ -105,10 +125,86 @@ export async function cmdOddsImport(eventId: string, date: string): Promise<void
     process.exit(1);
   }
 }
+
+/**
+ * Show all available bet legs for a single event with EV/ROI
+ */
+export async function cmdBets(
+  sport: Sport,
+  eventId: string,
+  date: string,
+  stake: number
+): Promise<void> {
+  try {
+    const { fetchEvents, fetchOdds, normalizeOdds } = getFetchers(sport);
+    const competitions = await fetchEvents(date);
+    const comp = competitions.find(c => c.eventId === eventId);
+    if (!comp) {
+      console.error(chalk.red(`Event ${eventId} not found on ${date}`));
+      process.exit(1);
+    }
+
+    console.log(chalk.bold.cyan(`\n🎯 Bets for ${comp.awayTeam.name} @ ${comp.homeTeam.name} (stake $${stake.toFixed(2)})\n`));
+    const oddsEntries = await fetchOdds(eventId);
+    if (oddsEntries.length === 0) {
+      console.log(chalk.yellow("No odds available for this event"));
+      return;
+    }
+    const legs = normalizeOdds(
+      eventId,
+      oddsEntries,
+      comp.homeTeam.abbreviation || comp.homeTeam.name,
+      comp.awayTeam.abbreviation || comp.awayTeam.name
+    );
+    if (!legs.length) {
+      console.log(chalk.yellow("No bet legs normalized"));
+      return;
+    }
+    console.log(chalk.gray(`Provider: ${legs[0].provider}`));
+    console.log(chalk.dim(`(Fair probabilities shown - vig removed)\n`));
+
+    // Group by market
+    const markets: Record<string, BetLeg[]> = {
+      moneyline: legs.filter(l => l.market === "moneyline"),
+      spread: legs.filter(l => l.market === "spread"),
+      total: legs.filter(l => l.market === "total")
+    };
+
+    for (const [market, mLegs] of Object.entries(markets)) {
+      if (!mLegs.length) continue;
+      const title = market === "moneyline" ? "Moneylines" : market === "spread" ? "Spreads" : "Totals";
+      console.log(chalk.bold(`${title}`));
+      for (const leg of mLegs) {
+        const result = evaluateParlay({ legs: [leg], stake });
+        const evColor = result.ev >= 0 ? chalk.green : chalk.red;
+        const evSign = result.ev >= 0 ? "+" : "";
+        console.log(
+          `  ${leg.description} → ${(leg.impliedProbability * 100).toFixed(2)}% | EV: ${evColor(evSign + "$" + result.ev.toFixed(2))} (${evColor(evSign + result.roi.toFixed(2) + "%")})`
+        );
+      }
+      console.log();
+    }
+
+    const best = markets.moneyline
+      .concat(markets.spread)
+      .concat(markets.total)
+      .map(l => evaluateParlay({ legs: [l], stake }))
+      .sort((a,b) => b.ev - a.ev)[0];
+    if (best) {
+      const prefix = best.ev >= 0 ? chalk.green.bold("✨ Potential +EV") : chalk.dim("Least negative EV");
+      console.log(prefix + chalk.dim(`: ${best.legs[0].description} (EV $${best.ev.toFixed(2)}, ROI ${best.roi.toFixed(2)}%)`));
+    }
+    console.log(chalk.dim(`\n💡 Use recommend for multi-leg parlays: recommend --sport ${sport} --date ${date} --min-legs 2`));
+  } catch (err) {
+    console.error(chalk.red("Error showing bets:"), err);
+    process.exit(1);
+  }
+}
 /**
  * Generate and rank parlay recommendations
  */
 export async function cmdRecommend(
+  sport: Sport,
   date: string,
   stake: number,
   minLegs: number,
@@ -119,6 +215,7 @@ export async function cmdRecommend(
     console.log(chalk.bold.cyan(`\n🔍 Analyzing all games on ${date}...\n`));
 
     // Fetch all games and odds
+    const { fetchEvents, fetchOdds, normalizeOdds } = getFetchers(sport);
     const competitions = await fetchEvents(date);
 
     if (competitions.length === 0) {
