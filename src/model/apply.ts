@@ -76,9 +76,13 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     featureMap.set(f.gameId, { base: baseFeatures, market: marketFeatures });
   }
 
-  // Query games matching date prefix
+  // Query games matching date prefix (check both the date and next day for UTC rollover)
   const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
-  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND date LIKE ? || '%'`).all(sport, isoPrefix) as Array<{ id: number; espn_event_id: string }>;
+  const nextDay = new Date(isoPrefix);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const nextDayPrefix = nextDay.toISOString().slice(0, 10);
+  
+  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefix) as Array<{ id: number; espn_event_id: string }>;
   if (rows.length === 0) return undefined;
 
   const probs = new Map<string, number>();
@@ -154,9 +158,13 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
     }
   }
 
-  // Query games matching date prefix
+  // Query games matching date prefix (check both the date and next day for UTC rollover)
   const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
-  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND date LIKE ? || '%'`).all(sport, isoPrefix) as Array<{ id: number; espn_event_id: string }>;
+  const nextDay = new Date(isoPrefix);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const nextDayPrefix = nextDay.toISOString().slice(0, 10);
+  
+  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefix) as Array<{ id: number; espn_event_id: string }>;
   if (rows.length === 0) return undefined;
 
   const probs = new Map<string, number>();
@@ -232,7 +240,11 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   }
 
   const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
-  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND date LIKE ? || '%'`).all(sport, isoPrefix) as Array<{ id: number; espn_event_id: string }>;
+  const nextDayT = new Date(isoPrefix);
+  nextDayT.setDate(nextDayT.getDate() + 1);
+  const nextDayPrefixT = nextDayT.toISOString().slice(0, 10);
+  
+  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefixT) as Array<{ id: number; espn_event_id: string }>;
   if (!rows.length) return undefined;
 
   const probs = new Map<string, number>();

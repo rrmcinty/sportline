@@ -40,6 +40,18 @@ interface ESPNScore {
   displayValue: string;
 }
 
+interface ESPNStatus {
+  type: {
+    id: string;
+    name: string;
+    state: string;
+    completed: boolean;
+    description: string;
+    detail: string;
+    shortDetail: string;
+  };
+}
+
 interface ESPNTeam { id: string; displayName: string; abbreviation?: string; }
 
 /**
@@ -117,6 +129,27 @@ async function fetchScore(url: string): Promise<number | null> {
   }
 }
 
+async function fetchStatus(url: string): Promise<string> {
+  const cached = getCache<ESPNStatus>(url);
+  if (cached) {
+    if (cached.type.completed) return "final";
+    if (cached.type.state === "in") return "in-progress";
+    return "scheduled";
+  }
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return "scheduled";
+    const data = (await response.json()) as ESPNStatus;
+    setCache(url, data, 5 * 60 * 1000);
+    if (data.type.completed) return "final";
+    if (data.type.state === "in") return "in-progress";
+    return "scheduled";
+  } catch (error) {
+    return "scheduled";
+  }
+}
+
 async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
   if (!event.competitions?.length) return null;
   const comp = event.competitions[0];
@@ -124,11 +157,12 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
   const awayCompetitor = comp.competitors.find(c => c.homeAway === "away");
   if (!homeCompetitor || !awayCompetitor) return null;
 
-  const [homeTeam, awayTeam, homeScore, awayScore] = await Promise.all([
+  const [homeTeam, awayTeam, homeScore, awayScore, status] = await Promise.all([
     fetchTeam(homeCompetitor.team.$ref),
     fetchTeam(awayCompetitor.team.$ref),
     homeCompetitor.score?.$ref ? fetchScore(homeCompetitor.score.$ref) : Promise.resolve(null),
     awayCompetitor.score?.$ref ? fetchScore(awayCompetitor.score.$ref) : Promise.resolve(null),
+    fetchStatus(comp.status.$ref),
   ]);
 
   return {
@@ -138,7 +172,7 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
     date: event.date,
     homeTeam: { id: homeTeam.id, name: homeTeam.displayName, abbreviation: homeTeam.abbreviation },
     awayTeam: { id: awayTeam.id, name: awayTeam.displayName, abbreviation: awayTeam.abbreviation },
-    status: "scheduled", // could derive from status ref later
+    status,
     venue: comp.venue?.fullName,
     homeScore,
     awayScore,

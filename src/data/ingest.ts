@@ -151,7 +151,7 @@ export async function cmdDataIngest(
             comp.homeScore ?? null,
             comp.awayScore ?? null,
             comp.venue || null,
-            "scheduled"
+            comp.status
           );
 
           totalGames++;
