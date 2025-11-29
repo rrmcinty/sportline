@@ -1,0 +1,11 @@
+{
+  "market": "total",
+  "predictionType": "regression",
+  "validationAccuracy": 51.24282982791587,
+  "brierScore": 0.28822495507266543,
+  "logLoss": 0.7908844011556964,
+  "sigma": 38,
+  "splitDate": "2025-09-20T23:00Z",
+  "numTrainingSamples": 1219,
+  "numValidationSamples": 523
+}

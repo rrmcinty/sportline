@@ -175,7 +175,12 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
     const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
     const rawProb = sigmoid(z);
     const calibratedProb = model.calibration ? applyCalibration(rawProb, model.calibration) : rawProb;
-    probs.set(r.espn_event_id, calibratedProb);
+    
+    // Clip extreme predictions to prevent overconfidence on outliers
+    // Model trained mostly on 30-50% range, so extreme predictions (>95% or <5%) are likely extrapolations
+    const clippedProb = Math.max(0.05, Math.min(0.95, calibratedProb));
+    
+    probs.set(r.espn_event_id, clippedProb);
   }
   return probs;
 }

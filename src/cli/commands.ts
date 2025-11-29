@@ -448,6 +448,20 @@ export async function cmdRecommend(
     } else {
       console.log(chalk.dim("Using vig-free market probabilities (no model override)"));
     }
+    
+    // Limit legs to prevent memory overflow
+    // Filter to only positive or near-positive EV legs for parlays
+    const MAX_LEGS_FOR_PARLAYS = 50;
+    if (allLegs.length > MAX_LEGS_FOR_PARLAYS) {
+      console.log(chalk.yellow(`⚠️  Too many betting opportunities (${allLegs.length}). Filtering to top ${MAX_LEGS_FOR_PARLAYS} by EV for parlay generation.`));
+      const singleBetEVs = allLegs.map(leg => ({
+        leg,
+        ev: evaluateParlay({ legs: [leg], stake }).ev
+      }));
+      singleBetEVs.sort((a, b) => b.ev - a.ev);
+      allLegs.splice(0, allLegs.length, ...singleBetEVs.slice(0, MAX_LEGS_FOR_PARLAYS).map(x => x.leg));
+      console.log(chalk.gray(`Filtered to ${allLegs.length} legs for parlay combinations\n`));
+    }
     // Provide distribution summary for totals model probabilities (regression-derived)
     if (totalModelProbs && totalModelProbs.size > 0) {
       const probs = Array.from(totalModelProbs.values());

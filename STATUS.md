@@ -1,8 +1,8 @@
 # sportline Status
 
 **Last Updated:** 2025-11-29  
-**Current Phase:** Phase 2 – Moneyline, Spread & Totals (Regression + Pace/Efficiency) Integrated  
-**Active Step:** Daily prediction pipeline (all three markets) with enhanced totals model ✅
+**Current Phase:** Phase 3 – Production-Ready Pipeline with Historical Data & Model Predictions  
+**Active Step:** Full season data ingestion, model training, and live prediction display ✅
 
 ---
 
@@ -52,8 +52,11 @@
 - [x] **Data Pipeline**
   - [x] Implemented SQLite data ingest pipeline (games/odds → scores persisted)
   - [x] Created SQLite schema (7 tables: teams, games, odds, team_stats, features, model_runs, model_predictions)
-  - [x] Ingested full CFB 2025 season: 1662 completed games with scores
+  - [x] Ingested full CFB 2025 season: 1810 games (1750 completed with scores)
   - [x] Ingested NCAAM 2025 season: 78 completed games with scores
+  - [x] Fixed ESPN events fetcher to parse game status (final/in-progress/scheduled) from API
+  - [x] Data ingest now updates game status and scores for historical games
+  - [x] Daily ingest command (`sportline data daily`) incrementally updates from latest DB date
 
 - [x] **Feature Engineering**
   - [x] Implemented rolling statistics (5-game windows: win rate, avg margin)
@@ -83,6 +86,8 @@
   - [x] Model overrides market probabilities for moneylines when available
   - [x] Added "(model)" tag to show which values are model-derived
   - [x] Enhanced bet display: market type, payout if win, EV explanation
+  - [x] Model predictions display in `bets` command with [Model: X.X%] brackets
+  - [x] Fixed UTC timezone rollover for games spanning midnight (queries both date and next day)
 
 - [x] **Spread Model & Integration**
   - [x] Extended features with `spreadLine` + `spreadMarketImpliedProb` (11 total)
@@ -104,6 +109,14 @@
   - [x] Integrated regression-based totals probabilities into `recommend` (Over/Under legs tagged '(model)')
   - [x] CLI prints distribution summary (n, mean, std, range) for monitoring
   - [x] Diagnostics tool added: `src/model/diagnostics.ts` (10-bin calibration, ECE, divergence metrics)
+
+- [x] **Team Search & Discovery**
+  - [x] Implemented `find` command to search for games by team name
+  - [x] Fuzzy matching on team name and abbreviation (case-insensitive)
+  - [x] Multi-day search window (default 7 days, configurable with --days)
+  - [x] Displays event IDs, dates (human-readable + YYYYMMDD), venues
+  - [x] Generates ready-to-run `bets` commands with correct date parameters
+  - [x] Works for both CFB and NCAAM sports
 
 - [x] **Calibration Experiments**
   - [x] Implemented isotonic regression (PAVA algorithm)
@@ -142,8 +155,8 @@ Totals Model (Regression):
 - **Calibration:** Raw probabilities (Beta calibration removed due to small validation set overfitting)
 
 ### 📋 Next Steps
-- [x] ~~Enhance totals regression (add pace & efficiency; evaluate Poisson mixture vs normal)~~ ✅ Completed (pace/efficiency added)
-- [x] ~~Moneyline ensemble (base model + market-aware model blend) to fix mid-range underprediction~~ ✅ Completed (ECE 0.0846 → 0.0534)
+- [ ] Clean up debug warnings in bets output (remove "No model prediction" messages when features exist)
+- [ ] Add confidence indicators when model diverges significantly from market (>10% difference)
 - [ ] Spread dynamic range enhancement (interaction features: |line| × winRateDiff)
 - [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter
 - [ ] Add rest days / back-to-back game features
@@ -168,25 +181,34 @@ Totals Model (Regression):
 ## Current Model Results Example
 
 ```
-1. OKST ML +450
-   Market: Moneyline (win outright)
-   If you win: $55.00 total ($45.00 profit)
-   Win chance: 44.8% (model)
-   Expected value: +$14.64 average profit per bet (model)
-   ✨ This bet has positive expected value!
+🎯 Bets for North Carolina Tar Heels @ NC State Wolfpack (stake $10.00)
+
+Moneylines
+  NCSU ML -270 → 70.02% [Model: 73.1%] | EV: $-0.41 (-4.05%)
+  UNC ML +220 → 29.98% [Model: 26.9%] | EV: $-0.41 (-4.05%)
+
+Spreads
+  NCSU +7.5 (+105) → 46.75% [Model: 1.0%] | EV: $-0.42 (-4.16%)
+  UNC -7.5 (-125) → 53.25% [Model: 99.0%] | EV: $-0.42 (-4.16%)
+
+Totals
+  Over 49.5 (-105) → 48.92% [Model: 58.3%] | EV: $-0.45 (-4.50%)
+  Under 49.5 (-115) → 51.08% [Model: 41.7%] | EV: $-0.45 (-4.50%)
 ```
 
-**Key Insight:** Ensemble approach blends stats-only (base) model with market-aware model to reduce overweighting of bookmaker odds while preserving valuable market signal. This reduced ECE by 37% (0.0846 → 0.0534) and fixed severe mid-range underprediction (40-50% bin: 19.6% → 25.9% actual). Market-aware component (30% weight) captures bookmaker edge, while base component (70% weight) provides independent statistical assessment.
+**Key Insight:** Model predictions now display alongside market probabilities in brackets. UNC vs NC State example shows model strongly favors UNC to cover the 7.5-point spread (99.0% vs market's 53.3%), suggesting potential value. All three markets (moneyline, spread, totals) provide independent model assessments.
 **Additional Spread Insight:** Cover probabilities cluster near 35–45% for many favorites; variance increases with larger absolute lines. Opportunity: highlight lines where model cover probability diverges >5% from vig-free implied.
 **Totals Model Insight:** Replaced miscalibrated classification (saturated ~99–100% Over probabilities) with regression-based expected total approach. Added pace/efficiency features (rolling combined score, points scored/allowed proxies) and MAD-based robust variance estimation. Current metrics: Brier 0.2900, Log Loss 0.7958, ECE 0.1666 (well-calibrated). Probabilities occupy realistic range (10–90%) with good discrimination. Further gains possible from recency weighting and advanced efficiency metrics (points per possession when available).
 
 ## Notes
 - **Working:** ESPN Core API for NCAAM & CFB events/odds/scores
-- **Tested:** CFB recommendations showing reasonable probabilities (14-45% range)
-- **Data:** 1662 CFB completed games, 78 NCAAM completed games ingested
-- **Model:** Market-aware logistic regression with L2 regularization
+- **Tested:** Model predictions displaying correctly across all three markets
+- **Data:** 1810 CFB games (1750 completed), 78 NCAAM completed games ingested
+- **Model:** Ensemble moneyline (70% base + 30% market-aware), spread logistic regression, totals regression
 - **Validation:** Temporal split ensures model predicts future games accurately
 - **Cache:** 5-minute TTL for live games, 1-hour for completed
 - **EV Accuracy:** Vig removal + model probabilities = true expected value
-- **Display:** Clear explanations of moneyline vs spread, actual payout if win, average profit (EV)
- - **Spread:** Now producing cover probabilities; not yet separately surfaced in top EV list (improvement target)
+- **Display:** Market probabilities → model predictions [in brackets] | EV calculations
+- **Search:** Team-based game finder with fuzzy matching for easy discovery
+- **Data Flow:** Daily incremental ingest → feature computation → model training → predictions
+- **Timezone:** Fixed UTC rollover handling for games spanning midnight (e.g., 7:30 PM ET = 00:30 UTC next day)
