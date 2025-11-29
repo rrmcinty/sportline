@@ -6,6 +6,7 @@
 
 import { Command } from "commander";
 import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets } from "./cli/commands.js";
+import { cmdSearchTeam } from "./cli/search.js";
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
 import { cmdModelPredict } from "./model/predict.js";
@@ -38,6 +39,20 @@ program
     const sport: Sport = options.sport;
     const date = options.date || todayYYYYMMDD();
     await cmdGamesFetch(sport, date);
+  });
+
+// search for team
+program
+  .command("find")
+  .description("Search for games by team name")
+  .requiredOption("-t, --team <name>", "Team name or abbreviation (e.g., 'UNC', 'Duke', 'NC State')")
+  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
+  .option("-d, --date <date>", "Start date in YYYYMMDD format (default: today)")
+  .option("--days <number>", "Number of days to search ahead (default: 7)", "7")
+  .action(async (options) => {
+    const sport: Sport = options.sport;
+    const date = options.date || todayYYYYMMDD();
+    await cmdSearchTeam(sport, options.team, date, parseInt(options.days));
   });
 
 // odds import command

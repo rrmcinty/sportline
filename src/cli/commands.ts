@@ -162,7 +162,31 @@ export async function cmdBets(
       return;
     }
     console.log(chalk.gray(`Provider: ${legs[0].provider}`));
-    console.log(chalk.dim(`(Fair probabilities shown - vig removed)\n`));
+    console.log(chalk.dim(`(Market probabilities shown - vig removed | Model predictions in brackets)\n`));
+
+    // Load model predictions
+    let modelProbs: Map<string, number> | undefined;
+    let spreadModelProbs: Map<string, number> | undefined;
+    let totalModelProbs: Map<string, number> | undefined;
+    
+    try {
+      modelProbs = await getHomeWinModelProbabilities(sport, date);
+      spreadModelProbs = await getHomeSpreadCoverProbabilities(sport, date);
+      totalModelProbs = await getTotalOverModelProbabilities(sport, date);
+      
+      // Debug: show if models loaded but have no predictions for this event
+      if (modelProbs && !modelProbs.has(eventId)) {
+        console.log(chalk.dim(`\n⚠️  No moneyline model prediction for this event (${modelProbs.size} events have predictions)\n`));
+      }
+      if (spreadModelProbs && !spreadModelProbs.has(eventId)) {
+        console.log(chalk.dim(`⚠️  No spread model prediction for this event (${spreadModelProbs.size} events have predictions)\n`));
+      }
+      if (totalModelProbs && !totalModelProbs.has(eventId)) {
+        console.log(chalk.dim(`⚠️  No totals model prediction for this event (${totalModelProbs.size} events have predictions)\n`));
+      }
+    } catch (err) {
+      console.log(chalk.dim(`\n⚠️  Model predictions unavailable: ${err instanceof Error ? err.message : String(err)}\n`));
+    }
 
     // Group by market
     const markets: Record<string, BetLeg[]> = {
@@ -179,8 +203,31 @@ export async function cmdBets(
         const result = evaluateParlay({ legs: [leg], stake });
         const evColor = result.ev >= 0 ? chalk.green : chalk.red;
         const evSign = result.ev >= 0 ? "+" : "";
+        
+        // Get model prediction for this leg
+        let modelPrediction = "";
+        if (market === "moneyline" && modelProbs) {
+          const homeProb = modelProbs.get(eventId);
+          if (homeProb !== undefined) {
+            const prob = leg.description.includes(comp.homeTeam.abbreviation || comp.homeTeam.name) ? homeProb : 1 - homeProb;
+            modelPrediction = ` [Model: ${(prob * 100).toFixed(1)}%]`;
+          }
+        } else if (market === "spread" && spreadModelProbs) {
+          const homeCoverProb = spreadModelProbs.get(eventId);
+          if (homeCoverProb !== undefined) {
+            const prob = leg.description.includes(comp.homeTeam.abbreviation || comp.homeTeam.name) ? homeCoverProb : 1 - homeCoverProb;
+            modelPrediction = ` [Model: ${(prob * 100).toFixed(1)}%]`;
+          }
+        } else if (market === "total" && totalModelProbs) {
+          const overProb = totalModelProbs.get(eventId);
+          if (overProb !== undefined) {
+            const prob = leg.description.startsWith("Over") ? overProb : 1 - overProb;
+            modelPrediction = ` [Model: ${(prob * 100).toFixed(1)}%]`;
+          }
+        }
+        
         console.log(
-          `  ${leg.description} → ${(leg.impliedProbability * 100).toFixed(2)}% | EV: ${evColor(evSign + "$" + result.ev.toFixed(2))} (${evColor(evSign + result.roi.toFixed(2) + "%")})`
+          `  ${leg.description} → ${(leg.impliedProbability * 100).toFixed(2)}%${chalk.cyan(modelPrediction)} | EV: ${evColor(evSign + "$" + result.ev.toFixed(2))} (${evColor(evSign + result.roi.toFixed(2) + "%")})`
         );
       }
       console.log();
