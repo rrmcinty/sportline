@@ -17,6 +17,8 @@ export interface GameFeatures {
   homeOppAvgMargin5: number;  // Avg opponent margin (SoS quality)
   awayOppAvgMargin5: number;
   marketImpliedProb: number;  // Market consensus probability for home team win
+  spreadLine: number | null;  // Spread line (negative = home favored, e.g., -7.5)
+  spreadMarketImpliedProb: number | null;  // Market consensus for home team covering spread
 }
 
 /**
@@ -37,9 +39,11 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     away_score: number | null;
   }>;
 
-  // Fetch market odds for all games (moneyline only)
+  // Fetch market odds for all games (moneyline and spread)
   const marketOdds = new Map<number, { homePrice: number; awayPrice: number }>();
-  const oddsData = db.prepare(`
+  const spreadOdds = new Map<number, { line: number; homePrice: number; awayPrice: number }>();
+  
+  const moneylineData = db.prepare(`
     SELECT game_id, price_home, price_away
     FROM odds
     WHERE market = 'moneyline'
@@ -49,9 +53,30 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     price_away: number | null;
   }>;
 
-  for (const odd of oddsData) {
+  for (const odd of moneylineData) {
     if (odd.price_home && odd.price_away) {
       marketOdds.set(odd.game_id, {
+        homePrice: odd.price_home,
+        awayPrice: odd.price_away
+      });
+    }
+  }
+
+  const spreadData = db.prepare(`
+    SELECT game_id, line, price_home, price_away
+    FROM odds
+    WHERE market = 'spread'
+  `).all() as Array<{
+    game_id: number;
+    line: number | null;
+    price_home: number | null;
+    price_away: number | null;
+  }>;
+
+  for (const odd of spreadData) {
+    if (odd.line !== null && odd.price_home && odd.price_away) {
+      spreadOdds.set(odd.game_id, {
+        line: odd.line,
         homePrice: odd.price_home,
         awayPrice: odd.price_away
       });
@@ -79,7 +104,7 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     const homeOppAvgMargin5 = computeOpponentAvgMargin(homeHistory, teamHistory, 5);
     const awayOppAvgMargin5 = computeOpponentAvgMargin(awayHistory, teamHistory, 5);
 
-    // Compute market implied probability (vig-free)
+    // Compute market implied probability (vig-free) for moneyline
     let marketImpliedProb = 0.5;  // Default to 50/50 if no odds
     const odds = marketOdds.get(game.id);
     if (odds) {
@@ -88,6 +113,18 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       const total = homeImplied + awayImplied;
       // Remove vig by normalizing
       marketImpliedProb = homeImplied / total;
+    }
+
+    // Compute spread line and market implied probability for spread
+    let spreadLine: number | null = null;
+    let spreadMarketImpliedProb: number | null = null;
+    const spread = spreadOdds.get(game.id);
+    if (spread) {
+      spreadLine = spread.line;
+      const homeImplied = americanToImplied(spread.homePrice);
+      const awayImplied = americanToImplied(spread.awayPrice);
+      const total = homeImplied + awayImplied;
+      spreadMarketImpliedProb = homeImplied / total;
     }
 
     features.push({
@@ -102,7 +139,9 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       awayOppWinRate5,
       homeOppAvgMargin5,
       awayOppAvgMargin5,
-      marketImpliedProb
+      marketImpliedProb,
+      spreadLine,
+      spreadMarketImpliedProb
     });
 
     // Update history if game is complete

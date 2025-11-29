@@ -1,8 +1,8 @@
 # sportline Status
 
 **Last Updated:** 2025-11-29  
-**Current Phase:** Phase 2 – Model Validation & Market Integration Complete  
-**Active Step:** Predictive model operational with temporal validation ✅
+**Current Phase:** Phase 2 – Moneyline & Spread Models Integrated  
+**Active Step:** Daily prediction pipeline (moneyline + spread) operational ✅
 
 ---
 
@@ -84,6 +84,16 @@
   - [x] Added "(model)" tag to show which values are model-derived
   - [x] Enhanced bet display: market type, payout if win, EV explanation
 
+- [x] **Spread Model & Integration**
+  - [x] Extended features with `spreadLine` and `spreadMarketImpliedProb` (11 spread features total including base 9 + line + market spread prob)
+  - [x] Implemented separate logistic regression for home cover probability
+  - [x] Temporal validation identical to moneyline (date-based split)
+  - [x] Validation Accuracy (CFB Spread 2025): 68.3% (beats random 50%)
+  - [x] Brier Score (Spread): 0.2120 (improved vs random 0.25 baseline)
+  - [x] Integrated spread model probabilities into `recommend` (overrides vig-free implied for spread legs)
+  - [x] Added odds persistence before model feature recompute (stores moneyline/spread/total lines for today's games)
+  - [x] Verified 38 games produced both win & spread cover predictions for 2025-11-29
+
 - [x] **Calibration Experiments**
   - [x] Implemented isotonic regression (PAVA algorithm)
   - [x] Tested calibration with various validation set sizes
@@ -91,22 +101,33 @@
   - [x] L2 regularization proved more effective for stability
 
 ### 🔄 Current Model Performance (CFB 2025)
+Moneyline Model:
 - **Training Accuracy:** 75.8% (1163 games before Sept 27)
 - **Validation Accuracy:** 74.5% (499 games after Sept 27)
 - **Brier Score:** 0.1716 (12% better than stats-only model)
 - **Log Loss:** 0.5140 (10% better than stats-only model)
-- **Features:** 10 features including market implied probability
+- **Features:** 10 (rolling stats, SoS, market implied probability, home advantage)
 - **Regularization:** L2 penalty (lambda=0.1)
-- **Calibration:** Disabled (needs 1000+ validation samples)
+- **Calibration:** Disabled (needs ≥1000 validation samples; current 499)
+
+Spread Model:
+- **Training Accuracy:** 67.4% (1156 games before split date)
+- **Validation Accuracy:** 68.3% (496 games after split date)
+- **Brier Score:** 0.2120 (better than random 0.25 baseline)
+- **Log Loss:** 0.6143
+- **Features:** 11 (moneyline feature set + spread line + spread market implied probability)
+- **Regularization:** L2 penalty (lambda=0.1)
+- **Calibration:** Disabled (insufficient validation sample size)
 
 ### 📋 Next Steps
-- [ ] Spread prediction model (logistic regression for cover probability)
-- [ ] Total prediction model (linear regression for combined score)
+- [ ] Total prediction model (projected combined score → over/under probabilities)
+- [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter
 - [ ] Add rest days / back-to-back game features
 - [ ] Add team efficiency stats (offensive/defensive ratings)
-- [ ] Implement recency weighting for features
-- [ ] Track actual betting results vs predictions
-- [ ] Add model performance dashboard
+- [ ] Implement recency weighting (exponential decay on past games)
+- [ ] Track actual betting results vs predictions (logging + ROI table)
+- [ ] Add model performance dashboard (daily snapshot + rolling metrics)
+- [ ] Persist individual model predictions (new table) for auditing & backtests
 
 ### 🔮 Future Enhancements
 - [ ] Better output formatting (tables)
@@ -132,6 +153,7 @@
 ```
 
 **Key Insight:** Model finds +EV by identifying when bookmaker odds undervalue teams based on stats/SoS. Market-aware approach (using market probability as a feature) significantly improved accuracy from 70.3% → 74.5%.
+**Additional Spread Insight:** Cover probabilities cluster near 35–45% for many favorites; variance increases with larger absolute lines. Opportunity: highlight lines where model cover probability diverges >5% from vig-free implied.
 
 ## Notes
 - **Working:** ESPN Core API for NCAAM & CFB events/odds/scores
@@ -142,3 +164,4 @@
 - **Cache:** 5-minute TTL for live games, 1-hour for completed
 - **EV Accuracy:** Vig removal + model probabilities = true expected value
 - **Display:** Clear explanations of moneyline vs spread, actual payout if win, average profit (EV)
+ - **Spread:** Now producing cover probabilities; not yet separately surfaced in top EV list (improvement target)

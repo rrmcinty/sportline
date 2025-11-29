@@ -9,7 +9,7 @@ import { fetchOdds as fetchOddsNcaam, normalizeOdds as normalizeOddsNcaam } from
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import { fetchOdds as fetchOddsCfb, normalizeOdds as normalizeOddsCfb } from "../espn/cfb/odds.js";
 import { evaluateParlay, generateParlays, rankParlaysByEV, filterPositiveEV } from "../parlay/eval.js";
-import { getHomeWinModelProbabilities } from "../model/apply.js";
+import { getHomeWinModelProbabilities, getHomeSpreadCoverProbabilities } from "../model/apply.js";
 import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
 
 /**
@@ -224,10 +224,46 @@ export async function cmdRecommend(
       return;
     }
 
+    // First, fetch all odds and save them to database so models can use them
+    const db = (await import("../db/index.js")).getDb();
+    for (const comp of competitions) {
+      try {
+        const oddsEntries = await fetchOdds(comp.eventId);
+        
+        // Get or create game_id for this event
+        const gameRow = db.prepare(`SELECT id FROM games WHERE espn_event_id = ?`).get(comp.eventId) as { id: number } | undefined;
+        if (gameRow) {
+          // Delete old odds for this game to replace with fresh data
+          db.prepare(`DELETE FROM odds WHERE game_id = ?`).run(gameRow.id);
+          
+          // Insert new odds
+          const insertOdds = db.prepare(`INSERT INTO odds (game_id, provider, market, line, price_home, price_away, price_over, price_under, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+          const timestamp = new Date().toISOString();
+          
+          for (const entry of oddsEntries) {
+            if (entry.homeTeamOdds.moneyLine && entry.awayTeamOdds.moneyLine) {
+              insertOdds.run(gameRow.id, entry.provider.name, "moneyline", null, entry.homeTeamOdds.moneyLine, entry.awayTeamOdds.moneyLine, null, null, timestamp);
+            }
+            if (entry.homeTeamOdds.spreadOdds && entry.awayTeamOdds.spreadOdds && entry.spread !== undefined) {
+              insertOdds.run(gameRow.id, entry.provider.name, "spread", entry.spread, entry.homeTeamOdds.spreadOdds, entry.awayTeamOdds.spreadOdds, null, null, timestamp);
+            }
+            if (entry.overOdds && entry.underOdds && entry.overUnder !== undefined) {
+              insertOdds.run(gameRow.id, entry.provider.name, "total", entry.overUnder, null, null, entry.overOdds, entry.underOdds, timestamp);
+            }
+          }
+        }
+      } catch (err) {
+        // Silently skip games with missing odds
+      }
+    }
+
+    // Now compute model predictions (they can access today's odds from database)
     const allLegs: BetLeg[] = [];
     let modelProbs: Map<string, number> | undefined;
+    let spreadModelProbs: Map<string, number> | undefined;
     try {
       modelProbs = await getHomeWinModelProbabilities(sport, date);
+      spreadModelProbs = await getHomeSpreadCoverProbabilities(sport, date);
     } catch (err) {
       // silently ignore model failure
     }
@@ -257,6 +293,22 @@ export async function cmdRecommend(
             }
           }
         }
+
+        // If spread model probabilities available, override spread implied probabilities
+        if (spreadModelProbs && spreadModelProbs.has(comp.eventId)) {
+          const pHomeCover = spreadModelProbs.get(comp.eventId)!;
+          for (const leg of legs) {
+            if (leg.market === "spread") {
+              if (leg.team === "home") {
+                leg.impliedProbability = pHomeCover;
+                leg.description = leg.description + " (model)";
+              } else if (leg.team === "away") {
+                leg.impliedProbability = 1 - pHomeCover;
+                leg.description = leg.description + " (model)";
+              }
+            }
+          }
+        }
         allLegs.push(...legs);
       } catch (error) {
         console.warn(chalk.yellow(`⚠️  Failed to fetch odds for ${comp.eventId}`));
@@ -269,8 +321,11 @@ export async function cmdRecommend(
     }
 
     console.log(chalk.gray(`Found ${allLegs.length} betting opportunities across ${competitions.length} games`));
-    if (modelProbs) {
-      console.log(chalk.green.dim("Model probabilities applied to moneylines (home/away)"));
+    if (modelProbs || spreadModelProbs) {
+      const markets = [];
+      if (modelProbs) markets.push("moneylines");
+      if (spreadModelProbs) markets.push("spreads");
+      console.log(chalk.green.dim(`Model probabilities applied to ${markets.join(" and ")}`));
     } else {
       console.log(chalk.dim("Using vig-free market probabilities (no model override)"));
     }
