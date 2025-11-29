@@ -14,14 +14,17 @@ npm run build
 # Daily data update (run this each day to get new games and scores)
 npm run ingest
 
+# Get recommendations for today
+sportline recommend --sport cfb --min-legs 1 --stake 10
+
+# Get a full week of games (perfect for slow nights)
+sportline recommend --sport ncaam --min-legs 1 --stake 10 --days 7
+
 # Fetch today's games (date defaults to today)
 node dist/index.js games
 
 # Show odds for a specific game (date defaults to today)
 node dist/index.js odds --event 401827111
-
-# Generate parlay recommendations (date defaults to today)
-node dist/index.js recommend --stake 10 --min-legs 2 --max-legs 4 --top 10
 ```
 
 ## Daily Workflow
@@ -161,12 +164,28 @@ Import and display odds for a specific event (date defaults to today).
 ### `recommend`
 Generate and rank parlay recommendations by expected value (date defaults to today).
 
+**Usage:**
+```bash
+# Today's games only
+sportline recommend --sport cfb --min-legs 1 --stake 10
+
+# Look ahead 7 days (great for slow weeks)
+sportline recommend --sport ncaam --min-legs 1 --stake 10 --days 7
+
+# Weekend only (Friday-Sunday)
+sportline recommend --sport cfb --days 3 --min-legs 1
+```
+
 **Options:**
-- `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (optional)
+- `-d, --date <YYYYMMDD>` - Start date (default: today)
+- `--sport <sport>` - Sport: cfb or ncaam (default: ncaam)
 - `-s, --stake <amount>` - Stake amount per parlay (default: 10)
-- `--min-legs <number>` - Minimum legs per parlay (default: 2)
+- `--min-legs <number>` - Minimum legs per parlay (use 1 for single bets, default: 2)
 - `--max-legs <number>` - Maximum legs per parlay (default: 4)
 - `-n, --top <number>` - Number of top parlays to show (default: 10)
+- `--days <number>` - Number of days to look ahead from start date (default: 1)
+
+**Pro tip:** Use `--days 7` on slow nights to see a full week of opportunities!
 
 ## Architecture
 

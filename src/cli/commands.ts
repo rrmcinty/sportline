@@ -210,23 +210,52 @@ export async function cmdRecommend(
   stake: number,
   minLegs: number,
   maxLegs: number,
-  topN: number
+  topN: number,
+  days: number = 1
 ): Promise<void> {
   try {
-    console.log(chalk.bold.cyan(`\n🔍 Analyzing all games on ${date}...\n`));
+    // Generate date range if days > 1
+    const dates: string[] = [];
+    const startDate = new Date(
+      parseInt(date.slice(0, 4)),
+      parseInt(date.slice(4, 6)) - 1,
+      parseInt(date.slice(6, 8))
+    );
+    
+    for (let i = 0; i < days; i++) {
+      const d = new Date(startDate);
+      d.setDate(d.getDate() + i);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      dates.push(`${year}${month}${day}`);
+    }
+    
+    const dateRangeDisplay = days === 1 
+      ? date 
+      : `${date} through ${dates[dates.length - 1]} (${days} days)`;
+    
+    console.log(chalk.bold.cyan(`\n🔍 Analyzing all games on ${dateRangeDisplay}...\n`));
 
-    // Fetch all games and odds
+    // Fetch all games and odds across all dates
     const { fetchEvents, fetchOdds, normalizeOdds } = getFetchers(sport);
-    const competitions = await fetchEvents(date);
+    const allCompetitions = [];
+    
+    for (const d of dates) {
+      const competitions = await fetchEvents(d);
+      allCompetitions.push(...competitions);
+    }
 
-    if (competitions.length === 0) {
-      console.log(chalk.yellow("No games found for this date"));
+    if (allCompetitions.length === 0) {
+      console.log(chalk.yellow("No games found for this date range"));
       return;
     }
 
+    console.log(chalk.gray(`Found ${allCompetitions.length} games across ${days} day(s)\n`));
+
     // First, fetch all odds and save them to database so models can use them
     const db = (await import("../db/index.js")).getDb();
-    for (const comp of competitions) {
+    for (const comp of allCompetitions) {
       try {
         const oddsEntries = await fetchOdds(comp.eventId);
         
@@ -263,15 +292,32 @@ export async function cmdRecommend(
     let modelProbs: Map<string, number> | undefined;
     let spreadModelProbs: Map<string, number> | undefined;
     let totalModelProbs: Map<string, number> | undefined;
-    try {
-      modelProbs = await getHomeWinModelProbabilities(sport, date);
-      spreadModelProbs = await getHomeSpreadCoverProbabilities(sport, date);
-      totalModelProbs = await getTotalOverModelProbabilities(sport, date);
-    } catch (err) {
-      // silently ignore model failure
+    
+    // Load model predictions for all dates in range
+    for (const d of dates) {
+      try {
+        const dayModelProbs = await getHomeWinModelProbabilities(sport, d);
+        const daySpreadProbs = await getHomeSpreadCoverProbabilities(sport, d);
+        const dayTotalProbs = await getTotalOverModelProbabilities(sport, d);
+        
+        if (dayModelProbs) {
+          if (!modelProbs) modelProbs = new Map();
+          dayModelProbs.forEach((v, k) => modelProbs!.set(k, v));
+        }
+        if (daySpreadProbs) {
+          if (!spreadModelProbs) spreadModelProbs = new Map();
+          daySpreadProbs.forEach((v, k) => spreadModelProbs!.set(k, v));
+        }
+        if (dayTotalProbs) {
+          if (!totalModelProbs) totalModelProbs = new Map();
+          dayTotalProbs.forEach((v, k) => totalModelProbs!.set(k, v));
+        }
+      } catch (err) {
+        // silently ignore model failure for this date
+      }
     }
 
-    for (const comp of competitions) {
+    for (const comp of allCompetitions) {
       // Store matchup info for later display
       eventIdToMatchup.set(comp.eventId, {
         away: comp.awayTeam.abbreviation || comp.awayTeam.name,
@@ -345,7 +391,7 @@ export async function cmdRecommend(
       return;
     }
 
-    console.log(chalk.gray(`Found ${allLegs.length} betting opportunities across ${competitions.length} games`));
+    console.log(chalk.gray(`Found ${allLegs.length} betting opportunities across ${allCompetitions.length} games`));
     if (modelProbs || spreadModelProbs || totalModelProbs) {
       const markets: string[] = [];
       if (modelProbs) markets.push('moneylines');

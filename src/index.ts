@@ -76,6 +76,7 @@ program
   .option("--min-legs <number>", "Minimum legs per parlay (use 1 for single bets only)", "2")
   .option("--max-legs <number>", "Maximum legs per parlay", "4")
   .option("-n, --top <number>", "Number of top parlays to show", "10")
+  .option("--days <number>", "Number of days to look ahead (default: 1)", "1")
   .action(async (options) => {
     const sport: Sport = options.sport;
     const date = options.date || todayYYYYMMDD();
@@ -85,7 +86,8 @@ program
       parseFloat(options.stake),
       parseInt(options.minLegs),
       parseInt(options.maxLegs),
-      parseInt(options.top)
+      parseInt(options.top),
+      parseInt(options.days)
     );
   });
 
