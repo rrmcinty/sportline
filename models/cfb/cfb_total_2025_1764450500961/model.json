@@ -1,0 +1,41 @@
+{
+  "market": "total",
+  "weights": [
+    -0.017768596250876942,
+    -0.02160035910933882,
+    -0.30767122203698294,
+    -0.13756131343631725,
+    -0.01576734777216789,
+    0.008701876625377188,
+    0.013362714519065962,
+    -0.12643579550260206,
+    -0.07943322741876001,
+    0.2865239710628875,
+    -0.03307395519028708,
+    -0.17496042584195937,
+    0.17329526424449934,
+    0.0490187328288367,
+    0.14191842891439438
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "homePointsAvg5",
+    "awayPointsAvg5",
+    "homeOppPointsAvg5",
+    "awayOppPointsAvg5",
+    "totalLine",
+    "totalMarketImpliedProb"
+  ],
+  "sport": "cfb",
+  "season": 2025,
+  "trainedAt": "2025-11-29T21:08:20.961Z",
+  "calibration": null
+}

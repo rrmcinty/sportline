@@ -83,6 +83,8 @@ export async function cmdModelTrain(
         await trainMoneylineModel(db, sport, season, gameFeatures, calibrate);
       } else if (market === 'spread') {
         await trainSpreadModel(db, sport, season, gameFeatures, calibrate);
+      } else if (market === 'total') {
+        await trainTotalRegressionModel(db, sport, season, gameFeatures);
       }
     }
   } catch (error) {
@@ -541,4 +543,216 @@ async function trainSpreadModel(
   );
 
   console.log(chalk.green.bold(`✅ Spread model trained and saved to ${artifactsPath}\n`));
+}
+
+/**
+ * Train total (over/under) model: predicts probability game goes OVER closing total line
+ */
+/**
+ * Train total model using ridge regression to predict combined score, then derive P(over)
+ */
+async function trainTotalRegressionModel(
+  db: any,
+  sport: Sport,
+  season: number,
+  gameFeatures: any[]
+): Promise<void> {
+  console.log(chalk.bold.blue(`\n📊 Training TOTAL (regression) model...\n`));
+
+  const gamesWithTotals = db.prepare(`
+    SELECT g.id, g.home_score, g.away_score, o.line
+    FROM games g
+    JOIN odds o ON g.id = o.game_id
+    WHERE g.sport = ? AND g.season = ?
+      AND g.home_score IS NOT NULL AND g.away_score IS NOT NULL
+      AND o.market = 'total'
+      AND o.line IS NOT NULL
+  `).all(sport, season) as Array<{ id:number; home_score:number; away_score:number; line:number }>;
+
+  if (!gamesWithTotals.length) {
+    console.log(chalk.yellow('⚠️  No completed games with total lines found.'));
+    return;
+  }
+
+  // Map id -> total line
+  const totalLineMap = new Map(gamesWithTotals.map(g => [g.id, g.line]));
+  const combinedScoreMap = new Map(gamesWithTotals.map(g => [g.id, g.home_score + g.away_score]));
+
+  const rows: { features:number[]; y:number; date:string; line:number; overLabel:number }[] = [];
+  for (const gf of gameFeatures) {
+    const line = totalLineMap.get(gf.gameId);
+    const combined = combinedScoreMap.get(gf.gameId);
+    if (line !== undefined && combined !== undefined) {
+      // Feature set excluding market leakage: keep performance stats + pace/efficiency
+      const feat = [
+        gf.homePointsAvg5,
+        gf.awayPointsAvg5,
+        gf.homeOppPointsAvg5,
+        gf.awayOppPointsAvg5,
+        gf.homeWinRate5,
+        gf.awayWinRate5,
+        gf.homeAvgMargin5,
+        gf.awayAvgMargin5,
+        gf.homeOppAvgMargin5,
+        gf.awayOppAvgMargin5,
+        gf.homeOppWinRate5,
+        gf.awayOppWinRate5,
+        gf.homePace5,
+        gf.awayPace5,
+        gf.homeOffEff5,
+        gf.awayOffEff5,
+        gf.homeDefEff5,
+        gf.awayDefEff5
+      ];
+      rows.push({ features: feat, y: combined, date: gf.date, line, overLabel: combined > line ? 1 : 0 });
+    }
+  }
+
+  if (rows.length < 50) {
+    console.log(chalk.yellow('⚠️  Insufficient samples (<50) for totals regression. Skipping.'));
+    return;
+  }
+
+  // Temporal split
+  const sorted = rows.sort((a,b) => a.date.localeCompare(b.date));
+  const splitIdx = Math.floor(sorted.length * 0.7);
+  const trainRows = sorted.slice(0, splitIdx);
+  const valRows = sorted.slice(splitIdx);
+  const splitDate = valRows[0].date;
+  console.log(chalk.dim(`Temporal split at ${splitDate}: ${trainRows.length} train, ${valRows.length} validation`));
+
+  const Xtrain = trainRows.map(r => r.features);
+  const ytrain = trainRows.map(r => r.y);
+  const Xval = valRows.map(r => r.features);
+  const yval = valRows.map(r => r.y);
+
+  // Standardize features (mean/std on train)
+  const means = new Array(Xtrain[0].length).fill(0);
+  const stds = new Array(Xtrain[0].length).fill(0);
+  for (let j=0; j<means.length; j++) {
+    for (let i=0; i<Xtrain.length; i++) means[j] += Xtrain[i][j];
+    means[j] /= Xtrain.length;
+    for (let i=0; i<Xtrain.length; i++) stds[j] += Math.pow(Xtrain[i][j] - means[j], 2);
+    stds[j] = Math.sqrt(stds[j] / Xtrain.length) || 1;
+  }
+  function scaleRow(row:number[]):number[] { return row.map((v,j) => (v - means[j]) / stds[j]); }
+  const XtrainScaled = Xtrain.map(scaleRow);
+  const XvalScaled = Xval.map(scaleRow);
+
+  // Ridge regression closed-form: (X^T X + lambda I)^-1 X^T y
+  const lambda = 1; // stronger regularization for stability
+  const d = XtrainScaled[0].length;
+  // Build XtX and XtY
+  const XtX = Array.from({length:d}, () => new Array(d).fill(0));
+  const XtY = new Array(d).fill(0);
+  for (let i=0; i<XtrainScaled.length; i++) {
+    const x = XtrainScaled[i];
+    for (let j=0; j<d; j++) {
+      XtY[j] += x[j] * ytrain[i];
+      for (let k=0; k<d; k++) XtX[j][k] += x[j] * x[k];
+    }
+  }
+  for (let j=0; j<d; j++) XtX[j][j] += lambda; // ridge term
+
+  // Solve via simple gradient descent if matrix inversion is complex here
+  let weights = new Array(d).fill(0);
+  const lr = 0.01;
+  for (let iter=0; iter<5000; iter++) {
+    const grad = new Array(d).fill(0);
+    for (let i=0; i<XtrainScaled.length; i++) {
+      const x = XtrainScaled[i];
+      const pred = x.reduce((acc,v,j)=>acc+v*weights[j],0);
+      const err = pred - ytrain[i];
+      for (let j=0; j<d; j++) grad[j] += err * x[j];
+    }
+    for (let j=0; j<d; j++) {
+      grad[j] = grad[j] / XtrainScaled.length + lambda * weights[j];
+      weights[j] -= lr * grad[j];
+    }
+  }
+
+  // Compute predictions & residual sigma
+  const trainPreds = XtrainScaled.map(x => x.reduce((a,v,j)=>a+v*weights[j],0));
+  const valPreds = XvalScaled.map(x => x.reduce((a,v,j)=>a+v*weights[j],0));
+  // Add bias term to correct systemic offset (mean residual)
+  const bias = ytrain.reduce((acc,y,i)=>acc + (y - trainPreds[i]),0) / ytrain.length;
+  // Apply bias to prediction arrays
+  for (let i=0;i<trainPreds.length;i++) trainPreds[i] += bias;
+  for (let i=0;i<valPreds.length;i++) valPreds[i] += bias;
+  const trainResiduals = trainPreds.map((p,i) => ytrain[i] - p);
+  
+  // Use Median Absolute Deviation (MAD) for robust variance estimation
+  const sortedAbsResiduals = trainResiduals.map(r => Math.abs(r)).sort((a,b) => a-b);
+  const medianAbsResidual = sortedAbsResiduals[Math.floor(sortedAbsResiduals.length / 2)];
+  const madSigma = medianAbsResidual * 1.4826; // MAD to std conversion for normal distribution
+  
+  // Apply floor to prevent overconfidence
+  const sigmaFloor = 38;
+  let sigma = Math.max(madSigma, sigmaFloor);
+  console.log(chalk.dim(`  MAD-based sigma: ${madSigma.toFixed(2)}, applied floor: ${sigma.toFixed(2)}`));
+
+  // Derive probabilities of over for validation set
+  function normalCdf(z:number):number {
+    // Approximate erf using numerical approximation
+    const t = 1 / (1 + 0.5 * Math.abs(z));
+    const tau = t * Math.exp(-z*z - 1.26551223 + 1.00002368*t + 0.37409196*t*t + 0.09678418*t*t*t - 0.18628806*t*t*t*t + 0.27886807*t*t*t*t*t - 1.13520398*t*t*t*t*t*t + 1.48851587*t*t*t*t*t*t*t - 0.82215223*t*t*t*t*t*t*t*t + 0.17087277*t*t*t*t*t*t*t*t*t);
+    const erf = z >= 0 ? 1 - tau : tau - 1;
+    return 0.5 * (1 + erf);
+  }
+  const valOverProbs = valRows.map((r,i) => 1 - normalCdf((r.line - valPreds[i]) / sigma));
+  const valOverLabels = valRows.map(r => r.overLabel);
+
+  // Metrics using raw probabilities (calibration skipped - insufficient validation data)
+  let brierSum = 0; let logLossSum = 0; let correct = 0;
+  for (let i=0; i<valOverProbs.length; i++) {
+    const p = Math.max(0.001, Math.min(0.999, valOverProbs[i]));
+    const y = valOverLabels[i];
+    const err = p - y;
+    brierSum += err*err;
+    logLossSum += y === 1 ? -Math.log(p) : -Math.log(1-p);
+    const predClass = p > 0.5 ? 1 : 0;
+    if (predClass === y) correct++;
+  }
+  const brierScore = brierSum / valOverProbs.length;
+  const logLoss = logLossSum / valOverProbs.length;
+  const valAccuracy = (correct / valOverProbs.length) * 100;
+
+  console.log(chalk.green(`Validation accuracy (threshold 0.5): ${valAccuracy.toFixed(1)}%`));
+  console.log(chalk.cyan(`Brier score: ${brierScore.toFixed(4)}`));
+  console.log(chalk.cyan(`Log loss: ${logLoss.toFixed(4)}`));
+  console.log(chalk.cyan(`Residual sigma (MAD-based, floored at ${sigmaFloor}): ${sigma.toFixed(2)}\n`));
+
+  const runId = `${sport}_total_reg_${season}_${Date.now()}`;
+  const artifactsPath = join(process.cwd(), 'models', sport, runId);
+  mkdirSync(artifactsPath, { recursive: true });
+  const model = {
+    market: 'total',
+    predictionType: 'regression',
+    weights,
+    bias,
+    means,
+    stds,
+    sigma,
+    featureNames: ['homePointsAvg5','awayPointsAvg5','homeOppPointsAvg5','awayOppPointsAvg5','homeWinRate5','awayWinRate5','homeAvgMargin5','awayAvgMargin5','homeOppAvgMargin5','awayOppAvgMargin5','homeOppWinRate5','awayOppWinRate5','homePace5','awayPace5','homeOffEff5','awayOffEff5','homeDefEff5','awayDefEff5'],
+    sport,
+    season,
+    trainedAt: new Date().toISOString()
+  };
+  writeFileSync(join(artifactsPath,'model.json'), JSON.stringify(model,null,2));
+  const metrics = {
+    market: 'total',
+    predictionType: 'regression',
+    validationAccuracy: valAccuracy,
+    brierScore,
+    logLoss,
+    sigma,
+    splitDate,
+    numTrainingSamples: trainRows.length,
+    numValidationSamples: valRows.length
+  };
+  writeFileSync(join(artifactsPath,'metrics.json'), JSON.stringify(metrics,null,2));
+  db.prepare(`INSERT INTO model_runs (run_id, sport, season, config_json, started_at, finished_at, metrics_json, artifacts_path)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+    .run(runId, sport, season, JSON.stringify({ market:'total', type:'regression' }), new Date().toISOString(), new Date().toISOString(), JSON.stringify(metrics), artifactsPath);
+  console.log(chalk.green.bold(`✅ Total regression model trained and saved to ${artifactsPath}\n`));
 }

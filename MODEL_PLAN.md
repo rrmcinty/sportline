@@ -73,14 +73,34 @@
 - `models/<sport>/<timestamp>/metrics.json` (losses, Brier, ROI)
 
 ## Milestones
-1. Baseline (Week 1)
+1. ✅ Baseline (Week 1)
    - Ingest minimal NCAAM history, trends-only features, logistic baseline for moneyline; calibration.
    - Wire `predict` into `recommend` for EV using fair probs.
-2. Stats & SoS (Week 2)
+2. ✅ Stats & SoS (Week 2)
    - Add team stats + SoS features; retrain; backtest ROI.
-3. CFB Baseline (Week 3)
+3. ✅ CFB Baseline (Week 3)
    - Port pipeline; limited stats; calibrate.
-4. Similarity (Optional, Week 4+)
+4. 🔄 Pace & Efficiency Enhancement (Current)
+   - Add pace (possessions/plays per game) and offensive/defensive efficiency (points per possession/play).
+   - Apply to totals regression model to improve combined score predictions.
+   - Implement robust variance estimation (MAD-based sigma) to replace heuristic floor.
+   - Apply Beta calibration to totals Over/Under probabilities post-regression.
+   - Target: Reduce totals ECE from 0.1628 → ~0.08-0.10, improve Brier score.
+5. Moneyline Ensemble (Next)
+   - Train separate models: base (no market feature) + market-aware.
+   - Blend predictions (70/30) to reduce mid-range underprediction (40-50% bin).
+   - Target: Reduce moneyline ECE from 0.0846 → ~0.05-0.06.
+6. Spread Dynamic Range (Next)
+   - Add interaction features: |spreadLine| × winRateDiff, spreadLine × avgMarginDiff.
+   - Widen probability distribution beyond current 30-40% cluster.
+7. Recency Weighting (Next)
+   - Exponential decay on rolling windows (recent games weighted higher).
+   - Expected ~1-2% accuracy gain across all markets.
+8. ROI Tracking & Divergence Filtering (Next)
+   - Persist predictions to `model_predictions` table.
+   - Track realized ROI vs expected EV by market.
+   - Filter recommendations to show only |model - market| > 5% AND EV > 0.
+9. Similarity (Optional, Future)
    - Add embeddings; explain impact on matchups.
 
 ## Risks & Mitigations

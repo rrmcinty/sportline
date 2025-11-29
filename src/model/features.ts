@@ -19,6 +19,18 @@ export interface GameFeatures {
   marketImpliedProb: number;  // Market consensus probability for home team win
   spreadLine: number | null;  // Spread line (negative = home favored, e.g., -7.5)
   spreadMarketImpliedProb: number | null;  // Market consensus for home team covering spread
+  totalLine: number | null;  // Total points line
+  totalMarketImpliedProb: number | null; // Market consensus probability for over
+  homePointsAvg5: number;  // Rolling avg points scored (home team)
+  awayPointsAvg5: number;  // Rolling avg points scored (away team)
+  homeOppPointsAvg5: number; // Rolling avg points allowed by home opponents
+  awayOppPointsAvg5: number; // Rolling avg points allowed by away opponents
+  homePace5: number; // Rolling avg combined points (proxy for pace/tempo)
+  awayPace5: number; // Rolling avg combined points (proxy for pace/tempo)
+  homeOffEff5: number; // Rolling avg points scored (offensive efficiency proxy)
+  awayOffEff5: number; // Rolling avg points scored (offensive efficiency proxy)
+  homeDefEff5: number; // Rolling avg points allowed (defensive efficiency proxy)
+  awayDefEff5: number; // Rolling avg points allowed (defensive efficiency proxy)
 }
 
 /**
@@ -39,9 +51,10 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     away_score: number | null;
   }>;
 
-  // Fetch market odds for all games (moneyline and spread)
+  // Fetch market odds for all games (moneyline, spread, total)
   const marketOdds = new Map<number, { homePrice: number; awayPrice: number }>();
   const spreadOdds = new Map<number, { line: number; homePrice: number; awayPrice: number }>();
+  const totalOdds = new Map<number, { line: number; overPrice: number; underPrice: number }>();
   
   const moneylineData = db.prepare(`
     SELECT game_id, price_home, price_away
@@ -83,10 +96,31 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     }
   }
 
+  const totalData = db.prepare(`
+    SELECT game_id, line, price_over, price_under
+    FROM odds
+    WHERE market = 'total'
+  `).all() as Array<{
+    game_id: number;
+    line: number | null;
+    price_over: number | null;
+    price_under: number | null;
+  }>;
+
+  for (const odd of totalData) {
+    if (odd.line !== null && odd.price_over && odd.price_under) {
+      totalOdds.set(odd.game_id, {
+        line: odd.line,
+        overPrice: odd.price_over,
+        underPrice: odd.price_under
+      });
+    }
+  }
+
   const features: GameFeatures[] = [];
 
   // Build team performance history
-  const teamHistory = new Map<number, Array<{ date: string; margin: number; won: boolean; oppTeamId: number }>>();
+  const teamHistory = new Map<number, Array<{ date: string; margin: number; won: boolean; oppTeamId: number; pointsFor: number; pointsAgainst: number; combined: number }>>();
 
   for (const game of games) {
     const homeHistory = teamHistory.get(game.home_team_id) || [];
@@ -97,6 +131,16 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     const awayWinRate5 = computeWinRate(awayHistory, 5);
     const homeAvgMargin5 = computeAvgMargin(homeHistory, 5);
     const awayAvgMargin5 = computeAvgMargin(awayHistory, 5);
+    const homePointsAvg5 = computeAvgPointsFor(homeHistory, 5);
+    const awayPointsAvg5 = computeAvgPointsFor(awayHistory, 5);
+    const homeOppPointsAvg5 = computeOpponentAvgPoints(homeHistory, teamHistory, 5);
+    const awayOppPointsAvg5 = computeOpponentAvgPoints(awayHistory, teamHistory, 5);
+    const homePace5 = computeAvgCombined(homeHistory, 5);
+    const awayPace5 = computeAvgCombined(awayHistory, 5);
+    const homeOffEff5 = homePointsAvg5; // Same as points scored avg for now
+    const awayOffEff5 = awayPointsAvg5;
+    const homeDefEff5 = computeAvgPointsAgainst(homeHistory, 5);
+    const awayDefEff5 = computeAvgPointsAgainst(awayHistory, 5);
 
     // Compute SoS: average opponent stats
     const homeOppWinRate5 = computeOpponentAvgWinRate(homeHistory, teamHistory, 5);
@@ -127,6 +171,18 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       spreadMarketImpliedProb = homeImplied / total;
     }
 
+    // Total odds implied probability (vig-free) of over
+    let totalLine: number | null = null;
+    let totalMarketImpliedProb: number | null = null;
+    const totalEntry = totalOdds.get(game.id);
+    if (totalEntry) {
+      totalLine = totalEntry.line;
+      const overImp = americanToImplied(totalEntry.overPrice);
+      const underImp = americanToImplied(totalEntry.underPrice);
+      const sum = overImp + underImp;
+      totalMarketImpliedProb = overImp / sum;
+    }
+
     features.push({
       gameId: game.id,
       date: game.date,
@@ -134,14 +190,26 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       awayWinRate5,
       homeAvgMargin5,
       awayAvgMargin5,
-      homeAdvantage: 1,  // Assume home advantage
+      homeAdvantage: 1,
       homeOppWinRate5,
       awayOppWinRate5,
       homeOppAvgMargin5,
       awayOppAvgMargin5,
       marketImpliedProb,
       spreadLine,
-      spreadMarketImpliedProb
+      spreadMarketImpliedProb,
+      totalLine,
+      totalMarketImpliedProb,
+      homePointsAvg5,
+      awayPointsAvg5,
+      homeOppPointsAvg5,
+      awayOppPointsAvg5,
+      homePace5,
+      awayPace5,
+      homeOffEff5,
+      awayOffEff5,
+      homeDefEff5,
+      awayDefEff5
     });
 
     // Update history if game is complete
@@ -153,14 +221,20 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
         date: game.date,
         margin: homeMargin,
         won: homeMargin > 0,
-        oppTeamId: game.away_team_id
+        oppTeamId: game.away_team_id,
+        pointsFor: game.home_score,
+        pointsAgainst: game.away_score,
+        combined: game.home_score + game.away_score
       });
 
       awayHistory.push({
         date: game.date,
         margin: awayMargin,
         won: awayMargin > 0,
-        oppTeamId: game.home_team_id
+        oppTeamId: game.home_team_id,
+        pointsFor: game.away_score,
+        pointsAgainst: game.home_score,
+        combined: game.home_score + game.away_score
       });
 
       teamHistory.set(game.home_team_id, homeHistory);
@@ -189,6 +263,48 @@ function computeAvgMargin(history: Array<{ margin: number }>, window: number): n
   const recent = history.slice(-window);
   const sum = recent.reduce((acc, g) => acc + g.margin, 0);
   return sum / recent.length;
+}
+
+function computeAvgPointsFor(history: Array<{ pointsFor: number }>, window: number): number {
+  if (history.length === 0) return 0;
+  const recent = history.slice(-window);
+  const sum = recent.reduce((acc, g) => acc + g.pointsFor, 0);
+  return sum / recent.length;
+}
+
+function computeAvgPointsAgainst(history: Array<{ pointsAgainst: number }>, window: number): number {
+  if (history.length === 0) return 0;
+  const recent = history.slice(-window);
+  const sum = recent.reduce((acc, g) => acc + g.pointsAgainst, 0);
+  return sum / recent.length;
+}
+
+function computeAvgCombined(history: Array<{ combined: number }>, window: number): number {
+  if (history.length === 0) return 0;
+  const recent = history.slice(-window);
+  const sum = recent.reduce((acc, g) => acc + g.combined, 0);
+  return sum / recent.length;
+}
+
+function computeOpponentAvgPoints(
+  history: Array<{ oppTeamId: number }>,
+  teamHistory: Map<number, Array<{ pointsAgainst: number }>>,
+  window: number
+): number {
+  if (history.length === 0) return 0;
+  const recent = history.slice(-window);
+  let total = 0;
+  let count = 0;
+  for (const h of recent) {
+    const oppHist = teamHistory.get(h.oppTeamId) || [];
+    if (oppHist.length) {
+      const oppRecent = oppHist.slice(-window);
+      const avgAllowed = oppRecent.reduce((acc, g) => acc + g.pointsAgainst, 0) / oppRecent.length;
+      total += avgAllowed;
+      count++;
+    }
+  }
+  return count ? total / count : 0;
 }
 
 /**

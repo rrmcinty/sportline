@@ -9,7 +9,7 @@ import { fetchOdds as fetchOddsNcaam, normalizeOdds as normalizeOddsNcaam } from
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import { fetchOdds as fetchOddsCfb, normalizeOdds as normalizeOddsCfb } from "../espn/cfb/odds.js";
 import { evaluateParlay, generateParlays, rankParlaysByEV, filterPositiveEV } from "../parlay/eval.js";
-import { getHomeWinModelProbabilities, getHomeSpreadCoverProbabilities } from "../model/apply.js";
+import { getHomeWinModelProbabilities, getHomeSpreadCoverProbabilities, getTotalOverModelProbabilities } from "../model/apply.js";
 import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
 
 /**
@@ -261,9 +261,11 @@ export async function cmdRecommend(
     const allLegs: BetLeg[] = [];
     let modelProbs: Map<string, number> | undefined;
     let spreadModelProbs: Map<string, number> | undefined;
+    let totalModelProbs: Map<string, number> | undefined;
     try {
       modelProbs = await getHomeWinModelProbabilities(sport, date);
       spreadModelProbs = await getHomeSpreadCoverProbabilities(sport, date);
+      totalModelProbs = await getTotalOverModelProbabilities(sport, date);
     } catch (err) {
       // silently ignore model failure
     }
@@ -309,6 +311,22 @@ export async function cmdRecommend(
             }
           }
         }
+
+        // If total model probabilities available, override total implied probabilities
+        if (totalModelProbs && totalModelProbs.has(comp.eventId)) {
+          const pOver = totalModelProbs.get(comp.eventId)!;
+          for (const leg of legs) {
+            if (leg.market === 'total') {
+              if (leg.description.startsWith('Over')) {
+                leg.impliedProbability = pOver;
+                leg.description = leg.description + ' (model)';
+              } else if (leg.description.startsWith('Under')) {
+                leg.impliedProbability = 1 - pOver;
+                leg.description = leg.description + ' (model)';
+              }
+            }
+          }
+        }
         allLegs.push(...legs);
       } catch (error) {
         console.warn(chalk.yellow(`⚠️  Failed to fetch odds for ${comp.eventId}`));
@@ -321,13 +339,27 @@ export async function cmdRecommend(
     }
 
     console.log(chalk.gray(`Found ${allLegs.length} betting opportunities across ${competitions.length} games`));
-    if (modelProbs || spreadModelProbs) {
-      const markets = [];
-      if (modelProbs) markets.push("moneylines");
-      if (spreadModelProbs) markets.push("spreads");
-      console.log(chalk.green.dim(`Model probabilities applied to ${markets.join(" and ")}`));
+    if (modelProbs || spreadModelProbs || totalModelProbs) {
+      const markets: string[] = [];
+      if (modelProbs) markets.push('moneylines');
+      if (spreadModelProbs) markets.push('spreads');
+      if (totalModelProbs) markets.push('totals');
+      console.log(chalk.green.dim(`Model probabilities applied to ${markets.join(' and ')}`));
     } else {
       console.log(chalk.dim("Using vig-free market probabilities (no model override)"));
+    }
+    // Provide distribution summary for totals model probabilities (regression-derived)
+    if (totalModelProbs && totalModelProbs.size > 0) {
+      const probs = Array.from(totalModelProbs.values());
+      const n = probs.length;
+      const mean = probs.reduce((a,b) => a + b, 0) / n;
+      const variance = probs.reduce((a,b) => a + Math.pow(b - mean, 2), 0) / n;
+      const std = Math.sqrt(variance);
+      const min = Math.min(...probs);
+      const max = Math.max(...probs);
+      const high = probs.filter(p => p > 0.7).length;
+      const low = probs.filter(p => p < 0.3).length;
+      console.log(chalk.magenta.dim(`Totals model distribution: n=${n}, mean=${(mean*100).toFixed(1)}%, std=${(std*100).toFixed(1)}%, range=[${(min*100).toFixed(1)}%, ${(max*100).toFixed(1)}%], >70%: ${high}, <30%: ${low}`));
     }
     console.log(chalk.dim(`Calculating expected value (EV) with fair probabilities...\n`));
 

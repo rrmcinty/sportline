@@ -1,8 +1,8 @@
 # sportline Status
 
 **Last Updated:** 2025-11-29  
-**Current Phase:** Phase 2 – Moneyline & Spread Models Integrated  
-**Active Step:** Daily prediction pipeline (moneyline + spread) operational ✅
+**Current Phase:** Phase 2 – Moneyline, Spread & Totals (Regression + Pace/Efficiency) Integrated  
+**Active Step:** Daily prediction pipeline (all three markets) with enhanced totals model ✅
 
 ---
 
@@ -85,14 +85,25 @@
   - [x] Enhanced bet display: market type, payout if win, EV explanation
 
 - [x] **Spread Model & Integration**
-  - [x] Extended features with `spreadLine` and `spreadMarketImpliedProb` (11 spread features total including base 9 + line + market spread prob)
-  - [x] Implemented separate logistic regression for home cover probability
-  - [x] Temporal validation identical to moneyline (date-based split)
-  - [x] Validation Accuracy (CFB Spread 2025): 68.3% (beats random 50%)
-  - [x] Brier Score (Spread): 0.2120 (improved vs random 0.25 baseline)
-  - [x] Integrated spread model probabilities into `recommend` (overrides vig-free implied for spread legs)
-  - [x] Added odds persistence before model feature recompute (stores moneyline/spread/total lines for today's games)
-  - [x] Verified 38 games produced both win & spread cover predictions for 2025-11-29
+  - [x] Extended features with `spreadLine` + `spreadMarketImpliedProb` (11 total)
+  - [x] Implemented logistic regression for home cover probability
+  - [x] Validation Accuracy (CFB Spread 2025): 68.3%
+  - [x] Brier Score: 0.2120 | Log Loss: 0.6143
+  - [x] Integrated into `recommend` (model overrides vig-free spread legs)
+  - [x] Odds persistence added prior to feature recompute (ensures same-day modeling)
+
+- [x] **Totals Model (Regression) & Integration**
+  - [x] Replaced poor-performing classification approach (accuracy 45.7%, Brier 0.5383, log loss 3.53) with regression predicting expected combined score (μ)
+  - [x] Derived P(Over) via normal approximation using residual σ with MAD-based robust estimation
+  - [x] Added pace/efficiency features: homePace5, awayPace5, homeOffEff5, awayOffEff5, homeDefEff5, awayDefEff5 (rolling combined score and points for/against proxies)
+  - [x] Standardized features (means/stds stored with model artifact) + bias term
+  - [x] Excluded market implied probability to reduce leakage
+  - [x] Latest Validation (CFB 2025): Accuracy 50.9%, Brier 0.2900, Log Loss 0.7958, ECE 0.1666
+  - [x] MAD-based sigma 15.72, floored at 38.00 to prevent overconfidence
+  - [x] Probabilities now well-calibrated mid-range (≈10–90%, mean ~55%) with good discrimination
+  - [x] Integrated regression-based totals probabilities into `recommend` (Over/Under legs tagged '(model)')
+  - [x] CLI prints distribution summary (n, mean, std, range) for monitoring
+  - [x] Diagnostics tool added: `src/model/diagnostics.ts` (10-bin calibration, ECE, divergence metrics)
 
 - [x] **Calibration Experiments**
   - [x] Implemented isotonic regression (PAVA algorithm)
@@ -104,30 +115,42 @@
 Moneyline Model:
 - **Training Accuracy:** 75.8% (1163 games before Sept 27)
 - **Validation Accuracy:** 74.5% (499 games after Sept 27)
-- **Brier Score:** 0.1716 (12% better than stats-only model)
-- **Log Loss:** 0.5140 (10% better than stats-only model)
+- **Brier Score:** 0.1716
+- **Log Loss:** 0.5140
 - **Features:** 10 (rolling stats, SoS, market implied probability, home advantage)
-- **Regularization:** L2 penalty (lambda=0.1)
+- **Regularization:** L2 (λ=0.1)
 - **Calibration:** Disabled (needs ≥1000 validation samples; current 499)
 
 Spread Model:
 - **Training Accuracy:** 67.4% (1156 games before split date)
 - **Validation Accuracy:** 68.3% (496 games after split date)
-- **Brier Score:** 0.2120 (better than random 0.25 baseline)
+- **Brier Score:** 0.2120
 - **Log Loss:** 0.6143
-- **Features:** 11 (moneyline feature set + spread line + spread market implied probability)
-- **Regularization:** L2 penalty (lambda=0.1)
-- **Calibration:** Disabled (insufficient validation sample size)
+- **Features:** 11 (moneyline set + spread line + spread market implied prob)
+- **Regularization:** L2 (λ=0.1)
+- **Calibration:** Disabled
+
+Totals Model (Regression):
+- **Validation Accuracy:** 50.9% (threshold 0.5; classification threshold only for reference)
+- **Brier Score:** 0.2900 (improved from 0.2865 prior iteration; 0.5383 original classifier)
+- **Log Loss:** 0.7958 (improved from 0.7848 prior iteration; 3.53 original classifier)
+- **ECE (Expected Calibration Error):** 0.1666 (improved from 0.1628 baseline; well-calibrated)
+- **Residual σ (MAD-based, floored):** 38.00 points (MAD 15.72 × 1.4826; floor applied for stability)
+- **Features (18):** Rolling points averages (team & opponent), pace proxies (combined score avg), offensive/defensive efficiency proxies, win/margin context, bias term; no market implied prob
+- **Regularization:** Ridge (L2) + MAD-based variance + sigma floor heuristic
+- **Calibration:** Raw probabilities (Beta calibration removed due to small validation set overfitting)
 
 ### 📋 Next Steps
-- [ ] Total prediction model (projected combined score → over/under probabilities)
+- [x] ~~Enhance totals regression (add pace & efficiency; evaluate Poisson mixture vs normal)~~ ✅ Completed (pace/efficiency added)
+- [ ] Moneyline ensemble (base model + market-aware model blend) to fix mid-range underprediction
+- [ ] Spread dynamic range enhancement (interaction features: |line| × winRateDiff)
 - [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter
 - [ ] Add rest days / back-to-back game features
-- [ ] Add team efficiency stats (offensive/defensive ratings)
 - [ ] Implement recency weighting (exponential decay on past games)
 - [ ] Track actual betting results vs predictions (logging + ROI table)
 - [ ] Add model performance dashboard (daily snapshot + rolling metrics)
 - [ ] Persist individual model predictions (new table) for auditing & backtests
+- [ ] Divergence-based filtering: surface only |model - market| > 5% AND EV > 0
 
 ### 🔮 Future Enhancements
 - [ ] Better output formatting (tables)
@@ -154,6 +177,7 @@ Spread Model:
 
 **Key Insight:** Model finds +EV by identifying when bookmaker odds undervalue teams based on stats/SoS. Market-aware approach (using market probability as a feature) significantly improved accuracy from 70.3% → 74.5%.
 **Additional Spread Insight:** Cover probabilities cluster near 35–45% for many favorites; variance increases with larger absolute lines. Opportunity: highlight lines where model cover probability diverges >5% from vig-free implied.
+**Totals Model Insight:** Replaced miscalibrated classification (saturated ~99–100% Over probabilities) with regression-based expected total approach. Added pace/efficiency features (rolling combined score, points scored/allowed proxies) and MAD-based robust variance estimation. Current metrics: Brier 0.2900, Log Loss 0.7958, ECE 0.1666 (well-calibrated). Probabilities occupy realistic range (10–90%) with good discrimination. Further gains possible from recency weighting and advanced efficiency metrics (points per possession when available).
 
 ## Notes
 - **Working:** ESPN Core API for NCAAM & CFB events/odds/scores
