@@ -259,6 +259,7 @@ export async function cmdRecommend(
 
     // Now compute model predictions (they can access today's odds from database)
     const allLegs: BetLeg[] = [];
+    const eventIdToMatchup = new Map<string, { away: string; home: string }>();
     let modelProbs: Map<string, number> | undefined;
     let spreadModelProbs: Map<string, number> | undefined;
     let totalModelProbs: Map<string, number> | undefined;
@@ -271,6 +272,12 @@ export async function cmdRecommend(
     }
 
     for (const comp of competitions) {
+      // Store matchup info for later display
+      eventIdToMatchup.set(comp.eventId, {
+        away: comp.awayTeam.abbreviation || comp.awayTeam.name,
+        home: comp.homeTeam.abbreviation || comp.homeTeam.name
+      });
+      
       try {
         const oddsEntries = await fetchOdds(comp.eventId);
         const legs = normalizeOdds(
@@ -382,10 +389,17 @@ export async function cmdRecommend(
         const isModelProb = leg.description.includes('(model)');
         const cleanDescription = leg.description.replace(' (model)', '');
         
+        // Get matchup info
+        const matchup = eventIdToMatchup.get(leg.eventId);
+        const matchupDisplay = matchup ? chalk.dim(`${matchup.away} @ ${matchup.home}`) : '';
+        
         // Calculate potential profit if bet wins
         const potentialProfit = bet.payout - stake;
         
         console.log(chalk.bold(`${i + 1}. ${cleanDescription}`));
+        if (matchupDisplay) {
+          console.log(`   ${matchupDisplay}`);
+        }
         console.log(chalk.dim(`   Market: ${leg.market === 'moneyline' ? 'Moneyline (win outright)' : leg.market === 'spread' ? 'Point Spread' : 'Total Points'}`));
         console.log(`   If you win: ${chalk.green('$' + bet.payout.toFixed(2) + ' total')} ${chalk.dim('($' + potentialProfit.toFixed(2) + ' profit)')}`);
         console.log(`   Win chance: ${chalk.cyan((bet.probability * 100).toFixed(1) + '%')}${isModelProb ? chalk.dim(' (model)') : ''}`);

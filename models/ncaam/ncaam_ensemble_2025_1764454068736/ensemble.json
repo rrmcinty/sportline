@@ -1,0 +1,8 @@
+{
+  "type": "ensemble",
+  "baseWeight": 0.7,
+  "marketWeight": 0.3,
+  "sport": "ncaam",
+  "season": 2025,
+  "trainedAt": "2025-11-29T22:07:48.741Z"
+}
