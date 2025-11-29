@@ -9,10 +9,21 @@ interface ModelMeta { run_id:string; artifacts_path:string; metrics_json:string;
 function loadLatestModel(db:any, sport:string, market:string) {
   const row = db.prepare(`SELECT run_id, artifacts_path, metrics_json, config_json FROM model_runs WHERE sport = ? AND config_json LIKE ? ORDER BY finished_at DESC LIMIT 1`).get(sport, `%${market}%`) as ModelMeta | undefined;
   if (!row) return undefined;
+  
+  // Check for ensemble model (moneyline)
   try {
-    const model = JSON.parse(readFileSync(join(row.artifacts_path,'model.json'),'utf-8'));
-    return { meta: row, model };
-  } catch { return undefined; }
+    const ensemblePath = join(row.artifacts_path, 'ensemble.json');
+    const baseModel = JSON.parse(readFileSync(join(row.artifacts_path,'base_model.json'),'utf-8'));
+    const marketModel = JSON.parse(readFileSync(join(row.artifacts_path,'market_model.json'),'utf-8'));
+    const ensemble = JSON.parse(readFileSync(ensemblePath,'utf-8'));
+    return { meta: row, model: null, ensemble: { base: baseModel, market: marketModel, config: ensemble } };
+  } catch {
+    // Fall back to single model
+    try {
+      const model = JSON.parse(readFileSync(join(row.artifacts_path,'model.json'),'utf-8'));
+      return { meta: row, model, ensemble: null };
+    } catch { return undefined; }
+  }
 }
 
 function percentile(arr:number[], p:number):number { if(!arr.length) return 0; const sorted=[...arr].sort((a,b)=>a-b); const idx=(p/100)*(sorted.length-1); const lo=Math.floor(idx); const hi=Math.ceil(idx); if(lo===hi) return sorted[lo]; const w=idx-lo; return sorted[lo]*(1-w)+sorted[hi]*w; }
@@ -67,19 +78,46 @@ async function runDiagnostics() {
 
   // Moneyline diagnostics
   if (moneylineModel) {
-    const m = moneylineModel.model;
     const valDate = JSON.parse(moneylineModel.meta.metrics_json).splitDate;
     const valGames = features.filter(f=> f.date >= valDate && gameMap.has(f.gameId));
     const preds:number[] = []; const labels:number[] = []; const divergences:number[] = [];
-    for (const f of valGames) {
-      const x = [f.homeWinRate5,f.awayWinRate5,f.homeAvgMargin5,f.awayAvgMargin5,f.homeAdvantage,f.homeOppWinRate5,f.awayOppWinRate5,f.homeOppAvgMargin5,f.awayOppAvgMargin5,f.marketImpliedProb];
-      const z = x.reduce((acc,v,i)=> acc + v * m.weights[i],0);
-      const p = 1/(1+Math.exp(-z));
-      const game = gameMap.get(f.gameId)!;
-      const label = game.home_score > game.away_score ? 1 : 0;
-      preds.push(p); labels.push(label);
-      divergences.push(p - f.marketImpliedProb);
+    
+    if (moneylineModel.ensemble) {
+      // Ensemble prediction
+      const baseWeights = moneylineModel.ensemble.base.weights;
+      const marketWeights = moneylineModel.ensemble.market.weights;
+      const ensembleConfig = moneylineModel.ensemble.config;
+      
+      for (const f of valGames) {
+        const baseFeatures = [f.homeWinRate5,f.awayWinRate5,f.homeAvgMargin5,f.awayAvgMargin5,f.homeAdvantage,f.homeOppWinRate5,f.awayOppWinRate5,f.homeOppAvgMargin5,f.awayOppAvgMargin5];
+        const marketFeatures = [...baseFeatures, f.marketImpliedProb];
+        
+        const baseZ = baseFeatures.reduce((acc,v,i)=> acc + v * baseWeights[i],0);
+        const baseP = 1/(1+Math.exp(-baseZ));
+        
+        const marketZ = marketFeatures.reduce((acc,v,i)=> acc + v * marketWeights[i],0);
+        const marketP = 1/(1+Math.exp(-marketZ));
+        
+        const p = ensembleConfig.baseWeight * baseP + ensembleConfig.marketWeight * marketP;
+        const game = gameMap.get(f.gameId)!;
+        const label = game.home_score > game.away_score ? 1 : 0;
+        preds.push(p); labels.push(label);
+        divergences.push(p - f.marketImpliedProb);
+      }
+    } else if (moneylineModel.model) {
+      // Single model
+      const m = moneylineModel.model;
+      for (const f of valGames) {
+        const x = [f.homeWinRate5,f.awayWinRate5,f.homeAvgMargin5,f.awayAvgMargin5,f.homeAdvantage,f.homeOppWinRate5,f.awayOppWinRate5,f.homeOppAvgMargin5,f.awayOppAvgMargin5,f.marketImpliedProb];
+        const z = x.reduce((acc,v,i)=> acc + v * m.weights[i],0);
+        const p = 1/(1+Math.exp(-z));
+        const game = gameMap.get(f.gameId)!;
+        const label = game.home_score > game.away_score ? 1 : 0;
+        preds.push(p); labels.push(label);
+        divergences.push(p - f.marketImpliedProb);
+      }
     }
+    
     console.log(chalk.bold.green('Moneyline Model'));
     console.log(chalk.dim(` Validation games: ${preds.length}`));
     const cal = binCalibration(preds, labels, 10); printCalibration(' Moneyline Calibration (10 bins)', cal);

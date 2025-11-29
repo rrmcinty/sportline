@@ -94,7 +94,7 @@ export async function cmdModelTrain(
 }
 
 /**
- * Train moneyline (win/loss) model
+ * Train moneyline ensemble: base model (no market feature) + market-aware model blended 70/30
  */
 async function trainMoneylineModel(
   db: any,
@@ -103,7 +103,7 @@ async function trainMoneylineModel(
   gameFeatures: any[],
   calibrate: string
 ): Promise<void> {
-  console.log(chalk.bold.blue(`\n📊 Training MONEYLINE model...\n`));
+  console.log(chalk.bold.blue(`\n📊 Training MONEYLINE ENSEMBLE (base + market-aware)...\n`));
 
   // Load outcomes (home team wins)
   const gamesWithOutcomes = db.prepare(`
@@ -132,10 +132,23 @@ async function trainMoneylineModel(
       gamesWithOutcomes.map(g => [g.id, g.home_score > g.away_score ? 1 : 0])
     );
 
+    // Build both base (9 features) and market-aware (10 features) datasets
+    const baseData: { features: number[][]; labels: number[]; dates: string[] } = {
+      features: [],
+      labels: [],
+      dates: []
+    };
+    const marketAwareData: { features: number[][]; labels: number[]; dates: string[] } = {
+      features: [],
+      labels: [],
+      dates: []
+    };
+
     for (const gf of gameFeatures) {
       const outcome = gameOutcomes.get(gf.gameId);
       if (outcome !== undefined) {
-        trainingData.features.push([
+        // Base features (no market)
+        const baseFeat = [
           gf.homeWinRate5,
           gf.awayWinRate5,
           gf.homeAvgMargin5,
@@ -144,9 +157,20 @@ async function trainMoneylineModel(
           gf.homeOppWinRate5,
           gf.awayOppWinRate5,
           gf.homeOppAvgMargin5,
-          gf.awayOppAvgMargin5,
-          gf.marketImpliedProb
-        ]);
+          gf.awayOppAvgMargin5
+        ];
+        baseData.features.push(baseFeat);
+        baseData.labels.push(outcome);
+        baseData.dates.push(gf.date);
+
+        // Market-aware features (with market implied prob)
+        const marketFeat = [...baseFeat, gf.marketImpliedProb];
+        marketAwareData.features.push(marketFeat);
+        marketAwareData.labels.push(outcome);
+        marketAwareData.dates.push(gf.date);
+
+        // Legacy trainingData for backward compat
+        trainingData.features.push(marketFeat);
         trainingData.labels.push(outcome);
         trainingData.dates.push(gf.date);
       }
@@ -159,9 +183,8 @@ async function trainMoneylineModel(
       return;
     }
 
-    // Temporal split: 70% earliest games for training, 30% most recent for validation
-    // Sort by date to ensure chronological order
-    const sortedIndices = trainingData.dates
+    // Temporal split for both datasets
+    const sortedIndices = baseData.dates
       .map((date, idx) => ({ date, idx }))
       .sort((a, b) => a.date.localeCompare(b.date))
       .map(x => x.idx);
@@ -170,60 +193,63 @@ async function trainMoneylineModel(
     const trainIndices = sortedIndices.slice(0, splitIdx);
     const valIndices = sortedIndices.slice(splitIdx);
 
-    const trainFeatures = trainIndices.map(i => trainingData.features[i]);
-    const trainLabels = trainIndices.map(i => trainingData.labels[i]);
-    const valFeatures = valIndices.map(i => trainingData.features[i]);
-    const valLabels = valIndices.map(i => trainingData.labels[i]);
+    const splitDate = baseData.dates[sortedIndices[splitIdx]];
+    console.log(chalk.dim(`Temporal split at ${splitDate}: ${trainIndices.length} train, ${valIndices.length} validation\n`));
 
-    const trainDates = trainIndices.map(i => trainingData.dates[i]);
-    const valDates = valIndices.map(i => trainingData.dates[i]);
-    const splitDate = valDates[0];
-
-    console.log(chalk.dim(`Temporal split at ${splitDate}: ${trainFeatures.length} train, ${valFeatures.length} validation\n`));
-
-    // Train logistic regression for moneyline
-    console.log(chalk.dim("Training logistic regression..."));
-    const weights = trainLogisticRegression(trainFeatures, trainLabels);
-
-    // Compute training accuracy
-    let trainCorrect = 0;
-    for (let i = 0; i < trainFeatures.length; i++) {
-      const prediction = sigmoid(dot(trainFeatures[i], weights));
-      const predicted = prediction > 0.5 ? 1 : 0;
-      if (predicted === trainLabels[i]) trainCorrect++;
-    }
-    const trainAccuracy = (trainCorrect / trainFeatures.length) * 100;
-
-    console.log(chalk.green(`Training accuracy: ${trainAccuracy.toFixed(1)}%`));
-
-    // Compute validation metrics
-    const valPredictions = valFeatures.map(f => sigmoid(dot(f, weights)));
+    // Train BASE model (9 features, no market)
+    console.log(chalk.dim("Training BASE model (no market feature)..."));
+    const baseTrain = trainIndices.map(i => baseData.features[i]);
+    const baseTrainLabels = trainIndices.map(i => baseData.labels[i]);
+    const baseVal = valIndices.map(i => baseData.features[i]);
+    const baseValLabels = valIndices.map(i => baseData.labels[i]);
+    const baseWeights = trainLogisticRegression(baseTrain, baseTrainLabels);
     
-    // Validation accuracy
-    let valCorrect = 0;
-    for (let i = 0; i < valFeatures.length; i++) {
-      const predicted = valPredictions[i] > 0.5 ? 1 : 0;
-      if (predicted === valLabels[i]) valCorrect++;
-    }
-    const valAccuracy = (valCorrect / valFeatures.length) * 100;
+    // Train MARKET-AWARE model (10 features, with market)
+    console.log(chalk.dim("Training MARKET-AWARE model (with market feature)..."));
+    const marketTrain = trainIndices.map(i => marketAwareData.features[i]);
+    const marketTrainLabels = trainIndices.map(i => marketAwareData.labels[i]);
+    const marketVal = valIndices.map(i => marketAwareData.features[i]);
+    const marketValLabels = valIndices.map(i => marketAwareData.labels[i]);
+    const marketWeights = trainLogisticRegression(marketTrain, marketTrainLabels);
 
-    // Brier score (lower is better, 0 = perfect, 0.25 = random)
-    let brierSum = 0;
-    for (let i = 0; i < valFeatures.length; i++) {
-      const error = valPredictions[i] - valLabels[i];
-      brierSum += error * error;
-    }
-    const brierScore = brierSum / valFeatures.length;
+    // Compute ensemble predictions (70% base, 30% market-aware)
+    const ensembleWeight = { base: 0.7, market: 0.3 };
+    const valPredictionsBase = baseVal.map(f => sigmoid(dot(f, baseWeights)));
+    const valPredictionsMarket = marketVal.map(f => sigmoid(dot(f, marketWeights)));
+    const valPredictionsEnsemble = valPredictionsBase.map((pb, i) => 
+      ensembleWeight.base * pb + ensembleWeight.market * valPredictionsMarket[i]
+    );
 
-    // Log loss (lower is better)
-    let logLossSum = 0;
-    for (let i = 0; i < valFeatures.length; i++) {
-      const p = Math.max(0.001, Math.min(0.999, valPredictions[i])); // Clip to avoid log(0)
-      logLossSum += valLabels[i] === 1 ? -Math.log(p) : -Math.log(1 - p);
+    // Compute metrics for each variant
+    function computeMetrics(predictions: number[], labels: number[], name: string) {
+      let correct = 0;
+      let brierSum = 0;
+      let logLossSum = 0;
+      for (let i = 0; i < predictions.length; i++) {
+        const p = Math.max(0.001, Math.min(0.999, predictions[i]));
+        const predicted = p > 0.5 ? 1 : 0;
+        if (predicted === labels[i]) correct++;
+        const error = p - labels[i];
+        brierSum += error * error;
+        logLossSum += labels[i] === 1 ? -Math.log(p) : -Math.log(1 - p);
+      }
+      const accuracy = (correct / predictions.length) * 100;
+      const brierScore = brierSum / predictions.length;
+      const logLoss = logLossSum / predictions.length;
+      console.log(chalk.cyan(`  ${name}: Acc ${accuracy.toFixed(1)}%, Brier ${brierScore.toFixed(4)}, LogLoss ${logLoss.toFixed(4)}`));
+      return { accuracy, brierScore, logLoss };
     }
-    const logLoss = logLossSum / valFeatures.length;
 
-    // Calibration curve: bin predictions and compute actual win rate
+    console.log(chalk.green(`\\nValidation Metrics:`));
+    const baseMetrics = computeMetrics(valPredictionsBase, baseValLabels, 'Base');
+    const marketMetrics = computeMetrics(valPredictionsMarket, marketValLabels, 'Market-Aware');
+    const ensembleMetrics = computeMetrics(valPredictionsEnsemble, baseValLabels, 'Ensemble (70/30)');
+
+    const valAccuracy = ensembleMetrics.accuracy;
+    const brierScore = ensembleMetrics.brierScore;
+    const logLoss = ensembleMetrics.logLoss;
+
+    // Calibration curve: bin ensemble predictions and compute actual win rate
     const bins = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
     const calibrationData: Array<{ binStart: number; binEnd: number; predictedProb: number; actualWinRate: number; count: number }> = [];
     
@@ -232,9 +258,9 @@ async function trainMoneylineModel(
       const binEnd = bins[b + 1];
       const binSamples: Array<{ pred: number; actual: number }> = [];
       
-      for (let i = 0; i < valPredictions.length; i++) {
-        if (valPredictions[i] >= binStart && valPredictions[i] < binEnd) {
-          binSamples.push({ pred: valPredictions[i], actual: valLabels[i] });
+      for (let i = 0; i < valPredictionsEnsemble.length; i++) {
+        if (valPredictionsEnsemble[i] >= binStart && valPredictionsEnsemble[i] < binEnd) {
+          binSamples.push({ pred: valPredictionsEnsemble[i], actual: baseValLabels[i] });
         }
       }
       
@@ -257,43 +283,54 @@ async function trainMoneylineModel(
     console.log(chalk.cyan(`Brier score: ${brierScore.toFixed(4)} (lower is better, 0.25 = random)`));
     console.log(chalk.cyan(`Log loss: ${logLoss.toFixed(4)} (lower is better)\n`));
 
-    // Fit calibration on validation set (only with large validation sets)
-    let calibrationCurve: CalibrationCurve | null = null;
-    if (calibrate === "isotonic" && valFeatures.length >= 400) {
-      console.log(chalk.dim("Fitting isotonic calibration on validation set..."));
-      const valPredictions = valFeatures.map(f => sigmoid(dot(f, weights)));
-      calibrationCurve = fitIsotonicCalibration(valPredictions, valLabels);
-      console.log(chalk.green(`Calibration fitted with ${calibrationCurve.x.length} points\n`));
-    } else {
-      console.log(chalk.yellow(`⚠️  Skipping calibration (need ≥400 validation samples for stable isotonic regression, have ${valFeatures.length})\n`));
-    }
-
-    // Save model artifacts
-    const runId = `${sport}_${season}_${Date.now()}`;
+    // Save ensemble model artifacts
+    const runId = `${sport}_ensemble_${season}_${Date.now()}`;
     const artifactsPath = join(process.cwd(), "models", sport, runId);
     mkdirSync(artifactsPath, { recursive: true });
 
-    const model = {
-      weights,
+    // Save base model
+    const baseModel = {
+      type: 'base',
+      weights: baseWeights,
+      featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5"],
+      sport,
+      season,
+      trainedAt: new Date().toISOString()
+    };
+    writeFileSync(join(artifactsPath, "base_model.json"), JSON.stringify(baseModel, null, 2));
+
+    // Save market-aware model
+    const marketModel = {
+      type: 'market-aware',
+      weights: marketWeights,
       featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "marketImpliedProb"],
       sport,
       season,
-      trainedAt: new Date().toISOString(),
-      calibration: calibrationCurve
+      trainedAt: new Date().toISOString()
     };
+    writeFileSync(join(artifactsPath, "market_model.json"), JSON.stringify(marketModel, null, 2));
 
-    writeFileSync(join(artifactsPath, "model.json"), JSON.stringify(model, null, 2));
+    // Save ensemble config
+    const ensembleConfig = {
+      type: 'ensemble',
+      baseWeight: ensembleWeight.base,
+      marketWeight: ensembleWeight.market,
+      sport,
+      season,
+      trainedAt: new Date().toISOString()
+    };
+    writeFileSync(join(artifactsPath, "ensemble.json"), JSON.stringify(ensembleConfig, null, 2));
 
     const metrics = {
-      trainingAccuracy: trainAccuracy,
+      baseMetrics,
+      marketMetrics,
+      ensembleMetrics,
       validationAccuracy: valAccuracy,
       brierScore,
       logLoss,
-      numTrainingSamples: trainFeatures.length,
-      numValidationSamples: valFeatures.length,
-      splitDate,
-      calibrationData,
-      calibrated: calibrationCurve !== null
+      numTrainingSamples: trainIndices.length,
+      numValidationSamples: valIndices.length,
+      splitDate
     };
 
     writeFileSync(join(artifactsPath, "metrics.json"), JSON.stringify(metrics, null, 2));
@@ -306,14 +343,14 @@ async function trainMoneylineModel(
       runId,
       sport,
       season,
-      JSON.stringify({ market: 'moneyline', calibrate }),
+      JSON.stringify({ market: 'moneyline', type: 'ensemble', baseWeight: ensembleWeight.base, marketWeight: ensembleWeight.market }),
       new Date().toISOString(),
       new Date().toISOString(),
       JSON.stringify(metrics),
       artifactsPath
     );
 
-    console.log(chalk.green.bold(`✅ Moneyline model trained and saved to ${artifactsPath}\n`));
+    console.log(chalk.green.bold(`✅ Moneyline ensemble trained and saved to ${artifactsPath}\n`));
 }
 
 /**

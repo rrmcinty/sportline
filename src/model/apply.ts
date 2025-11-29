@@ -18,6 +18,7 @@ function getFetchEvents(sport: Sport) {
 /**
  * Load latest model and produce home win probabilities per eventId for given date.
  * Returns undefined if no model available or no games.
+ * Supports ensemble models (base + market-aware blending).
  */
 export async function getHomeWinModelProbabilities(sport: Sport, date: string): Promise<Map<string, number> | undefined> {
   const db = getDb();
@@ -25,12 +26,30 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   const latestRun = db.prepare(`SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%moneyline%' ORDER BY finished_at DESC LIMIT 1`).get(sport) as { run_id: string; artifacts_path: string } | undefined;
   if (!latestRun) return undefined;
 
-  const modelPath = join(latestRun.artifacts_path, "model.json");
-  let model: { weights: number[]; featureNames: string[]; season: number; calibration?: CalibrationCurve | null };
+  // Check if ensemble model
+  const ensemblePath = join(latestRun.artifacts_path, "ensemble.json");
+  let isEnsemble = false;
+  let baseModel: { type: string; weights: number[]; featureNames: string[]; season?: number } | undefined;
+  let marketModel: { type: string; weights: number[]; featureNames: string[]; season?: number } | undefined;
+  let ensembleConfig: { baseWeight: number; marketWeight: number; season?: number } | undefined;
+  let season: number = 2025;
+
   try {
-    model = JSON.parse(readFileSync(modelPath, "utf-8"));
+    ensembleConfig = JSON.parse(readFileSync(ensemblePath, "utf-8"));
+    baseModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "base_model.json"), "utf-8"));
+    marketModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "market_model.json"), "utf-8"));
+    season = ensembleConfig?.season || baseModel?.season || marketModel?.season || 2025;
+    isEnsemble = true;
   } catch {
-    return undefined; // artifact missing
+    // Fall back to single model
+    const modelPath = join(latestRun.artifacts_path, "model.json");
+    try {
+      const model = JSON.parse(readFileSync(modelPath, "utf-8"));
+      baseModel = { type: 'single', weights: model.weights, featureNames: model.featureNames };
+      season = model.season || 2025;
+    } catch {
+      return undefined; // no artifacts
+    }
   }
 
   const fetchEvents = getFetchEvents(sport);
@@ -44,14 +63,17 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   for (const comp of competitions) {
     const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
     const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-    insertGame.run(comp.eventId, sport, comp.date, model.season, home.id, away.id, comp.venue || null);
+    insertGame.run(comp.eventId, sport, comp.date, season, home.id, away.id, comp.venue || null);
   }
 
-  // Compute features for season and map gameId -> feature vector
-  const allFeatures = computeFeatures(db, sport, model.season);
-  const featureMap = new Map<number, number[]>();
+  // Compute features for season
+  const allFeatures = computeFeatures(db, sport, season);
+  const featureMap = new Map<number, { base: number[]; market: number[] }>();
+  
   for (const f of allFeatures) {
-    featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.marketImpliedProb]);
+    const baseFeatures = [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5];
+    const marketFeatures = [...baseFeatures, f.marketImpliedProb];
+    featureMap.set(f.gameId, { base: baseFeatures, market: marketFeatures });
   }
 
   // Query games matching date prefix
@@ -60,13 +82,31 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   if (rows.length === 0) return undefined;
 
   const probs = new Map<string, number>();
-  for (const r of rows) {
-    const x = featureMap.get(r.id) || [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5];
-    const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
-    const rawProb = sigmoid(z);
-    const calibratedProb = model.calibration ? applyCalibration(rawProb, model.calibration) : rawProb;
-    probs.set(r.espn_event_id, calibratedProb);
+  
+  if (isEnsemble && baseModel && marketModel && ensembleConfig) {
+    // Ensemble prediction: blend base (no market) + market-aware
+    for (const r of rows) {
+      const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
+      
+      const baseZ = features.base.reduce((acc, v, i) => acc + v * baseModel.weights[i], 0);
+      const baseProb = sigmoid(baseZ);
+      
+      const marketZ = features.market.reduce((acc, v, i) => acc + v * marketModel.weights[i], 0);
+      const marketProb = sigmoid(marketZ);
+      
+      const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
+      probs.set(r.espn_event_id, ensembleProb);
+    }
+  } else if (baseModel) {
+    // Single model fallback
+    for (const r of rows) {
+      const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
+      const x = baseModel.featureNames.length === 9 ? features.base : features.market;
+      const z = x.reduce((acc, v, i) => acc + v * baseModel.weights[i], 0);
+      probs.set(r.espn_event_id, sigmoid(z));
+    }
   }
+  
   return probs;
 }
 
