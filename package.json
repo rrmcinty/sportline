@@ -12,7 +12,10 @@
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "test": "echo \"No tests yet\" && exit 0",
-    "all": "npm run build && npm link"
+    "all": "npm run build && npm link",
+    "ingest": "node dist/index.js data daily",
+    "ingest:cfb": "node dist/index.js data daily --sports cfb",
+    "ingest:ncaam": "node dist/index.js data daily --sports ncaam"
   },
   "keywords": [
     "ncaam",

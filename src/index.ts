@@ -9,6 +9,7 @@ import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets } from "./cli/comma
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
 import { cmdModelPredict } from "./model/predict.js";
+import { runDailyIngest } from "./ingest/daily.js";
 import type { Sport } from "./models/types.js";
 
 function todayYYYYMMDD(): string {
@@ -89,9 +90,11 @@ program
   });
 
 // data ingest command
-program
+const data = program
   .command("data")
-  .description("Data ingestion commands")
+  .description("Data ingestion commands");
+
+data
   .command("ingest")
   .description("Ingest historical game data for a sport/season")
   .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
@@ -101,6 +104,15 @@ program
   .action(async (options) => {
     const sport: Sport = options.sport;
     await cmdDataIngest(sport, parseInt(options.season), options.from, options.to);
+  });
+
+data
+  .command("daily")
+  .description("Daily update: fetch new games and update scores from latest DB date to today")
+  .option("--sports <sports>", "Sports to update (comma-separated: cfb,ncaam)", "cfb,ncaam")
+  .action(async (options) => {
+    const sports = options.sports.split(",").filter((s: string) => s === 'cfb' || s === 'ncaam') as Sport[];
+    await runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam']);
   });
 
 // model commands (parent + subcommands)

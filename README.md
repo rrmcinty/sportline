@@ -11,6 +11,9 @@ npm install
 # Build
 npm run build
 
+# Daily data update (run this each day to get new games and scores)
+npm run ingest
+
 # Fetch today's games (date defaults to today)
 node dist/index.js games
 
@@ -19,6 +22,29 @@ node dist/index.js odds --event 401827111
 
 # Generate parlay recommendations (date defaults to today)
 node dist/index.js recommend --stake 10 --min-legs 2 --max-legs 4 --top 10
+```
+
+## Daily Workflow
+
+**Every day before using the app:**
+```bash
+npm run ingest        # Updates both CFB and NCAAM
+# OR
+npm run ingest:cfb    # CFB only
+npm run ingest:ncaam  # NCAAM only
+```
+
+This command:
+- Finds the latest date in your database for each sport
+- Fetches all games from that date through today
+- Updates scores for completed games
+- Adds newly scheduled games
+- Updates odds for all games
+
+**After accumulating ~100+ new games, retrain models:**
+```bash
+sportline model train --sport cfb --season 2025 --markets moneyline,spread,total
+sportline model train --sport ncaam --season 2025 --markets moneyline,spread,total
 ```
 
 ## Example Output
@@ -89,11 +115,41 @@ Top 5 recommendations:
 
 ## Commands
 
+### `data daily`
+Daily incremental data update - fetches new games and updates scores from latest DB date to today.
+
+**Usage:**
+```bash
+sportline data daily                    # Both CFB and NCAAM
+sportline data daily --sports cfb       # CFB only  
+sportline data daily --sports ncaam     # NCAAM only
+sportline data daily --sports cfb,ncaam # Both (explicit)
+```
+
+**What it does:**
+- Queries DB for latest game date per sport
+- Fetches all games from that date through today
+- Updates scores for games that have completed
+- Adds new games as they're scheduled
+- Updates odds for all games
+
+**Recommended:** Run this once per day before generating recommendations.
+
+### `data ingest`
+Full historical data ingestion for a sport/season (first-time setup).
+
+**Options:**
+- `--sport <sport>` - Sport: cfb or ncaam (default: ncaam)
+- `--season <year>` - Season year (required)
+- `--from <date>` - Start date YYYY-MM-DD (optional)
+- `--to <date>` - End date YYYY-MM-DD (optional)
+
 ### `games`
 Fetch games for a specific date (defaults to today if omitted).
 
 **Options:**
 - `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (optional)
+- `--sport <sport>` - Sport: cfb or ncaam (default: ncaam)
 
 ### `odds`
 Import and display odds for a specific event (date defaults to today).
