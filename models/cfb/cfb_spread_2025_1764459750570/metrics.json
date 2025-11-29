@@ -1,0 +1,41 @@
+{
+  "market": "spread",
+  "trainingAccuracy": 66.38655462184873,
+  "validationAccuracy": 67.78711484593838,
+  "brierScore": 0.21694765462177767,
+  "logLoss": 0.6244299687738071,
+  "numTrainingSamples": 833,
+  "numValidationSamples": 357,
+  "splitDate": "2025-10-11T19:30Z",
+  "calibrationData": [
+    {
+      "binStart": 0.2,
+      "binEnd": 0.3,
+      "predictedProb": 0.26857543547687407,
+      "actualWinRate": 0.2028985507246377,
+      "count": 69
+    },
+    {
+      "binStart": 0.3,
+      "binEnd": 0.4,
+      "predictedProb": 0.3479308224099498,
+      "actualWinRate": 0.354978354978355,
+      "count": 231
+    },
+    {
+      "binStart": 0.4,
+      "binEnd": 0.5,
+      "predictedProb": 0.4304658378238328,
+      "actualWinRate": 0.33962264150943394,
+      "count": 53
+    },
+    {
+      "binStart": 0.5,
+      "binEnd": 0.6,
+      "predictedProb": 0.5223440418440148,
+      "actualWinRate": 0.75,
+      "count": 4
+    }
+  ],
+  "calibrated": false
+}

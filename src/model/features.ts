@@ -183,34 +183,38 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       totalMarketImpliedProb = overImp / sum;
     }
 
-    features.push({
-      gameId: game.id,
-      date: game.date,
-      homeWinRate5,
-      awayWinRate5,
-      homeAvgMargin5,
-      awayAvgMargin5,
-      homeAdvantage: 1,
-      homeOppWinRate5,
-      awayOppWinRate5,
-      homeOppAvgMargin5,
-      awayOppAvgMargin5,
-      marketImpliedProb,
-      spreadLine,
-      spreadMarketImpliedProb,
-      totalLine,
-      totalMarketImpliedProb,
-      homePointsAvg5,
-      awayPointsAvg5,
-      homeOppPointsAvg5,
-      awayOppPointsAvg5,
-      homePace5,
-      awayPace5,
-      homeOffEff5,
-      awayOffEff5,
-      homeDefEff5,
-      awayDefEff5
-    });
+    // Only include games where both teams have at least 5 completed games
+    // This ensures rolling-5 features are based on sufficient data
+    if (homeHistory.length >= 5 && awayHistory.length >= 5) {
+      features.push({
+        gameId: game.id,
+        date: game.date,
+        homeWinRate5,
+        awayWinRate5,
+        homeAvgMargin5,
+        awayAvgMargin5,
+        homeAdvantage: 1,
+        homeOppWinRate5,
+        awayOppWinRate5,
+        homeOppAvgMargin5,
+        awayOppAvgMargin5,
+        marketImpliedProb,
+        spreadLine,
+        spreadMarketImpliedProb,
+        totalLine,
+        totalMarketImpliedProb,
+        homePointsAvg5,
+        awayPointsAvg5,
+        homeOppPointsAvg5,
+        awayOppPointsAvg5,
+        homePace5,
+        awayPace5,
+        homeOffEff5,
+        awayOffEff5,
+        homeDefEff5,
+        awayDefEff5
+      });
+    }
 
     // Update history if game is complete
     if (game.home_score !== null && game.away_score !== null) {
