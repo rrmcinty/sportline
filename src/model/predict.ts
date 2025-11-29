@@ -10,6 +10,7 @@ import { join } from "path";
 import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import { computeFeatures } from "./features.js";
+import { applyCalibration, type CalibrationCurve } from "./calibration.js";
 
 function sigmoid(z: number): number {
   return 1 / (1 + Math.exp(-z));
@@ -52,6 +53,7 @@ export async function cmdModelPredict(
       sport: string;
       season: number;
       trainedAt: string;
+      calibration?: CalibrationCurve | null;
     };
 
     // 2) Ensure games for date exist in DB (upsert teams and games)
@@ -89,7 +91,7 @@ export async function cmdModelPredict(
     for (const f of allFeatures) {
       featureMap.set(
         f.gameId,
-        [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5]
+        [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.marketImpliedProb]
       );
     }
 
@@ -115,7 +117,8 @@ export async function cmdModelPredict(
       .map((r) => {
         const x = featureMap.get(r.game_id) || [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0];
         const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
-        const pHome = sigmoid(z);
+        const rawProb = sigmoid(z);
+        const pHome = model.calibration ? applyCalibration(rawProb, model.calibration) : rawProb;
         return { ...r, pHome };
       })
       .sort((a, b) => b.pHome - a.pHome);

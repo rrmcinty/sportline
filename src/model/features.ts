@@ -6,6 +6,7 @@ import type Database from "better-sqlite3";
 
 export interface GameFeatures {
   gameId: number;
+  date: string;  // Game date for temporal splitting
   homeWinRate5: number;  // Last 5 games win rate
   awayWinRate5: number;
   homeAvgMargin5: number;  // Last 5 games average margin
@@ -15,6 +16,7 @@ export interface GameFeatures {
   awayOppWinRate5: number;
   homeOppAvgMargin5: number;  // Avg opponent margin (SoS quality)
   awayOppAvgMargin5: number;
+  marketImpliedProb: number;  // Market consensus probability for home team win
 }
 
 /**
@@ -22,10 +24,10 @@ export interface GameFeatures {
  */
 export function computeFeatures(db: Database.Database, sport: string, season: number): GameFeatures[] {
   const games = db.prepare(`
-    SELECT id, date, home_team_id, away_team_id, home_score, away_score
-    FROM games
-    WHERE sport = ? AND season = ?
-    ORDER BY date ASC
+    SELECT g.id, g.date, g.home_team_id, g.away_team_id, g.home_score, g.away_score
+    FROM games g
+    WHERE g.sport = ? AND g.season = ?
+    ORDER BY g.date ASC
   `).all(sport, season) as Array<{
     id: number;
     date: string;
@@ -34,6 +36,27 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     home_score: number | null;
     away_score: number | null;
   }>;
+
+  // Fetch market odds for all games (moneyline only)
+  const marketOdds = new Map<number, { homePrice: number; awayPrice: number }>();
+  const oddsData = db.prepare(`
+    SELECT game_id, price_home, price_away
+    FROM odds
+    WHERE market = 'moneyline'
+  `).all() as Array<{
+    game_id: number;
+    price_home: number | null;
+    price_away: number | null;
+  }>;
+
+  for (const odd of oddsData) {
+    if (odd.price_home && odd.price_away) {
+      marketOdds.set(odd.game_id, {
+        homePrice: odd.price_home,
+        awayPrice: odd.price_away
+      });
+    }
+  }
 
   const features: GameFeatures[] = [];
 
@@ -56,8 +79,20 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
     const homeOppAvgMargin5 = computeOpponentAvgMargin(homeHistory, teamHistory, 5);
     const awayOppAvgMargin5 = computeOpponentAvgMargin(awayHistory, teamHistory, 5);
 
+    // Compute market implied probability (vig-free)
+    let marketImpliedProb = 0.5;  // Default to 50/50 if no odds
+    const odds = marketOdds.get(game.id);
+    if (odds) {
+      const homeImplied = americanToImplied(odds.homePrice);
+      const awayImplied = americanToImplied(odds.awayPrice);
+      const total = homeImplied + awayImplied;
+      // Remove vig by normalizing
+      marketImpliedProb = homeImplied / total;
+    }
+
     features.push({
       gameId: game.id,
+      date: game.date,
       homeWinRate5,
       awayWinRate5,
       homeAvgMargin5,
@@ -67,6 +102,7 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       awayOppWinRate5,
       homeOppAvgMargin5,
       awayOppAvgMargin5,
+      marketImpliedProb
     });
 
     // Update history if game is complete
@@ -114,6 +150,17 @@ function computeAvgMargin(history: Array<{ margin: number }>, window: number): n
   const recent = history.slice(-window);
   const sum = recent.reduce((acc, g) => acc + g.margin, 0);
   return sum / recent.length;
+}
+
+/**
+ * Convert American odds to implied probability
+ */
+function americanToImplied(price: number): number {
+  if (price > 0) {
+    return 100 / (price + 100);
+  } else {
+    return -price / (-price + 100);
+  }
 }
 
 /**

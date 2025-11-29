@@ -1,0 +1,6 @@
+{
+  "trainingAccuracy": 72.31298366294067,
+  "numTrainingSamples": 1163,
+  "numValidationSamples": 499,
+  "calibrated": false
+}

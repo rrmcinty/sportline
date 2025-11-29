@@ -287,11 +287,22 @@ export async function cmdRecommend(
       
       for (let i = 0; i < rankedSingles.length; i++) {
         const bet = rankedSingles[i];
+        const leg = bet.legs[0];
         const evColor = bet.ev >= 0 ? chalk.green : chalk.red;
         const evSign = bet.ev >= 0 ? '+' : '';
-        console.log(chalk.bold(`${i + 1}. ${bet.legs[0].description}`));
-        console.log(`   Win chance: ${chalk.cyan((bet.probability * 100).toFixed(1) + '%')}`);
-        console.log(`   Expected value: ${evColor(evSign + '$' + bet.ev.toFixed(2))} per $${stake} bet ${evColor('(' + evSign + bet.roi.toFixed(1) + '%)')}`);
+        
+        // Check if this probability came from model
+        const isModelProb = leg.description.includes('(model)');
+        const cleanDescription = leg.description.replace(' (model)', '');
+        
+        // Calculate potential profit if bet wins
+        const potentialProfit = bet.payout - stake;
+        
+        console.log(chalk.bold(`${i + 1}. ${cleanDescription}`));
+        console.log(chalk.dim(`   Market: ${leg.market === 'moneyline' ? 'Moneyline (win outright)' : leg.market === 'spread' ? 'Point Spread' : 'Total Points'}`));
+        console.log(`   If you win: ${chalk.green('$' + bet.payout.toFixed(2) + ' total')} ${chalk.dim('($' + potentialProfit.toFixed(2) + ' profit)')}`);
+        console.log(`   Win chance: ${chalk.cyan((bet.probability * 100).toFixed(1) + '%')}${isModelProb ? chalk.dim(' (model)') : ''}`);
+        console.log(`   Expected value: ${evColor(evSign + '$' + bet.ev.toFixed(2))} ${chalk.dim('average profit per bet')}${isModelProb ? chalk.dim(' (model)') : ''}`);
         if (bet.ev >= 0) {
           console.log(chalk.green.bold(`   ✨ This bet has positive expected value!`));
         }

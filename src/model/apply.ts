@@ -5,6 +5,7 @@ import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import type { Sport } from "../models/types.js";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { applyCalibration, type CalibrationCurve } from "./calibration.js";
 
 function sigmoid(z: number): number {
   return 1 / (1 + Math.exp(-z));
@@ -25,7 +26,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   if (!latestRun) return undefined;
 
   const modelPath = join(latestRun.artifacts_path, "model.json");
-  let model: { weights: number[]; featureNames: string[]; season: number };
+  let model: { weights: number[]; featureNames: string[]; season: number; calibration?: CalibrationCurve | null };
   try {
     model = JSON.parse(readFileSync(modelPath, "utf-8"));
   } catch {
@@ -50,7 +51,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   const allFeatures = computeFeatures(db, sport, model.season);
   const featureMap = new Map<number, number[]>();
   for (const f of allFeatures) {
-    featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5]);
+    featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.marketImpliedProb]);
   }
 
   // Query games matching date prefix
@@ -62,7 +63,9 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   for (const r of rows) {
     const x = featureMap.get(r.id) || [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0];
     const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
-    probs.set(r.espn_event_id, sigmoid(z));
+    const rawProb = sigmoid(z);
+    const calibratedProb = model.calibration ? applyCalibration(rawProb, model.calibration) : rawProb;
+    probs.set(r.espn_event_id, calibratedProb);
   }
   return probs;
 }
