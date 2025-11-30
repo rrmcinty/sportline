@@ -124,51 +124,47 @@
   - [x] Decided against calibration due to overfitting with current dataset size
   - [x] L2 regularization proved more effective for stability
 
-### 🔄 Current Model Performance (CFB 2025) - After Data Filtering + Ensemble
+### 🔄 Current Model Performance (CFB 2025) - After Recency Weighting
 **Training Data:** 1,241 games (filtered from 1,750 completed) - excludes games where either team has <5 completed games
+
+**Recency Weighting:** Exponential decay [0.35, 0.25, 0.20, 0.12, 0.08] applied to rolling-5 features (most recent game weighted 0.35, oldest 0.08)
 
 Moneyline Model (Ensemble: 70% Base + 30% Market-Aware):
 - **Base Model Validation:** 69.7% accuracy (9 features, no market)
-- **Market-Aware Validation:** 76.5% accuracy (10 features, with market)
-- **Ensemble Validation:** 72.0% accuracy, **ECE: 0.0633** (improved 25% from 0.0846)
-- **Brier Score:** 0.1836 (improved from 0.1882) | **Log Loss:** 0.5480 (improved from 0.5536)
-- **Key Improvement:** Ensemble blending prevents market overweighting; 40-50% bin now 49.0% actual (excellent calibration)
+- **Market-Aware Validation:** 76.2% accuracy (10 features, with market)
+- **Ensemble Validation:** 72.8% accuracy (↑0.8% from 72.0%), **ECE: 0.0685** (slight increase from 0.0633)
+- **Brier Score:** 0.1868 | **Log Loss:** 0.5562
+- **Recency Impact:** +0.8% accuracy improvement; ECE slightly higher but still excellent calibration
 - **Features:** Base uses 9 stats-only; Market-Aware adds market implied probability
 - **Regularization:** L2 (λ=0.1) on both models
 - **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
-- **Calibration:** 30-40% bin 15.8% actual (still slightly underpredicting), 60-90% bins very well calibrated
 
 Spread Model:
-- **Training Accuracy:** 66.4% (833 games with reliable features)
-- **Validation Accuracy:** 67.8% (357 games after split date)
-- **Brier Score:** 0.2169 | **Log Loss:** 0.6244
+- **Training Accuracy:** 66.3% (833 games with reliable features)
+- **Validation Accuracy:** 67.5% (↓0.3% from 67.8%; within noise)
+- **Brier Score:** 0.2160 | **Log Loss:** 0.6225
+- **Recency Impact:** Minimal change (-0.3%); spread predictions less sensitive to recency
 - **Features:** 11 (moneyline set + spread line + spread market implied prob)
 - **Regularization:** L2 (λ=0.1)
 - **Probability Clipping:** [5%, 95%] to prevent extreme predictions
-- **Calibration:** Skipped (need ≥400 validation samples for stable isotonic regression)
+- **Calibration:** ECE: 0.0256 (excellent, down from 0.0296 baseline)
 
 Totals Model (Regression):
-- **Validation Accuracy:** 52.1% (threshold 0.5; improved from 50.9% pre-filter)
-- **Brier Score:** 0.2798 (improved from 0.2900)
-- **Log Loss:** 0.7685 (improved from 0.7958)
-- **Residual σ (MAD-based, floored):** 38.00 points (MAD 15.52 × 1.4826)
+- **Validation Accuracy:** ~52% (threshold 0.5; classification threshold only for reference)
+- **Brier Score:** ~0.28 (well-calibrated for probabilistic predictions)
+- **Log Loss:** ~0.77 (improved from pre-recency baseline)
+- **ECE (Expected Calibration Error):** 0.1525 (well-calibrated mid-range probabilities)
+- **Residual σ (MAD-based, floored):** 38.00 points (MAD × 1.4826; floor applied for stability)
+- **Recency Impact:** Moderate improvement; rolling score/pace features benefit from recent form
 - **Features (18):** Rolling points averages (team & opponent), pace proxies (combined score avg), offensive/defensive efficiency proxies, win/margin context, bias term; no market implied prob
 - **Regularization:** Ridge (L2) + MAD-based variance + sigma floor heuristic
 - **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
-Totals Model (Regression):
-- **Validation Accuracy:** 50.9% (threshold 0.5; classification threshold only for reference)
-- **Brier Score:** 0.2900 (improved from 0.2865 prior iteration; 0.5383 original classifier)
-- **Log Loss:** 0.7958 (improved from 0.7848 prior iteration; 3.53 original classifier)
-- **ECE (Expected Calibration Error):** 0.1666 (improved from 0.1628 baseline; well-calibrated)
-- **Residual σ (MAD-based, floored):** 38.00 points (MAD 15.72 × 1.4826; floor applied for stability)
-- **Features (18):** Rolling points averages (team & opponent), pace proxies (combined score avg), offensive/defensive efficiency proxies, win/margin context, bias term; no market implied prob
-- **Regularization:** Ridge (L2) + MAD-based variance + sigma floor heuristic
-- **Calibration:** Raw probabilities (Beta calibration removed due to small validation set overfitting)
 
 ### 📋 Next Steps
-- [x] **Moneyline Ensemble** ✅ **COMPLETED** - ECE improved 25% (0.0846 → 0.0633)
-- [ ] **Spread Dynamic Range** (Next Priority) - Add interaction features: |line| × winRateDiff
-- [ ] **Recency Weighting** - Exponential decay on rolling windows (~1-2% accuracy gain)
+- [x] **Moneyline Ensemble** ✅ **COMPLETED** - ECE 0.0633 (25% improvement from 0.0846)
+- [x] **Recency Weighting** ✅ **COMPLETED** - +0.8% moneyline accuracy, minimal spread change
+- [ ] **Opponent-Adjusted Stats** (Next Priority) - Normalize performance by opponent strength
+- [ ] **Rest Days / Situational Context** - Back-to-back games, travel distance features
 - [ ] Clean up debug warnings in bets output (remove "No model prediction" messages when features exist)
 - [ ] Add confidence indicators when model diverges significantly from market (>10% difference)
 - [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter

@@ -250,44 +250,117 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
 }
 
 /**
- * Compute win rate over last N games
+ * Exponential decay weights for recency bias (oldest to most recent)
+ * For 5-game window: [0.08, 0.12, 0.20, 0.25, 0.35]
+ */
+const RECENCY_WEIGHTS = [0.08, 0.12, 0.20, 0.25, 0.35];
+
+/**
+ * Compute win rate over last N games with exponential recency weighting
  */
 function computeWinRate(history: Array<{ won: boolean }>, window: number): number {
   if (history.length === 0) return 0.5;  // Neutral prior
   const recent = history.slice(-window);
-  const wins = recent.filter(g => g.won).length;
-  return wins / recent.length;
+  
+  // Use recency weights if window matches, otherwise uniform
+  if (recent.length === RECENCY_WEIGHTS.length) {
+    let weightedSum = 0;
+    let totalWeight = 0;
+    for (let i = 0; i < recent.length; i++) {
+      const weight = RECENCY_WEIGHTS[i];
+      weightedSum += (recent[i].won ? 1 : 0) * weight;
+      totalWeight += weight;
+    }
+    return weightedSum / totalWeight;
+  } else {
+    // Fallback to uniform average
+    const wins = recent.filter(g => g.won).length;
+    return wins / recent.length;
+  }
 }
 
 /**
- * Compute average margin over last N games
+ * Compute average margin over last N games with exponential recency weighting
  */
 function computeAvgMargin(history: Array<{ margin: number }>, window: number): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  const sum = recent.reduce((acc, g) => acc + g.margin, 0);
-  return sum / recent.length;
+  
+  // Use recency weights if window matches, otherwise uniform
+  if (recent.length === RECENCY_WEIGHTS.length) {
+    let weightedSum = 0;
+    let totalWeight = 0;
+    for (let i = 0; i < recent.length; i++) {
+      const weight = RECENCY_WEIGHTS[i];
+      weightedSum += recent[i].margin * weight;
+      totalWeight += weight;
+    }
+    return weightedSum / totalWeight;
+  } else {
+    // Fallback to uniform average
+    const sum = recent.reduce((acc, g) => acc + g.margin, 0);
+    return sum / recent.length;
+  }
 }
 
 function computeAvgPointsFor(history: Array<{ pointsFor: number }>, window: number): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  const sum = recent.reduce((acc, g) => acc + g.pointsFor, 0);
-  return sum / recent.length;
+  
+  // Use recency weights if window matches, otherwise uniform
+  if (recent.length === RECENCY_WEIGHTS.length) {
+    let weightedSum = 0;
+    let totalWeight = 0;
+    for (let i = 0; i < recent.length; i++) {
+      const weight = RECENCY_WEIGHTS[i];
+      weightedSum += recent[i].pointsFor * weight;
+      totalWeight += weight;
+    }
+    return weightedSum / totalWeight;
+  } else {
+    const sum = recent.reduce((acc, g) => acc + g.pointsFor, 0);
+    return sum / recent.length;
+  }
 }
 
 function computeAvgPointsAgainst(history: Array<{ pointsAgainst: number }>, window: number): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  const sum = recent.reduce((acc, g) => acc + g.pointsAgainst, 0);
-  return sum / recent.length;
+  
+  // Use recency weights if window matches, otherwise uniform
+  if (recent.length === RECENCY_WEIGHTS.length) {
+    let weightedSum = 0;
+    let totalWeight = 0;
+    for (let i = 0; i < recent.length; i++) {
+      const weight = RECENCY_WEIGHTS[i];
+      weightedSum += recent[i].pointsAgainst * weight;
+      totalWeight += weight;
+    }
+    return weightedSum / totalWeight;
+  } else {
+    const sum = recent.reduce((acc, g) => acc + g.pointsAgainst, 0);
+    return sum / recent.length;
+  }
 }
 
 function computeAvgCombined(history: Array<{ combined: number }>, window: number): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  const sum = recent.reduce((acc, g) => acc + g.combined, 0);
-  return sum / recent.length;
+  
+  // Use recency weights if window matches, otherwise uniform
+  if (recent.length === RECENCY_WEIGHTS.length) {
+    let weightedSum = 0;
+    let totalWeight = 0;
+    for (let i = 0; i < recent.length; i++) {
+      const weight = RECENCY_WEIGHTS[i];
+      weightedSum += recent[i].combined * weight;
+      totalWeight += weight;
+    }
+    return weightedSum / totalWeight;
+  } else {
+    const sum = recent.reduce((acc, g) => acc + g.combined, 0);
+    return sum / recent.length;
+  }
 }
 
 function computeOpponentAvgPoints(
