@@ -77,9 +77,17 @@ Generated via `src/model/diagnostics.ts` (validation set only; temporal split fr
 1. ✅ ~~Totals Pace/Efficiency~~ **COMPLETED**: Added 6 pace/efficiency features + MAD sigma → ECE 0.1666, Brier 0.2900
 2. ✅ ~~Moneyline Ensemble~~ **COMPLETED**: 70/30 base + market-aware blend → ECE 0.0633 (25% improvement), excellent 40-90% calibration
 3. ✅ ~~Recency Weighting~~ **COMPLETED**: Exponential decay [0.35, 0.25, 0.20, 0.12, 0.08] → +0.8% moneyline accuracy (72.0% → 72.8%), minimal spread change
-4. **Opponent-Adjusted Stats** (NEXT PRIORITY): Normalize performance by opponent strength (scored 80 vs weak ≠ 80 vs strong) → better discrimination, ~1-2% accuracy gain expected
-5. **Rest Days / Situational Context**: Back-to-back games, travel distance features → capture fatigue/travel effects
-6. **Divergence Filtering**: Flag bets where |model - market| > 5% and EV positive to surface candidate edges
+4. ❌ ~~Opponent-Adjusted Stats~~ **FAILED**: Normalizing by opponent defensive strength degraded performance severely (moneyline 72.8% → 55.5%, spread 67.5% → 67.2%). Adjustment formula `pointsFor * (leagueAvg / oppDefStrength)` created feature scale mismatch and instability with sparse early-season opponent data. **Reverted to baseline.**
+5. ❌ ~~Rest Days~~ **NOT PREDICTIVE FOR CFB**: Data analysis of 1,608 CFB games showed rest advantage confounded by scheduling artifacts (teams with -4+ days rest win 78.3% because good teams get Thursday prime-time slots, not fatigue effects). CFB weekly schedule (6-7 days standard) minimizes fatigue impact. **May revisit for NCAAM** where back-to-back games are common.
+6. **Conference/Rivalry Context** (NEXT TO EXPLORE): Add categorical features for conference strength (SEC vs MAC), rivalry game indicators
+7. **Feature Normalization**: Standardize all features (z-scores) to prevent scale dominance, safer foundation for future features
+
+## Lessons Learned (2025-11-29)
+- ✅ **Recency weighting is safe and effective**: Exponential decay on rolling windows improves performance without numerical issues
+- ❌ **Opponent adjustments need careful scaling**: Multiplicative adjustments create wide feature ranges that confuse logistic regression without normalization
+- ❌ **Correlation ≠ Causation**: Rest day correlation in CFB driven by team quality and TV scheduling, not actual fatigue effects
+- 💡 **Data-driven validation is critical**: Always check if theoretical features actually correlate with outcomes in your specific domain
+- 💡 **Simpler is often better**: 4 adjusted features caused -17% accuracy drop; 4 recency weights gave +0.8% gain
 
 ## Completed Enhancements (2025-11-29)
 - ✅ Added pace proxies: rolling combined score averages (homePace5, awayPace5)
@@ -96,6 +104,8 @@ Generated via `src/model/diagnostics.ts` (validation set only; temporal split fr
   - Spread unchanged (-0.3%, within noise)
   - Totals moderate improvement in Brier/LogLoss
   - Most recent game now weighted 4.4x more than oldest game in rolling window
+- ❌ **Attempted opponent-adjusted stats**: Severe performance degradation, reverted
+- ❌ **Analyzed rest days**: Found confounding factors in CFB, not predictive
 
 ## Commands
 ```bash

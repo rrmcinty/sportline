@@ -1,0 +1,8 @@
+{
+  "type": "ensemble",
+  "baseWeight": 0.7,
+  "marketWeight": 0.3,
+  "sport": "cfb",
+  "season": 2025,
+  "trainedAt": "2025-11-30T01:52:43.923Z"
+}

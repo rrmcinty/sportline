@@ -163,8 +163,10 @@ Totals Model (Regression):
 ### 📋 Next Steps
 - [x] **Moneyline Ensemble** ✅ **COMPLETED** - ECE 0.0633 (25% improvement from 0.0846)
 - [x] **Recency Weighting** ✅ **COMPLETED** - +0.8% moneyline accuracy, minimal spread change
-- [ ] **Opponent-Adjusted Stats** (Next Priority) - Normalize performance by opponent strength
-- [ ] **Rest Days / Situational Context** - Back-to-back games, travel distance features
+- [x] **Opponent-Adjusted Stats** ❌ **FAILED** - Degraded performance (72.8% → 55.5% moneyline), adjustment formula too aggressive
+- [x] **Rest Days Analysis** ❌ **NOT PREDICTIVE** - CFB rest differences confounded by scheduling (good teams get Thursday games)
+- [ ] **Conference/Rivalry Context** (Next to explore) - Simple categorical features for conference strength, rivalry games
+- [ ] **Feature Normalization** - Standardize all features (z-scores) to prevent scale dominance
 - [ ] Clean up debug warnings in bets output (remove "No model prediction" messages when features exist)
 - [ ] Add confidence indicators when model diverges significantly from market (>10% difference)
 - [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter

@@ -119,7 +119,7 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
 
   const features: GameFeatures[] = [];
 
-  // Build team performance history
+  // Build team performance history incrementally
   const teamHistory = new Map<number, Array<{ date: string; margin: number; won: boolean; oppTeamId: number; pointsFor: number; pointsAgainst: number; combined: number }>>();
 
   for (const game of games) {
@@ -216,7 +216,7 @@ export function computeFeatures(db: Database.Database, sport: string, season: nu
       });
     }
 
-    // Update history if game is complete
+    // Update history AFTER computing features for this game
     if (game.home_score !== null && game.away_score !== null) {
       const homeMargin = game.home_score - game.away_score;
       const awayMargin = game.away_score - game.home_score;
