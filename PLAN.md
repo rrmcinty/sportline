@@ -8,17 +8,19 @@ NCAAM betting CLI with parlay EV ranking. Build sport-agnostic infrastructure fi
 ### Phase 1: NCAAM (Now – December 2025)
 - **Language:** TypeScript/Node
 - **Data Source:** ESPN Core API (`sports.core.api.espn.com`)
-- **Sports:** NCAAM only
+- **Sports:** NCAAM, CFB, NFL, NBA
 - **Markets:** Moneyline, Spread (ATS), Totals (O/U)
 - **Providers:** ESPN BET (priority), DraftKings, others as available
 - **Parlay Logic:** Independence assumption (no same-game correlation yet)
 - **Caching:** Simple on-disk JSON cache by URL/date
 - **CLI:** `sportline games fetch --date`, `game show --event`, `odds import --event`, `parlay eval --legs --stake`
 
-### Phase 2: CFB (Late December 2025)
-- Enable `--sport cfb` flag
-- Reuse all models/parlay engine
-- Focus on bowl games and playoffs
+### Phase 2: Multi-Sport Support ✅
+- All major sports enabled: `--sport ncaam|cfb|nfl|nba`
+- Shared models/parlay engine across all sports
+- CFB: Bowl games and playoffs (late December)
+- NFL: Regular season and playoffs
+- NBA: Regular season and playoffs
 
 ### Phase 3: Future
 - Same-game parlay correlation (SGP)

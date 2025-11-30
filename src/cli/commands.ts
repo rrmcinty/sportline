@@ -8,6 +8,10 @@ import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
 import { fetchOdds as fetchOddsNcaam, normalizeOdds as normalizeOddsNcaam } from "../espn/ncaam/odds.js";
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import { fetchOdds as fetchOddsCfb, normalizeOdds as normalizeOddsCfb } from "../espn/cfb/odds.js";
+import { fetchEvents as fetchEventsNfl } from "../espn/nfl/events.js";
+import { fetchOdds as fetchOddsNfl, normalizeOdds as normalizeOddsNfl } from "../espn/nfl/odds.js";
+import { fetchEvents as fetchEventsNba } from "../espn/nba/events.js";
+import { fetchOdds as fetchOddsNba, normalizeOdds as normalizeOddsNba } from "../espn/nba/odds.js";
 import { evaluateParlay, generateParlays, rankParlaysByEV, filterPositiveEV } from "../parlay/eval.js";
 import { getHomeWinModelProbabilities, getHomeSpreadCoverProbabilities, getTotalOverModelProbabilities } from "../model/apply.js";
 import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
@@ -21,6 +25,20 @@ function getFetchers(sport: Sport) {
       fetchEvents: fetchEventsCfb,
       fetchOdds: fetchOddsCfb,
       normalizeOdds: normalizeOddsCfb,
+    };
+  }
+  if (sport === "nfl") {
+    return {
+      fetchEvents: fetchEventsNfl,
+      fetchOdds: fetchOddsNfl,
+      normalizeOdds: normalizeOddsNfl,
+    };
+  }
+  if (sport === "nba") {
+    return {
+      fetchEvents: fetchEventsNba,
+      fetchOdds: fetchOddsNba,
+      normalizeOdds: normalizeOddsNba,
     };
   }
   // default to ncaam

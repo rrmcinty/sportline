@@ -2,6 +2,8 @@ import { getDb } from "../db/index.js";
 import { computeFeatures } from "./features.js";
 import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
+import { fetchEvents as fetchEventsNfl } from "../espn/nfl/events.js";
+import { fetchEvents as fetchEventsNba } from "../espn/nba/events.js";
 import type { Sport } from "../models/types.js";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -12,7 +14,10 @@ function sigmoid(z: number): number {
 }
 
 function getFetchEvents(sport: Sport) {
-  return sport === "cfb" ? fetchEventsCfb : fetchEventsNcaam;
+  if (sport === "cfb") return fetchEventsCfb;
+  if (sport === "nfl") return fetchEventsNfl;
+  if (sport === "nba") return fetchEventsNba;
+  return fetchEventsNcaam;
 }
 
 /**
