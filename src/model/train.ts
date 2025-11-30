@@ -11,6 +11,55 @@ import { writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
 
 /**
+ * Standardize features (z-score normalization)
+ * Computes mean and std from training data, applies to both train and validation
+ */
+function standardizeFeatures(
+  trainFeatures: number[][],
+  valFeatures: number[][]
+): {
+  trainNormalized: number[][];
+  valNormalized: number[][];
+  means: number[];
+  stds: number[];
+} {
+  const numFeatures = trainFeatures[0].length;
+  const means = new Array(numFeatures).fill(0);
+  const stds = new Array(numFeatures).fill(0);
+
+  // Compute means from training data
+  for (let j = 0; j < numFeatures; j++) {
+    for (let i = 0; i < trainFeatures.length; i++) {
+      means[j] += trainFeatures[i][j];
+    }
+    means[j] /= trainFeatures.length;
+  }
+
+  // Compute standard deviations from training data
+  for (let j = 0; j < numFeatures; j++) {
+    for (let i = 0; i < trainFeatures.length; i++) {
+      const diff = trainFeatures[i][j] - means[j];
+      stds[j] += diff * diff;
+    }
+    stds[j] = Math.sqrt(stds[j] / trainFeatures.length);
+    // Avoid division by zero for constant features
+    if (stds[j] < 1e-8) stds[j] = 1.0;
+  }
+
+  // Apply normalization to training data
+  const trainNormalized = trainFeatures.map(row =>
+    row.map((val, j) => (val - means[j]) / stds[j])
+  );
+
+  // Apply same normalization to validation data
+  const valNormalized = valFeatures.map(row =>
+    row.map((val, j) => (val - means[j]) / stds[j])
+  );
+
+  return { trainNormalized, valNormalized, means, stds };
+}
+
+/**
  * Simple logistic regression (gradient descent with L2 regularization)
  */
 function trainLogisticRegression(
@@ -196,20 +245,40 @@ async function trainMoneylineModel(
     const splitDate = baseData.dates[sortedIndices[splitIdx]];
     console.log(chalk.dim(`Temporal split at ${splitDate}: ${trainIndices.length} train, ${valIndices.length} validation\n`));
 
+    // STANDARDIZE features (z-score normalization)
+    console.log(chalk.dim("Standardizing features (z-score)..."));
+    
+    // Extract train/val splits
+    const baseTrainRaw = trainIndices.map(i => baseData.features[i]);
+    const baseTrainLabels = trainIndices.map(i => baseData.labels[i]);
+    const baseValRaw = valIndices.map(i => baseData.features[i]);
+    const baseValLabels = valIndices.map(i => baseData.labels[i]);
+    
+    const marketTrainRaw = trainIndices.map(i => marketAwareData.features[i]);
+    const marketTrainLabels = trainIndices.map(i => marketAwareData.labels[i]);
+    const marketValRaw = valIndices.map(i => marketAwareData.features[i]);
+    const marketValLabels = valIndices.map(i => marketAwareData.labels[i]);
+
+    // Standardize base features
+    const baseStandardized = standardizeFeatures(baseTrainRaw, baseValRaw);
+    const baseTrain = baseStandardized.trainNormalized;
+    const baseVal = baseStandardized.valNormalized;
+    const baseMeans = baseStandardized.means;
+    const baseStds = baseStandardized.stds;
+
+    // Standardize market features
+    const marketStandardized = standardizeFeatures(marketTrainRaw, marketValRaw);
+    const marketTrain = marketStandardized.trainNormalized;
+    const marketVal = marketStandardized.valNormalized;
+    const marketMeans = marketStandardized.means;
+    const marketStds = marketStandardized.stds;
+
     // Train BASE model (9 features, no market)
     console.log(chalk.dim("Training BASE model (no market feature)..."));
-    const baseTrain = trainIndices.map(i => baseData.features[i]);
-    const baseTrainLabels = trainIndices.map(i => baseData.labels[i]);
-    const baseVal = valIndices.map(i => baseData.features[i]);
-    const baseValLabels = valIndices.map(i => baseData.labels[i]);
     const baseWeights = trainLogisticRegression(baseTrain, baseTrainLabels);
     
     // Train MARKET-AWARE model (10 features, with market)
     console.log(chalk.dim("Training MARKET-AWARE model (with market feature)..."));
-    const marketTrain = trainIndices.map(i => marketAwareData.features[i]);
-    const marketTrainLabels = trainIndices.map(i => marketAwareData.labels[i]);
-    const marketVal = valIndices.map(i => marketAwareData.features[i]);
-    const marketValLabels = valIndices.map(i => marketAwareData.labels[i]);
     const marketWeights = trainLogisticRegression(marketTrain, marketTrainLabels);
 
     // Compute ensemble predictions (70% base, 30% market-aware)
@@ -292,6 +361,8 @@ async function trainMoneylineModel(
     const baseModel = {
       type: 'base',
       weights: baseWeights,
+      means: baseMeans,
+      stds: baseStds,
       featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5"],
       sport,
       season,
@@ -303,6 +374,8 @@ async function trainMoneylineModel(
     const marketModel = {
       type: 'market-aware',
       weights: marketWeights,
+      means: marketMeans,
+      stds: marketStds,
       featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "marketImpliedProb"],
       sport,
       season,
@@ -449,40 +522,48 @@ async function trainSpreadModel(
 
   console.log(chalk.dim(`Temporal split at ${splitDate}: ${trainFeatures.length} train, ${valFeatures.length} validation\n`));
 
+  // STANDARDIZE features (z-score normalization)
+  console.log(chalk.dim("Standardizing features (z-score)..."));
+  const standardized = standardizeFeatures(trainFeatures, valFeatures);
+  const trainFeaturesNorm = standardized.trainNormalized;
+  const valFeaturesNorm = standardized.valNormalized;
+  const means = standardized.means;
+  const stds = standardized.stds;
+
   // Train logistic regression
   console.log(chalk.dim("Training logistic regression..."));
-  const weights = trainLogisticRegression(trainFeatures, trainLabels);
+  const weights = trainLogisticRegression(trainFeaturesNorm, trainLabels);
 
   // Compute training accuracy
   let trainCorrect = 0;
-  for (let i = 0; i < trainFeatures.length; i++) {
-    const prediction = sigmoid(dot(trainFeatures[i], weights));
+  for (let i = 0; i < trainFeaturesNorm.length; i++) {
+    const prediction = sigmoid(dot(trainFeaturesNorm[i], weights));
     const predicted = prediction > 0.5 ? 1 : 0;
     if (predicted === trainLabels[i]) trainCorrect++;
   }
-  const trainAccuracy = (trainCorrect / trainFeatures.length) * 100;
+  const trainAccuracy = (trainCorrect / trainFeaturesNorm.length) * 100;
 
   console.log(chalk.green(`Training accuracy: ${trainAccuracy.toFixed(1)}%`));
 
   // Compute validation metrics
-  const valPredictions = valFeatures.map(f => sigmoid(dot(f, weights)));
+  const valPredictions = valFeaturesNorm.map(f => sigmoid(dot(f, weights)));
   
   let valCorrect = 0;
-  for (let i = 0; i < valFeatures.length; i++) {
+  for (let i = 0; i < valFeaturesNorm.length; i++) {
     const predicted = valPredictions[i] > 0.5 ? 1 : 0;
     if (predicted === valLabels[i]) valCorrect++;
   }
-  const valAccuracy = (valCorrect / valFeatures.length) * 100;
+  const valAccuracy = (valCorrect / valFeaturesNorm.length) * 100;
 
   let brierSum = 0;
-  for (let i = 0; i < valFeatures.length; i++) {
+  for (let i = 0; i < valFeaturesNorm.length; i++) {
     const error = valPredictions[i] - valLabels[i];
     brierSum += error * error;
   }
-  const brierScore = brierSum / valFeatures.length;
+  const brierScore = brierSum / valFeaturesNorm.length;
 
   let logLossSum = 0;
-  for (let i = 0; i < valFeatures.length; i++) {
+  for (let i = 0; i < valFeaturesNorm.length; i++) {
     const p = Math.max(0.001, Math.min(0.999, valPredictions[i]));
     logLossSum += valLabels[i] === 1 ? -Math.log(p) : -Math.log(1 - p);
   }
@@ -540,6 +621,8 @@ async function trainSpreadModel(
   const model = {
     market: 'spread',
     weights,
+    means,
+    stds,
     featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "spreadLine", "spreadMarketImpliedProb"],
     sport,
     season,
@@ -555,8 +638,8 @@ async function trainSpreadModel(
     validationAccuracy: valAccuracy,
     brierScore,
     logLoss,
-    numTrainingSamples: trainFeatures.length,
-    numValidationSamples: valFeatures.length,
+    numTrainingSamples: trainFeaturesNorm.length,
+    numValidationSamples: valFeaturesNorm.length,
     splitDate,
     calibrationData,
     calibrated: calibrationCurve !== null

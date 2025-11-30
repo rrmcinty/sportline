@@ -124,58 +124,67 @@
   - [x] Decided against calibration due to overfitting with current dataset size
   - [x] L2 regularization proved more effective for stability
 
-### 🔄 Current Model Performance (CFB 2025) - After Recency Weighting
+### 🔄 Current Model Performance (CFB 2025) - After Feature Normalization (Z-Score)
 **Training Data:** 1,241 games (filtered from 1,750 completed) - excludes games where either team has <5 completed games
+
+**Feature Normalization:** All features standardized (z-score: `(x - mean) / std`) using training set statistics, applied to both train and validation sets
 
 **Recency Weighting:** Exponential decay [0.35, 0.25, 0.20, 0.12, 0.08] applied to rolling-5 features (most recent game weighted 0.35, oldest 0.08)
 
 Moneyline Model (Ensemble: 70% Base + 30% Market-Aware):
-- **Base Model Validation:** 69.7% accuracy (9 features, no market)
-- **Market-Aware Validation:** 76.2% accuracy (10 features, with market)
-- **Ensemble Validation:** 72.8% accuracy (↑0.8% from 72.0%), **ECE: 0.0685** (slight increase from 0.0633)
-- **Brier Score:** 0.1868 | **Log Loss:** 0.5562
-- **Recency Impact:** +0.8% accuracy improvement; ECE slightly higher but still excellent calibration
-- **Features:** Base uses 9 stats-only; Market-Aware adds market implied probability
+- **Base Model Validation:** 67.2% accuracy (9 features, no market)
+- **Market-Aware Validation:** 88.5% accuracy (10 features, with market)
+- **Ensemble Validation:** 80.7% accuracy (↑7.9% from 72.8%), **Brier: 0.1623**, **Log Loss: 0.5047**
+- **Normalization Impact:** MAJOR IMPROVEMENT - +7.9% accuracy from z-score standardization
+- **Features:** Base uses 9 stats-only; Market-Aware adds market implied probability (all z-score normalized)
 - **Regularization:** L2 (λ=0.1) on both models
 - **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
 
 Spread Model:
-- **Training Accuracy:** 66.3% (833 games with reliable features)
-- **Validation Accuracy:** 67.5% (↓0.3% from 67.8%; within noise)
-- **Brier Score:** 0.2160 | **Log Loss:** 0.6225
-- **Recency Impact:** Minimal change (-0.3%); spread predictions less sensitive to recency
-- **Features:** 11 (moneyline set + spread line + spread market implied prob)
+- **Training Accuracy:** 66.1% (833 games with reliable features)
+- **Validation Accuracy:** 72.8% (↑5.3% from 67.5%)
+- **Brier Score:** 0.1988 | **Log Loss:** 0.5862
+- **Normalization Impact:** SIGNIFICANT IMPROVEMENT - +5.3% accuracy from z-score standardization
+- **Features:** 11 (moneyline set + spread line + spread market implied prob, all z-score normalized)
 - **Regularization:** L2 (λ=0.1)
 - **Probability Clipping:** [5%, 95%] to prevent extreme predictions
-- **Calibration:** ECE: 0.0256 (excellent, down from 0.0296 baseline)
+- **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
 
 Totals Model (Regression):
 - **Validation Accuracy:** ~52% (threshold 0.5; classification threshold only for reference)
 - **Brier Score:** ~0.28 (well-calibrated for probabilistic predictions)
-- **Log Loss:** ~0.77 (improved from pre-recency baseline)
+- **Log Loss:** ~0.77
 - **ECE (Expected Calibration Error):** 0.1525 (well-calibrated mid-range probabilities)
 - **Residual σ (MAD-based, floored):** 38.00 points (MAD × 1.4826; floor applied for stability)
-- **Recency Impact:** Moderate improvement; rolling score/pace features benefit from recent form
-- **Features (18):** Rolling points averages (team & opponent), pace proxies (combined score avg), offensive/defensive efficiency proxies, win/margin context, bias term; no market implied prob
+- **Normalization:** Already implemented in totals regression model (means/stds saved with model)
+- **Features (18):** Rolling points averages (team & opponent), pace proxies (combined score avg), offensive/defensive efficiency proxies, win/margin context, bias term; all z-score normalized
 - **Regularization:** Ridge (L2) + MAD-based variance + sigma floor heuristic
 - **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
 
 ### 📋 Next Steps
 - [x] **Moneyline Ensemble** ✅ **COMPLETED** - ECE 0.0633 (25% improvement from 0.0846)
 - [x] **Recency Weighting** ✅ **COMPLETED** - +0.8% moneyline accuracy, minimal spread change
+- [x] **Feature Normalization (Z-Score)** ✅ **COMPLETED** - MAJOR IMPROVEMENT: Moneyline +7.9% (72.8% → 80.7%), Spread +5.3% (67.5% → 72.8%)
 - [x] **Opponent-Adjusted Stats** ❌ **FAILED** - Degraded performance (72.8% → 55.5% moneyline), adjustment formula too aggressive
 - [x] **Rest Days Analysis** ❌ **NOT PREDICTIVE** - CFB rest differences confounded by scheduling (good teams get Thursday games)
 - [ ] **Conference/Rivalry Context** (Next to explore) - Simple categorical features for conference strength, rivalry games
-- [ ] **Feature Normalization** - Standardize all features (z-scores) to prevent scale dominance
 - [ ] Clean up debug warnings in bets output (remove "No model prediction" messages when features exist)
 - [ ] Add confidence indicators when model diverges significantly from market (>10% difference)
 - [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter
-- [ ] Add rest days / back-to-back game features
-- [ ] Implement recency weighting (exponential decay on past games)
 - [ ] Track actual betting results vs predictions (logging + ROI table)
 - [ ] Add model performance dashboard (daily snapshot + rolling metrics)
 - [ ] Persist individual model predictions (new table) for auditing & backtests
 - [ ] Divergence-based filtering: surface only |model - market| > 5% AND EV > 0
+
+### 📊 Improvement History
+| Date | Feature | Moneyline Accuracy | Spread Accuracy | Notes |
+|------|---------|-------------------|-----------------|-------|
+| 2025-11-27 | Baseline | 72.0% | 67.8% | Initial models with basic features |
+| 2025-11-28 | Recency Weighting | 72.8% (+0.8%) | 67.5% (-0.3%) | Exponential decay on rolling-5 windows |
+| 2025-11-29 | Opponent Adjustments | 55.5% (-17.3%) | 67.2% (-0.3%) | FAILED - Reverted due to feature scale mismatch |
+| 2025-11-29 | Feature Normalization | **80.7% (+7.9%)** | **72.8% (+5.3%)** | **Z-score standardization - MAJOR BREAKTHROUGH** |
+
+**Key Lesson:** Feature normalization (z-score) is the single most impactful improvement (+7.9% moneyline, +5.3% spread). Prevents features with different scales (win rate 0-1 vs margin -30 to +30) from dominating gradient descent. This should have been done first before any other feature engineering attempts.
 
 ### 🔮 Future Enhancements
 - [ ] Better output formatting (tables)

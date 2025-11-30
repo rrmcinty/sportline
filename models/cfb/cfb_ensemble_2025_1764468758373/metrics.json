@@ -1,0 +1,23 @@
+{
+  "baseMetrics": {
+    "accuracy": 67.22689075630252,
+    "brierScore": 0.20822173638092437,
+    "logLoss": 0.6046250240808067
+  },
+  "marketMetrics": {
+    "accuracy": 88.51540616246498,
+    "brierScore": 0.10074368581226906,
+    "logLoss": 0.34554927391045553
+  },
+  "ensembleMetrics": {
+    "accuracy": 80.67226890756302,
+    "brierScore": 0.16230598992123116,
+    "logLoss": 0.5046612485268709
+  },
+  "validationAccuracy": 80.67226890756302,
+  "brierScore": 0.16230598992123116,
+  "logLoss": 0.5046612485268709,
+  "numTrainingSamples": 833,
+  "numValidationSamples": 357,
+  "splitDate": "2025-10-11T19:30Z"
+}

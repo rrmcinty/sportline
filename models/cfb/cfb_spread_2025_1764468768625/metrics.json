@@ -1,0 +1,62 @@
+{
+  "market": "spread",
+  "trainingAccuracy": 66.14645858343337,
+  "validationAccuracy": 72.82913165266106,
+  "brierScore": 0.1988119559209045,
+  "logLoss": 0.5861861350920067,
+  "numTrainingSamples": 833,
+  "numValidationSamples": 357,
+  "splitDate": "2025-10-11T19:30Z",
+  "calibrationData": [
+    {
+      "binStart": 0.2,
+      "binEnd": 0.3,
+      "predictedProb": 0.2672917454445149,
+      "actualWinRate": 0.03125,
+      "count": 32
+    },
+    {
+      "binStart": 0.3,
+      "binEnd": 0.4,
+      "predictedProb": 0.35233074638043876,
+      "actualWinRate": 0.08602150537634409,
+      "count": 93
+    },
+    {
+      "binStart": 0.4,
+      "binEnd": 0.5,
+      "predictedProb": 0.44528825352659057,
+      "actualWinRate": 0.2631578947368421,
+      "count": 76
+    },
+    {
+      "binStart": 0.5,
+      "binEnd": 0.6,
+      "predictedProb": 0.5528739508097733,
+      "actualWinRate": 0.5072463768115942,
+      "count": 69
+    },
+    {
+      "binStart": 0.6,
+      "binEnd": 0.7,
+      "predictedProb": 0.6348011835336546,
+      "actualWinRate": 0.5254237288135594,
+      "count": 59
+    },
+    {
+      "binStart": 0.7,
+      "binEnd": 0.8,
+      "predictedProb": 0.7420721170575589,
+      "actualWinRate": 0.7368421052631579,
+      "count": 19
+    },
+    {
+      "binStart": 0.8,
+      "binEnd": 0.9,
+      "predictedProb": 0.8336102086810397,
+      "actualWinRate": 0.8888888888888888,
+      "count": 9
+    }
+  ],
+  "calibrated": false
+}
