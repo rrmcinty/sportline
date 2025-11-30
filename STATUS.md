@@ -124,18 +124,19 @@
   - [x] Decided against calibration due to overfitting with current dataset size
   - [x] L2 regularization proved more effective for stability
 
-### 🔄 Current Model Performance (CFB 2025) - After Data Filtering
+### 🔄 Current Model Performance (CFB 2025) - After Data Filtering + Ensemble
 **Training Data:** 1,241 games (filtered from 1,750 completed) - excludes games where either team has <5 completed games
 
 Moneyline Model (Ensemble: 70% Base + 30% Market-Aware):
 - **Base Model Validation:** 69.7% accuracy (9 features, no market)
 - **Market-Aware Validation:** 76.5% accuracy (10 features, with market)
-- **Ensemble Validation:** 72.0% accuracy (improved from 71.7% pre-filter)
+- **Ensemble Validation:** 72.0% accuracy, **ECE: 0.0633** (improved 25% from 0.0846)
 - **Brier Score:** 0.1836 (improved from 0.1882) | **Log Loss:** 0.5480 (improved from 0.5536)
-- **Key Improvement:** Data filtering removed FCS edge cases, improved calibration
+- **Key Improvement:** Ensemble blending prevents market overweighting; 40-50% bin now 49.0% actual (excellent calibration)
 - **Features:** Base uses 9 stats-only; Market-Aware adds market implied probability
 - **Regularization:** L2 (λ=0.1) on both models
 - **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
+- **Calibration:** 30-40% bin 15.8% actual (still slightly underpredicting), 60-90% bins very well calibrated
 
 Spread Model:
 - **Training Accuracy:** 66.4% (833 games with reliable features)
@@ -165,9 +166,11 @@ Totals Model (Regression):
 - **Calibration:** Raw probabilities (Beta calibration removed due to small validation set overfitting)
 
 ### 📋 Next Steps
+- [x] **Moneyline Ensemble** ✅ **COMPLETED** - ECE improved 25% (0.0846 → 0.0633)
+- [ ] **Spread Dynamic Range** (Next Priority) - Add interaction features: |line| × winRateDiff
+- [ ] **Recency Weighting** - Exponential decay on rolling windows (~1-2% accuracy gain)
 - [ ] Clean up debug warnings in bets output (remove "No model prediction" messages when features exist)
 - [ ] Add confidence indicators when model diverges significantly from market (>10% difference)
-- [ ] Spread dynamic range enhancement (interaction features: |line| × winRateDiff)
 - [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter
 - [ ] Add rest days / back-to-back game features
 - [ ] Implement recency weighting (exponential decay on past games)
