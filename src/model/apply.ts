@@ -45,7 +45,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     const modelPath = join(latestRun.artifacts_path, "model.json");
     try {
       const model = JSON.parse(readFileSync(modelPath, "utf-8"));
-      baseModel = { type: 'single', weights: model.weights, featureNames: model.featureNames, means: model.means, stds: model.stds } as any;
+      baseModel = { type: 'single', weights: model.weights, featureNames: model.featureNames } as any;
       season = model.season || 2025;
     } catch {
       return undefined; // no artifacts
@@ -92,20 +92,10 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     for (const r of rows) {
       const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
       
-      // Standardize base features
-      const baseFeaturesNorm = (baseModel as any).means 
-        ? features.base.map((v: number, i: number) => (v - (baseModel as any).means[i]) / (baseModel as any).stds[i])
-        : features.base;
-      
-      const baseZ = baseFeaturesNorm.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
+      const baseZ = features.base.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
       const baseProb = sigmoid(baseZ);
       
-      // Standardize market features
-      const marketFeaturesNorm = (marketModel as any).means
-        ? features.market.map((v: number, i: number) => (v - (marketModel as any).means[i]) / (marketModel as any).stds[i])
-        : features.market;
-      
-      const marketZ = marketFeaturesNorm.reduce((acc: number, v: number, i: number) => acc + v * (marketModel as any).weights[i], 0);
+      const marketZ = features.market.reduce((acc: number, v: number, i: number) => acc + v * (marketModel as any).weights[i], 0);
       const marketProb = sigmoid(marketZ);
       
       const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
@@ -117,12 +107,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
       const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
       const x = (baseModel as any).featureNames.length === 9 ? features.base : features.market;
       
-      // Standardize features if means/stds available
-      const xNorm = (baseModel as any).means
-        ? x.map((v: number, i: number) => (v - (baseModel as any).means[i]) / (baseModel as any).stds[i])
-        : x;
-      
-      const z = xNorm.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
+      const z = x.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
       probs.set(r.espn_event_id, sigmoid(z));
     }
   }
@@ -188,12 +173,7 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
     const x = featureMap.get(r.id);
     if (!x) continue; // Skip games without spread data
     
-    // Standardize features if means/stds available
-    const xNorm = model.means && model.stds
-      ? x.map((v, i) => (v - model.means![i]) / model.stds![i])
-      : x;
-    
-    const z = xNorm.reduce((acc, v, i) => acc + v * model.weights[i], 0);
+    const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
     const rawProb = sigmoid(z);
     const calibratedProb = model.calibration ? applyCalibration(rawProb, model.calibration) : rawProb;
     

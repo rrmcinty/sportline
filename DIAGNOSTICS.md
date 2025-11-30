@@ -1,62 +1,47 @@
 # Model Diagnostics (CFB 2025)
 
-_Last run: 2025-11-29 (after feature normalization with z-score standardization)_
+_Last run: 2025-11-29 (after reverting feature normalization to restore calibration)_
 
-## ⚠️ CRITICAL FINDING: Accuracy vs Calibration Tradeoff
+## ✅ CALIBRATION RESTORED
 
-**The normalized models have high accuracy but POOR calibration:**
-- Moneyline: 80.7% accuracy but **ECE 0.24** (was 0.07 before normalization)
-- Spread: 72.8% accuracy but **ECE 0.31** (was 0.03 before normalization)  
-- **Issue:** Models make extreme predictions (0-10% or 90-100%) that don't match actual outcomes
-
-**Root Cause:** Z-score normalization amplified feature signal, making model overconfident. High accuracy comes from correctly identifying easy games, but probability estimates are miscalibrated.
-
-**Impact on Betting:** Poor calibration means EV calculations are unreliable - a 95% prediction that's actually 80% leads to false confidence and poor bet sizing.
-
-**Next Steps:** Need to either (1) reduce normalization impact via regularization tuning, (2) apply post-hoc calibration (Platt scaling), or (3) revert to pre-normalized models for betting decisions.
+**After reverting z-score normalization, models are back to excellent calibration:**
+- Moneyline: 72.8% accuracy with **ECE 0.0685** (down from 0.24)
+- Spread: 67.5% accuracy with **ECE 0.0256** (down from 0.31)
+- **Probabilities are now reliable for betting decisions and EV calculations**
 
 ## Overview
 Generated via `src/model/diagnostics.ts` (validation set only; temporal split from latest model runs). Provides calibration, divergence vs market, and residual analysis.
 
-## Moneyline (Ensemble: 70% Base + 30% Market-Aware) ⚠️ ACCURACY HIGH, CALIBRATION POOR
+## Moneyline (Ensemble: 70% Base + 30% Market-Aware) ✅ PRODUCTION-READY
 - Validation samples: 369
-- **Validation Accuracy: 80.7%** (↑7.9% from 72.8%)
-- **ECE: 0.2381** (POOR - was 0.0685 before normalization, 3.5x worse)
-- Brier: 0.1623, Log Loss: 0.5047
-- Divergence (model - market): mean -6.43%, std 38.51%, p90 +41.19%
+- **Validation Accuracy: 72.8%**
+- **ECE: 0.0685** (excellent - restored from 0.24 after normalization revert)
+- Brier: 0.1868, Log Loss: 0.5562
+- Divergence (model - market): mean +4.28%, std 26.75%, p90 +42.96%
 - **Calibration by bin:**
-  - 0-10%: pred 2.0% vs actual 30.4% (n=125) - **severe underprediction**
-  - 10-20%: pred 13.9% vs actual 51.7% (n=29)
-  - 20-30%: pred 24.3% vs actual 61.5% (n=13)
-  - 30-40%: pred 35.1% vs actual 81.3% (n=16)
-  - 40-50%: pred 46.5% vs actual 50.0% (n=10) - good
-  - 50-60%: pred 55.7% vs actual 81.3% (n=16)
-  - 60-70%: pred 65.5% vs actual 61.5% (n=13) - good
-  - 70-80%: pred 75.1% vs actual 62.5% (n=8)
-  - 80-90%: pred 84.8% vs actual 75.0% (n=12)
-  - 90-100%: pred 98.4% vs actual 81.1% (n=127) - **severe overprediction**
-- **Critical Issue:** Model clusters predictions at extremes (125 games at 0-10%, 127 at 90-100%) but these extreme predictions are wrong
-- **Status:** High accuracy but **NOT PRODUCTION-READY** for betting without calibration fix
+  - 10-20%: pred 15.8% vs actual 14.3% (n=14) - excellent
+  - 20-30%: pred 24.9% vs actual 23.8% (n=21) - excellent
+  - 30-40%: pred 35.2% vs actual 31.3% (n=32) - good
+  - 40-50%: pred 45.4% vs actual 32.7% (n=52) - slight underprediction
+  - 50-60%: pred 55.5% vs actual 49.2% (n=59) - good
+  - 60-70%: pred 64.6% vs actual 72.1% (n=68) - good
+  - 70-80%: pred 75.3% vs actual 83.6% (n=67) - good
+  - 80-90%: pred 84.8% vs actual 88.4% (n=43) - excellent
+  - 90-100%: pred 93.1% vs actual 84.6% (n=13) - slight overprediction
+- **Status:** **PRODUCTION-READY** - probabilities reliable across full range
 
-## Spread ⚠️ ACCURACY HIGH, CALIBRATION POOR
+## Spread ✅ PRODUCTION-READY
 - Validation samples: 369
-- **Validation Accuracy: 72.8%** (↑5.3% from 67.5%)
-- **ECE: 0.3106** (VERY POOR - was 0.0256 before normalization, 12x worse)
-- Brier: 0.1988, Log Loss: 0.5862
-- Divergence (model - market): mean +6.53%, std 42.49%, p90 +69.75%
+- **Validation Accuracy: 67.5%**
+- **ECE: 0.0256** (excellent - restored from 0.31 after normalization revert)
+- Brier: 0.2160, Log Loss: 0.6225
+- Divergence (model - market): mean +0.08%, std 19.98%, p90 +22.89%
 - **Calibration by bin:**
-  - 0-10%: pred 3.2% vs actual 33.9% (n=112) - **severe underprediction**
-  - 10-20%: pred 14.7% vs actual 33.3% (n=36)
-  - 20-30%: pred 25.1% vs actual 16.7% (n=30) - good
-  - 30-40%: pred 35.1% vs actual 34.5% (n=29) - excellent
-  - 40-50%: pred 45.7% vs actual 57.1% (n=14)
-  - 50-60%: pred 54.5% vs actual 23.3% (n=30) - **overprediction**
-  - 60-70%: pred 65.4% vs actual 47.4% (n=19)
-  - 70-80%: pred 72.6% vs actual 26.3% (n=19) - **severe overprediction**
-  - 80-90%: pred 86.3% vs actual 23.5% (n=17) - **severe overprediction**
-  - 90-100%: pred 96.7% vs actual 38.1% (n=63) - **severe overprediction**
-- **Critical Issue:** High-confidence predictions (>70%) dramatically wrong - model thinks it knows more than it does
-- **Status:** High accuracy but **NOT PRODUCTION-READY** for betting without calibration fix
+  - 20-30%: pred 27.3% vs actual 22.4% (n=76) - good
+  - 30-40%: pred 34.9% vs actual 35.5% (n=242) - excellent
+  - 40-50%: pred 43.0% vs actual 35.4% (n=48) - slight overprediction
+  - 50-60%: pred 51.4% vs actual 66.7% (n=3) - small sample
+- **Status:** **PRODUCTION-READY** - probabilities reliable
 
 ## Totals (Regression → Over Probability) — **IMPROVED**
 - Validation samples: 369
