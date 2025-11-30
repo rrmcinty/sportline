@@ -162,7 +162,7 @@ Import and display odds for a specific event (date defaults to today).
 - `-d, --date <YYYYMMDD>` - Date in YYYYMMDD format (optional)
 
 ### `recommend`
-Generate and rank parlay recommendations by expected value (date defaults to today).
+Generate and rank single bet and parlay recommendations by expected value (date defaults to today).
 
 **Usage:**
 ```bash
@@ -182,7 +182,7 @@ sportline recommend --sport cfb --days 3 --min-legs 1
 - `-s, --stake <amount>` - Stake amount per parlay (default: 10)
 - `--min-legs <number>` - Minimum legs per parlay (use 1 for single bets, default: 2)
 - `--max-legs <number>` - Maximum legs per parlay (default: 4)
-- `-n, --top <number>` - Number of top parlays to show (default: 10)
+- `-n, --top <number>` - Number of top single bets AND parlays to show (default: 10)
 - `--days <number>` - Number of days to look ahead from start date (default: 1)
 
 **Pro tip:** Use `--days 7` on slow nights to see a full week of opportunities!

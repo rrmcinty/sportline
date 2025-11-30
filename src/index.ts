@@ -84,13 +84,13 @@ program
 // recommend command
 program
   .command("recommend")
-  .description("Generate parlay recommendations (date defaults to today)")
+  .description("Generate single bet + parlay recommendations (date defaults to today)")
   .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
   .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
   .option("-s, --stake <amount>", "Stake amount per bet", "10")
   .option("--min-legs <number>", "Minimum legs per parlay (use 1 for single bets only)", "2")
   .option("--max-legs <number>", "Maximum legs per parlay", "4")
-  .option("-n, --top <number>", "Number of top parlays to show", "10")
+  .option("-n, --top <number>", "Number of top single bets and parlays to show", "10")
   .option("--days <number>", "Number of days to look ahead (default: 1)", "1")
   .action(async (options) => {
     const sport: Sport = options.sport;

@@ -488,7 +488,8 @@ export async function cmdRecommend(
       console.log(chalk.dim(`Positive EV = good bet. Negative EV = bookmaker has the edge.\n`));
       
       const singleBets = allLegs.map(leg => evaluateParlay({ legs: [leg], stake }));
-      const rankedSingles = rankParlaysByEV(singleBets).slice(0, 5);
+      // Use topN (shared with parlay limit) to control number of single bets displayed
+      const rankedSingles = rankParlaysByEV(singleBets).slice(0, topN);
       
       for (let i = 0; i < rankedSingles.length; i++) {
         const bet = rankedSingles[i];
@@ -522,7 +523,7 @@ export async function cmdRecommend(
       }
 
       // Show interpretation
-      const bestEV = rankedSingles[0].ev;
+      const bestEV = rankedSingles.length > 0 ? rankedSingles[0].ev : 0;
       if (bestEV >= 0) {
         console.log(chalk.green.bold(`🎯 RECOMMENDATION: The best bet has +EV! This is a potentially profitable opportunity.`));
       } else if (bestEV > -0.50) {
