@@ -84,9 +84,9 @@ program
 // recommend command
 program
   .command("recommend")
-  .description("Generate single bet + parlay recommendations (date defaults to today)")
+  .description("Generate single bet + parlay recommendations (date defaults to today, omit --sport for all sports)")
   .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
-  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
+  .option("--sport <sport>", "Sport (ncaam|cfb|nfl|nba) or omit for all sports")
   .option("-s, --stake <amount>", "Stake amount per bet", "10")
   .option("--min-legs <number>", "Minimum legs per parlay (use 1 for single bets only)", "2")
   .option("--max-legs <number>", "Maximum legs per parlay", "4")
@@ -94,10 +94,10 @@ program
   .option("--days <number>", "Number of days to look ahead (default: 1)", "1")
   .option("--divergence <threshold>", "Only show bets where |model - market| > threshold % (e.g., 5)", "0")
   .action(async (options) => {
-    const sport: Sport = options.sport;
+    const sports: Sport[] | undefined = options.sport ? [options.sport as Sport] : undefined;
     const date = options.date || todayYYYYMMDD();
     await cmdRecommend(
-      sport,
+      sports,
       date,
       parseFloat(options.stake),
       parseInt(options.minLegs),

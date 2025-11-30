@@ -274,7 +274,7 @@ export async function cmdBets(
  * Generate and rank parlay recommendations
  */
 export async function cmdRecommend(
-  sport: Sport,
+  sports: Sport[] | undefined,
   date: string,
   stake: number,
   minLegs: number,
@@ -284,6 +284,9 @@ export async function cmdRecommend(
   divergenceThreshold: number = 0
 ): Promise<void> {
   try {
+    // If no sports specified, check all sports
+    const sportsToCheck: Sport[] = sports || ["ncaam", "cfb", "nfl", "nba"];
+    
     // Generate date range if days > 1
     const dates: string[] = [];
     const startDate = new Date(
@@ -305,15 +308,22 @@ export async function cmdRecommend(
       ? date 
       : `${date} through ${dates[dates.length - 1]} (${days} days)`;
     
-    console.log(chalk.bold.cyan(`\n🔍 Analyzing all games on ${dateRangeDisplay}...\n`));
+    const sportDisplay = sports ? sports.join(", ").toUpperCase() : "ALL SPORTS";
+    console.log(chalk.bold.cyan(`\n🔍 Analyzing ${sportDisplay} games on ${dateRangeDisplay}...\n`));
 
-    // Fetch all games and odds across all dates
-    const { fetchEvents, fetchOdds, normalizeOdds } = getFetchers(sport);
-    const allCompetitions = [];
+    // Fetch all games and odds across all sports and dates
+    const allCompetitions: Array<Competition & { sport: Sport }> = [];
     
-    for (const d of dates) {
-      const competitions = await fetchEvents(d);
-      allCompetitions.push(...competitions);
+    for (const sport of sportsToCheck) {
+      const { fetchEvents } = getFetchers(sport);
+      for (const d of dates) {
+        try {
+          const competitions = await fetchEvents(d);
+          allCompetitions.push(...competitions.map(c => ({ ...c, sport })));
+        } catch (err) {
+          // Silently skip if no games for this sport/date
+        }
+      }
     }
 
     if (allCompetitions.length === 0) {
@@ -321,12 +331,13 @@ export async function cmdRecommend(
       return;
     }
 
-    console.log(chalk.gray(`Found ${allCompetitions.length} games across ${days} day(s)\n`));
+    console.log(chalk.gray(`Found ${allCompetitions.length} games across ${sportsToCheck.length} sport(s) and ${days} day(s)\n`));
 
     // First, fetch all odds and save them to database so models can use them
     const db = (await import("../db/index.js")).getDb();
     for (const comp of allCompetitions) {
       try {
+        const { fetchOdds } = getFetchers(comp.sport);
         const oddsEntries = await fetchOdds(comp.eventId);
         
         // Get or create game_id for this event
@@ -358,32 +369,32 @@ export async function cmdRecommend(
 
     // Now compute model predictions (they can access today's odds from database)
     const allLegs: BetLeg[] = [];
-    const eventIdToMatchup = new Map<string, { away: string; home: string }>();
-    let modelProbs: Map<string, number> | undefined;
-    let spreadModelProbs: Map<string, number> | undefined;
-    let totalModelProbs: Map<string, number> | undefined;
+    const eventIdToMatchup = new Map<string, { away: string; home: string; sport: Sport }>();
     
-    // Load model predictions for all dates in range
-    for (const d of dates) {
-      try {
-        const dayModelProbs = await getHomeWinModelProbabilities(sport, d);
-        const daySpreadProbs = await getHomeSpreadCoverProbabilities(sport, d);
-        const dayTotalProbs = await getTotalOverModelProbabilities(sport, d);
-        
-        if (dayModelProbs) {
-          if (!modelProbs) modelProbs = new Map();
-          dayModelProbs.forEach((v, k) => modelProbs!.set(k, v));
+    // Load model predictions for each sport across all dates
+    const modelProbs = new Map<string, number>();
+    const spreadModelProbs = new Map<string, number>();
+    const totalModelProbs = new Map<string, number>();
+    
+    for (const sport of sportsToCheck) {
+      for (const d of dates) {
+        try {
+          const dayModelProbs = await getHomeWinModelProbabilities(sport, d);
+          const daySpreadProbs = await getHomeSpreadCoverProbabilities(sport, d);
+          const dayTotalProbs = await getTotalOverModelProbabilities(sport, d);
+          
+          if (dayModelProbs) {
+            dayModelProbs.forEach((v, k) => modelProbs.set(k, v));
+          }
+          if (daySpreadProbs) {
+            daySpreadProbs.forEach((v, k) => spreadModelProbs.set(k, v));
+          }
+          if (dayTotalProbs) {
+            dayTotalProbs.forEach((v, k) => totalModelProbs.set(k, v));
+          }
+        } catch (err) {
+          // silently ignore model failure for this sport/date
         }
-        if (daySpreadProbs) {
-          if (!spreadModelProbs) spreadModelProbs = new Map();
-          daySpreadProbs.forEach((v, k) => spreadModelProbs!.set(k, v));
-        }
-        if (dayTotalProbs) {
-          if (!totalModelProbs) totalModelProbs = new Map();
-          dayTotalProbs.forEach((v, k) => totalModelProbs!.set(k, v));
-        }
-      } catch (err) {
-        // silently ignore model failure for this date
       }
     }
 
@@ -391,10 +402,12 @@ export async function cmdRecommend(
       // Store matchup info for later display
       eventIdToMatchup.set(comp.eventId, {
         away: comp.awayTeam.abbreviation || comp.awayTeam.name,
-        home: comp.homeTeam.abbreviation || comp.homeTeam.name
+        home: comp.homeTeam.abbreviation || comp.homeTeam.name,
+        sport: comp.sport
       });
       
       try {
+        const { fetchOdds, normalizeOdds } = getFetchers(comp.sport);
         const oddsEntries = await fetchOdds(comp.eventId);
         const legs = normalizeOdds(
           comp.eventId,
@@ -404,55 +417,63 @@ export async function cmdRecommend(
         );
 
         // If model probabilities available, override moneyline implied probabilities
-        if (modelProbs && modelProbs.has(comp.eventId)) {
+        if (modelProbs.has(comp.eventId)) {
           const pHome = modelProbs.get(comp.eventId)!;
           for (const leg of legs) {
             if (leg.market === "moneyline") {
               leg.marketImpliedProbability = leg.impliedProbability; // Save original
               if (leg.team === "home") {
                 leg.impliedProbability = pHome;
-                leg.description = leg.description + " (model)";
+                leg.description = `${leg.description} [${comp.sport.toUpperCase()}] (model)`;
               } else if (leg.team === "away") {
                 leg.impliedProbability = 1 - pHome;
-                leg.description = leg.description + " (model)";
+                leg.description = `${leg.description} [${comp.sport.toUpperCase()}] (model)`;
               }
             }
           }
         }
 
         // If spread model probabilities available, override spread implied probabilities
-        if (spreadModelProbs && spreadModelProbs.has(comp.eventId)) {
+        if (spreadModelProbs.has(comp.eventId)) {
           const pHomeCover = spreadModelProbs.get(comp.eventId)!;
           for (const leg of legs) {
             if (leg.market === "spread") {
               leg.marketImpliedProbability = leg.impliedProbability; // Save original
               if (leg.team === "home") {
                 leg.impliedProbability = pHomeCover;
-                leg.description = leg.description + " (model)";
+                leg.description = `${leg.description} [${comp.sport.toUpperCase()}] (model)`;
               } else if (leg.team === "away") {
                 leg.impliedProbability = 1 - pHomeCover;
-                leg.description = leg.description + " (model)";
+                leg.description = `${leg.description} [${comp.sport.toUpperCase()}] (model)`;
               }
             }
           }
         }
 
         // If total model probabilities available, override total implied probabilities
-        if (totalModelProbs && totalModelProbs.has(comp.eventId)) {
+        if (totalModelProbs.has(comp.eventId)) {
           const pOver = totalModelProbs.get(comp.eventId)!;
           for (const leg of legs) {
             if (leg.market === 'total') {
               leg.marketImpliedProbability = leg.impliedProbability; // Save original
               if (leg.description.startsWith('Over')) {
                 leg.impliedProbability = pOver;
-                leg.description = leg.description + ' (model)';
+                leg.description = `${leg.description} [${comp.sport.toUpperCase()}] (model)`;
               } else if (leg.description.startsWith('Under')) {
                 leg.impliedProbability = 1 - pOver;
-                leg.description = leg.description + ' (model)';
+                leg.description = `${leg.description} [${comp.sport.toUpperCase()}] (model)`;
               }
             }
           }
         }
+        
+        // Add sport tag to legs without model predictions
+        for (const leg of legs) {
+          if (!leg.description.includes('[')) {
+            leg.description = `${leg.description} [${comp.sport.toUpperCase()}]`;
+          }
+        }
+        
         allLegs.push(...legs);
       } catch (error) {
         console.warn(chalk.yellow(`⚠️  Failed to fetch odds for ${comp.eventId}`));
@@ -465,11 +486,11 @@ export async function cmdRecommend(
     }
 
     console.log(chalk.gray(`Found ${allLegs.length} betting opportunities across ${allCompetitions.length} games`));
-    if (modelProbs || spreadModelProbs || totalModelProbs) {
+    if (modelProbs.size > 0 || spreadModelProbs.size > 0 || totalModelProbs.size > 0) {
       const markets: string[] = [];
-      if (modelProbs) markets.push('moneylines');
-      if (spreadModelProbs) markets.push('spreads');
-      if (totalModelProbs) markets.push('totals');
+      if (modelProbs.size > 0) markets.push('moneylines');
+      if (spreadModelProbs.size > 0) markets.push('spreads');
+      if (totalModelProbs.size > 0) markets.push('totals');
       console.log(chalk.green.dim(`Model probabilities applied to ${markets.join(' and ')}`));
     } else {
       console.log(chalk.dim("Using vig-free market probabilities (no model override)"));
