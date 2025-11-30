@@ -226,8 +226,12 @@ export async function cmdBets(
           }
         }
         
+        // Calculate potential profit (payout - stake)
+        const profit = result.payout - stake;
+        const profitDisplay = profit > 0 ? ` | Profit: ${chalk.green("$" + profit.toFixed(2))}` : "";
+        
         console.log(
-          `  ${leg.description} → ${(leg.impliedProbability * 100).toFixed(2)}%${chalk.cyan(modelPrediction)} | EV: ${evColor(evSign + "$" + result.ev.toFixed(2))} (${evColor(evSign + result.roi.toFixed(2) + "%")})`
+          `  ${leg.description} → ${(leg.impliedProbability * 100).toFixed(2)}%${chalk.cyan(modelPrediction)} | EV: ${evColor(evSign + "$" + result.ev.toFixed(2))} (${evColor(evSign + result.roi.toFixed(2) + "%")})${profitDisplay}`
         );
       }
       console.log();
