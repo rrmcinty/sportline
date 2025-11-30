@@ -104,7 +104,22 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
       const marketProb = sigmoid(marketZ);
       
       const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
-      probs.set(r.espn_event_id, ensembleProb);
+      // Clip extreme predictions to prevent overconfidence on outliers
+      const clippedProb = Math.max(0.05, Math.min(0.95, ensembleProb));
+      
+      // For extreme market lines (massive underdogs/favorites), trust market more than model
+      // If market < 10% or > 90%, blend more toward market to prevent overconfidence
+      const marketImplied = features.market[features.market.length - 1]; // Last feature is market implied prob
+      let finalProb = clippedProb;
+      if (marketImplied < 0.15) {
+        // Massive underdog - blend 90% market, 10% model to prevent overconfidence
+        finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
+      } else if (marketImplied > 0.85) {
+        // Massive favorite - blend 90% market, 10% model
+        finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
+      }
+      
+      probs.set(r.espn_event_id, finalProb);
     }
   } else if (baseModel) {
     // Single model fallback
@@ -113,7 +128,23 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
       const x = (baseModel as any).featureNames.length === 9 ? features.base : features.market;
       
       const z = x.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
-      probs.set(r.espn_event_id, sigmoid(z));
+      const rawProb = sigmoid(z);
+      // Clip extreme predictions to prevent overconfidence on outliers
+      const clippedProb = Math.max(0.05, Math.min(0.95, rawProb));
+      
+      // For single model with market feature, apply same extreme line logic
+      if (x.length === 10) { // Has market feature
+        const marketImplied = x[x.length - 1];
+        let finalProb = clippedProb;
+        if (marketImplied < 0.15) {
+          finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
+        } else if (marketImplied > 0.85) {
+          finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
+        }
+        probs.set(r.espn_event_id, finalProb);
+      } else {
+        probs.set(r.espn_event_id, clippedProb);
+      }
     }
   }
   
