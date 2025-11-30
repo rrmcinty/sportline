@@ -2,7 +2,7 @@
 
 **Last Updated:** 2025-11-29  
 **Current Phase:** Phase 3 – Production-Ready Pipeline with Historical Data & Model Predictions  
-**Active Step:** Full season data ingestion, model training, and live prediction display ✅
+**Active Step:** Multi-sport support with cross-sport bet aggregation ✅
 
 ---
 
@@ -118,6 +118,22 @@
   - [x] Generates ready-to-run `bets` commands with correct date parameters
   - [x] Works for both CFB and NCAAM sports
 
+- [x] **Multi-Sport Expansion**
+  - [x] Added NFL support: `src/espn/nfl/events.ts` and `src/espn/nfl/odds.ts`
+  - [x] Added NBA support: `src/espn/nba/events.ts` and `src/espn/nba/odds.ts`
+  - [x] Updated Sport type to include "nfl" | "nba"
+  - [x] Expanded CLI routing (getFetchers, getFetchEvents) for all 4 sports
+  - [x] Tested NFL API: Successfully fetched Giants @ Patriots (12/1/2025)
+  - [x] Tested NBA API: Successfully fetched 9 games (12/1/2025)
+
+- [x] **Cross-Sport Bet Aggregation**
+  - [x] Modified `recommend` command to accept optional `--sport` parameter
+  - [x] When `--sport` omitted, analyzes all sports (ncaam, cfb, nfl, nba)
+  - [x] Aggregates bet legs across all sports before ranking by EV
+  - [x] Adds [SPORT] tags to bet descriptions for clarity (e.g., "[NFL]", "[NBA]")
+  - [x] Maintains backward compatibility with single-sport mode
+  - [x] Shows "ALL SPORTS" in header when analyzing multiple sports
+
 - [x] **Calibration Experiments**
   - [x] Implemented isotonic regression (PAVA algorithm)
   - [x] Tested calibration with various validation set sizes
@@ -165,8 +181,11 @@ Totals Model (Regression):
 - [x] **Feature Normalization (Z-Score)** ❌ **COMPLETED BUT REVERTED** - Improved accuracy (+7.9% moneyline) but destroyed calibration (ECE 3-12x worse). Probabilities unreliable for betting decisions. **Reverted to restore calibration.**
 - [x] **Opponent-Adjusted Stats** ❌ **FAILED** - Degraded performance (72.8% → 55.5% moneyline), adjustment formula too aggressive
 - [x] **Rest Days Analysis** ❌ **NOT PREDICTIVE** - CFB rest differences confounded by scheduling (good teams get Thursday games)
-- [ ] **Increase Regularization** (NEXT) - Try λ=0.5 or λ=1.0 to improve accuracy without breaking calibration
-- [ ] **Simple Interaction Features** - homeWinRate * spreadLine, avgMargin * spreadLine (non-linear relationships)
+- [x] **Increased Regularization** ❌ **NO EFFECT** - Tried λ=0.5, no change in accuracy or calibration (baseline λ=0.1 already optimal)
+- [x] **Interaction Features** ❌ **CATASTROPHIC FAILURE** - Added homeWinRate × spreadLine, awayWinRate × spreadLine, homeMargin × spreadLine, awayMargin × spreadLine. Spread accuracy collapsed from 67.5% to 54.1% (worse than random), ECE exploded from 0.03 to 0.45. Model clustered 231 games at 0-10% probability and 105 at 90-100%, with systematically wrong predictions. **Reverted immediately.**
+- [x] **NFL Support** ✅ **COMPLETED** - Created ESPN API integrations for NFL events and odds
+- [x] **NBA Support** ✅ **COMPLETED** - Created ESPN API integrations for NBA events and odds  
+- [x] **Cross-Sport Aggregation** ✅ **COMPLETED** - Recommend command analyzes all sports when --sport omitted
 - [ ] **Team Strength Tiers** - Categorical features for Elite/Strong/Average/Weak based on rolling performance
 - [ ] **Model-Market Divergence Filtering** - Use --divergence flag to surface only |model - market| > threshold% bets
 - [ ] Clean up debug warnings in bets output (remove "No model prediction" messages when features exist)
@@ -184,62 +203,41 @@ Totals Model (Regression):
 | 2025-11-29 | Opponent Adjustments | 55.5% (-17.3%) | 67.2% (-0.3%) | N/A | FAILED - Reverted due to feature scale mismatch |
 | 2025-11-29 | Feature Normalization | 80.7% (+7.9%) | 72.8% (+5.3%) | 0.2381 (3.5x worse) | REVERTED - High accuracy but poor calibration (probabilities unreliable) |
 | 2025-11-29 | Revert to Pre-Normalized | **72.8%** | **67.5%** | **0.0685** | **CURRENT - Reliable probabilities for betting decisions** |
+| 2025-11-29 | Increased Regularization (λ=0.5) | 72.8% (no change) | 67.5% (no change) | 0.0685 (no change) | No effect - baseline λ=0.1 already optimal |
+| 2025-11-29 | Interaction Features | 71.7% (-1.1%) | 54.1% (-13.4%) | 0.18 (2.6x worse) | CATASTROPHIC - Spread ECE exploded to 0.45, reverted immediately |
+| 2025-11-29 | Post-Revert Verification | **72.8%** | **67.5%** | **0.0685** | **Baseline fully restored** |
 
 **Key Lesson:** For betting applications, **calibration matters more than accuracy**. A 72.8% model with ECE 0.07 (reliable probabilities) is better than an 80.7% model with ECE 0.24 (overconfident predictions). Feature normalization improved classification but made the model think it knew more than it did, leading to false confidence in probability estimates.
 
+**Second Key Lesson:** Simple 9-11 feature models with strong regularization (λ=0.1) beat complex feature engineering for sparse sports betting data. Interaction features attempted to capture non-linear relationships (e.g., how win rate affects spread covering) but with only 833 training samples, the model catastrophically overfitted - clustering predictions at extremes (0-10% and 90-100%) while being systematically wrong.
+
 ### 🔮 Future Enhancements
 - [ ] Better output formatting (tables)
-## Current Model Results Example (After Data Filtering)
+- [ ] Multi-day aggregation (e.g., all games this week)
+- [ ] Correlation modeling for same-game parlays
+- [ ] Player/team props integration
+- [ ] Historical performance tracking and ROI analysis
 
-```
-🎯 Bets for North Carolina Tar Heels @ NC State Wolfpack (stake $10.00)
-
-Moneylines
-  NCSU ML -270 → 70.02% [Model: 69.5%] | EV: $-0.41 (-4.05%)
-  UNC ML +220 → 29.98% [Model: 30.5%] | EV: $-0.41 (-4.05%)
-
-Spreads
-  NCSU +7.5 (+105) → 46.75% [Model: 33.4%] | EV: $-0.42 (-4.16%)
-  UNC -7.5 (-125) → 53.25% [Model: 66.6%] | EV: $-0.42 (-4.16%)
-
-Totals
-  Over 49.5 (-105) → 48.92% [Model: 55.4%] | EV: $-0.45 (-4.50%)
-  Under 49.5 (-115) → 51.08% [Model: 44.6%] | EV: $-0.45 (-4.50%)
-```
-
-**Key Insight:** After filtering out games with insufficient team data (<5 completed games), model predictions are now well-calibrated and reasonable. UNC vs NC State shows excellent moneyline calibration (69.5% model vs 70.0% market) and confident but realistic spread prediction (66.6% for UNC -7.5, down from previous 99% extreme). All predictions now fall within sensible ranges (<70% confidence).
-
-**Data Quality Impact:** 
-- **Before filtering:** Extreme predictions (95-99%) on FCS vs FBS matchups due to zero-valued features
 ## Notes
-- **Working:** ESPN Core API for NCAAM & CFB events/odds/scores with real game status parsing
-- **Tested:** Model predictions displaying correctly across all three markets with data quality filtering
+- **Working:** ESPN Core API for NCAAM, CFB, NFL, and NBA events/odds/scores with real game status parsing
+- **Sports:** Full support for 4 sports - NCAAM (college basketball), CFB (college football), NFL (pro football), NBA (pro basketball)
+- **Cross-Sport:** `recommend` command aggregates best bets across all sports when --sport omitted
+- **Tested:** NFL API (Giants @ Patriots 12/1/2025), NBA API (9 games 12/1/2025), model predictions across all markets
 - **Data:** 1810 CFB games (1750 completed), 78 NCAAM completed games ingested; 1,241 CFB games used for training after filtering
 - **Data Quality:** Games excluded when either team has <5 completed games (prevents unreliable rolling-5 features)
 - **Model:** Ensemble moneyline (70% base + 30% market-aware), spread logistic regression with clipping, totals regression
 - **Validation:** Temporal split ensures model predicts future games accurately (split at 2025-10-11 for CFB)
 - **Cache:** 5-minute TTL for live games, 1-hour for completed
 - **EV Accuracy:** Vig removal + model probabilities = true expected value
-- **Display:** Market probabilities → model predictions [in brackets] | EV calculations
+- **Display:** Market probabilities → model predictions [in brackets] | EV calculations with [SPORT] tags for multi-sport views
 - **Search:** Team-based game finder with fuzzy matching for easy discovery
 - **Data Flow:** Daily incremental ingest → feature computation → model training → predictions
 - **Timezone:** Fixed UTC rollover handling for games spanning midnight (e.g., 7:30 PM ET = 00:30 UTC next day)
 - **Performance:** Memory-optimized parlay generation (top 50 legs by EV, prevents 66M+ combination overflow)
 - **Edge Cases:** FCS teams and early-season games automatically excluded from predictions when insufficient historical data
 
-**Key Insight:** Model predictions now display alongside market probabilities in brackets. UNC vs NC State example shows model strongly favors UNC to cover the 7.5-point spread (99.0% vs market's 53.3%), suggesting potential value. All three markets (moneyline, spread, totals) provide independent model assessments.
-**Additional Spread Insight:** Cover probabilities cluster near 35–45% for many favorites; variance increases with larger absolute lines. Opportunity: highlight lines where model cover probability diverges >5% from vig-free implied.
-**Totals Model Insight:** Replaced miscalibrated classification (saturated ~99–100% Over probabilities) with regression-based expected total approach. Added pace/efficiency features (rolling combined score, points scored/allowed proxies) and MAD-based robust variance estimation. Current metrics: Brier 0.2900, Log Loss 0.7958, ECE 0.1666 (well-calibrated). Probabilities occupy realistic range (10–90%) with good discrimination. Further gains possible from recency weighting and advanced efficiency metrics (points per possession when available).
-
-## Notes
-- **Working:** ESPN Core API for NCAAM & CFB events/odds/scores
-- **Tested:** Model predictions displaying correctly across all three markets
-- **Data:** 1810 CFB games (1750 completed), 78 NCAAM completed games ingested
-- **Model:** Ensemble moneyline (70% base + 30% market-aware), spread logistic regression, totals regression
-- **Validation:** Temporal split ensures model predicts future games accurately
-- **Cache:** 5-minute TTL for live games, 1-hour for completed
-- **EV Accuracy:** Vig removal + model probabilities = true expected value
-- **Display:** Market probabilities → model predictions [in brackets] | EV calculations
-- **Search:** Team-based game finder with fuzzy matching for easy discovery
-- **Data Flow:** Daily incremental ingest → feature computation → model training → predictions
-- **Timezone:** Fixed UTC rollover handling for games spanning midnight (e.g., 7:30 PM ET = 00:30 UTC next day)
+**Model Insights:**
+- **Moneyline Calibration:** Model predictions closely track market probabilities (e.g., 69.5% model vs 70.0% market on favorites), indicating reliable probability estimates
+- **Spread Predictions:** Model shows confident but realistic predictions (typically 60-70% range), avoiding the previous 95-99% extremes seen before data quality filtering
+- **Totals Model:** Regression-based approach replaced miscalibrated classification. Current metrics: Brier 0.2900, Log Loss 0.7958, ECE 0.1666. Probabilities occupy realistic 10-90% range with good discrimination
+- **Value Detection:** Cover probabilities cluster near 35-45% for many favorites; divergence >5% from market suggests potential betting opportunities
