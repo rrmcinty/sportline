@@ -5,6 +5,7 @@
 
 import { getDb } from "../db/index.js";
 import { getHomeWinModelProbabilities } from "./apply.js";
+import { computeFeatures } from "./features.js";
 import type { Sport } from "../models/types.js";
 
 interface BacktestResult {
@@ -20,20 +21,21 @@ interface BacktestResult {
  * Backtest moneyline model predictions
  * Groups predictions into bins and checks if actual win rates match predicted rates
  */
-export async function backtestMoneyline(sport: Sport, season: number): Promise<void> {
+export async function backtestMoneyline(sport: Sport, seasons: number[]): Promise<void> {
   const db = getDb();
   
-  // Get all completed games with odds for this season
+  // Get all completed games with odds for these seasons
+  const seasonPlaceholders = seasons.map(() => '?').join(',');
   const games = db.prepare(`
     SELECT g.id, g.espn_event_id, g.date, g.home_score, g.away_score,
            g.home_team_id, g.away_team_id
     FROM games g
     WHERE g.sport = ? 
-      AND g.season = ?
+      AND g.season IN (${seasonPlaceholders})
       AND g.home_score IS NOT NULL 
       AND g.away_score IS NOT NULL
     ORDER BY g.date
-  `).all(sport, season) as Array<{
+  `).all(sport, ...seasons) as Array<{
     id: number;
     espn_event_id: string;
     date: string;
@@ -43,7 +45,13 @@ export async function backtestMoneyline(sport: Sport, season: number): Promise<v
     away_team_id: number;
   }>;
 
-  console.log(`\n📊 MONEYLINE MODEL BACKTEST - ${sport.toUpperCase()} ${season}`);
+  if (games.length === 0) {
+    console.log(`\n⚠️  No completed games found for ${sport.toUpperCase()} season${seasons.length > 1 ? 's' : ''} ${seasons.join(', ')}`);
+    console.log(`Skipping backtest for this sport.\n`);
+    return;
+  }
+
+  console.log(`\n📊 MONEYLINE MODEL BACKTEST - ${sport.toUpperCase()} ${seasons.join(', ')}`);
   console.log(`Testing ${games.length} completed games\n`);
 
   // Get model predictions for each date
@@ -270,6 +278,135 @@ export async function backtestMoneyline(sport: Sport, season: number): Promise<v
     console.log(`  Profit if bet model's picks: ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)}`);
     console.log(`  ROI: ${modelFavored > 0 ? ((profit / (modelFavored * 10)) * 100).toFixed(1) : '0.0'}%`);
   }
+
+  console.log("\n═══════════════════════════════════════════════════════════════════════\n");
+
+  // FEATURE ANALYSIS: What stats correlate with profitable predictions?
+  console.log("═══════════════════════════════════════════════════════════════════════");
+  console.log("FEATURE ANALYSIS: Winners vs Losers");
+  console.log("═══════════════════════════════════════════════════════════════════════\n");
+
+  // Compute features for all games
+  const allFeatures = computeFeatures(db, sport, seasons);
+  const featureMap = new Map(allFeatures.map(f => [f.gameId, f]));
+
+  // Match games with features
+  const gamesWithFeatures = results
+    .map(r => {
+      const game = games.find(g => g.espn_event_id === r.eventId);
+      if (!game) return null;
+      const features = featureMap.get(game.id);
+      if (!features) return null;
+      
+      // Determine if this was a profitable bet
+      const betOnHome = r.modelProb > 0.5;
+      const won = betOnHome ? r.homeWon : !r.homeWon;
+      const odds = betOnHome ? r.homeOdds : r.awayOdds;
+      const payout = odds < 0 ? (100 / Math.abs(odds)) + 1 : (odds / 100) + 1;
+      const profit = won ? (payout - 1) * 10 : -10;
+      
+      return {
+        ...r,
+        features,
+        betOnHome,
+        won,
+        profit,
+        divergence: Math.abs(r.modelProb - r.marketProb)
+      };
+    })
+    .filter(g => g !== null);
+
+  if (gamesWithFeatures.length === 0) {
+    console.log("⚠️  No games with features available for analysis\n");
+    return;
+  }
+
+  // Split into winners and losers
+  const winners = gamesWithFeatures.filter(g => g.profit > 0);
+  const losers = gamesWithFeatures.filter(g => g.profit < 0);
+
+  console.log(`Analyzing ${winners.length} profitable bets vs ${losers.length} losing bets\n`);
+
+  // Key stats to analyze
+  const statsToAnalyze = [
+    { name: "Win Rate 5-game (Home)", getHome: (f: any) => f.homeWinRate5, getAway: (f: any) => f.awayWinRate5 },
+    { name: "Win Rate 10-game (Home)", getHome: (f: any) => f.homeWinRate10, getAway: (f: any) => f.awayWinRate10 },
+    { name: "Avg Margin 5-game (Home)", getHome: (f: any) => f.homeAvgMargin5, getAway: (f: any) => f.awayAvgMargin5 },
+    { name: "Avg Margin 10-game (Home)", getHome: (f: any) => f.homeAvgMargin10, getAway: (f: any) => f.awayAvgMargin10 },
+    { name: "Opp Win Rate 5-game (SoS)", getHome: (f: any) => f.homeOppWinRate5, getAway: (f: any) => f.awayOppWinRate5 },
+    { name: "Opp Win Rate 10-game (SoS)", getHome: (f: any) => f.homeOppWinRate10, getAway: (f: any) => f.awayOppWinRate10 },
+    { name: "Opp Margin 5-game (SoS Quality)", getHome: (f: any) => f.homeOppAvgMargin5, getAway: (f: any) => f.awayOppAvgMargin5 },
+    { name: "Opp Margin 10-game (SoS Quality)", getHome: (f: any) => f.homeOppAvgMargin10, getAway: (f: any) => f.awayOppAvgMargin10 },
+    { name: "Points Scored 5-game", getHome: (f: any) => f.homePointsAvg5, getAway: (f: any) => f.awayPointsAvg5 },
+    { name: "Points Scored 10-game", getHome: (f: any) => f.homePointsAvg10, getAway: (f: any) => f.awayPointsAvg10 },
+    { name: "Points Allowed 5-game (Defense)", getHome: (f: any) => f.homeDefEff5, getAway: (f: any) => f.awayDefEff5 },
+    { name: "Points Allowed 10-game (Defense)", getHome: (f: any) => f.homeDefEff10, getAway: (f: any) => f.awayDefEff10 },
+    { name: "Pace 5-game (Tempo)", getHome: (f: any) => f.homePace5, getAway: (f: any) => f.awayPace5 },
+    { name: "Pace 10-game (Tempo)", getHome: (f: any) => f.homePace10, getAway: (f: any) => f.awayPace10 },
+    { name: "Model-Market Divergence", getHome: (f: any, g: any) => g.divergence, getAway: (f: any, g: any) => g.divergence }
+  ];
+
+  console.log("Average Feature Values (Team Bet On):");
+  console.log("─".repeat(95));
+  console.log("Feature".padEnd(40) + "Winners".padEnd(15) + "Losers".padEnd(15) + "Difference".padEnd(15) + "Edge");
+  console.log("─".repeat(95));
+
+  for (const stat of statsToAnalyze) {
+    const winnerValues = winners.map(g => {
+      const val = g.betOnHome ? stat.getHome(g.features, g) : stat.getAway(g.features, g);
+      return val !== undefined ? val : 0;
+    });
+    const loserValues = losers.map(g => {
+      const val = g.betOnHome ? stat.getHome(g.features, g) : stat.getAway(g.features, g);
+      return val !== undefined ? val : 0;
+    });
+
+    const winnerAvg = winnerValues.reduce((a, b) => a + b, 0) / winnerValues.length;
+    const loserAvg = loserValues.reduce((a, b) => a + b, 0) / loserValues.length;
+    const diff = winnerAvg - loserAvg;
+    const edge = diff > 0 ? "✓ Winners higher" : diff < 0 ? "✗ Losers higher" : "= Equal";
+
+    console.log(
+      stat.name.padEnd(40) +
+      winnerAvg.toFixed(3).padEnd(15) +
+      loserAvg.toFixed(3).padEnd(15) +
+      (diff >= 0 ? '+' : '') + diff.toFixed(3).padEnd(15) +
+      edge
+    );
+  }
+
+  console.log("─".repeat(95));
+  console.log("\n💡 Key Insights:");
+  
+  // Find biggest differentiators
+  const diffs = statsToAnalyze.map(stat => {
+    const winnerValues = winners.map(g => {
+      const val = g.betOnHome ? stat.getHome(g.features, g) : stat.getAway(g.features, g);
+      return val !== undefined ? val : 0;
+    });
+    const loserValues = losers.map(g => {
+      const val = g.betOnHome ? stat.getHome(g.features, g) : stat.getAway(g.features, g);
+      return val !== undefined ? val : 0;
+    });
+    const winnerAvg = winnerValues.reduce((a, b) => a + b, 0) / winnerValues.length;
+    const loserAvg = loserValues.reduce((a, b) => a + b, 0) / loserValues.length;
+    return { name: stat.name, diff: Math.abs(winnerAvg - loserAvg), direction: winnerAvg > loserAvg ? 'higher' : 'lower' };
+  }).sort((a, b) => b.diff - a.diff);
+
+  console.log(`   Top 3 predictive features (by difference):`);
+  for (let i = 0; i < Math.min(3, diffs.length); i++) {
+    console.log(`   ${i + 1}. ${diffs[i].name} (winners ${diffs[i].direction} by ${diffs[i].diff.toFixed(3)})`);
+  }
+
+  // Analyze high-confidence vs low-confidence bets
+  const highConfidence = gamesWithFeatures.filter(g => Math.abs(g.modelProb - 0.5) > 0.2);
+  const lowConfidence = gamesWithFeatures.filter(g => Math.abs(g.modelProb - 0.5) <= 0.2);
+  
+  const highConfWinRate = highConfidence.filter(g => g.won).length / highConfidence.length;
+  const lowConfWinRate = lowConfidence.filter(g => g.won).length / lowConfidence.length;
+  
+  console.log(`\n   High-confidence bets (>70% or <30%): ${(highConfWinRate * 100).toFixed(1)}% win rate (${highConfidence.length} bets)`);
+  console.log(`   Low-confidence bets (40-60%): ${(lowConfWinRate * 100).toFixed(1)}% win rate (${lowConfidence.length} bets)`);
 
   console.log("\n═══════════════════════════════════════════════════════════════════════\n");
 }

@@ -31,6 +31,25 @@ export interface GameFeatures {
   awayOffEff5: number; // Rolling avg points scored (offensive efficiency proxy)
   homeDefEff5: number; // Rolling avg points allowed (defensive efficiency proxy)
   awayDefEff5: number; // Rolling avg points allowed (defensive efficiency proxy)
+  // 10-game window features for better stability
+  homeWinRate10: number;
+  awayWinRate10: number;
+  homeAvgMargin10: number;
+  awayAvgMargin10: number;
+  homeOppWinRate10: number;
+  awayOppWinRate10: number;
+  homeOppAvgMargin10: number;
+  awayOppAvgMargin10: number;
+  homePointsAvg10: number;
+  awayPointsAvg10: number;
+  homeOppPointsAvg10: number;
+  awayOppPointsAvg10: number;
+  homePace10: number;
+  awayPace10: number;
+  homeOffEff10: number;
+  awayOffEff10: number;
+  homeDefEff10: number;
+  awayDefEff10: number;
 }
 
 /**
@@ -127,7 +146,7 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     const homeHistory = teamHistory.get(game.home_team_id) || [];
     const awayHistory = teamHistory.get(game.away_team_id) || [];
 
-    // Compute rolling features
+    // Compute rolling features (5-game window)
     const homeWinRate5 = computeWinRate(homeHistory, 5);
     const awayWinRate5 = computeWinRate(awayHistory, 5);
     const homeAvgMargin5 = computeAvgMargin(homeHistory, 5);
@@ -143,11 +162,33 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     const homeDefEff5 = computeAvgPointsAgainst(homeHistory, 5);
     const awayDefEff5 = computeAvgPointsAgainst(awayHistory, 5);
 
-    // Compute SoS: average opponent stats
+    // Compute SoS: average opponent stats (5-game)
     const homeOppWinRate5 = computeOpponentAvgWinRate(homeHistory, teamHistory, 5);
     const awayOppWinRate5 = computeOpponentAvgWinRate(awayHistory, teamHistory, 5);
     const homeOppAvgMargin5 = computeOpponentAvgMargin(homeHistory, teamHistory, 5);
     const awayOppAvgMargin5 = computeOpponentAvgMargin(awayHistory, teamHistory, 5);
+
+    // Compute rolling features (10-game window)
+    const homeWinRate10 = computeWinRate(homeHistory, 10);
+    const awayWinRate10 = computeWinRate(awayHistory, 10);
+    const homeAvgMargin10 = computeAvgMargin(homeHistory, 10);
+    const awayAvgMargin10 = computeAvgMargin(awayHistory, 10);
+    const homePointsAvg10 = computeAvgPointsFor(homeHistory, 10);
+    const awayPointsAvg10 = computeAvgPointsFor(awayHistory, 10);
+    const homeOppPointsAvg10 = computeOpponentAvgPoints(homeHistory, teamHistory, 10);
+    const awayOppPointsAvg10 = computeOpponentAvgPoints(awayHistory, teamHistory, 10);
+    const homePace10 = computeAvgCombined(homeHistory, 10);
+    const awayPace10 = computeAvgCombined(awayHistory, 10);
+    const homeOffEff10 = homePointsAvg10;
+    const awayOffEff10 = awayPointsAvg10;
+    const homeDefEff10 = computeAvgPointsAgainst(homeHistory, 10);
+    const awayDefEff10 = computeAvgPointsAgainst(awayHistory, 10);
+
+    // Compute SoS: average opponent stats (10-game)
+    const homeOppWinRate10 = computeOpponentAvgWinRate(homeHistory, teamHistory, 10);
+    const awayOppWinRate10 = computeOpponentAvgWinRate(awayHistory, teamHistory, 10);
+    const homeOppAvgMargin10 = computeOpponentAvgMargin(homeHistory, teamHistory, 10);
+    const awayOppAvgMargin10 = computeOpponentAvgMargin(awayHistory, teamHistory, 10);
 
     // Compute market implied probability (vig-free) for moneyline
     let marketImpliedProb = 0.5;  // Default to 50/50 if no odds
@@ -185,7 +226,7 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     }
 
     // Only include games where both teams have at least 5 completed games
-    // This ensures rolling-5 features are based on sufficient data
+    // This ensures rolling features are based on sufficient data
     if (homeHistory.length >= 5 && awayHistory.length >= 5) {
       features.push({
         gameId: game.id,
@@ -213,7 +254,25 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
         homeOffEff5,
         awayOffEff5,
         homeDefEff5,
-        awayDefEff5
+        awayDefEff5,
+        homeWinRate10,
+        awayWinRate10,
+        homeAvgMargin10,
+        awayAvgMargin10,
+        homeOppWinRate10,
+        awayOppWinRate10,
+        homeOppAvgMargin10,
+        awayOppAvgMargin10,
+        homePointsAvg10,
+        awayPointsAvg10,
+        homeOppPointsAvg10,
+        awayOppPointsAvg10,
+        homePace10,
+        awayPace10,
+        homeOffEff10,
+        awayOffEff10,
+        homeDefEff10,
+        awayDefEff10
       });
     }
 
@@ -253,8 +312,10 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
 /**
  * Exponential decay weights for recency bias (oldest to most recent)
  * For 5-game window: [0.08, 0.12, 0.20, 0.25, 0.35]
+ * For 10-game window: weights decay exponentially with more emphasis on recent games
  */
-const RECENCY_WEIGHTS = [0.08, 0.12, 0.20, 0.25, 0.35];
+const RECENCY_WEIGHTS_5 = [0.08, 0.12, 0.20, 0.25, 0.35];
+const RECENCY_WEIGHTS_10 = [0.03, 0.04, 0.05, 0.06, 0.07, 0.09, 0.11, 0.14, 0.18, 0.23];
 
 /**
  * Compute win rate over last N games with exponential recency weighting
@@ -263,12 +324,13 @@ function computeWinRate(history: Array<{ won: boolean }>, window: number): numbe
   if (history.length === 0) return 0.5;  // Neutral prior
   const recent = history.slice(-window);
   
-  // Use recency weights if window matches, otherwise uniform
-  if (recent.length === RECENCY_WEIGHTS.length) {
+  // Use recency weights if window matches
+  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
     for (let i = 0; i < recent.length; i++) {
-      const weight = RECENCY_WEIGHTS[i];
+      const weight = weights[i];
       weightedSum += (recent[i].won ? 1 : 0) * weight;
       totalWeight += weight;
     }
@@ -287,12 +349,13 @@ function computeAvgMargin(history: Array<{ margin: number }>, window: number): n
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
   
-  // Use recency weights if window matches, otherwise uniform
-  if (recent.length === RECENCY_WEIGHTS.length) {
+  // Use recency weights if window matches
+  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
     for (let i = 0; i < recent.length; i++) {
-      const weight = RECENCY_WEIGHTS[i];
+      const weight = weights[i];
       weightedSum += recent[i].margin * weight;
       totalWeight += weight;
     }
@@ -308,12 +371,13 @@ function computeAvgPointsFor(history: Array<{ pointsFor: number }>, window: numb
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
   
-  // Use recency weights if window matches, otherwise uniform
-  if (recent.length === RECENCY_WEIGHTS.length) {
+  // Use recency weights if window matches
+  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
     for (let i = 0; i < recent.length; i++) {
-      const weight = RECENCY_WEIGHTS[i];
+      const weight = weights[i];
       weightedSum += recent[i].pointsFor * weight;
       totalWeight += weight;
     }
@@ -328,12 +392,13 @@ function computeAvgPointsAgainst(history: Array<{ pointsAgainst: number }>, wind
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
   
-  // Use recency weights if window matches, otherwise uniform
-  if (recent.length === RECENCY_WEIGHTS.length) {
+  // Use recency weights if window matches
+  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
     for (let i = 0; i < recent.length; i++) {
-      const weight = RECENCY_WEIGHTS[i];
+      const weight = weights[i];
       weightedSum += recent[i].pointsAgainst * weight;
       totalWeight += weight;
     }
@@ -348,12 +413,13 @@ function computeAvgCombined(history: Array<{ combined: number }>, window: number
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
   
-  // Use recency weights if window matches, otherwise uniform
-  if (recent.length === RECENCY_WEIGHTS.length) {
+  // Use recency weights if window matches
+  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
     for (let i = 0; i < recent.length; i++) {
-      const weight = RECENCY_WEIGHTS[i];
+      const weight = weights[i];
       weightedSum += recent[i].combined * weight;
       totalWeight += weight;
     }

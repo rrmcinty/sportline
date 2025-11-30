@@ -1,0 +1,52 @@
+{
+  "market": "spread",
+  "weights": [
+    -0.00026729577307858885,
+    0.020813078209814755,
+    0.0031083947337548733,
+    -0.08526494786877556,
+    0.04225593433588547,
+    0.03342211064131954,
+    -0.010412562938012068,
+    -0.0735900812492107,
+    -0.04683402967948068,
+    0.03834629315514436,
+    0.02250003855383294,
+    0.0026951516641032713,
+    0.0823676264496836,
+    0.01553364153240255,
+    0.013156196890433621,
+    0.022015054907035907,
+    0.00009960503333215856,
+    -0.017460261549660825,
+    0.024108933547726905
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "homeWinRate10",
+    "awayWinRate10",
+    "homeAvgMargin10",
+    "awayAvgMargin10",
+    "homeOppWinRate10",
+    "awayOppWinRate10",
+    "homeOppAvgMargin10",
+    "awayOppAvgMargin10",
+    "spreadLine",
+    "spreadMarketImpliedProb"
+  ],
+  "sport": "nba",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trainedAt": "2025-11-30T22:29:06.364Z",
+  "calibration": null
+}

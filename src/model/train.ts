@@ -149,7 +149,7 @@ async function trainMoneylineModel(
     for (const gf of gameFeatures) {
       const outcome = gameOutcomes.get(gf.gameId);
       if (outcome !== undefined) {
-        // Base features (no market)
+        // Base features (no market) - both 5-game and 10-game windows
         const baseFeat = [
           gf.homeWinRate5,
           gf.awayWinRate5,
@@ -159,7 +159,15 @@ async function trainMoneylineModel(
           gf.homeOppWinRate5,
           gf.awayOppWinRate5,
           gf.homeOppAvgMargin5,
-          gf.awayOppAvgMargin5
+          gf.awayOppAvgMargin5,
+          gf.homeWinRate10,
+          gf.awayWinRate10,
+          gf.homeAvgMargin10,
+          gf.awayAvgMargin10,
+          gf.homeOppWinRate10,
+          gf.awayOppWinRate10,
+          gf.homeOppAvgMargin10,
+          gf.awayOppAvgMargin10
         ];
         baseData.features.push(baseFeat);
         baseData.labels.push(outcome);
@@ -295,7 +303,7 @@ async function trainMoneylineModel(
     const baseModel = {
       type: 'base',
       weights: baseWeights,
-      featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5"],
+      featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "homeWinRate10", "awayWinRate10", "homeAvgMargin10", "awayAvgMargin10", "homeOppWinRate10", "awayOppWinRate10", "homeOppAvgMargin10", "awayOppAvgMargin10"],
       sport,
       seasons,
       trainedAt: new Date().toISOString()
@@ -306,7 +314,7 @@ async function trainMoneylineModel(
     const marketModel = {
       type: 'market-aware',
       weights: marketWeights,
-      featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "marketImpliedProb"],
+      featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "homeWinRate10", "awayWinRate10", "homeAvgMargin10", "awayAvgMargin10", "homeOppWinRate10", "awayOppWinRate10", "homeOppAvgMargin10", "awayOppAvgMargin10", "marketImpliedProb"],
       sport,
       seasons,
       trainedAt: new Date().toISOString()
@@ -418,6 +426,14 @@ async function trainSpreadModel(
         gf.awayOppWinRate5,
         gf.homeOppAvgMargin5,
         gf.awayOppAvgMargin5,
+        gf.homeWinRate10,
+        gf.awayWinRate10,
+        gf.homeAvgMargin10,
+        gf.awayAvgMargin10,
+        gf.homeOppWinRate10,
+        gf.awayOppWinRate10,
+        gf.homeOppAvgMargin10,
+        gf.awayOppAvgMargin10,
         gf.spreadLine,  // Spread line as feature
         gf.spreadMarketImpliedProb  // Market probability for spread
       ]);
@@ -545,7 +561,7 @@ async function trainSpreadModel(
   const model = {
     market: 'spread',
     weights,
-    featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "spreadLine", "spreadMarketImpliedProb"],
+    featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "homeWinRate10", "awayWinRate10", "homeAvgMargin10", "awayAvgMargin10", "homeOppWinRate10", "awayOppWinRate10", "homeOppAvgMargin10", "awayOppAvgMargin10", "spreadLine", "spreadMarketImpliedProb"],
     sport,
     seasons,
     trainedAt: new Date().toISOString(),
@@ -626,7 +642,7 @@ async function trainTotalRegressionModel(
     const line = totalLineMap.get(gf.gameId);
     const combined = combinedScoreMap.get(gf.gameId);
     if (line !== undefined && combined !== undefined) {
-      // Feature set excluding market leakage: keep performance stats + pace/efficiency
+      // Feature set excluding market leakage: keep performance stats + pace/efficiency (both 5 and 10 game windows)
       const feat = [
         gf.homePointsAvg5,
         gf.awayPointsAvg5,
@@ -645,7 +661,25 @@ async function trainTotalRegressionModel(
         gf.homeOffEff5,
         gf.awayOffEff5,
         gf.homeDefEff5,
-        gf.awayDefEff5
+        gf.awayDefEff5,
+        gf.homePointsAvg10,
+        gf.awayPointsAvg10,
+        gf.homeOppPointsAvg10,
+        gf.awayOppPointsAvg10,
+        gf.homeWinRate10,
+        gf.awayWinRate10,
+        gf.homeAvgMargin10,
+        gf.awayAvgMargin10,
+        gf.homeOppAvgMargin10,
+        gf.awayOppAvgMargin10,
+        gf.homeOppWinRate10,
+        gf.awayOppWinRate10,
+        gf.homePace10,
+        gf.awayPace10,
+        gf.homeOffEff10,
+        gf.awayOffEff10,
+        gf.homeDefEff10,
+        gf.awayDefEff10
       ];
       rows.push({ features: feat, y: combined, date: gf.date, line, overLabel: combined > line ? 1 : 0 });
     }
@@ -777,7 +811,7 @@ async function trainTotalRegressionModel(
     means,
     stds,
     sigma,
-    featureNames: ['homePointsAvg5','awayPointsAvg5','homeOppPointsAvg5','awayOppPointsAvg5','homeWinRate5','awayWinRate5','homeAvgMargin5','awayAvgMargin5','homeOppAvgMargin5','awayOppAvgMargin5','homeOppWinRate5','awayOppWinRate5','homePace5','awayPace5','homeOffEff5','awayOffEff5','homeDefEff5','awayDefEff5'],
+    featureNames: ['homePointsAvg5','awayPointsAvg5','homeOppPointsAvg5','awayOppPointsAvg5','homeWinRate5','awayWinRate5','homeAvgMargin5','awayAvgMargin5','homeOppAvgMargin5','awayOppAvgMargin5','homeOppWinRate5','awayOppWinRate5','homePace5','awayPace5','homeOffEff5','awayOffEff5','homeDefEff5','awayDefEff5','homePointsAvg10','awayPointsAvg10','homeOppPointsAvg10','awayOppPointsAvg10','homeWinRate10','awayWinRate10','homeAvgMargin10','awayAvgMargin10','homeOppAvgMargin10','awayOppAvgMargin10','homeOppWinRate10','awayOppWinRate10','homePace10','awayPace10','homeOffEff10','awayOffEff10','homeDefEff10','awayDefEff10'],
     sport,
     seasons,
     trainedAt: new Date().toISOString()

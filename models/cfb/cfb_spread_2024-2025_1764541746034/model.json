@@ -1,0 +1,52 @@
+{
+  "market": "spread",
+  "weights": [
+    -0.12466028610176517,
+    -0.1059462468948016,
+    0.015533175241603124,
+    -0.004620973401691357,
+    -0.24640802403536388,
+    -0.12587907421921898,
+    -0.12202484131298037,
+    0.032542693136130604,
+    0.022646252689500157,
+    -0.11849124036915996,
+    -0.10965185065565121,
+    -0.008908063075578534,
+    0.011114640737453836,
+    -0.11646083022007413,
+    -0.11027919881596089,
+    -0.04282409029989299,
+    -0.003710174167426221,
+    0.012097717374391186,
+    0.2854770123173526
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "homeWinRate10",
+    "awayWinRate10",
+    "homeAvgMargin10",
+    "awayAvgMargin10",
+    "homeOppWinRate10",
+    "awayOppWinRate10",
+    "homeOppAvgMargin10",
+    "awayOppAvgMargin10",
+    "spreadLine",
+    "spreadMarketImpliedProb"
+  ],
+  "sport": "cfb",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trainedAt": "2025-11-30T22:29:06.035Z",
+  "calibration": null
+}

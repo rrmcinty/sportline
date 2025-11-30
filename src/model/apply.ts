@@ -76,7 +76,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   const featureMap = new Map<number, { base: number[]; market: number[] }>();
   
   for (const f of allFeatures) {
-    const baseFeatures = [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5];
+    const baseFeatures = [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.homeWinRate10, f.awayWinRate10, f.homeAvgMargin10, f.awayAvgMargin10, f.homeOppWinRate10, f.awayOppWinRate10, f.homeOppAvgMargin10, f.awayOppAvgMargin10];
     const marketFeatures = [...baseFeatures, f.marketImpliedProb];
     featureMap.set(f.gameId, { base: baseFeatures, market: marketFeatures });
   }
@@ -191,7 +191,7 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
   for (const f of allFeatures) {
     // Only include if spread data is available
     if (f.spreadLine !== null && f.spreadMarketImpliedProb !== null) {
-      featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.spreadLine, f.spreadMarketImpliedProb]);
+      featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.homeWinRate10, f.awayWinRate10, f.homeAvgMargin10, f.awayAvgMargin10, f.homeOppWinRate10, f.awayOppWinRate10, f.homeOppAvgMargin10, f.awayOppAvgMargin10, f.spreadLine, f.spreadMarketImpliedProb]);
     }
   }
 

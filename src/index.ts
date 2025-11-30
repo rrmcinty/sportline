@@ -171,12 +171,13 @@ model
 model
   .command("backtest")
   .description("Backtest model predictions against actual outcomes")
-  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
-  .requiredOption("--season <year>", "Season year (e.g., 2025)")
+  .option("--sport <sport>", "Sport (ncaam|cfb|nfl|nba)", "ncaam")
+  .requiredOption("--season <years>", "Season year(s) (e.g., 2025 or 2024,2025)")
   .action(async (options) => {
     const sport: Sport = options.sport;
+    const seasons = options.season.split(",").map((s: string) => parseInt(s.trim()));
     const { backtestMoneyline } = await import("./model/backtest.js");
-    await backtestMoneyline(sport, parseInt(options.season));
+    await backtestMoneyline(sport, seasons);
   });
 
 program.parse();

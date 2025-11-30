@@ -1,0 +1,49 @@
+{
+  "type": "market-aware",
+  "weights": [
+    -0.0184132006174159,
+    0.058833619881657265,
+    0.06601833685653771,
+    -0.08276041272775507,
+    0.08477242431233424,
+    0.08783891587018107,
+    0.014867307767303304,
+    0.04693073556040212,
+    -0.035051155263535756,
+    0.022688452735324473,
+    0.05268902995826463,
+    0.043102164743442174,
+    0.04407132284477752,
+    0.06507992716130749,
+    0.05014818660815888,
+    -0.03016462450995552,
+    0.09274922310711384,
+    0.24987552503313193
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "homeWinRate10",
+    "awayWinRate10",
+    "homeAvgMargin10",
+    "awayAvgMargin10",
+    "homeOppWinRate10",
+    "awayOppWinRate10",
+    "homeOppAvgMargin10",
+    "awayOppAvgMargin10",
+    "marketImpliedProb"
+  ],
+  "sport": "nba",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trainedAt": "2025-11-30T22:29:06.358Z"
+}
