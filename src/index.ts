@@ -92,6 +92,7 @@ program
   .option("--max-legs <number>", "Maximum legs per parlay", "4")
   .option("-n, --top <number>", "Number of top single bets and parlays to show", "10")
   .option("--days <number>", "Number of days to look ahead (default: 1)", "1")
+  .option("--divergence <threshold>", "Only show bets where |model - market| > threshold % (e.g., 5)", "0")
   .action(async (options) => {
     const sport: Sport = options.sport;
     const date = options.date || todayYYYYMMDD();
@@ -102,7 +103,8 @@ program
       parseInt(options.minLegs),
       parseInt(options.maxLegs),
       parseInt(options.top),
-      parseInt(options.days)
+      parseInt(options.days),
+      parseFloat(options.divergence)
     );
   });
 

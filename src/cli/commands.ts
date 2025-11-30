@@ -262,7 +262,8 @@ export async function cmdRecommend(
   minLegs: number,
   maxLegs: number,
   topN: number,
-  days: number = 1
+  days: number = 1,
+  divergenceThreshold: number = 0
 ): Promise<void> {
   try {
     // Generate date range if days > 1
@@ -389,6 +390,7 @@ export async function cmdRecommend(
           const pHome = modelProbs.get(comp.eventId)!;
           for (const leg of legs) {
             if (leg.market === "moneyline") {
+              leg.marketImpliedProbability = leg.impliedProbability; // Save original
               if (leg.team === "home") {
                 leg.impliedProbability = pHome;
                 leg.description = leg.description + " (model)";
@@ -405,6 +407,7 @@ export async function cmdRecommend(
           const pHomeCover = spreadModelProbs.get(comp.eventId)!;
           for (const leg of legs) {
             if (leg.market === "spread") {
+              leg.marketImpliedProbability = leg.impliedProbability; // Save original
               if (leg.team === "home") {
                 leg.impliedProbability = pHomeCover;
                 leg.description = leg.description + " (model)";
@@ -421,6 +424,7 @@ export async function cmdRecommend(
           const pOver = totalModelProbs.get(comp.eventId)!;
           for (const leg of legs) {
             if (leg.market === 'total') {
+              leg.marketImpliedProbability = leg.impliedProbability; // Save original
               if (leg.description.startsWith('Over')) {
                 leg.impliedProbability = pOver;
                 leg.description = leg.description + ' (model)';
@@ -451,6 +455,21 @@ export async function cmdRecommend(
       console.log(chalk.green.dim(`Model probabilities applied to ${markets.join(' and ')}`));
     } else {
       console.log(chalk.dim("Using vig-free market probabilities (no model override)"));
+    }
+    
+    // Apply divergence filter if threshold set
+    if (divergenceThreshold > 0) {
+      const beforeFilter = allLegs.length;
+      allLegs.splice(0, allLegs.length, ...allLegs.filter(leg => {
+        if (!leg.marketImpliedProbability) return false; // No model override, exclude
+        const divergence = Math.abs(leg.impliedProbability - leg.marketImpliedProbability) * 100;
+        return divergence >= divergenceThreshold;
+      }));
+      console.log(chalk.cyan(`🔍 Divergence filter: showing only ${allLegs.length}/${beforeFilter} bets where |model - market| ≥ ${divergenceThreshold}%`));
+      if (allLegs.length === 0) {
+        console.log(chalk.yellow("\nNo bets meet the divergence threshold. Try a lower value or remove the --divergence flag."));
+        return;
+      }
     }
     
     // Limit legs to prevent memory overflow

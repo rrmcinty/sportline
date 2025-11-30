@@ -35,6 +35,7 @@ export interface BetLeg {
   odds: number; // American odds (e.g., -110, +150)
   decimalOdds: number;
   impliedProbability: number;
+  marketImpliedProbability?: number; // Original vig-free market probability (before model override)
   provider?: string;
   description: string; // e.g., "IU -29.5 (-115)"
 }
