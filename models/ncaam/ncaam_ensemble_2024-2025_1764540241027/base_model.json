@@ -1,0 +1,31 @@
+{
+  "type": "base",
+  "weights": [
+    0.10226890329573626,
+    -0.009250459526648817,
+    0.03824706604069034,
+    -0.05727344789056054,
+    0.17849957764534585,
+    0.07570190125386098,
+    0.15685382335569906,
+    -0.006800254246661678,
+    -0.009876423403431369
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5"
+  ],
+  "sport": "ncaam",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trainedAt": "2025-11-30T22:04:01.027Z"
+}

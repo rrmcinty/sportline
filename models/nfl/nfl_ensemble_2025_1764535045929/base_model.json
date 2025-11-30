@@ -1,0 +1,28 @@
+{
+  "type": "base",
+  "weights": [
+    0.05920160474370793,
+    -0.0002239429253824834,
+    0.045714784487006374,
+    -0.01508157037633943,
+    0.06747932567361628,
+    0.006665979027553345,
+    0.08059088888984282,
+    -0.1556270562257383,
+    -0.00914296623341853
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5"
+  ],
+  "sport": "nfl",
+  "season": 2025,
+  "trainedAt": "2025-11-30T20:37:25.929Z"
+}

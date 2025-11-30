@@ -51,7 +51,8 @@ export async function cmdModelPredict(
       weights: number[];
       featureNames: string[];
       sport: string;
-      season: number;
+      seasons?: number[];
+      season?: number;
       trainedAt: string;
       calibration?: CalibrationCurve | null;
     };
@@ -82,11 +83,11 @@ export async function cmdModelPredict(
     for (const comp of competitions) {
       const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
       const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-      insertGame.run(comp.eventId, sport, comp.date, model.season, home.id, away.id, comp.venue || null);
+      insertGame.run(comp.eventId, sport, comp.date, (Array.isArray(model.seasons) && model.seasons.length ? model.seasons[0] : 2025), home.id, away.id, comp.venue || null);
     }
 
     // 3) Compute features for the model's season
-    const allFeatures = computeFeatures(db, sport, model.season);
+    const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2025]);
     const featureMap = new Map<number, number[]>();
     for (const f of allFeatures) {
       featureMap.set(
@@ -110,7 +111,7 @@ export async function cmdModelPredict(
       return;
     }
 
-    console.log(chalk.gray(`Using model trained on season ${model.season} (${model.trainedAt})`));
+    console.log(chalk.gray(`Using model trained on season${model.seasons && model.seasons.length > 1 ? 's' : ''} ${(model.seasons ? model.seasons.join(', ') : model.season)} (${model.trainedAt})`));
     console.log(chalk.dim(`Features: ${model.featureNames.join(", ")}\n`));
 
     const scored = rows

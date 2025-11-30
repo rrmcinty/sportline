@@ -147,13 +147,14 @@ model
   .command("train")
   .description("Train predictive model for a sport/season")
   .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
-  .requiredOption("--season <year>", "Season year (e.g., 2025)")
+  .requiredOption("--season <years>", "Season year(s) (e.g., 2025 or 2024,2025 for multi-season)")
   .option("--markets <markets>", "Markets to train (comma-separated)", "moneyline,spread,total")
   .option("--calibrate <method>", "Calibration method (isotonic|platt)", "isotonic")
   .action(async (options) => {
     const sport: Sport = options.sport;
     const markets = options.markets.split(",");
-    await cmdModelTrain(sport, parseInt(options.season), markets, options.calibrate);
+    const seasons = options.season.split(",").map((s: string) => parseInt(s.trim()));
+    await cmdModelTrain(sport, seasons, markets, options.calibrate);
   });
 
 model

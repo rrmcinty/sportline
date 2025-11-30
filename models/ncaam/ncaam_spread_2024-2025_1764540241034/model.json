@@ -1,0 +1,36 @@
+{
+  "market": "spread",
+  "weights": [
+    0.04950270976799809,
+    0.0174825612651384,
+    -0.019136232162402022,
+    -0.022940524926038663,
+    0.06966910785906265,
+    0.027775556031962405,
+    0.027981973221193387,
+    -0.014401335140450323,
+    -0.05588820435996883,
+    0.003538028907771556,
+    0.041091179993036506
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "spreadLine",
+    "spreadMarketImpliedProb"
+  ],
+  "sport": "ncaam",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trainedAt": "2025-11-30T22:04:01.034Z",
+  "calibration": null
+}

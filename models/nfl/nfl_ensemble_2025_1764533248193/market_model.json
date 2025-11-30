@@ -1,0 +1,30 @@
+{
+  "type": "market-aware",
+  "weights": [
+    0.012905397979262647,
+    -0.039720001568812634,
+    0.042008724929023314,
+    -0.01106559065302401,
+    -0.015833388417116238,
+    -0.03317259627039843,
+    0.03993288059485001,
+    -0.15274826853255177,
+    -0.008776215754545553,
+    0.39855278583518333
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "marketImpliedProb"
+  ],
+  "sport": "nfl",
+  "season": 2025,
+  "trainedAt": "2025-11-30T20:07:28.195Z"
+}

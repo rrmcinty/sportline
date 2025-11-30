@@ -1,0 +1,33 @@
+{
+  "type": "market-aware",
+  "weights": [
+    0.004858132592273105,
+    -0.09611807758641538,
+    0.034612571286362685,
+    -0.04987843806659947,
+    -0.023622705865210997,
+    -0.02497931035217896,
+    0.05244389673785522,
+    -0.0008672311254210558,
+    -0.004748836836738693,
+    0.903689647116651
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "marketImpliedProb"
+  ],
+  "sport": "ncaam",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trainedAt": "2025-11-30T22:04:01.027Z"
+}

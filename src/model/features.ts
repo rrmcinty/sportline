@@ -34,15 +34,16 @@ export interface GameFeatures {
 }
 
 /**
- * Compute features for all games
+ * Compute features for all games across multiple seasons
  */
-export function computeFeatures(db: Database.Database, sport: string, season: number): GameFeatures[] {
+export function computeFeatures(db: Database.Database, sport: string, seasons: number[]): GameFeatures[] {
+  const seasonPlaceholders = seasons.map(() => '?').join(',');
   const games = db.prepare(`
     SELECT g.id, g.date, g.home_team_id, g.away_team_id, g.home_score, g.away_score
     FROM games g
-    WHERE g.sport = ? AND g.season = ?
+    WHERE g.sport = ? AND g.season IN (${seasonPlaceholders})
     ORDER BY g.date ASC
-  `).all(sport, season) as Array<{
+  `).all(sport, ...seasons) as Array<{
     id: number;
     date: string;
     home_team_id: number;

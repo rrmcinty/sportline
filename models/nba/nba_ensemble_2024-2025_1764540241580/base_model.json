@@ -1,0 +1,31 @@
+{
+  "type": "base",
+  "weights": [
+    0.04014531296440687,
+    0.11338573214750466,
+    0.09732928045833596,
+    -0.06015899865265604,
+    0.2019502811777446,
+    0.15121369905137247,
+    0.07595083617708157,
+    0.028518279838634267,
+    0.002810216968475805
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5"
+  ],
+  "sport": "nba",
+  "seasons": [
+    2024,
+    2025
+  ],
+  "trainedAt": "2025-11-30T22:04:01.580Z"
+}

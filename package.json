@@ -15,7 +15,10 @@
     "all": "npm run build && npm link",
     "ingest": "node dist/index.js data daily",
     "ingest:cfb": "node dist/index.js data daily --sports cfb",
-    "ingest:ncaam": "node dist/index.js data daily --sports ncaam"
+    "ingest:ncaam": "node dist/index.js data daily --sports ncaam",
+    "train": "node dist/index.js model train --sport ncaam --season 2024,2025 --markets moneyline,spread,total && node dist/index.js model train --sport cfb --season 2024,2025 --markets moneyline,spread,total && node dist/index.js model train --sport nfl --season 2024,2025 --markets moneyline,spread,total && node dist/index.js model train --sport nba --season 2024,2025 --markets moneyline,spread,total",
+    "backtest": "node dist/index.js model backtest",
+    "update": "npm run ingest && npm run train"
   },
   "keywords": [
     "ncaam",

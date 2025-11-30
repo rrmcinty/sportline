@@ -1,0 +1,30 @@
+{
+  "type": "market-aware",
+  "weights": [
+    0.009178665118736828,
+    0.08377901403020982,
+    0.09548966728773713,
+    -0.05745542714311921,
+    0.1394683028578334,
+    0.12000913425227068,
+    0.04435564586318644,
+    0.028624536704724292,
+    0.0035738633159971833,
+    0.2817837095097996
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "marketImpliedProb"
+  ],
+  "sport": "nba",
+  "season": 2025,
+  "trainedAt": "2025-11-30T20:37:26.045Z"
+}

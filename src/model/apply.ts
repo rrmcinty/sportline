@@ -34,16 +34,16 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   // Check if ensemble model
   const ensemblePath = join(latestRun.artifacts_path, "ensemble.json");
   let isEnsemble = false;
-  let baseModel: { type: string; weights: number[]; featureNames: string[]; season?: number } | undefined;
-  let marketModel: { type: string; weights: number[]; featureNames: string[]; season?: number } | undefined;
-  let ensembleConfig: { baseWeight: number; marketWeight: number; season?: number } | undefined;
-  let season: number = 2025;
+  let baseModel: { type: string; weights: number[]; featureNames: string[]; seasons?: number[] } | undefined;
+  let marketModel: { type: string; weights: number[]; featureNames: string[]; seasons?: number[] } | undefined;
+  let ensembleConfig: { baseWeight: number; marketWeight: number; seasons?: number[] } | undefined;
+  let seasons: number[] = [2025];
 
   try {
     ensembleConfig = JSON.parse(readFileSync(ensemblePath, "utf-8"));
     baseModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "base_model.json"), "utf-8")) as any;
     marketModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "market_model.json"), "utf-8")) as any;
-    season = ensembleConfig?.season || baseModel?.season || marketModel?.season || 2025;
+    seasons = ensembleConfig?.seasons || baseModel?.seasons || marketModel?.seasons || [2025];
     isEnsemble = true;
   } catch {
     // Fall back to single model
@@ -51,7 +51,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     try {
       const model = JSON.parse(readFileSync(modelPath, "utf-8"));
       baseModel = { type: 'single', weights: model.weights, featureNames: model.featureNames } as any;
-      season = model.season || 2025;
+      seasons = model.seasons || [model.season] || [2025];
     } catch {
       return undefined; // no artifacts
     }
@@ -68,11 +68,11 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   for (const comp of competitions) {
     const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
     const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-    insertGame.run(comp.eventId, sport, comp.date, season, home.id, away.id, comp.venue || null);
+    insertGame.run(comp.eventId, sport, comp.date, (Array.isArray(seasons) && seasons.length ? seasons[0] : 2025), home.id, away.id, comp.venue || null);
   }
 
   // Compute features for season
-  const allFeatures = computeFeatures(db, sport, season);
+  const allFeatures = computeFeatures(db, sport, Array.isArray(seasons) && seasons.length ? seasons : [2025]);
   const featureMap = new Map<number, { base: number[]; market: number[] }>();
   
   for (const f of allFeatures) {
@@ -162,7 +162,7 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
   if (!latestRun) return undefined;
 
   const modelPath = join(latestRun.artifacts_path, "model.json");
-  let model: { market: string; weights: number[]; means?: number[]; stds?: number[]; featureNames: string[]; season: number; calibration?: CalibrationCurve | null };
+  let model: { market: string; weights: number[]; means?: number[]; stds?: number[]; featureNames: string[]; seasons?: number[]; calibration?: CalibrationCurve | null };
   try {
     model = JSON.parse(readFileSync(modelPath, "utf-8"));
   } catch {
@@ -182,11 +182,11 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
   for (const comp of competitions) {
     const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
     const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-    insertGame.run(comp.eventId, sport, comp.date, model.season, home.id, away.id, comp.venue || null);
+    insertGame.run(comp.eventId, sport, comp.date, (Array.isArray(model.seasons) && model.seasons.length ? model.seasons[0] : 2025), home.id, away.id, comp.venue || null);
   }
 
   // Compute features for season
-  const allFeatures = computeFeatures(db, sport, model.season);
+  const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2025]);
   const featureMap = new Map<number, number[]>();
   for (const f of allFeatures) {
     // Only include if spread data is available
@@ -231,7 +231,7 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   if (!latestRun) return undefined;
 
   const modelPath = join(latestRun.artifacts_path, 'model.json');
-  let model: { market: string; predictionType?: string; weights: number[]; featureNames: string[]; season: number; means?: number[]; stds?: number[]; sigma?: number; calibration?: CalibrationCurve | null };
+  let model: { market: string; predictionType?: string; weights: number[]; featureNames: string[]; seasons?: number[]; means?: number[]; stds?: number[]; sigma?: number; calibration?: CalibrationCurve | null };
   try {
     model = JSON.parse(readFileSync(modelPath, 'utf-8'));
   } catch {
@@ -248,10 +248,10 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   for (const comp of competitions) {
     const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
     const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-    insertGame.run(comp.eventId, sport, comp.date, model.season, home.id, away.id, comp.venue || null);
+    insertGame.run(comp.eventId, sport, comp.date, (Array.isArray(model.seasons) && model.seasons.length ? model.seasons[0] : 2025), home.id, away.id, comp.venue || null);
   }
 
-  const allFeatures = computeFeatures(db, sport, model.season);
+  const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2025]);
   const featureMap = new Map<number, number[]>();
   for (const f of allFeatures) {
     if (f.totalLine !== null) {

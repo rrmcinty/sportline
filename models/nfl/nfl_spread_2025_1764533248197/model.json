@@ -1,0 +1,33 @@
+{
+  "market": "spread",
+  "weights": [
+    -0.14935554771927706,
+    -0.019885874688455506,
+    0.006813071931967032,
+    0.045859467056301936,
+    -0.08156459673244869,
+    -0.029684319267020056,
+    -0.02948776431235808,
+    0.012128943396026133,
+    0.04893181782929973,
+    -0.02100075682229069,
+    0.23187018575059629
+  ],
+  "featureNames": [
+    "homeWinRate5",
+    "awayWinRate5",
+    "homeAvgMargin5",
+    "awayAvgMargin5",
+    "homeAdvantage",
+    "homeOppWinRate5",
+    "awayOppWinRate5",
+    "homeOppAvgMargin5",
+    "awayOppAvgMargin5",
+    "spreadLine",
+    "spreadMarketImpliedProb"
+  ],
+  "sport": "nfl",
+  "season": 2025,
+  "trainedAt": "2025-11-30T20:07:28.198Z",
+  "calibration": null
+}

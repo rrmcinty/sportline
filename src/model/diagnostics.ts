@@ -63,17 +63,18 @@ function printCalibration(title:string, cal:{bins:{bin:string;count:number;avgPr
 async function runDiagnostics() {
   const sport = process.argv.includes('--sport') ? process.argv[process.argv.indexOf('--sport')+1] : 'cfb';
   const seasonStr = process.argv.includes('--season') ? process.argv[process.argv.indexOf('--season')+1] : '2025';
-  const season = parseInt(seasonStr,10);
+  const seasons = seasonStr.split(',').map(s => parseInt(s.trim(),10));
   const db = getDb();
-  console.log(chalk.bold.cyan(`\n🔬 Diagnostics for ${sport.toUpperCase()} season ${season}\n`));
+  console.log(chalk.bold.cyan(`\n🔬 Diagnostics for ${sport.toUpperCase()} season${seasons.length > 1 ? 's' : ''} ${seasons.join(', ')}\n`));
 
-  const features = computeFeatures(db, sport, season);
+  const features = computeFeatures(db, sport, seasons);
   const moneylineModel = loadLatestModel(db, sport, 'moneyline');
   const spreadModel = loadLatestModel(db, sport, 'spread');
   const totalModel = loadLatestModel(db, sport, 'total');
 
   // Build maps for scores and odds lines
-  const gamesComplete = db.prepare(`SELECT id, home_score, away_score, date FROM games WHERE sport = ? AND season = ? AND home_score IS NOT NULL AND away_score IS NOT NULL`).all(sport, season) as Array<{id:number;home_score:number;away_score:number;date:string}>;
+  const seasonPlaceholders = seasons.map(() => '?').join(',');
+  const gamesComplete = db.prepare(`SELECT id, home_score, away_score, date FROM games WHERE sport = ? AND season IN (${seasonPlaceholders}) AND home_score IS NOT NULL AND away_score IS NOT NULL`).all(sport, ...seasons) as Array<{id:number;home_score:number;away_score:number;date:string}>;
   const gameMap = new Map(gamesComplete.map(g=>[g.id,g]));
 
   // Moneyline diagnostics

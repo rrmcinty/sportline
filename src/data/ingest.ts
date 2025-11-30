@@ -7,8 +7,12 @@ import type { Sport, Competition } from "../models/types.js";
 import { initDb, getDb } from "../db/index.js";
 import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
+import { fetchEvents as fetchEventsNfl } from "../espn/nfl/events.js";
+import { fetchEvents as fetchEventsNba } from "../espn/nba/events.js";
 import { fetchOdds as fetchOddsNcaam } from "../espn/ncaam/odds.js";
 import { fetchOdds as fetchOddsCfb } from "../espn/cfb/odds.js";
+import { fetchOdds as fetchOddsNfl } from "../espn/nfl/odds.js";
+import { fetchOdds as fetchOddsNba } from "../espn/nba/odds.js";
 
 /**
  * Get season date range for a sport
@@ -20,11 +24,23 @@ function getSeasonDateRange(sport: Sport, season: number): { start: string; end:
       start: `${season}-11-01`,
       end: `${season + 1}-04-15`
     };
-  } else {
+  } else if (sport === "cfb") {
     // CFB season: Aug 20 to Jan 31
     return {
       start: `${season}-08-20`,
       end: `${season + 1}-01-31`
+    };
+  } else if (sport === "nfl") {
+    // NFL season: Sep 1 to Feb 15 (includes playoffs/Super Bowl)
+    return {
+      start: `${season}-09-01`,
+      end: `${season + 1}-02-15`
+    };
+  } else {
+    // NBA season: Oct 1 to Jun 30 (includes playoffs)
+    return {
+      start: `${season}-10-01`,
+      end: `${season + 1}-06-30`
     };
   }
 }
@@ -77,9 +93,23 @@ export async function cmdDataIngest(
     
     console.log(chalk.gray(`Date range: ${startDate} to ${endDate}\n`));
 
-    // Select appropriate fetchers
-    const fetchEvents = sport === "ncaam" ? fetchEventsNcaam : fetchEventsCfb;
-    const fetchOdds = sport === "ncaam" ? fetchOddsNcaam : fetchOddsCfb;
+    // Select appropriate fetchers based on sport
+    let fetchEvents: (date: string) => Promise<Competition[]>;
+    let fetchOdds: (eventId: string) => Promise<any[]>;
+    
+    if (sport === "ncaam") {
+      fetchEvents = fetchEventsNcaam;
+      fetchOdds = fetchOddsNcaam;
+    } else if (sport === "cfb") {
+      fetchEvents = fetchEventsCfb;
+      fetchOdds = fetchOddsCfb;
+    } else if (sport === "nfl") {
+      fetchEvents = fetchEventsNfl;
+      fetchOdds = fetchOddsNfl;
+    } else {
+      fetchEvents = fetchEventsNba;
+      fetchOdds = fetchOddsNba;
+    }
 
     // Generate dates to fetch
     const dates = generateDateRange(startDate, endDate);

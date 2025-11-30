@@ -61,12 +61,13 @@ function dot(a: number[], b: number[]): number {
  */
 export async function cmdModelTrain(
   sport: Sport,
-  season: number,
+  seasons: number[],
   markets: string[],
   calibrate: string
 ): Promise<void> {
   try {
-    console.log(chalk.bold.cyan(`\n🤖 Training ${sport.toUpperCase()} model for season ${season}...\n`));
+    const seasonsStr = seasons.length === 1 ? `season ${seasons[0]}` : `seasons ${seasons.join(", ")}`;
+    console.log(chalk.bold.cyan(`\n🤖 Training ${sport.toUpperCase()} model for ${seasonsStr}...\n`));
     console.log(chalk.gray(`Markets: ${markets.join(", ")}`));
     console.log(chalk.gray(`Calibration: ${calibrate}\n`));
 
@@ -74,17 +75,17 @@ export async function cmdModelTrain(
 
     // Compute features for all games
     console.log(chalk.dim("Computing features..."));
-    const gameFeatures = computeFeatures(db, sport, season);
+    const gameFeatures = computeFeatures(db, sport, seasons);
     console.log(chalk.dim(`Features computed for ${gameFeatures.length} games\n`));
 
     // Train models for each requested market
     for (const market of markets) {
       if (market === 'moneyline') {
-        await trainMoneylineModel(db, sport, season, gameFeatures, calibrate);
+        await trainMoneylineModel(db, sport, seasons, gameFeatures, calibrate);
       } else if (market === 'spread') {
-        await trainSpreadModel(db, sport, season, gameFeatures, calibrate);
+        await trainSpreadModel(db, sport, seasons, gameFeatures, calibrate);
       } else if (market === 'total') {
-        await trainTotalRegressionModel(db, sport, season, gameFeatures);
+        await trainTotalRegressionModel(db, sport, seasons, gameFeatures);
       }
     }
   } catch (error) {
@@ -99,18 +100,19 @@ export async function cmdModelTrain(
 async function trainMoneylineModel(
   db: any,
   sport: Sport,
-  season: number,
+  seasons: number[],
   gameFeatures: any[],
   calibrate: string
 ): Promise<void> {
   console.log(chalk.bold.blue(`\n📊 Training MONEYLINE ENSEMBLE (base + market-aware)...\n`));
 
   // Load outcomes (home team wins)
+  const seasonPlaceholders = seasons.map(() => '?').join(',');
   const gamesWithOutcomes = db.prepare(`
     SELECT id, home_score, away_score
     FROM games
-    WHERE sport = ? AND season = ? AND home_score IS NOT NULL AND away_score IS NOT NULL
-  `).all(sport, season) as Array<{
+    WHERE sport = ? AND season IN (${seasonPlaceholders}) AND home_score IS NOT NULL AND away_score IS NOT NULL
+  `).all(sport, ...seasons) as Array<{
       id: number;
       home_score: number;
       away_score: number;
@@ -284,7 +286,8 @@ async function trainMoneylineModel(
     console.log(chalk.cyan(`Log loss: ${logLoss.toFixed(4)} (lower is better)\n`));
 
     // Save ensemble model artifacts
-    const runId = `${sport}_ensemble_${season}_${Date.now()}`;
+    const seasonsStr = seasons.join('-');
+    const runId = `${sport}_ensemble_${seasonsStr}_${Date.now()}`;
     const artifactsPath = join(process.cwd(), "models", sport, runId);
     mkdirSync(artifactsPath, { recursive: true });
 
@@ -294,7 +297,7 @@ async function trainMoneylineModel(
       weights: baseWeights,
       featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5"],
       sport,
-      season,
+      seasons,
       trainedAt: new Date().toISOString()
     };
     writeFileSync(join(artifactsPath, "base_model.json"), JSON.stringify(baseModel, null, 2));
@@ -305,7 +308,7 @@ async function trainMoneylineModel(
       weights: marketWeights,
       featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "marketImpliedProb"],
       sport,
-      season,
+      seasons,
       trainedAt: new Date().toISOString()
     };
     writeFileSync(join(artifactsPath, "market_model.json"), JSON.stringify(marketModel, null, 2));
@@ -316,7 +319,7 @@ async function trainMoneylineModel(
       baseWeight: ensembleWeight.base,
       marketWeight: ensembleWeight.market,
       sport,
-      season,
+      seasons,
       trainedAt: new Date().toISOString()
     };
     writeFileSync(join(artifactsPath, "ensemble.json"), JSON.stringify(ensembleConfig, null, 2));
@@ -342,7 +345,7 @@ async function trainMoneylineModel(
     `).run(
       runId,
       sport,
-      season,
+      seasonsStr,
       JSON.stringify({ market: 'moneyline', type: 'ensemble', baseWeight: ensembleWeight.base, marketWeight: ensembleWeight.market }),
       new Date().toISOString(),
       new Date().toISOString(),
@@ -359,22 +362,23 @@ async function trainMoneylineModel(
 async function trainSpreadModel(
   db: any,
   sport: Sport,
-  season: number,
+  seasons: number[],
   gameFeatures: any[],
   calibrate: string
 ): Promise<void> {
   console.log(chalk.bold.blue(`\n📊 Training SPREAD model...\n`));
 
   // Load games with scores and spread lines
+  const seasonPlaceholders = seasons.map(() => '?').join(',');
   const gamesWithSpreads = db.prepare(`
     SELECT g.id, g.home_score, g.away_score, o.line
     FROM games g
     JOIN odds o ON g.id = o.game_id
-    WHERE g.sport = ? AND g.season = ?
+    WHERE g.sport = ? AND g.season IN (${seasonPlaceholders})
       AND g.home_score IS NOT NULL AND g.away_score IS NOT NULL
       AND o.market = 'spread'
       AND o.line IS NOT NULL
-  `).all(sport, season) as Array<{
+  `).all(sport, ...seasons) as Array<{
     id: number;
     home_score: number;
     away_score: number;
@@ -533,7 +537,8 @@ async function trainSpreadModel(
   }
 
   // Save model artifacts
-  const runId = `${sport}_spread_${season}_${Date.now()}`;
+  const seasonsStr = seasons.join('-');
+  const runId = `${sport}_spread_${seasonsStr}_${Date.now()}`;
   const artifactsPath = join(process.cwd(), "models", sport, runId);
   mkdirSync(artifactsPath, { recursive: true });
 
@@ -542,7 +547,7 @@ async function trainSpreadModel(
     weights,
     featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "spreadLine", "spreadMarketImpliedProb"],
     sport,
-    season,
+    seasons,
     trainedAt: new Date().toISOString(),
     calibration: calibrationCurve
   };
@@ -571,7 +576,7 @@ async function trainSpreadModel(
   `).run(
     runId,
     sport,
-    season,
+    seasonsStr,
     JSON.stringify({ market: 'spread', calibrate }),
     new Date().toISOString(),
     new Date().toISOString(),
@@ -591,20 +596,21 @@ async function trainSpreadModel(
 async function trainTotalRegressionModel(
   db: any,
   sport: Sport,
-  season: number,
+  seasons: number[],
   gameFeatures: any[]
 ): Promise<void> {
   console.log(chalk.bold.blue(`\n📊 Training TOTAL (regression) model...\n`));
 
+  const seasonPlaceholders = seasons.map(() => '?').join(',');
   const gamesWithTotals = db.prepare(`
     SELECT g.id, g.home_score, g.away_score, o.line
     FROM games g
     JOIN odds o ON g.id = o.game_id
-    WHERE g.sport = ? AND g.season = ?
+    WHERE g.sport = ? AND g.season IN (${seasonPlaceholders})
       AND g.home_score IS NOT NULL AND g.away_score IS NOT NULL
       AND o.market = 'total'
       AND o.line IS NOT NULL
-  `).all(sport, season) as Array<{ id:number; home_score:number; away_score:number; line:number }>;
+  `).all(sport, ...seasons) as Array<{ id:number; home_score:number; away_score:number; line:number }>;
 
   if (!gamesWithTotals.length) {
     console.log(chalk.yellow('⚠️  No completed games with total lines found.'));
@@ -759,7 +765,8 @@ async function trainTotalRegressionModel(
   console.log(chalk.cyan(`Log loss: ${logLoss.toFixed(4)}`));
   console.log(chalk.cyan(`Residual sigma (MAD-based, floored at ${sigmaFloor}): ${sigma.toFixed(2)}\n`));
 
-  const runId = `${sport}_total_reg_${season}_${Date.now()}`;
+  const seasonsStr = seasons.join('-');
+  const runId = `${sport}_total_reg_${seasonsStr}_${Date.now()}`;
   const artifactsPath = join(process.cwd(), 'models', sport, runId);
   mkdirSync(artifactsPath, { recursive: true });
   const model = {
@@ -772,7 +779,7 @@ async function trainTotalRegressionModel(
     sigma,
     featureNames: ['homePointsAvg5','awayPointsAvg5','homeOppPointsAvg5','awayOppPointsAvg5','homeWinRate5','awayWinRate5','homeAvgMargin5','awayAvgMargin5','homeOppAvgMargin5','awayOppAvgMargin5','homeOppWinRate5','awayOppWinRate5','homePace5','awayPace5','homeOffEff5','awayOffEff5','homeDefEff5','awayDefEff5'],
     sport,
-    season,
+    seasons,
     trainedAt: new Date().toISOString()
   };
   writeFileSync(join(artifactsPath,'model.json'), JSON.stringify(model,null,2));
@@ -790,6 +797,6 @@ async function trainTotalRegressionModel(
   writeFileSync(join(artifactsPath,'metrics.json'), JSON.stringify(metrics,null,2));
   db.prepare(`INSERT INTO model_runs (run_id, sport, season, config_json, started_at, finished_at, metrics_json, artifacts_path)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
-    .run(runId, sport, season, JSON.stringify({ market:'total', type:'regression' }), new Date().toISOString(), new Date().toISOString(), JSON.stringify(metrics), artifactsPath);
+    .run(runId, sport, seasonsStr, JSON.stringify({ market:'total', type:'regression' }), new Date().toISOString(), new Date().toISOString(), JSON.stringify(metrics), artifactsPath);
   console.log(chalk.green.bold(`✅ Total regression model trained and saved to ${artifactsPath}\n`));
 }
