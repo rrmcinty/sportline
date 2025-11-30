@@ -18,7 +18,7 @@ function trainLogisticRegression(
   labels: number[],
   learningRate: number = 0.01,
   iterations: number = 1000,
-  lambda: number = 0.1
+  lambda: number = 0.5
 ): number[] {
   const numFeatures = features[0].length;
   const weights = new Array(numFeatures).fill(0);
