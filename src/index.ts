@@ -93,6 +93,8 @@ program
   .option("-n, --top <number>", "Number of top single bets and parlays to show", "10")
   .option("--days <number>", "Number of days to look ahead (default: 1)", "1")
   .option("--divergence <threshold>", "Only show bets where |model - market| > threshold % (e.g., 5)", "0")
+  .option("--favorites-only", "Filter to favorites on moneylines (keep spreads/totals)", false)
+  .option("--include-dogs", "Include underdogs (disables suppression guardrails)", false)
   .action(async (options) => {
     const sports: Sport[] | undefined = options.sport ? [options.sport as Sport] : undefined;
     const date = options.date || todayYYYYMMDD();
@@ -104,7 +106,9 @@ program
       parseInt(options.maxLegs),
       parseInt(options.top),
       parseInt(options.days),
-      parseFloat(options.divergence)
+      parseFloat(options.divergence),
+      Boolean(options.favoritesOnly),
+      Boolean(options.includeDogs)
     );
   });
 
@@ -161,6 +165,17 @@ model
     const sport: Sport = options.sport;
     const date = options.date || todayYYYYMMDD();
     await cmdModelPredict(sport, date);
+  });
+
+model
+  .command("backtest")
+  .description("Backtest model predictions against actual outcomes")
+  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
+  .requiredOption("--season <year>", "Season year (e.g., 2025)")
+  .action(async (options) => {
+    const sport: Sport = options.sport;
+    const { backtestMoneyline } = await import("./model/backtest.js");
+    await backtestMoneyline(sport, parseInt(options.season));
   });
 
 program.parse();

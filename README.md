@@ -172,18 +172,33 @@ sportline recommend --sport cfb --min-legs 1 --stake 10
 # Look ahead 7 days (great for slow weeks)
 sportline recommend --sport ncaam --min-legs 1 --stake 10 --days 7
 
+# All sports (omit --sport)
+sportline recommend --min-legs 1 --stake 10
+
+# Favorites-only filter (moneylines)
+sportline recommend --favorites-only --min-legs 1 --stake 10
+
+# Include underdogs explicitly (bypass guardrails)
+sportline recommend --include-dogs --min-legs 1 --stake 10
+
+# Show only big model vs market differences (≥10%)
+sportline recommend --divergence 10 --min-legs 1 --stake 10
+
 # Weekend only (Friday-Sunday)
 sportline recommend --sport cfb --days 3 --min-legs 1
 ```
 
 **Options:**
 - `-d, --date <YYYYMMDD>` - Start date (default: today)
-- `--sport <sport>` - Sport: cfb or ncaam (default: ncaam)
+- `--sport <sport>` - Sport: ncaam|cfb|nfl|nba (omit for all sports)
 - `-s, --stake <amount>` - Stake amount per parlay (default: 10)
 - `--min-legs <number>` - Minimum legs per parlay (use 1 for single bets, default: 2)
 - `--max-legs <number>` - Maximum legs per parlay (default: 4)
 - `-n, --top <number>` - Number of top single bets AND parlays to show (default: 10)
 - `--days <number>` - Number of days to look ahead from start date (default: 1)
+- `--favorites-only` - Keep only moneyline favorites (spreads/totals unaffected)
+- `--include-dogs` - Include underdogs (disables suppression guardrails)
+- `--divergence <threshold>` - Only show bets where |model - market| ≥ threshold % (e.g., 10)
 
 **Pro tip:** Use `--days 7` on slow nights to see a full week of opportunities!
 

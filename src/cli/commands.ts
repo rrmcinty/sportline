@@ -281,7 +281,9 @@ export async function cmdRecommend(
   maxLegs: number,
   topN: number,
   days: number = 1,
-  divergenceThreshold: number = 0
+  divergenceThreshold: number = 0,
+  favoritesOnly: boolean = false,
+  includeDogsFlag: boolean = false
 ): Promise<void> {
   try {
     // If no sports specified, check all sports
@@ -409,7 +411,7 @@ export async function cmdRecommend(
       try {
         const { fetchOdds, normalizeOdds } = getFetchers(comp.sport);
         const oddsEntries = await fetchOdds(comp.eventId);
-        const legs = normalizeOdds(
+        let legs = normalizeOdds(
           comp.eventId,
           oddsEntries,
           comp.homeTeam.abbreviation || comp.homeTeam.name,
@@ -474,6 +476,49 @@ export async function cmdRecommend(
           }
         }
         
+        // Guardrails: suppress severe underdogs unless explicitly included
+        const includeDogsEnv = process.env.SPORTLINE_INCLUDE_DOGS === '1' || false;
+        const includeDogs = includeDogsEnv || includeDogsFlag;
+        if (!includeDogs) {
+          const filtered: BetLeg[] = [];
+          for (const leg of legs) {
+            if (leg.market === 'moneyline') {
+              const marketProb = leg.marketImpliedProbability ?? leg.impliedProbability;
+              const isUnderdog = marketProb < 0.5 && leg.team ? true : marketProb < 0.5;
+              const isSevereUnderdog = marketProb < 0.20; // <20% implied
+              const modelProb = leg.impliedProbability;
+              const modelFavorsDog = modelProb > marketProb && marketProb < 0.5;
+              const excessiveDivergence = Math.abs(modelProb - marketProb) > 0.20; // cap 20%
+
+              // Suppress severe dogs, and suppress dogs where model < market (no edge)
+              if (isSevereUnderdog && modelFavorsDog) {
+                continue;
+              }
+              if (isUnderdog && !modelFavorsDog) {
+                continue;
+              }
+              if (excessiveDivergence) {
+                // cap divergence by blending toward market
+                const w = 0.75; // strong trust in market when divergence is huge
+                leg.impliedProbability = w * marketProb + (1 - w) * modelProb;
+              }
+              filtered.push(leg);
+            } else {
+              filtered.push(leg);
+            }
+          }
+          legs = filtered;
+        }
+
+        // Optional: favorites-only filter
+        if (favoritesOnly) {
+          legs = legs.filter(leg => {
+            if (leg.market !== 'moneyline') return true; // allow spreads/totals regardless
+            const baseProb = leg.marketImpliedProbability ?? leg.impliedProbability;
+            return baseProb >= 0.5; // keep favorites only
+          });
+        }
+
         allLegs.push(...legs);
       } catch (error) {
         console.warn(chalk.yellow(`⚠️  Failed to fetch odds for ${comp.eventId}`));
