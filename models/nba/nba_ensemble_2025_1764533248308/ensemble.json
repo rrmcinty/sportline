@@ -1,8 +1,0 @@
-{
-  "type": "ensemble",
-  "baseWeight": 0.7,
-  "marketWeight": 0.3,
-  "sport": "nba",
-  "season": 2025,
-  "trainedAt": "2025-11-30T20:07:28.309Z"
-}
