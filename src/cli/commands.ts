@@ -584,41 +584,155 @@ export async function cmdRecommend(
     }
     console.log(chalk.dim(`Calculating expected value (EV) with fair probabilities...\n`));
 
+    // Categorize bets by confidence tier based on backtest results
+    function getConfidenceTier(prob: number): { tier: string; emoji: string; historicalWinRate: string; avgROI: string } {
+      if (prob >= 0.80 || prob <= 0.20) {
+        return {
+          tier: 'ELITE',
+          emoji: '🏆',
+          historicalWinRate: '85-91%',
+          avgROI: '+25% to +56%'
+        };
+      } else if (prob >= 0.70 || prob <= 0.30) {
+        return {
+          tier: 'HIGH',
+          emoji: '⭐',
+          historicalWinRate: '67-84%',
+          avgROI: '+6% to +27%'
+        };
+      } else if (prob >= 0.60 || prob <= 0.40) {
+        return {
+          tier: 'MEDIUM',
+          emoji: '📊',
+          historicalWinRate: '50-67%',
+          avgROI: '-8% to +3%'
+        };
+      } else {
+        return {
+          tier: 'COIN FLIP',
+          emoji: '⚠️',
+          historicalWinRate: '42-58%',
+          avgROI: '-20% to -1%'
+        };
+      }
+    }
+
+    // Calculate value score: combines EV with confidence level
+    // High-confidence bets get bonus, coin-flip bets get penalty
+    function getValueScore(bet: ParlayResult): number {
+      const legProb = bet.legs[0]?.impliedProbability || 0.5;
+      const tier = getConfidenceTier(legProb);
+      let confidenceMultiplier = 1.0;
+      
+      if (tier.tier === 'ELITE') {
+        confidenceMultiplier = 2.0; // Double weight for elite confidence
+      } else if (tier.tier === 'HIGH') {
+        confidenceMultiplier = 1.5; // 50% bonus for high confidence
+      } else if (tier.tier === 'COIN FLIP') {
+        confidenceMultiplier = 0.5; // Penalty for close games
+      }
+      
+      return bet.ev * confidenceMultiplier;
+    }
+
     // Show best single bets first
     if (minLegs === 1 || allLegs.length > 0) {
-      console.log(chalk.bold.green(`📊 BEST SINGLE BETS`) + chalk.dim(` (ranked by expected value)\n`));
+      console.log(chalk.bold.green(`📊 BEST SINGLE BETS`) + chalk.dim(` (ranked by confidence + EV)\n`));
       console.log(chalk.dim(`What's EV? It's the average $ you'd win/lose per $${stake} bet over many tries.`));
       console.log(chalk.dim(`Positive EV = good bet. Negative EV = bookmaker has the edge.\n`));
       
       const singleBets = allLegs.map(leg => evaluateParlay({ legs: [leg], stake }));
-      // Use topN (shared with parlay limit) to control number of single bets displayed
-      const rankedSingles = rankParlaysByEV(singleBets).slice(0, topN);
+      // Filter to only backtested bets (moneyline and spread)
+      const backtestedSingles = singleBets.filter(bet => {
+        const leg = bet.legs[0];
+        return leg.market === 'moneyline' || leg.market === 'spread';
+      });
+      // Sort by value score (EV * confidence multiplier) instead of raw EV
+      const rankedSingles = backtestedSingles
+        .map(bet => ({ bet, valueScore: getValueScore(bet) }))
+        .sort((a, b) => b.valueScore - a.valueScore)
+        .slice(0, topN)
+        .map(x => x.bet);
+      
+      // Show confidence tier distribution
+      const tiers = { ELITE: 0, HIGH: 0, MEDIUM: 0, 'COIN FLIP': 0 };
+      singleBets.forEach(bet => {
+        const prob = bet.legs[0]?.impliedProbability || 0.5;
+        const tier = getConfidenceTier(prob).tier;
+        tiers[tier as keyof typeof tiers]++;
+      });
+      console.log(chalk.dim(`Confidence distribution: 🏆 ${tiers.ELITE} Elite | ⭐ ${tiers.HIGH} High | 📊 ${tiers.MEDIUM} Medium | ⚠️ ${tiers['COIN FLIP']} Coin Flip\n`));
       
       for (let i = 0; i < rankedSingles.length; i++) {
         const bet = rankedSingles[i];
         const leg = bet.legs[0];
         const evColor = bet.ev >= 0 ? chalk.green : chalk.red;
         const evSign = bet.ev >= 0 ? '+' : '';
-        
+
+        // Cap displayed probability at 97%
+        let displayProb = bet.probability;
+        if (displayProb > 0.97) displayProb = 0.97;
+        if (displayProb < 0.03) displayProb = 0.03;
+
+        // Get market type
+        const marketType = leg.market;
+        // Get sport from eventIdToMatchup map
+        let sportName = 'nba';
+        const matchupInfo = eventIdToMatchup.get(leg.eventId);
+        if (matchupInfo && matchupInfo.sport) sportName = matchupInfo.sport.toLowerCase();
+
+        // Market-specific backtest stats
+        let marketStats = { winRate: 'N/A', roi: 'N/A', label: '' };
+        if (marketType === 'moneyline') {
+          // Use moneyline bins from BACKTEST_RESULTS.md
+          if (sportName === 'nba' && displayProb >= 0.80) marketStats = { winRate: '90.7%', roi: '+25.9%', label: 'NBA 80-90%' };
+          else if (sportName === 'nba' && displayProb >= 0.20 && displayProb < 0.30) marketStats = { winRate: '15.8%', roi: '+61.5%', label: 'NBA 20-30%' };
+          // ...add more bins for other sports as needed
+        } else if (marketType === 'total') {
+          // Totals are not calibrated in backtests, so suppress ELITE label
+          marketStats = { winRate: 'N/A', roi: 'N/A', label: 'Totals: calibration not validated' };
+        }
+
+        // Get confidence tier
+        const tier = getConfidenceTier(displayProb);
+
         // Check if this probability came from model
         const isModelProb = leg.description.includes('(model)');
         const cleanDescription = leg.description.replace(' (model)', '');
-        
+
         // Get matchup info
         const matchup = eventIdToMatchup.get(leg.eventId);
         const matchupDisplay = matchup ? chalk.dim(`${matchup.away} @ ${matchup.home}`) : '';
-        
+
         // Calculate potential profit if bet wins
         const potentialProfit = bet.payout - stake;
-        
-        console.log(chalk.bold(`${i + 1}. ${cleanDescription}`));
+
+        // Suppress ELITE/HIGH label for totals
+        let confidenceLabel = tier.tier;
+        if (marketType === 'total' && (tier.tier === 'ELITE' || tier.tier === 'HIGH')) {
+          confidenceLabel = 'UNVERIFIED';
+        }
+
+        console.log(chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel} CONFIDENCE]`));
         if (matchupDisplay) {
           console.log(`   ${matchupDisplay}`);
         }
-        console.log(chalk.dim(`   Market: ${leg.market === 'moneyline' ? 'Moneyline (win outright)' : leg.market === 'spread' ? 'Point Spread' : 'Total Points'}`));
+        console.log(chalk.dim(`   Market: ${marketType === 'moneyline' ? 'Moneyline (win outright)' : marketType === 'spread' ? 'Point Spread' : 'Total Points'}`));
         console.log(`   If you win: ${chalk.green('$' + bet.payout.toFixed(2) + ' total')} ${chalk.dim('($' + potentialProfit.toFixed(2) + ' profit)')}`);
-        console.log(`   Win chance: ${chalk.cyan((bet.probability * 100).toFixed(1) + '%')}${isModelProb ? chalk.dim(' (model)') : ''}`);
+        console.log(`   Win chance: ${chalk.cyan((displayProb * 100).toFixed(1) + '%')}${isModelProb ? chalk.dim(' (model)') : ''}`);
+        if (marketStats.label) {
+          console.log(chalk.dim(`   Historical: ${marketStats.winRate} win rate, ${marketStats.roi} ROI (${marketStats.label})`));
+        }
         console.log(`   Expected value: ${evColor(evSign + '$' + bet.ev.toFixed(2))} ${chalk.dim('average profit per bet')}${isModelProb ? chalk.dim(' (model)') : ''}`);
+        if (confidenceLabel === 'ELITE' || confidenceLabel === 'HIGH') {
+          if (marketType === 'moneyline') {
+            console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - backtests show ${marketStats.winRate} success rate!`));
+          } else {
+            console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - totals calibration not validated. Proceed with caution.`));
+          }
+        } else if (confidenceLabel === 'COIN FLIP') {
+          console.log(chalk.yellow(`   ${tier.emoji} Close game - backtests show negative ROI on these. Proceed with caution.`));
+        }
         if (bet.ev >= 0) {
           console.log(chalk.green.bold(`   ✨ This bet has positive expected value!`));
         }
@@ -626,13 +740,20 @@ export async function cmdRecommend(
       }
 
       // Show interpretation
-      const bestEV = rankedSingles.length > 0 ? rankedSingles[0].ev : 0;
-      if (bestEV >= 0) {
-        console.log(chalk.green.bold(`🎯 RECOMMENDATION: The best bet has +EV! This is a potentially profitable opportunity.`));
+      const bestBet = rankedSingles.length > 0 ? rankedSingles[0] : null;
+      const bestEV = bestBet?.ev || 0;
+      const bestTier = bestBet ? getConfidenceTier(bestBet.probability) : null;
+      
+      if (bestEV >= 0 && bestTier && (bestTier.tier === 'ELITE' || bestTier.tier === 'HIGH')) {
+        console.log(chalk.green.bold(`🎯 RECOMMENDATION: ${bestTier.emoji} ${bestTier.tier} confidence bet with +EV! Backtests show ${bestTier.historicalWinRate} success rate.`));
+      } else if (bestEV >= 0) {
+        console.log(chalk.green.bold(`🎯 RECOMMENDATION: This bet has +EV, but lower confidence. Consider smaller stake.`));
+      } else if (bestTier && (bestTier.tier === 'ELITE' || bestTier.tier === 'HIGH')) {
+        console.log(chalk.yellow(`💡 INSIGHT: ${bestTier.tier} confidence bets available, but market is efficient (-EV). Wait for better opportunities.`));
       } else if (bestEV > -0.50) {
         console.log(chalk.yellow(`💡 INSIGHT: Moneylines have the lowest bookmaker edge (~${Math.abs(bestEV * 10).toFixed(0)}%). Still negative EV though.`));
       } else {
-        console.log(chalk.yellow(`⚠️  INSIGHT: High bookmaker edge today. All bets lose ${Math.abs(rankedSingles[0].roi).toFixed(1)}% on average.`));
+        console.log(chalk.yellow(`⚠️  INSIGHT: High bookmaker edge today. All bets lose ${Math.abs(rankedSingles[0]?.roi || 0).toFixed(1)}% on average.`));
       }
       console.log();
     }
