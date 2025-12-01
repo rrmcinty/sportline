@@ -2,7 +2,7 @@
  * Core types for sportline
  */
 
-export type Sport = "ncaam" | "cfb" | "nfl" | "nba";
+export type Sport = "ncaam" | "cfb" | "nfl" | "nba" | "nhl";
 
 export type MarketType = "moneyline" | "spread" | "total";
 

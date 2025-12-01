@@ -19,7 +19,7 @@ import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
 /**
  * Fetch and display games for a date
  */
-function getFetchers(sport: Sport) {
+async function getFetchers(sport: Sport) {
   if (sport === "cfb") {
     return {
       fetchEvents: fetchEventsCfb,
@@ -41,6 +41,15 @@ function getFetchers(sport: Sport) {
       normalizeOdds: normalizeOddsNba,
     };
   }
+  if (sport === "nhl") {
+    const { fetchNHLEvents } = await import("../espn/nhl/events.js");
+    const { fetchNHLOdds, normalizeOdds } = await import("../espn/nhl/odds.js");
+    return {
+      fetchEvents: fetchNHLEvents,
+      fetchOdds: fetchNHLOdds,
+      normalizeOdds,
+    };
+  }
   // default to ncaam
   return {
     fetchEvents: fetchEventsNcaam,
@@ -51,7 +60,7 @@ function getFetchers(sport: Sport) {
 
 export async function cmdGamesFetch(sport: Sport, date: string): Promise<void> {
   try {
-    const { fetchEvents } = getFetchers(sport);
+    const { fetchEvents } = await getFetchers(sport);
     const competitions = await fetchEvents(date);
 
     if (competitions.length === 0) {
@@ -81,9 +90,9 @@ export async function cmdGamesFetch(sport: Sport, date: string): Promise<void> {
  */
 export async function cmdOddsImport(sport: Sport, eventId: string, date: string): Promise<void> {
   try {
-    const { fetchEvents, fetchOdds, normalizeOdds } = getFetchers(sport);
+    const { fetchEvents, fetchOdds, normalizeOdds } = await getFetchers(sport);
     const competitions = await fetchEvents(date);
-    const comp = competitions.find((c) => c.eventId === eventId);
+    const comp = competitions.find((c: Competition) => c.eventId === eventId);
 
     if (!comp) {
       console.error(chalk.red(`Event ${eventId} not found on ${date}`));
@@ -109,9 +118,9 @@ export async function cmdOddsImport(sport: Sport, eventId: string, date: string)
     console.log(chalk.gray(`Provider: ${legs[0]?.provider || "N/A"}`));
     console.log(chalk.dim(`(Probabilities shown are "vig-free" - the bookmaker's edge has been removed)\n`));
 
-    const moneylines = legs.filter((l) => l.market === "moneyline");
-    const spreads = legs.filter((l) => l.market === "spread");
-    const totals = legs.filter((l) => l.market === "total");
+    const moneylines = legs.filter((l: BetLeg) => l.market === "moneyline");
+    const spreads = legs.filter((l: BetLeg) => l.market === "spread");
+    const totals = legs.filter((l: BetLeg) => l.market === "total");
 
     if (moneylines.length > 0) {
       console.log(chalk.bold("💰 Moneylines") + chalk.dim(" (bet on who wins straight-up):"));
@@ -155,9 +164,9 @@ export async function cmdBets(
   stake: number
 ): Promise<void> {
   try {
-    const { fetchEvents, fetchOdds, normalizeOdds } = getFetchers(sport);
+    const { fetchEvents, fetchOdds, normalizeOdds } = await getFetchers(sport);
     const competitions = await fetchEvents(date);
-    const comp = competitions.find(c => c.eventId === eventId);
+    const comp = competitions.find((c: Competition) => c.eventId === eventId);
     if (!comp) {
       console.error(chalk.red(`Event ${eventId} not found on ${date}`));
       process.exit(1);
@@ -208,9 +217,9 @@ export async function cmdBets(
 
     // Group by market
     const markets: Record<string, BetLeg[]> = {
-      moneyline: legs.filter(l => l.market === "moneyline"),
-      spread: legs.filter(l => l.market === "spread"),
-      total: legs.filter(l => l.market === "total")
+      moneyline: legs.filter((l: BetLeg) => l.market === "moneyline"),
+      spread: legs.filter((l: BetLeg) => l.market === "spread"),
+      total: legs.filter((l: BetLeg) => l.market === "total")
     };
 
     for (const [market, mLegs] of Object.entries(markets)) {
@@ -288,7 +297,7 @@ export async function cmdRecommend(
 ): Promise<void> {
   try {
     // If no sports specified, check all sports
-    const sportsToCheck: Sport[] = sports || ["ncaam", "cfb", "nfl", "nba"];
+    const sportsToCheck: Sport[] = sports || ["ncaam", "cfb", "nfl", "nba", "nhl"];
     
     // Generate date range if days > 1
     const dates: string[] = [];
@@ -318,11 +327,11 @@ export async function cmdRecommend(
     const allCompetitions: Array<Competition & { sport: Sport }> = [];
     
     for (const sport of sportsToCheck) {
-      const { fetchEvents } = getFetchers(sport);
+      const { fetchEvents } = await getFetchers(sport);
       for (const d of dates) {
         try {
           const competitions = await fetchEvents(d);
-          allCompetitions.push(...competitions.map(c => ({ ...c, sport })));
+          allCompetitions.push(...competitions.map((c: Competition) => ({ ...c, sport })));
         } catch (err) {
           // Silently skip if no games for this sport/date
         }
@@ -340,7 +349,7 @@ export async function cmdRecommend(
     const db = (await import("../db/index.js")).getDb();
     for (const comp of allCompetitions) {
       try {
-        const { fetchOdds } = getFetchers(comp.sport);
+        const { fetchOdds } = await getFetchers(comp.sport);
         const oddsEntries = await fetchOdds(comp.eventId);
         
         // Get or create game_id for this event
@@ -411,7 +420,7 @@ export async function cmdRecommend(
       });
       
       try {
-        const { fetchOdds, normalizeOdds } = getFetchers(comp.sport);
+        const { fetchOdds, normalizeOdds } = await getFetchers(comp.sport);
         const oddsEntries = await fetchOdds(comp.eventId);
         let legs = normalizeOdds(
           comp.eventId,
@@ -514,7 +523,7 @@ export async function cmdRecommend(
 
         // Optional: favorites-only filter
         if (favoritesOnly) {
-          legs = legs.filter(leg => {
+          legs = legs.filter((leg: BetLeg) => {
             if (leg.market !== 'moneyline') return true; // allow spreads/totals regardless
             const baseProb = leg.marketImpliedProbability ?? leg.impliedProbability;
             return baseProb >= 0.5; // keep favorites only

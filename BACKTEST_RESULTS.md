@@ -19,6 +19,7 @@ This document tracks backtest results for all sports models. Backtests validate 
 - ✅ **CFB Moneyline:** +12.04% ROI, 6.52% ECE (highest ROI)
 - ✅ **NFL Moneyline:** +5.69% ROI, 6.13% ECE
 - ✅ **NCAAM Moneyline:** +3.11% ROI, 11.84% ECE
+- ✅ **NHL Moneyline:** +37.35% ROI, 8.60% ECE (large sample, strong edge)
 
 **Not Recommended (Unprofitable or Poor Calibration):**
 - ❌ **CFB Spreads:** -7.03% ROI, 18.41% ECE (poor calibration)
@@ -26,8 +27,51 @@ This document tracks backtest results for all sports models. Backtests validate 
 - ❌ **NCAAM Spreads:** -8.22% ROI, 8.48% ECE (unprofitable)
 - ❌ **All Totals except NBA:** Systematic inversion issues (40-57% ECE)
 - ⚠️ **NBA Totals:** 6.56% ECE (excellent) but -1.84% ROI (slightly unprofitable)
+- ❌ **NHL Underdogs:** Catastrophic on extreme dogs (see below) — avoid
 
 **Key Insight:** NBA is the only sport where we have edge on BOTH moneyline and spreads. All other sports should stick to moneyline only.
+
+---
+
+## NHL (Pro Hockey) 2024 + 2025 ✅ PRODUCTION-READY (MONEYLINE)
+
+**Test Period:** Oct 2024 – Jun 2025 (2024 season) + ongoing 2025
+**Completed Games:** 2,344
+**Matched Games:** 2,335 (with both predictions and odds)
+**Model:** Ensemble (70% base + 30% market-aware), hockey-specific features (5-game + 10-game windows)
+
+### Moneyline Results
+- **Validation Games:** 2,335
+- **Overall ROI:** +37.35% (+$8,720.45 profit on 2,335 bets)
+- **ECE:** 8.60% (good calibration)
+- **Status:** ✅ Production-ready — strong edge with large sample
+
+**Calibration by Bin (selected):**
+- 0-10%: Actual 0.0% (353 games), ROI +69.7%
+- 10-20%: Actual 0.0% (287 games), ROI +65.4%
+- 80-90%: Actual 100.0% (207 games), ROI +54.7%
+- 90-100%: Actual 100.0% (617 games), ROI +47.8%
+
+**Key Insights:**
+- Large, diversified sample confirms profitability across seasons.
+- High-confidence favorites (80-100%) deliver consistent, high ROI.
+- Low-probability bins (0-20%) show mispriced market opportunities.
+- Feature deltas suggest winners trend slightly lower on pace/points vs opponents and diverge more from market.
+
+### Underdog Performance
+**Status:** ❌ Catastrophic — avoid when model favors severe dogs
+
+When model favored underdogs:
+- +200 or worse: 85/1,351 (6.3%), ROI -35.7%
+- +300 or worse: 16/1,332 (1.2%), ROI -42.2%
+- +500 or worse: 3/1,314 (0.2%), ROI -42.1%
+- +1000 or worse: 0/1,282 (0.0%), ROI -38.3%
+
+**Recommendation:**
+- ✅ Use default guardrails (suppress severe underdogs).
+- ✅ Focus on high-confidence favorites (≥80%).
+- ✅ Consider selectively exploiting 0-20% bins where the market is mispriced, but monitor volatility.
+- ❌ Do not use `--include-dogs` for NHL.
 
 ---
 

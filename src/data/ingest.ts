@@ -9,10 +9,12 @@ import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import { fetchEvents as fetchEventsNfl } from "../espn/nfl/events.js";
 import { fetchEvents as fetchEventsNba } from "../espn/nba/events.js";
+import { fetchNHLEvents as fetchEventsNhl } from "../espn/nhl/events.js";
 import { fetchOdds as fetchOddsNcaam } from "../espn/ncaam/odds.js";
 import { fetchOdds as fetchOddsCfb } from "../espn/cfb/odds.js";
 import { fetchOdds as fetchOddsNfl } from "../espn/nfl/odds.js";
 import { fetchOdds as fetchOddsNba } from "../espn/nba/odds.js";
+import { fetchNHLOdds as fetchOddsNhl } from "../espn/nhl/odds.js";
 
 /**
  * Get season date range for a sport
@@ -106,6 +108,9 @@ export async function cmdDataIngest(
     } else if (sport === "nfl") {
       fetchEvents = fetchEventsNfl;
       fetchOdds = fetchOddsNfl;
+    } else if (sport === "nhl") {
+      fetchEvents = fetchEventsNhl;
+      fetchOdds = fetchOddsNhl;
     } else {
       fetchEvents = fetchEventsNba;
       fetchOdds = fetchOddsNba;
@@ -153,7 +158,7 @@ export async function cmdDataIngest(
         
         if (competitions.length === 0) continue;
 
-        console.log(chalk.dim(`${dateStr}: ${competitions.length} game(s)`));
+        console.log(chalk.dim(`${dateStr}: ${competitions.length} ${sport.toUpperCase()} game(s)`));
 
         for (const comp of competitions) {
           // Upsert teams

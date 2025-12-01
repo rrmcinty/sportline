@@ -4,6 +4,7 @@ import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
 import { fetchEvents as fetchEventsNfl } from "../espn/nfl/events.js";
 import { fetchEvents as fetchEventsNba } from "../espn/nba/events.js";
+import { fetchNHLEvents } from "../espn/nhl/events.js";
 import type { Sport } from "../models/types.js";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -17,6 +18,7 @@ function getFetchEvents(sport: Sport) {
   if (sport === "cfb") return fetchEventsCfb;
   if (sport === "nfl") return fetchEventsNfl;
   if (sport === "nba") return fetchEventsNba;
+  if (sport === "nhl") return fetchNHLEvents;
   return fetchEventsNcaam;
 }
 
@@ -57,19 +59,11 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     }
   }
 
-  const fetchEvents = getFetchEvents(sport);
-  const competitions = await fetchEvents(date);
-  if (competitions.length === 0) return undefined;
-
-  // Upsert teams and games (in case not ingested yet)
-  const upsertTeam = db.prepare(`INSERT INTO teams (sport, espn_id, name, abbreviation) VALUES (?, ?, ?, ?) ON CONFLICT(sport, espn_id) DO UPDATE SET name=excluded.name, abbreviation=excluded.abbreviation RETURNING id`);
-  const insertGame = db.prepare(`INSERT INTO games (espn_event_id, sport, date, season, home_team_id, away_team_id, home_score, away_score, venue, status) VALUES (?, ?, ?, ?, ?, ?, NULL, NULL, ?, 'scheduled') ON CONFLICT(espn_event_id) DO NOTHING`);
-
-  for (const comp of competitions) {
-    const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
-    const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-    insertGame.run(comp.eventId, sport, comp.date, (Array.isArray(seasons) && seasons.length ? seasons[0] : 2025), home.id, away.id, comp.venue || null);
-  }
+  // Use database only - no API fetches during backtest/predictions
+  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+  const nextDay = new Date(isoPrefix);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const nextDayPrefix = nextDay.toISOString().slice(0, 10);
 
   // Compute features for season
   const allFeatures = computeFeatures(db, sport, Array.isArray(seasons) && seasons.length ? seasons : [2025]);
@@ -81,11 +75,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     featureMap.set(f.gameId, { base: baseFeatures, market: marketFeatures });
   }
 
-  // Query games matching date prefix (check both the date and next day for UTC rollover)
-  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
-  const nextDay = new Date(isoPrefix);
-  nextDay.setDate(nextDay.getDate() + 1);
-  const nextDayPrefix = nextDay.toISOString().slice(0, 10);
+  // Query games matching date prefix (already calculated above)
   
   const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefix) as Array<{ id: number; espn_event_id: string }>;
   if (rows.length === 0) return undefined;
@@ -171,19 +161,11 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
 
   if (model.market !== 'spread') return undefined;
 
-  const fetchEvents = getFetchEvents(sport);
-  const competitions = await fetchEvents(date);
-  if (competitions.length === 0) return undefined;
-
-  // Upsert teams and games
-  const upsertTeam = db.prepare(`INSERT INTO teams (sport, espn_id, name, abbreviation) VALUES (?, ?, ?, ?) ON CONFLICT(sport, espn_id) DO UPDATE SET name=excluded.name, abbreviation=excluded.abbreviation RETURNING id`);
-  const insertGame = db.prepare(`INSERT INTO games (espn_event_id, sport, date, season, home_team_id, away_team_id, home_score, away_score, venue, status) VALUES (?, ?, ?, ?, ?, ?, NULL, NULL, ?, 'scheduled') ON CONFLICT(espn_event_id) DO NOTHING`);
-
-  for (const comp of competitions) {
-    const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
-    const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-    insertGame.run(comp.eventId, sport, comp.date, (Array.isArray(model.seasons) && model.seasons.length ? model.seasons[0] : 2025), home.id, away.id, comp.venue || null);
-  }
+  // Use database only - no API fetches during backtest/predictions
+  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+  const nextDay = new Date(isoPrefix);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const nextDayPrefix = nextDay.toISOString().slice(0, 10);
 
   // Compute features for season
   const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2025]);
@@ -195,12 +177,7 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
     }
   }
 
-  // Query games matching date prefix (check both the date and next day for UTC rollover)
-  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
-  const nextDay = new Date(isoPrefix);
-  nextDay.setDate(nextDay.getDate() + 1);
-  const nextDayPrefix = nextDay.toISOString().slice(0, 10);
-  
+  // Query games matching date prefix (already calculated above)
   const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefix) as Array<{ id: number; espn_event_id: string }>;
   if (rows.length === 0) return undefined;
 
@@ -239,17 +216,11 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   }
   if (model.market !== 'total') return undefined;
 
-  const fetchEvents = getFetchEvents(sport);
-  const competitions = await fetchEvents(date);
-  if (!competitions.length) return undefined;
-
-  const upsertTeam = db.prepare(`INSERT INTO teams (sport, espn_id, name, abbreviation) VALUES (?, ?, ?, ?) ON CONFLICT(sport, espn_id) DO UPDATE SET name=excluded.name, abbreviation=excluded.abbreviation RETURNING id`);
-  const insertGame = db.prepare(`INSERT INTO games (espn_event_id, sport, date, season, home_team_id, away_team_id, home_score, away_score, venue, status) VALUES (?, ?, ?, ?, ?, ?, NULL, NULL, ?, 'scheduled') ON CONFLICT(espn_event_id) DO NOTHING`);
-  for (const comp of competitions) {
-    const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
-    const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
-    insertGame.run(comp.eventId, sport, comp.date, (Array.isArray(model.seasons) && model.seasons.length ? model.seasons[0] : 2025), home.id, away.id, comp.venue || null);
-  }
+  // Use database only - no API fetches during backtest/predictions
+  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+  const nextDayT = new Date(isoPrefix);
+  nextDayT.setDate(nextDayT.getDate() + 1);
+  const nextDayPrefixT = nextDayT.toISOString().slice(0, 10);
 
   const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2025]);
   const featureMap = new Map<number, number[]>();
@@ -299,11 +270,7 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
     }
   }
 
-  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
-  const nextDayT = new Date(isoPrefix);
-  nextDayT.setDate(nextDayT.getDate() + 1);
-  const nextDayPrefixT = nextDayT.toISOString().slice(0, 10);
-  
+  // Query games matching date prefix
   const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefixT) as Array<{ id: number; espn_event_id: string }>;
   if (!rows.length) return undefined;
 

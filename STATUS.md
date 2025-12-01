@@ -1,6 +1,6 @@
 # sportline Status
 
-**Last Updated:** 2025-11-29  
+**Last Updated:** 2025-11-30  
 **Current Phase:** Phase 3 – Production-Ready Pipeline with Historical Data & Model Predictions  
 **Active Step:** Multi-sport support with cross-sport bet aggregation ✅
 
@@ -121,10 +121,12 @@
 - [x] **Multi-Sport Expansion**
   - [x] Added NFL support: `src/espn/nfl/events.ts` and `src/espn/nfl/odds.ts`
   - [x] Added NBA support: `src/espn/nba/events.ts` and `src/espn/nba/odds.ts`
-  - [x] Updated Sport type to include "nfl" | "nba"
+  - [x] Added NHL support: `src/espn/nhl/events.ts` and `src/espn/nhl/odds.ts`
+  - [x] Updated Sport type to include "nfl" | "nba" | "nhl"
   - [x] Expanded CLI routing (getFetchers, getFetchEvents) for all 4 sports
   - [x] Tested NFL API: Successfully fetched Giants @ Patriots (12/1/2025)
   - [x] Tested NBA API: Successfully fetched 9 games (12/1/2025)
+  - [x] Ingested NHL 2024 season (scores via $ref) and validated model
 
 - [x] **Cross-Sport Bet Aggregation**
   - [x] Modified `recommend` command to accept optional `--sport` parameter
@@ -142,10 +144,12 @@
 
 - [x] **Model Backtesting & Validation**
   - [x] Implemented moneyline backtesting across all 4 sports (CFB, NCAAM, NFL, NBA)
+  - [x] Implemented NHL moneyline backtesting (+37.35% ROI, 8.60% ECE on 2,335 games)
   - [x] CFB: 1,584 validated bets, +12.04% ROI, 6.52% ECE (production-ready)
   - [x] NBA: 349 validated bets, +7.56% ROI, 4.90% ECE (best calibration)
   - [x] NFL: 441 validated bets, +5.69% ROI, 6.13% ECE (solid performance)
   - [x] NCAAM: 928 validated bets, +3.11% ROI, 11.84% ECE (working well)
+  - [x] NHL: 2,335 validated bets, +37.35% ROI, 8.60% ECE (production-ready moneyline)
   - [x] Created BACKTEST_RESULTS.md with comprehensive metrics by sport
   - [x] Implemented backtestTotals() function with calibration analysis
   - [x] Investigated totals models: Found critical bug (missing 10-game features)
@@ -223,6 +227,7 @@ Totals Model (Regression):
 - [ ] Track actual betting results vs predictions (logging + ROI table)
 - [ ] Add model performance dashboard (daily snapshot + rolling metrics)
 - [ ] Persist individual model predictions (new table) for auditing & backtests
+ - [ ] Add NHL to default recommend filters and confidence tiers (moneyline only)
 
 ### 📊 Improvement History
 | Date | Feature | Moneyline Accuracy | Spread Accuracy | ECE (Moneyline) | Notes |

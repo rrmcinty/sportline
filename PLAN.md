@@ -8,7 +8,7 @@ NCAAM betting CLI with parlay EV ranking. Build sport-agnostic infrastructure fi
 ### Phase 1: NCAAM (Now – December 2025)
 - **Language:** TypeScript/Node
 - **Data Source:** ESPN Core API (`sports.core.api.espn.com`)
-- **Sports:** NCAAM, CFB, NFL, NBA
+- **Sports:** NCAAM, CFB, NFL, NBA, NHL
 - **Markets:** Moneyline, Spread (ATS), Totals (O/U)
 - **Providers:** ESPN BET (priority), DraftKings, others as available
 - **Parlay Logic:** Independence assumption (no same-game correlation yet)
@@ -16,11 +16,12 @@ NCAAM betting CLI with parlay EV ranking. Build sport-agnostic infrastructure fi
 - **CLI:** `sportline games fetch --date`, `game show --event`, `odds import --event`, `parlay eval --legs --stake`
 
 ### Phase 2: Multi-Sport Support ✅
-- All major sports enabled: `--sport ncaam|cfb|nfl|nba`
+- All major sports enabled: `--sport ncaam|cfb|nfl|nba|nhl`
 - Shared models/parlay engine across all sports
 - CFB: Bowl games and playoffs (late December)
 - NFL: Regular season and playoffs
 - NBA: Regular season and playoffs
+ - NHL: Regular season and playoffs (moneyline model production-ready)
 
 ### Phase 3: Future
 - Same-game parlay correlation (SGP)
@@ -52,6 +53,11 @@ sportline game show --sport ncaam --event 401827111
 sportline odds import --sport ncaam --event 401827111
 sportline parlay eval --sport ncaam --legs "IU ML,-115" "UK +1.5,-110" --stake 10
 sportline recommend --sport ncaam --date 2025-11-29 --stake 10 --min-legs 2 --max-legs 4
+
+# NHL examples (moneyline production-ready)
+sportline data ingest --sport nhl --season 2024,2025
+sportline model train --sport nhl --season 2024,2025 --markets moneyline
+sportline model backtest --sport nhl --season 2024,2025 --market moneyline
 ```
 
 ## Technical Notes
