@@ -158,10 +158,11 @@
   - [x] Implemented probability display cap at 97% (prevents 99.9% overconfidence)
   - [x] Added market-specific backtest stat lookup (shows historical win rate, ROI)
   - [x] Suppressed ELITE/HIGH confidence labels for unvalidated markets (totals, spreads)
-  - [x] Filtered recommend command to only show moneyline bets (backtested only)
+  - [x] Filtered recommend command to show only validated bets (moneyline all sports, NBA spreads)
   - [x] Added --include-parlays flag (parlays hidden by default, EV compounds negatively)
   - [x] Enhanced bet display with confidence tiers and backtest-based warnings
   - [x] Added divergence analysis tools for model investigation
+  - [x] NBA spreads now shown in recommendations (+11.02% backtested ROI)
 
 ### 🔄 Current Model Performance (CFB 2025) - After Normalization Revert
 **Training Data:** 1,241 games (filtered from 1,750 completed) - excludes games where either team has <5 completed games
@@ -178,15 +179,17 @@ Moneyline Model (Ensemble: 70% Base + 30% Market-Aware):
 - **Status:** Production-ready with reliable probability estimates
 
 Spread Model:
+- **Backtest Results (by sport):**
+  - NBA: +11.02% ROI, 6.67% ECE (✅ PRODUCTION-READY - only profitable spread model!)
+  - CFB: -7.03% ROI, 18.41% ECE (❌ poor calibration, unprofitable)
+  - NFL: -11.04% ROI, 7.37% ECE (❌ good calibration but unprofitable)
+  - NCAAM: -8.22% ROI, 8.48% ECE (❌ moderate calibration but unprofitable)
 - **Training Accuracy:** 66.3% (833 games with reliable features)
 - **Validation Accuracy:** 67.5%
-- **Brier Score:** 0.2160 | **Log Loss:** 0.6225
-- **ECE: 0.0256** (excellent calibration on validation set)
 - **Features:** 11 (moneyline set + spread line + spread market implied prob)
 - **Regularization:** L2 (λ=0.1)
 - **Probability Clipping:** [5%, 95%] to prevent extreme predictions
-- **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
-- **Status:** Needs backtesting - validation metrics look good but not yet validated on historical odds
+- **Status:** NBA spreads production-ready (+11% ROI), all other sports avoid spreads
 
 Totals Model (Regression):
 - **Backtest Results (after bug fix):**
@@ -214,7 +217,7 @@ Totals Model (Regression):
 - [x] **Moneyline Backtesting** ✅ **COMPLETED** - All 4 sports validated with comprehensive ROI/ECE metrics
 - [x] **Betting Guardrails** ✅ **COMPLETED** - Probability caps, backtest stats, moneyline-only recommendations
 - [x] **Totals Model Investigation** ✅ **COMPLETED** - Found/fixed missing features bug, NBA works but others inverted
-- [ ] **Spread Backtesting** 🎯 **NEXT PRIORITY** - Implement backtestSpreads() for all 4 sports
+- [x] **Spread Backtesting** ✅ **COMPLETED** - All 4 sports validated, only NBA is profitable (+11.02% ROI!)
 - [ ] **Totals Model Fix** - Investigate NFL/CFB/NCAAM systematic inversion (low predictions → goes Over)
 - [ ] **Team Strength Tiers** - Categorical features for Elite/Strong/Average/Weak based on rolling performance
 - [ ] Track actual betting results vs predictions (logging + ROI table)

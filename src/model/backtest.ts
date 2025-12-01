@@ -4,7 +4,7 @@
  */
 
 import { getDb } from "../db/index.js";
-import { getHomeWinModelProbabilities, getTotalOverModelProbabilities } from "./apply.js";
+import { getHomeWinModelProbabilities, getTotalOverModelProbabilities, getHomeSpreadCoverProbabilities } from "./apply.js";
 import { computeFeatures } from "./features.js";
 import type { Sport } from "../models/types.js";
 
@@ -407,6 +407,259 @@ export async function backtestMoneyline(sport: Sport, seasons: number[]): Promis
   
   console.log(`\n   High-confidence bets (>70% or <30%): ${(highConfWinRate * 100).toFixed(1)}% win rate (${highConfidence.length} bets)`);
   console.log(`   Low-confidence bets (40-60%): ${(lowConfWinRate * 100).toFixed(1)}% win rate (${lowConfidence.length} bets)`);
+
+  console.log("\n═══════════════════════════════════════════════════════════════════════\n");
+}
+
+/**
+ * Backtest spread model predictions
+ * Groups predictions into bins and checks if actual cover rates match predicted rates
+ */
+export async function backtestSpreads(sport: Sport, seasons: number[]): Promise<void> {
+  const db = getDb();
+  
+  // Get all completed games with odds for these seasons
+  const seasonPlaceholders = seasons.map(() => '?').join(',');
+  const games = db.prepare(`
+    SELECT g.id, g.espn_event_id, g.date, g.home_score, g.away_score,
+           g.home_team_id, g.away_team_id
+    FROM games g
+    WHERE g.sport = ? 
+      AND g.season IN (${seasonPlaceholders})
+      AND g.home_score IS NOT NULL 
+      AND g.away_score IS NOT NULL
+    ORDER BY g.date
+  `).all(sport, ...seasons) as Array<{
+    id: number;
+    espn_event_id: string;
+    date: string;
+    home_score: number;
+    away_score: number;
+    home_team_id: number;
+    away_team_id: number;
+  }>;
+
+  if (games.length === 0) {
+    console.log(`\n⚠️  No completed games found for ${sport.toUpperCase()} season${seasons.length > 1 ? 's' : ''} ${seasons.join(', ')}`);
+    console.log(`Skipping spread backtest for this sport.\n`);
+    return;
+  }
+
+  console.log(`\n📊 SPREAD MODEL BACKTEST - ${sport.toUpperCase()} ${seasons.join(', ')}`);
+  console.log(`Testing ${games.length} completed games\n`);
+
+  // Get model predictions for each date
+  const predictions = new Map<string, number>();
+  const dateSet = new Set(games.map(g => g.date.slice(0, 10).replace(/-/g, '')));
+  
+  let predictedGames = 0;
+  for (const date of dateSet) {
+    try {
+      const probs = await getHomeSpreadCoverProbabilities(sport, date);
+      if (probs) {
+        probs.forEach((prob, eventId) => predictions.set(eventId, prob));
+        predictedGames += probs.size;
+      }
+    } catch (err) {
+      // Skip dates without predictions
+    }
+  }
+
+  console.log(`Model generated predictions for ${predictedGames} games`);
+  console.log(`Validating against ${games.length} actual outcomes\n`);
+
+  // For each game, check if we have odds and predictions
+  const results: Array<{
+    eventId: string;
+    modelProb: number;
+    marketProb: number;
+    homeCovered: boolean;
+    line: number;
+    homeOdds: number;
+    awayOdds: number;
+  }> = [];
+
+  for (const game of games) {
+    const modelProb = predictions.get(game.espn_event_id);
+    if (!modelProb) continue; // No model prediction for this game
+
+    // Get spread odds
+    const odds = db.prepare(`
+      SELECT market, line, price_home, price_away
+      FROM odds
+      WHERE game_id = ? AND market = 'spread'
+      ORDER BY timestamp DESC
+      LIMIT 1
+    `).get(game.id) as { market: string; line: number | null; price_home: number; price_away: number } | undefined;
+
+    if (!odds || odds.line === null || !odds.price_home || !odds.price_away) continue;
+
+    // Calculate market implied probability (with vig)
+    const homeDecimal = odds.price_home < 0 ? (100 / Math.abs(odds.price_home)) + 1 : (odds.price_home / 100) + 1;
+    const awayDecimal = odds.price_away < 0 ? (100 / Math.abs(odds.price_away)) + 1 : (odds.price_away / 100) + 1;
+    const homeImplied = 1 / homeDecimal;
+    const awayImplied = 1 / awayDecimal;
+    const marketProb = homeImplied / (homeImplied + awayImplied); // Vig-free
+
+    // Home covers if: home_score + line > away_score
+    const homeCovered = (game.home_score + odds.line) > game.away_score;
+
+    results.push({
+      eventId: game.espn_event_id,
+      modelProb,
+      marketProb,
+      homeCovered,
+      line: odds.line,
+      homeOdds: odds.price_home,
+      awayOdds: odds.price_away
+    });
+  }
+
+  console.log(`Matched ${results.length} games with both predictions and odds\n`);
+
+  // Bin predictions and calculate calibration
+  const bins = [
+    { min: 0, max: 0.10, label: "0-10%" },
+    { min: 0.10, max: 0.20, label: "10-20%" },
+    { min: 0.20, max: 0.30, label: "20-30%" },
+    { min: 0.30, max: 0.40, label: "30-40%" },
+    { min: 0.40, max: 0.50, label: "40-50%" },
+    { min: 0.50, max: 0.60, label: "50-60%" },
+    { min: 0.60, max: 0.70, label: "60-70%" },
+    { min: 0.70, max: 0.80, label: "70-80%" },
+    { min: 0.80, max: 0.90, label: "80-90%" },
+    { min: 0.90, max: 1.00, label: "90-100%" }
+  ];
+
+  const calibration: BacktestResult[] = [];
+
+  for (const bin of bins) {
+    const binResults = results.filter(r => r.modelProb >= bin.min && r.modelProb < bin.max);
+    if (binResults.length === 0) continue;
+
+    const avgPredicted = binResults.reduce((sum, r) => sum + r.modelProb, 0) / binResults.length;
+    const actualCovers = binResults.filter(r => r.homeCovered).length;
+    const actualRate = actualCovers / binResults.length;
+
+    // Calculate profit if we bet on every game in this bin
+    let profit = 0;
+    let bets = 0;
+    for (const r of binResults) {
+      // Bet on home spread if model thinks home will cover, away spread otherwise
+      if (r.modelProb > 0.5) {
+        bets++;
+        if (r.homeCovered) {
+          // Won home spread bet
+          const payout = r.homeOdds < 0 ? (100 / Math.abs(r.homeOdds)) + 1 : (r.homeOdds / 100) + 1;
+          profit += (payout - 1) * 10; // $10 bet
+        } else {
+          profit -= 10;
+        }
+      } else {
+        bets++;
+        if (!r.homeCovered) {
+          // Won away spread bet
+          const payout = r.awayOdds < 0 ? (100 / Math.abs(r.awayOdds)) + 1 : (r.awayOdds / 100) + 1;
+          profit += (payout - 1) * 10;
+        } else {
+          profit -= 10;
+        }
+      }
+    }
+
+    calibration.push({
+      bin: bin.label,
+      predicted: avgPredicted,
+      actual: actualRate,
+      count: binResults.length,
+      bets,
+      profit
+    });
+  }
+
+  // Calculate Expected Calibration Error (ECE)
+  const ece = calibration.reduce((sum, bin) => {
+    return sum + (bin.count / results.length) * Math.abs(bin.predicted - bin.actual);
+  }, 0);
+
+  // Calculate total profit and ROI
+  const totalProfit = calibration.reduce((sum, bin) => sum + bin.profit, 0);
+  const totalBets = calibration.reduce((sum, bin) => sum + bin.bets, 0);
+  const roi = (totalProfit / (totalBets * 10)) * 100;
+
+  // Print results
+  console.log("CALIBRATION ANALYSIS");
+  console.log("═══════════════════════════════════════════════════════════════════════");
+  console.log("Bin       | Predicted | Actual | Count | Error  | Profit (if bet all)");
+  console.log("───────────────────────────────────────────────────────────────────────");
+  
+  for (const bin of calibration) {
+    const error = Math.abs(bin.predicted - bin.actual);
+    const roiBin = (bin.profit / (bin.bets * 10)) * 100;
+    console.log(
+      `${bin.bin.padEnd(10)}| ${(bin.predicted * 100).toFixed(1).padStart(5)}%` +
+      `| ${(bin.actual * 100).toFixed(1).padStart(6)}% ` +
+      `| ${String(bin.count).padStart(5)} ` +
+      `| ${(error * 100).toFixed(1).padStart(5)}%` +
+      `| ${bin.profit >= 0 ? '+' : ''}$${bin.profit.toFixed(2).padStart(8)}  ` +
+      `(${roiBin >= 0 ? '+' : ''}${roiBin.toFixed(1)}% ROI)`
+    );
+  }
+  
+  console.log("═══════════════════════════════════════════════════════════════════════");
+  console.log(`Overall Calibration Error: ${(ece * 100).toFixed(2)}%`);
+  console.log(`Total Profit (if bet all): $${totalProfit >= 0 ? '+' : ''}${totalProfit.toFixed(2)} on ${totalBets} bets`);
+  console.log(`Return on Investment: ${roi >= 0 ? '+' : ''}${roi.toFixed(2)}%`);
+  console.log("═══════════════════════════════════════════════════════════════════════\n");
+
+  // Underdog performance analysis
+  console.log("UNDERDOG PERFORMANCE (when model favored underdog on spread)");
+  console.log("═══════════════════════════════════════════════════════════════════════");
+  
+  const thresholds = [
+    { label: "+200 or worse", minOdds: 200 },
+    { label: "+300 or worse", minOdds: 300 },
+    { label: "+500 or worse", minOdds: 500 },
+    { label: "+1000 or worse", minOdds: 1000 }
+  ];
+
+  for (const threshold of thresholds) {
+    const underdogBets = results.filter(r => {
+      const isUnderdog = r.marketProb < 0.5;
+      const modelFavors = r.modelProb > r.marketProb;
+      const meetsThreshold = r.homeOdds >= threshold.minOdds || r.awayOdds >= threshold.minOdds;
+      return isUnderdog && modelFavors && meetsThreshold;
+    });
+
+    if (underdogBets.length === 0) continue;
+
+    const wins = underdogBets.filter(r => {
+      if (r.modelProb > 0.5) return r.homeCovered;
+      else return !r.homeCovered;
+    }).length;
+
+    let underdogProfit = 0;
+    for (const r of underdogBets) {
+      if (r.modelProb > 0.5) {
+        if (r.homeCovered) {
+          const payout = r.homeOdds < 0 ? (100 / Math.abs(r.homeOdds)) + 1 : (r.homeOdds / 100) + 1;
+          underdogProfit += (payout - 1) * 10;
+        } else {
+          underdogProfit -= 10;
+        }
+      } else {
+        if (!r.homeCovered) {
+          const payout = r.awayOdds < 0 ? (100 / Math.abs(r.awayOdds)) + 1 : (r.awayOdds / 100) + 1;
+          underdogProfit += (payout - 1) * 10;
+        } else {
+          underdogProfit -= 10;
+        }
+      }
+    }
+
+    const underdogRoi = (underdogProfit / (underdogBets.length * 10)) * 100;
+    console.log(`${threshold.label}: ${wins}/${underdogBets.length} correct (${(wins / underdogBets.length * 100).toFixed(1)}%), ROI: ${underdogRoi >= 0 ? '+' : ''}${underdogRoi.toFixed(1)}%`);
+  }
 
   console.log("\n═══════════════════════════════════════════════════════════════════════\n");
 }

@@ -11,6 +11,24 @@ This document tracks backtest results for all sports models. Backtests validate 
 - **ROI:** Return on investment if betting $10 on every prediction
 - **Calibration Bins:** Predicted probability ranges vs actual win rates
 
+## Summary
+
+**Production-Ready (Validated & Profitable):**
+- ✅ **NBA Moneyline:** +7.56% ROI, 4.90% ECE (best calibration)
+- ✅ **NBA Spreads:** +11.02% ROI, 6.67% ECE (ONLY profitable spread model!)
+- ✅ **CFB Moneyline:** +12.04% ROI, 6.52% ECE (highest ROI)
+- ✅ **NFL Moneyline:** +5.69% ROI, 6.13% ECE
+- ✅ **NCAAM Moneyline:** +3.11% ROI, 11.84% ECE
+
+**Not Recommended (Unprofitable or Poor Calibration):**
+- ❌ **CFB Spreads:** -7.03% ROI, 18.41% ECE (poor calibration)
+- ❌ **NFL Spreads:** -11.04% ROI, 7.37% ECE (good calibration but unprofitable)
+- ❌ **NCAAM Spreads:** -8.22% ROI, 8.48% ECE (unprofitable)
+- ❌ **All Totals except NBA:** Systematic inversion issues (40-57% ECE)
+- ⚠️ **NBA Totals:** 6.56% ECE (excellent) but -1.84% ROI (slightly unprofitable)
+
+**Key Insight:** NBA is the only sport where we have edge on BOTH moneyline and spreads. All other sports should stick to moneyline only.
+
 ---
 
 ## CFB (College Football) 2025 ✅ PRODUCTION-READY
@@ -67,6 +85,33 @@ Results when model favored underdogs:
 - ❌ Never use `--include-dogs` flag for CFB
 - 📊 Highest confidence of all sports (1,768 completed games)
 
+### Spread Results
+- **Validation Games:** 1,202
+- **Overall ROI:** -7.03% (-$845.60 loss on 1,202 bets)
+- **ECE:** 18.41% (poor calibration - model is overconfident)
+- **Status:** ❌ NOT RECOMMENDED - poor calibration and unprofitable
+
+**Calibration by Bin:**
+| Predicted Range | Actual Cover Rate | Sample Size | Calibration Error | ROI |
+|----------------|------------------|-------------|-------------------|-----|
+| 10-20%  | 66.7% | 15  | 49.2% | -58.3% |
+| 20-30%  | 62.3% | 318 | 35.8% | -36.9% |
+| 30-40%  | 46.1% | 618 | 11.1% | -1.3%  |
+| 40-50%  | 32.2% | 233 | 11.2% | +25.5% |
+| 50-60%  | 23.5% | 17  | 28.5% | -52.8% |
+| 60-70%  | 0.0%  | 1   | 62.2% | -100.0%|
+
+**Key Issues:**
+- Systematic underconfidence: Low predictions (10-30%) actually cover at high rates (62-67%)
+- Model is inverted in some bins
+- Unprofitable across most probability ranges
+- Small sample in extreme bins suggests model isn't confident enough
+
+**Recommendation:**
+- ❌ Do not use CFB spread predictions
+- ⚠️ Model needs retraining or different approach for spreads
+- ✅ Stick to moneyline for CFB
+
 ---
 
 ## NCAAM (College Basketball) 2024 + 2025 ✅ WORKING
@@ -122,6 +167,33 @@ Results when model favored underdogs:
 - ❌ Never use `--include-dogs` flag for NCAAM (catastrophic on extreme dogs)
 - ⚠️ 50-60% bin shows model underconfidence (actual 69.3% vs predicted 54.4%)
 
+### Spread Results
+- **Validation Games:** 364
+- **Overall ROI:** -8.22% (-$299.17 loss on 364 bets)
+- **ECE:** 8.48% (moderate calibration)
+- **Status:** ❌ NOT RECOMMENDED - unprofitable despite reasonable calibration
+
+**Calibration by Bin:**
+| Predicted Range | Actual Cover Rate | Sample Size | Calibration Error | ROI |
+|----------------|------------------|-------------|-------------------|-----|
+| 20-30%  | 100.0% | 3   | 71.1% | -100.0% |
+| 30-40%  | 46.7%  | 15  | 10.1% | +1.9%   |
+| 40-50%  | 57.5%  | 87  | 11.6% | -18.6%  |
+| 50-60%  | 48.2%  | 199 | 6.6%  | -7.9%   |
+| 60-70%  | 56.9%  | 58  | 6.1%  | +8.2%   |
+| 70-80%  | 50.0%  | 2   | 22.5% | -2.4%   |
+
+**Key Issues:**
+- Unprofitable despite reasonable ECE
+- Small samples in extreme bins (20-30%, 70-80%)
+- Model lacks edge against spread market
+- Moderate underperformance across mid-range bins
+
+**Recommendation:**
+- ❌ Do not use NCAAM spread predictions
+- ✅ Stick to moneyline for college basketball
+- ⚠️ Spread market appears more efficient than moneyline market
+
 ---
 
 ## NFL (Pro Football) 2024 + 2025 ✅ WORKING
@@ -173,6 +245,32 @@ Results when model favored underdogs:
 - ✅ Focus on high-confidence picks (70%+) for best ROI
 - ❌ Avoid close games (50-70%) and extreme underdogs
 - 📊 Sample size now robust (468 completed games)
+
+### Spread Results
+- **Validation Games:** 363
+- **Overall ROI:** -11.04% (-$400.58 loss on 363 bets)
+- **ECE:** 7.37% (good calibration)
+- **Status:** ❌ NOT RECOMMENDED - well-calibrated but unprofitable
+
+**Calibration by Bin:**
+| Predicted Range | Actual Cover Rate | Sample Size | Calibration Error | ROI |
+|----------------|------------------|-------------|-------------------|-----|
+| 30-40%  | 93.3%  | 15  | 56.5% | -87.3%  |
+| 40-50%  | 48.5%  | 97  | 2.4%  | -13.3%  |
+| 50-60%  | 49.2%  | 191 | 5.6%  | -6.8%   |
+| 60-70%  | 55.9%  | 59  | 7.5%  | -0.0%   |
+| 70-80%  | 0.0%   | 1   | 73.8% | -100.0% |
+
+**Key Issues:**
+- Systematic miscalibration in 30-40% bin (predicts 36%, actual 93%)
+- Good calibration in mid-range but no edge against market
+- Unprofitable across all bins except breakeven at 60-70%
+- Small samples in extreme bins
+
+**Recommendation:**
+- ❌ Do not use NFL spread predictions
+- ✅ Stick to moneyline for NFL
+- ⚠️ NFL spread market is highly efficient
 
 ---
 
@@ -229,42 +327,78 @@ Results when model favored underdogs:
 - ✅ 20-30% bin shows exceptional value (model finding mispriced underdogs)
 - ❌ Still avoid extreme underdogs (+500 or worse)
 
+### Spread Results
+- **Validation Games:** 268
+- **Overall ROI:** +11.02% (+$295.23 profit on 268 bets)
+- **ECE:** 6.67% (excellent calibration)
+- **Status:** ✅ PRODUCTION-READY - Profitable and well-calibrated!
+
+**Calibration by Bin:**
+| Predicted Range | Actual Cover Rate | Sample Size | Calibration Error | ROI |
+|----------------|------------------|-------------|-------------------|-----|
+| 20-30%  | 0.0%   | 4   | 27.7% | +90.0%  |
+| 30-40%  | 48.3%  | 29  | 12.5% | -1.6%   |
+| 40-50%  | 40.8%  | 71  | 4.8%  | +12.2%  |
+| 50-60%  | 57.3%  | 82  | 2.4%  | +10.2%  |
+| 60-70%  | 55.2%  | 58  | 9.9%  | +5.1%   |
+| 70-80%  | 66.7%  | 21  | 7.1%  | +26.8%  |
+| 80-90%  | 66.7%  | 3   | 15.8% | +26.0%  |
+
+**Key Insights:**
+- **Only profitable spread model across all 4 sports!**
+- Excellent calibration (ECE 6.67%) matches moneyline quality
+- Positive ROI across all bins except 30-40%
+- Strong performance in high-confidence bins (70%+: +26% avg ROI)
+- Exceptional ROI in 20-30% bin (+90% on 4 bets - small sample)
+- Good sample distribution across mid-range bins
+
+**Recommendation:**
+- ✅ NBA spreads are production-ready alongside moneyline
+- ✅ Focus on high-confidence picks (60%+) for best ROI
+- ✅ Mid-range bins (40-60%) show consistent +10% ROI
+- 📊 NBA is the only sport where spread model has edge against market
+
 ---
 
 ## Recommendations by Sport
 
 ### NBA (Pro Basketball) 🏆 BEST PERFORMER
-- **Status:** Production-ready - best calibration and ROI of all sports
-- **Overall ROI:** +7.56% (349 games)
-- **Best Use:** Default guardrails (already working excellently)
-- **Sweet Spot:** 80-100% confidence picks (+22% ROI), 20-30% value underdogs (+61.5%)
-- **Avoid:** Extreme underdogs (+500 or worse)
-- **Confidence:** High (349 matched games, ECE 4.90% - best calibration)
+- **Status:** Production-ready - best calibration and ROI across both moneyline AND spreads
+- **Moneyline ROI:** +7.56% (349 games, ECE 4.90%)
+- **Spread ROI:** +11.02% (268 games, ECE 6.67%)
+- **Best Use:** Default guardrails, can use BOTH moneyline and spreads
+- **Sweet Spot (ML):** 80-100% confidence picks (+22% ROI), 20-30% value underdogs (+61.5%)
+- **Sweet Spot (Spread):** 40-60% range (+10-12% ROI), 70%+ picks (+26% ROI)
+- **Avoid:** Extreme moneyline underdogs (+500 or worse)
+- **Confidence:** Highest - only sport profitable on both moneyline and spreads
 - **Key Edge:** 10-game margin is top predictor, defense matters (points allowed)
 
-### CFB (College Football) 🏆 HIGHLY PROFITABLE
-- **Status:** Production-ready - largest sample, exceptional ROI
-- **Overall ROI:** +12.04% (1,584 games)
-- **Best Use:** Default guardrails (suppress severe underdogs)
+### CFB (College Football) 🏆 HIGHLY PROFITABLE (MONEYLINE ONLY)
+- **Status:** Production-ready for moneyline, avoid spreads
+- **Moneyline ROI:** +12.04% (1,584 games, ECE 6.52%)
+- **Spread ROI:** -7.03% (1,202 games, ECE 18.41%) ❌
+- **Best Use:** Default guardrails, moneyline only
 - **Sweet Spot:** Extreme confidence (80-100%: +30% avg ROI, 0-20%: +56% avg ROI)
-- **Avoid:** Close games (40-60%) and all underdogs
-- **Confidence:** Highest (1,768 completed games, most reliable)
+- **Avoid:** Close games (40-60%), all underdogs, AND ALL SPREADS
+- **Confidence:** Highest sample size (1,768 completed games)
 - **Key Edge:** Margin differential (both 5-game and 10-game are top predictors), defense
 
-### NFL (Pro Football) ⚠️ WORKING → ✅ SOLID
-- **Status:** Working well with robust data
-- **Overall ROI:** +5.69% (441 games)
-- **Best Use:** Default guardrails, focus on high-confidence picks
+### NFL (Pro Football) ✅ SOLID (MONEYLINE ONLY)
+- **Status:** Working well with robust data on moneyline, avoid spreads
+- **Moneyline ROI:** +5.69% (441 games, ECE 6.13%)
+- **Spread ROI:** -11.04% (363 games, ECE 7.37%) ❌
+- **Best Use:** Default guardrails, moneyline only, focus on high-confidence picks
 - **Sweet Spot:** High confidence picks (70-100%: +31% avg ROI, 0-20%: +56% avg ROI)
-- **Caution:** Avoid close games (50-70%) and extreme underdogs
-- **Confidence:** Good (468 completed games, ECE 6.13%)
+- **Caution:** Avoid close games (50-70%), extreme underdogs, AND ALL SPREADS
+- **Confidence:** Good (468 completed games)
 
-### NCAAM (College Basketball) ✅ WORKING
-- **Status:** Working well with robust sample
-- **Overall ROI:** +3.11% (928 games)
-- **Best Use:** Default guardrails, focus on high-confidence picks
+### NCAAM (College Basketball) ✅ WORKING (MONEYLINE ONLY)
+- **Status:** Working well with robust sample on moneyline, avoid spreads
+- **Moneyline ROI:** +3.11% (928 games, ECE 11.84%)
+- **Spread ROI:** -8.22% (364 games, ECE 8.48%) ❌
+- **Best Use:** Default guardrails, moneyline only, focus on high-confidence picks
 - **Sweet Spot:** High confidence (80-100%: +19% avg ROI), value plays (10-20%: +74%)
-- **Avoid:** Extreme underdogs (+200 or worse: -34% ROI) and 70-80% range (-8.7%)
+- **Avoid:** Extreme underdogs (+200 or worse: -34% ROI), 70-80% range (-8.7%), AND ALL SPREADS
 - **Confidence:** Good (1,056 completed games, growing sample)
 - **Key Edge:** Pace/tempo is top predictor, 10-game windows outperform 5-game
 
@@ -273,10 +407,28 @@ Results when model favored underdogs:
 ## Backtest Command Reference
 
 ```bash
-# Run backtest for any sport
-node dist/index.js model backtest --sport <cfb|ncaam|nfl|nba> --season 2025
+# Run backtest for any sport and market
+node dist/index.js model backtest --sport <cfb|ncaam|nfl|nba> --season 2025 --market <moneyline|spread|total|all>
 
-# Examples
+# Moneyline examples
+node dist/index.js model backtest --sport cfb --season 2024,2025 --market moneyline
+node dist/index.js model backtest --sport ncaam --season 2024,2025 --market moneyline
+node dist/index.js model backtest --sport nfl --season 2024,2025 --market moneyline
+node dist/index.js model backtest --sport nba --season 2024,2025 --market moneyline
+
+# Spread examples
+node dist/index.js model backtest --sport cfb --season 2024,2025 --market spread
+node dist/index.js model backtest --sport ncaam --season 2024,2025 --market spread
+node dist/index.js model backtest --sport nfl --season 2024,2025 --market spread
+node dist/index.js model backtest --sport nba --season 2024,2025 --market spread
+
+# Totals examples
+node dist/index.js model backtest --sport cfb --season 2024,2025 --market total
+node dist/index.js model backtest --sport nba --season 2024,2025 --market total
+
+# Run all markets at once
+node dist/index.js model backtest --sport nba --season 2024,2025 --market all
+```
 node dist/index.js model backtest --sport cfb --season 2025
 node dist/index.js model backtest --sport ncaam --season 2025
 node dist/index.js model backtest --sport nfl --season 2025

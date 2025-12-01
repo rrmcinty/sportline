@@ -643,10 +643,11 @@ export async function cmdRecommend(
       console.log(chalk.dim(`Positive EV = good bet. Negative EV = bookmaker has the edge.\n`));
       
       const singleBets = allLegs.map(leg => evaluateParlay({ legs: [leg], stake }));
-      // Filter to only backtested bets (moneyline only)
+      // Filter to only backtested bets (moneyline for all sports, spreads for NBA only)
       const backtestedSingles = singleBets.filter(bet => {
         const leg = bet.legs[0];
-        return leg.market === 'moneyline';
+        const isNBASpread = leg.market === 'spread' && leg.description.includes('[NBA]');
+        return leg.market === 'moneyline' || isNBASpread;
       });
       // Sort by value score (EV * confidence multiplier) instead of raw EV
       const rankedSingles = backtestedSingles
@@ -729,7 +730,12 @@ export async function cmdRecommend(
           if (marketType === 'moneyline') {
             console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - backtests show ${marketStats.winRate} success rate!`));
           } else if (marketType === 'spread') {
-            console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - spread calibration not validated. Proceed with caution.`));
+            const isNBA = leg.description.includes('[NBA]');
+            if (isNBA) {
+              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NBA spreads backtested at +11% ROI!`));
+            } else {
+              console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - spread calibration not validated. Proceed with caution.`));
+            }
           } else {
             console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - totals calibration not validated. Proceed with caution.`));
           }
