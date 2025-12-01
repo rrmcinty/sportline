@@ -372,7 +372,7 @@ export async function cmdRecommend(
 
     // Now compute model predictions (they can access today's odds from database)
     const allLegs: BetLeg[] = [];
-    const eventIdToMatchup = new Map<string, { away: string; home: string; sport: Sport }>();
+    const eventIdToMatchup = new Map<string, { away: string; home: string; sport: Sport; date: string }>();
     
     // Load model predictions for each sport across all dates
     const modelProbs = new Map<string, number>();
@@ -406,7 +406,8 @@ export async function cmdRecommend(
       eventIdToMatchup.set(comp.eventId, {
         away: comp.awayTeam.abbreviation || comp.awayTeam.name,
         home: comp.homeTeam.abbreviation || comp.homeTeam.name,
-        sport: comp.sport
+        sport: comp.sport,
+        date: comp.date
       });
       
       try {
@@ -704,7 +705,18 @@ export async function cmdRecommend(
 
         // Get matchup info
         const matchup = eventIdToMatchup.get(leg.eventId);
-        const matchupDisplay = matchup ? chalk.dim(`${matchup.away} @ ${matchup.home}`) : '';
+        let matchupDisplay = '';
+        if (matchup) {
+          const gameDate = new Date(matchup.date);
+          const dateStr = gameDate.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZoneName: 'short'
+          });
+          matchupDisplay = chalk.dim(`${matchup.away} @ ${matchup.home} - ${dateStr}`);
+        }
 
         // Calculate potential profit if bet wins
         const potentialProfit = bet.payout - stake;
@@ -778,7 +790,14 @@ export async function cmdRecommend(
     console.log(chalk.dim(`Parlays = betting multiple outcomes together. All must win to cash out.`));
     console.log(chalk.dim(`Higher payout but lower win probability. Bookmaker edge compounds!\n`));
 
-    const parlaySpecs = generateParlays(allLegs, minLegs, maxLegs, stake);
+    // Filter to only backtested markets (moneyline all sports + NBA spreads)
+    const backtestedLegs = allLegs.filter(leg => {
+      const isNBASpread = leg.market === 'spread' && leg.description.includes('[NBA]');
+      return leg.market === 'moneyline' || isNBASpread;
+    });
+    console.log(chalk.dim(`Using ${backtestedLegs.length} backtested legs for parlay generation (moneyline all sports + NBA spreads only)\n`));
+
+    const parlaySpecs = generateParlays(backtestedLegs, minLegs, maxLegs, stake);
     const parlayResults = parlaySpecs.map(evaluateParlay);
     const positiveEV = filterPositiveEV(parlayResults);
     const ranked = rankParlaysByEV(parlayResults); // Rank all, not just positive
@@ -788,7 +807,7 @@ export async function cmdRecommend(
 
       for (let i = 0; i < Math.min(topN, positiveEV.length); i++) {
         const parlay = positiveEV[i];
-        printParlay(i + 1, parlay, true);
+        printParlay(i + 1, parlay, true, eventIdToMatchup);
       }
     } else {
       console.log(chalk.yellow(`⚠️  No positive EV parlays found`));
@@ -797,7 +816,7 @@ export async function cmdRecommend(
 
       for (let i = 0; i < Math.min(topN, ranked.length); i++) {
         const parlay = ranked[i];
-        printParlay(i + 1, parlay, false);
+        printParlay(i + 1, parlay, false, eventIdToMatchup);
       }
     }
 
@@ -817,7 +836,7 @@ export async function cmdRecommend(
 /**
  * Print a parlay result
  */
-function printParlay(rank: number, parlay: ParlayResult, isPositiveEV: boolean): void {
+function printParlay(rank: number, parlay: ParlayResult, isPositiveEV: boolean, eventIdToMatchup: Map<string, { away: string; home: string; sport: Sport; date: string }>): void {
   const evColor = parlay.ev >= 0 ? chalk.green : chalk.red;
   const evSign = parlay.ev >= 0 ? '+' : '';
   
@@ -835,7 +854,20 @@ function printParlay(rank: number, parlay: ParlayResult, isPositiveEV: boolean):
   
   console.log(chalk.dim(`   Legs:`));
   for (const leg of parlay.legs) {
-    console.log(chalk.dim(`     • ${leg.description}`));
+    const matchup = eventIdToMatchup.get(leg.eventId);
+    let legDisplay = `     • ${leg.description}`;
+    if (matchup) {
+      const gameDate = new Date(matchup.date);
+      const dateStr = gameDate.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      });
+      legDisplay += ` - ${matchup.away} @ ${matchup.home} (${dateStr})`;
+    }
+    console.log(chalk.dim(legDisplay));
   }
   console.log();
 }
