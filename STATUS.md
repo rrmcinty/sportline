@@ -140,6 +140,29 @@
   - [x] Decided against calibration due to overfitting with current dataset size
   - [x] L2 regularization proved more effective for stability
 
+- [x] **Model Backtesting & Validation**
+  - [x] Implemented moneyline backtesting across all 4 sports (CFB, NCAAM, NFL, NBA)
+  - [x] CFB: 1,584 validated bets, +12.04% ROI, 6.52% ECE (production-ready)
+  - [x] NBA: 349 validated bets, +7.56% ROI, 4.90% ECE (best calibration)
+  - [x] NFL: 441 validated bets, +5.69% ROI, 6.13% ECE (solid performance)
+  - [x] NCAAM: 928 validated bets, +3.11% ROI, 11.84% ECE (working well)
+  - [x] Created BACKTEST_RESULTS.md with comprehensive metrics by sport
+  - [x] Implemented backtestTotals() function with calibration analysis
+  - [x] Investigated totals models: Found critical bug (missing 10-game features)
+  - [x] Fixed apply.ts to include all 36 features (was only using 18)
+  - [x] Implemented sport-specific sigma floors (NBA/NCAAM: 38, NFL/CFB: 10)
+  - [x] NBA totals validated: 6.56% ECE (excellent), -1.84% ROI (slightly unprofitable)
+  - [x] NFL/CFB/NCAAM totals still broken (systematic inversion, 40-57% ECE)
+
+- [x] **Betting Guardrails & UX Improvements**
+  - [x] Implemented probability display cap at 97% (prevents 99.9% overconfidence)
+  - [x] Added market-specific backtest stat lookup (shows historical win rate, ROI)
+  - [x] Suppressed ELITE/HIGH confidence labels for unvalidated markets (totals, spreads)
+  - [x] Filtered recommend command to only show moneyline bets (backtested only)
+  - [x] Added --include-parlays flag (parlays hidden by default, EV compounds negatively)
+  - [x] Enhanced bet display with confidence tiers and backtest-based warnings
+  - [x] Added divergence analysis tools for model investigation
+
 ### 🔄 Current Model Performance (CFB 2025) - After Normalization Revert
 **Training Data:** 1,241 games (filtered from 1,750 completed) - excludes games where either team has <5 completed games
 
@@ -158,22 +181,24 @@ Spread Model:
 - **Training Accuracy:** 66.3% (833 games with reliable features)
 - **Validation Accuracy:** 67.5%
 - **Brier Score:** 0.2160 | **Log Loss:** 0.6225
-- **ECE: 0.0256** (excellent calibration)
+- **ECE: 0.0256** (excellent calibration on validation set)
 - **Features:** 11 (moneyline set + spread line + spread market implied prob)
 - **Regularization:** L2 (λ=0.1)
 - **Probability Clipping:** [5%, 95%] to prevent extreme predictions
 - **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
-- **Status:** Production-ready with reliable probability estimates
+- **Status:** Needs backtesting - validation metrics look good but not yet validated on historical odds
 
 Totals Model (Regression):
-- **Validation Accuracy:** ~52% (threshold 0.5; classification threshold only for reference)
-- **Brier Score:** ~0.28 (well-calibrated for probabilistic predictions)
-- **Log Loss:** ~0.77
-- **ECE (Expected Calibration Error):** 0.1525 (well-calibrated mid-range probabilities)
-- **Residual σ (MAD-based, floored):** 38.00 points (MAD × 1.4826; floor applied for stability)
-- **Features (18):** Rolling points averages (team & opponent), pace proxies (combined score avg), offensive/defensive efficiency proxies, win/margin context, bias term; all with robust normalization
-- **Regularization:** Ridge (L2) + MAD-based variance + sigma floor heuristic
-- **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
+- **Backtest Results (after bug fix):**
+  - NBA: 6.56% ECE (excellent), -1.84% ROI (slightly unprofitable but well-calibrated)
+  - NFL: 43.17% ECE (catastrophic inversion), -38.42% ROI
+  - CFB: 56.93% ECE (catastrophic inversion), -55.26% ROI  
+  - NCAAM: 42.02% ECE (catastrophic inversion), -53.13% ROI
+- **Bug Fixed:** Missing 10-game features in apply.ts (18 of 36 features were zero)
+- **Sport-Specific Sigma:** NBA/NCAAM: 38 points, NFL/CFB: 10 points
+- **Features (36):** Dual-window (5-game + 10-game) with exponential recency weighting
+- **Regularization:** Ridge (L2) + MAD-based variance + sport-specific sigma floors
+- **Status:** NBA totals validated and working; NFL/CFB/NCAAM show systematic inversion (needs investigation)
 
 ### 📋 Next Steps
 - [x] **Moneyline Ensemble** ✅ **COMPLETED** - ECE 0.0633 (25% improvement from 0.0846)
@@ -186,11 +211,12 @@ Totals Model (Regression):
 - [x] **NFL Support** ✅ **COMPLETED** - Created ESPN API integrations for NFL events and odds
 - [x] **NBA Support** ✅ **COMPLETED** - Created ESPN API integrations for NBA events and odds  
 - [x] **Cross-Sport Aggregation** ✅ **COMPLETED** - Recommend command analyzes all sports when --sport omitted
+- [x] **Moneyline Backtesting** ✅ **COMPLETED** - All 4 sports validated with comprehensive ROI/ECE metrics
+- [x] **Betting Guardrails** ✅ **COMPLETED** - Probability caps, backtest stats, moneyline-only recommendations
+- [x] **Totals Model Investigation** ✅ **COMPLETED** - Found/fixed missing features bug, NBA works but others inverted
+- [ ] **Spread Backtesting** 🎯 **NEXT PRIORITY** - Implement backtestSpreads() for all 4 sports
+- [ ] **Totals Model Fix** - Investigate NFL/CFB/NCAAM systematic inversion (low predictions → goes Over)
 - [ ] **Team Strength Tiers** - Categorical features for Elite/Strong/Average/Weak based on rolling performance
-- [ ] **Model-Market Divergence Filtering** - Use --divergence flag to surface only |model - market| > threshold% bets
-- [ ] Clean up debug warnings in bets output (remove "No model prediction" messages when features exist)
-- [ ] Add confidence indicators when model diverges significantly from market (>10% difference)
-- [ ] Enhance CLI output: separate sections for top Spread vs Moneyline EV; add `--market` filter
 - [ ] Track actual betting results vs predictions (logging + ROI table)
 - [ ] Add model performance dashboard (daily snapshot + rolling metrics)
 - [ ] Persist individual model predictions (new table) for auditing & backtests

@@ -274,7 +274,25 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
         homeOffEff5: f.homeOffEff5,
         awayOffEff5: f.awayOffEff5,
         homeDefEff5: f.homeDefEff5,
-        awayDefEff5: f.awayDefEff5
+        awayDefEff5: f.awayDefEff5,
+        homePointsAvg10: f.homePointsAvg10,
+        awayPointsAvg10: f.awayPointsAvg10,
+        homeOppPointsAvg10: f.homeOppPointsAvg10,
+        awayOppPointsAvg10: f.awayOppPointsAvg10,
+        homeWinRate10: f.homeWinRate10,
+        awayWinRate10: f.awayWinRate10,
+        homeAvgMargin10: f.homeAvgMargin10,
+        awayAvgMargin10: f.awayAvgMargin10,
+        homeOppAvgMargin10: f.homeOppAvgMargin10,
+        awayOppAvgMargin10: f.awayOppAvgMargin10,
+        homeOppWinRate10: f.homeOppWinRate10,
+        awayOppWinRate10: f.awayOppWinRate10,
+        homePace10: f.homePace10,
+        awayPace10: f.awayPace10,
+        homeOffEff10: f.homeOffEff10,
+        awayOffEff10: f.awayOffEff10,
+        homeDefEff10: f.homeDefEff10,
+        awayDefEff10: f.awayDefEff10
       };
       const featureVector = model.featureNames.map(n => vecMap[n] ?? 0);
       featureMap.set(f.gameId, featureVector);

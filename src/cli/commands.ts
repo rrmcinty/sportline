@@ -283,7 +283,8 @@ export async function cmdRecommend(
   days: number = 1,
   divergenceThreshold: number = 0,
   favoritesOnly: boolean = false,
-  includeDogsFlag: boolean = false
+  includeDogsFlag: boolean = false,
+  includeParlays: boolean = false
 ): Promise<void> {
   try {
     // If no sports specified, check all sports
@@ -642,10 +643,10 @@ export async function cmdRecommend(
       console.log(chalk.dim(`Positive EV = good bet. Negative EV = bookmaker has the edge.\n`));
       
       const singleBets = allLegs.map(leg => evaluateParlay({ legs: [leg], stake }));
-      // Filter to only backtested bets (moneyline and spread)
+      // Filter to only backtested bets (moneyline only)
       const backtestedSingles = singleBets.filter(bet => {
         const leg = bet.legs[0];
-        return leg.market === 'moneyline' || leg.market === 'spread';
+        return leg.market === 'moneyline';
       });
       // Sort by value score (EV * confidence multiplier) instead of raw EV
       const rankedSingles = backtestedSingles
@@ -727,6 +728,8 @@ export async function cmdRecommend(
         if (confidenceLabel === 'ELITE' || confidenceLabel === 'HIGH') {
           if (marketType === 'moneyline') {
             console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - backtests show ${marketStats.winRate} success rate!`));
+          } else if (marketType === 'spread') {
+            console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - spread calibration not validated. Proceed with caution.`));
           } else {
             console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - totals calibration not validated. Proceed with caution.`));
           }
@@ -758,10 +761,10 @@ export async function cmdRecommend(
       console.log();
     }
 
-    // Generate parlays only if min legs > 1
-    if (minLegs === 1) {
+    // Skip parlays unless explicitly requested
+    if (!includeParlays) {
       console.log(chalk.dim(`\n💡 Tip: Parlays combine multiple bets but have worse EV (bookmaker edge compounds).`));
-      console.log(chalk.dim(`    Run with ${chalk.white('--min-legs 2')} to see parlay options.\n`));
+      console.log(chalk.dim(`    Run with ${chalk.white('--include-parlays')} to see parlay options.\n`));
       return; // Only showing single bets
     }
 

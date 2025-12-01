@@ -763,8 +763,9 @@ async function trainTotalRegressionModel(
   const medianAbsResidual = sortedAbsResiduals[Math.floor(sortedAbsResiduals.length / 2)];
   const madSigma = medianAbsResidual * 1.4826; // MAD to std conversion for normal distribution
   
-  // Apply floor to prevent overconfidence
-  const sigmaFloor = 38;
+  // Apply sport-specific floor to prevent overconfidence
+  // NBA/NCAAM: 38 points (totals ~220), NFL/CFB: 10 points (totals ~45)
+  const sigmaFloor = (sport === 'nba' || sport === 'ncaam') ? 38 : 10;
   let sigma = Math.max(madSigma, sigmaFloor);
   console.log(chalk.dim(`  MAD-based sigma: ${madSigma.toFixed(2)}, applied floor: ${sigma.toFixed(2)}`));
 

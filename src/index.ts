@@ -95,6 +95,7 @@ program
   .option("--divergence <threshold>", "Only show bets where |model - market| > threshold % (e.g., 5)", "0")
   .option("--favorites-only", "Filter to favorites on moneylines (keep spreads/totals)", false)
   .option("--include-dogs", "Include underdogs (disables suppression guardrails)", false)
+  .option("--include-parlays", "Include parlay recommendations (default: singles only)", false)
   .action(async (options) => {
     const sports: Sport[] | undefined = options.sport ? [options.sport as Sport] : undefined;
     const date = options.date || todayYYYYMMDD();
@@ -108,7 +109,8 @@ program
       parseInt(options.days),
       parseFloat(options.divergence),
       Boolean(options.favoritesOnly),
-      Boolean(options.includeDogs)
+      Boolean(options.includeDogs),
+      Boolean(options.includeParlays)
     );
   });
 
