@@ -173,11 +173,21 @@ model
   .description("Backtest model predictions against actual outcomes")
   .option("--sport <sport>", "Sport (ncaam|cfb|nfl|nba)", "ncaam")
   .requiredOption("--season <years>", "Season year(s) (e.g., 2025 or 2024,2025)")
+  .option("--market <market>", "Market to backtest (moneyline|total|all)", "moneyline")
   .action(async (options) => {
     const sport: Sport = options.sport;
     const seasons = options.season.split(",").map((s: string) => parseInt(s.trim()));
-    const { backtestMoneyline } = await import("./model/backtest.js");
-    await backtestMoneyline(sport, seasons);
+    const market = options.market || "moneyline";
+    
+    if (market === "all" || market === "moneyline") {
+      const { backtestMoneyline } = await import("./model/backtest.js");
+      await backtestMoneyline(sport, seasons);
+    }
+    
+    if (market === "all" || market === "total") {
+      const { backtestTotals } = await import("./model/backtest.js");
+      await backtestTotals(sport, seasons);
+    }
   });
 
 program.parse();
