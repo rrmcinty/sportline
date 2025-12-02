@@ -6,6 +6,9 @@ import chalk from "chalk";
 import type { Sport, Competition } from "../models/types.js";
 import { fetchEvents as fetchEventsNcaam } from "../espn/ncaam/events.js";
 import { fetchEvents as fetchEventsCfb } from "../espn/cfb/events.js";
+import { fetchEvents as fetchEventsNfl } from "../espn/nfl/events.js";
+import { fetchEvents as fetchEventsNba } from "../espn/nba/events.js";
+import { fetchNHLEvents as fetchEventsNhl } from "../espn/nhl/events.js";
 
 /**
  * Search for games involving a specific team across multiple days
@@ -17,7 +20,14 @@ export async function cmdSearchTeam(
   days: number = 7
 ): Promise<void> {
   try {
-    const fetchEvents = sport === 'cfb' ? fetchEventsCfb : fetchEventsNcaam;
+    // Select fetcher based on sport
+    let fetchEvents;
+    if (sport === 'cfb') fetchEvents = fetchEventsCfb;
+    else if (sport === 'nfl') fetchEvents = fetchEventsNfl;
+    else if (sport === 'nba') fetchEvents = fetchEventsNba;
+    else if (sport === 'nhl') fetchEvents = fetchEventsNhl;
+    else fetchEvents = fetchEventsNcaam;
+    
     const query = teamQuery.toLowerCase();
     
     // Generate date range

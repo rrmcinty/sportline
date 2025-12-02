@@ -1,9 +1,11 @@
 # Model Backtest Results
 
-**Last Updated:** 2025-11-30
+**Last Updated:** 2025-12-01
 
 ## Overview
 This document tracks backtest results for all sports models. Backtests validate model calibration and ROI by comparing predictions against actual outcomes on completed games.
+
+**Training Data:** 2023, 2024, 2025 seasons (3-year validation for maximum reliability)
 
 **Key Metrics:**
 - **Accuracy:** % of correct predictions
@@ -14,22 +16,258 @@ This document tracks backtest results for all sports models. Backtests validate 
 ## Summary
 
 **Production-Ready (Validated & Profitable):**
-- ✅ **NBA Moneyline:** +7.56% ROI, 4.90% ECE (best calibration)
-- ✅ **NBA Spreads:** +11.02% ROI, 6.67% ECE (ONLY profitable spread model!)
-- ✅ **CFB Moneyline:** +12.04% ROI, 6.52% ECE (highest ROI)
-- ✅ **NFL Moneyline:** +5.69% ROI, 6.13% ECE
-- ✅ **NCAAM Moneyline:** +3.11% ROI, 11.84% ECE
-- ✅ **NHL Moneyline:** +37.35% ROI, 8.60% ECE (large sample, strong edge)
+- ✅ **NBA Totals:** +2.57% ROI, 0.91% ECE (1,657 games) - Classification ensemble, exceptional calibration
+- ✅ **NFL Totals:** +8.19% ROI, 2.41% ECE (669 games) - Classification ensemble, high divergence bets +21.8% ROI 🆕
+- ✅ **NCAAM Totals:** +13.22% ROI, 4.44% ECE (933 games) - Classification ensemble, elite performance, high divergence +28.7% ROI
+- ✅ **NBA Moneyline:** +0.49% ROI, 2.51% ECE (1,738 games) - 80-90%: +6.2% ROI, 90-100%: +29.1% ROI
+- ✅ **NFL Moneyline:** +5.06% ROI, 3.64% ECE (752 games) - 80-90%: +16.1% ROI, 90-100%: +58.0% ROI
+- ✅ **NCAAM Moneyline:** +5.06% ROI, 9.83% ECE (1,818 games) - 80-90%: +15.8% ROI, 90-100%: +10.3% ROI
+- ✅ **CFB Moneyline:** +7.67% ROI, 7.17% ECE (2,481 games) - 80-90%: +34.2% ROI, 90-100%: +15.6% ROI
+- ✅ **NHL Moneyline:** +37.35% ROI, 8.60% ECE (2,335 games) - Large sample, strong edge (see detailed section)
 
 **Not Recommended (Unprofitable or Poor Calibration):**
-- ❌ **CFB Spreads:** -7.03% ROI, 18.41% ECE (poor calibration)
-- ❌ **NFL Spreads:** -11.04% ROI, 7.37% ECE (good calibration but unprofitable)
-- ❌ **NCAAM Spreads:** -8.22% ROI, 8.48% ECE (unprofitable)
-- ❌ **All Totals except NBA:** Systematic inversion issues (40-57% ECE)
-- ⚠️ **NBA Totals:** 6.56% ECE (excellent) but -1.84% ROI (slightly unprofitable)
+- ❌ **NBA Spreads:** -3.33% ROI, 44.11% ECE (1,657 games) - Systematic failure
+- ❌ **NFL Spreads:** -19.45% ROI, 12.51% ECE (670 games) - Broken
+- ❌ **CFB Spreads:** -4.08% ROI, 41.81% ECE (2,024 games) - Systematic failure
+- ❌ **CFB Totals:** -5.77% ROI, 5.36% ECE (1,999 games) - Unprofitable despite decent calibration
+- ❌ **NCAAM Spreads:** Not yet backtested with 3-season data
 - ❌ **NHL Underdogs:** Catastrophic on extreme dogs (see below) — avoid
 
-**Key Insight:** NBA is the only sport where we have edge on BOTH moneyline and spreads. All other sports should stick to moneyline only.
+**Key Insights:** 
+- **3-season validation** (2023+2024+2025) provides significantly more reliable metrics with larger sample sizes
+- **NFL totals breakthrough:** Adding 2023 data made NFL totals profitable (+8.19% vs -3.76% with 2 seasons)
+- **Classification ensemble works:** NBA, NFL, NCAAM totals all profitable with binary classification approach
+- **Totals are the new edge:** NBA (+2.57%), NFL (+8.19%), NCAAM (+13.22%) all profitable
+- **High-confidence moneyline bets** (80-100%) consistently profitable across all sports
+- **Spreads remain broken** across all sports (except historical NBA data) - avoid completely
+
+---
+
+## 🏆 3-SEASON BACKTEST RESULTS (2023 + 2024 + 2025)
+
+### NBA (Pro Basketball) ✅ PRODUCTION-READY
+
+**Test Period:** 2023, 2024, 2025 seasons
+**Completed Games:** 1,749
+**Matched Games:** 1,738 (moneyline), 1,657 (spread/total)
+**Model:** Ensemble (70% base + 30% market-aware)
+
+#### Moneyline Results
+- **Validation Games:** 1,738
+- **Overall ROI:** +0.49% (+$85.68 profit)
+- **ECE:** 2.51% (excellent calibration)
+- **Status:** ✅ Production-ready
+
+**Calibration by Confidence Tier:**
+| Tier | Predicted | Actual | Count | ROI |
+|------|-----------|--------|-------|-----|
+| 0-10% | 8.0% | 0.0% | 20 | +68.2% |
+| 10-20% | 15.0% | 14.3% | 49 | +12.7% |
+| 80-90% | 85.2% | 87.0% | 162 | +6.2% |
+| 90-100% | 92.5% | 100.0% | 36 | +29.1% |
+
+**Key Insights:**
+- High-confidence bets (>70% or <30%): **81.1% win rate** (528 bets)
+- Low-confidence bets (40-60%): **59.3% win rate** (1,129 bets)
+- Top features: Margin 10-game (+0.559), Margin 5-game (+0.549), Points Scored
+
+#### Spread Results
+- **Validation Games:** 1,657
+- **Overall ROI:** -3.33% (-$551.10 loss)
+- **ECE:** 44.11% (systematic failure)
+- **Status:** ❌ NOT RECOMMENDED - broken calibration
+
+#### Total (Over/Under) Results
+- **Validation Games:** 1,657
+- **Overall ROI:** +2.57% (+$425.37 profit)
+- **ECE:** 0.91% (exceptional calibration!)
+- **Status:** ✅ PRODUCTION-READY
+
+**Calibration by Bin:**
+| Predicted | Actual | Count | ROI |
+|-----------|--------|-------|-----|
+| 30-40% | 37.2% | 36.4% | 11 | +20.0% |
+| 40-50% | 46.8% | 45.5% | 800 | +3.5% |
+| 50-60% | 53.2% | 53.3% | 801 | +1.2% |
+| 60-70% | 62.8% | 56.8% | 44 | +8.4% |
+
+**Divergence Analysis:**
+- High divergence (>10%): 54.5% win rate, +4.9% ROI
+- Moderate divergence (5-10%): 52.9% win rate, +0.7% ROI
+
+---
+
+### NFL (Pro Football) ✅ PRODUCTION-READY
+
+**Test Period:** 2023, 2024, 2025 seasons
+**Completed Games:** 754
+**Matched Games:** 752 (moneyline), 670 (spread), 669 (total)
+**Model:** Ensemble (70% base + 30% market-aware)
+
+#### Moneyline Results
+- **Validation Games:** 752
+- **Overall ROI:** +5.06% (+$380.16 profit)
+- **ECE:** 3.64% (excellent calibration)
+- **Status:** ✅ Production-ready
+
+**Calibration by Confidence Tier:**
+| Tier | Predicted | Actual | Count | ROI |
+|------|-----------|--------|-------|-----|
+| 0-10% | 7.6% | 0.0% | 17 | +40.2% |
+| 10-20% | 13.6% | 4.0% | 25 | +85.0% |
+| 70-80% | 74.2% | 80.3% | 61 | +11.2% |
+| 80-90% | 85.2% | 86.5% | 74 | +16.1% |
+| 90-100% | 92.5% | 100.0% | 34 | +58.0% |
+
+**Key Insights:**
+- High-confidence bets (>70% or <30%): **87.0% win rate** (231 bets)
+- Low-confidence bets (40-60%): **59.5% win rate** (439 bets)
+- Top features: Margin 5-game (+1.064), Points Scored (+1.054), Pace (+1.045)
+
+#### Spread Results
+- **Validation Games:** 670
+- **Overall ROI:** -19.45% (-$1,303.34 loss)
+- **ECE:** 12.51% (poor calibration)
+- **Status:** ❌ NOT RECOMMENDED - broken
+
+#### Total (Over/Under) Results
+- **Validation Games:** 669
+- **Overall ROI:** +8.19% (+$547.69 profit)
+- **ECE:** 2.41% (excellent calibration)
+- **Status:** ✅ PRODUCTION-READY
+
+**Calibration by Bin:**
+| Predicted | Actual | Count | ROI |
+|-----------|--------|-------|-----|
+| 30-40% | 36.8% | 42.7% | 82 | +9.0% |
+| 40-50% | 45.8% | 44.8% | 252 | +5.3% |
+| 50-60% | 54.5% | 55.4% | 240 | +5.8% |
+| 60-70% | 63.6% | 66.7% | 75 | +28.0% |
+| 70-80% | 71.9% | 66.7% | 6 | +26.0% |
+
+**Divergence Analysis (HUGE EDGE):**
+- **High divergence (>10%):** 62.8% win rate, **+21.8% ROI** 🔥
+- Low divergence (<5%): 59.7% win rate, +15.3% ROI
+
+**Major Improvement:** -3.76% ROI (2 seasons) → **+8.19% ROI** (3 seasons)
+
+---
+
+### NCAAM (College Basketball) ✅ PRODUCTION-READY
+
+**Test Period:** 2023, 2024, 2025 seasons
+**Completed Games:** 1,985
+**Matched Games:** 1,818 (moneyline), 933 (total)
+**Model:** Ensemble (70% base + 30% market-aware)
+
+#### Moneyline Results
+- **Validation Games:** 1,818
+- **Overall ROI:** +5.06% (+$919.39 profit)
+- **ECE:** 9.83% (moderate calibration)
+- **Status:** ✅ Production-ready
+
+**Calibration by Confidence Tier:**
+| Tier | Predicted | Actual | Count | ROI |
+|------|-----------|--------|-------|-----|
+| 0-10% | 7.3% | 0.0% | 38 | +45.4% |
+| 10-20% | 14.1% | 5.2% | 58 | +89.1% |
+| 70-80% | 74.9% | 75.5% | 139 | +2.1% |
+| 80-90% | 85.4% | 87.2% | 156 | +15.8% |
+| 90-100% | 93.0% | 96.2% | 130 | +10.3% |
+
+**Key Insights:**
+- High-confidence bets (>70% or <30%): **86.4% win rate** (545 bets)
+- Low-confidence bets (40-60%): **56.7% win rate** (372 bets)
+- Top features: Margin 10-game (+1.380), Margin 5-game (+1.279), Points Scored 10-game
+
+#### Total (Over/Under) Results
+- **Validation Games:** 933
+- **Overall ROI:** +13.22% (+$1,233.62 profit)
+- **ECE:** 4.44% (excellent calibration)
+- **Status:** ✅ PRODUCTION-READY - ELITE PERFORMANCE
+
+**Calibration by Bin:**
+| Predicted | Actual | Count | ROI |
+|-----------|--------|-------|-----|
+| 30-40% | 37.1% | 23.0% | 61 | +46.8% |
+| 40-50% | 46.2% | 42.7% | 365 | +8.7% |
+| 50-60% | 54.4% | 58.4% | 437 | +10.0% |
+| 60-70% | 62.5% | 65.7% | 67 | +24.4% |
+| 70-80% | 71.7% | 100.0% | 2 | +91.1% |
+
+**Divergence Analysis (MASSIVE EDGE):**
+- **High divergence (>10%):** 67.0% win rate, **+28.7% ROI** 🔥🔥
+- Moderate divergence (5-10%): 58.3% win rate, +11.6% ROI
+- Low divergence (<5%): 57.4% win rate, +9.9% ROI
+
+---
+
+### CFB (College Football) ✅ PRODUCTION-READY (MONEYLINE)
+
+**Test Period:** 2023, 2024, 2025 seasons
+**Completed Games:** 2,708
+**Matched Games:** 2,481 (moneyline), 2,024 (spread), 1,999 (total)
+**Model:** Ensemble (70% base + 30% market-aware)
+
+#### Moneyline Results
+- **Validation Games:** 2,481
+- **Overall ROI:** +7.67% (+$1,902.82 profit)
+- **ECE:** 7.17% (good calibration)
+- **Status:** ✅ Production-ready - largest sample size
+
+**Calibration by Confidence Tier:**
+| Tier | Predicted | Actual | Count | ROI |
+|------|-----------|--------|-------|-----|
+| 0-10% | 7.6% | 1.9% | 107 | +50.5% |
+| 10-20% | 13.9% | 6.3% | 160 | +42.6% |
+| 70-80% | 74.7% | 67.8% | 199 | -7.0% |
+| 80-90% | 85.8% | 92.9% | 295 | +34.2% |
+| 90-100% | 93.1% | 96.9% | 259 | +15.6% |
+
+**Key Insights:**
+- High-confidence bets (>70% or <30%): **87.8% win rate** (1,125 bets)
+- Low-confidence bets (40-60%): **60.0% win rate** (825 bets)
+- Top features: Margin 5-game (+1.795), Margin 10-game (+1.649), Points Scored
+
+#### Spread Results
+- **Validation Games:** 2,024
+- **Overall ROI:** -4.08% (-$826.07 loss)
+- **ECE:** 41.81% (systematic failure)
+- **Status:** ❌ NOT RECOMMENDED - broken calibration
+
+#### Total (Over/Under) Results
+- **Validation Games:** 1,999
+- **Overall ROI:** -5.77% (-$1,153.17 loss)
+- **ECE:** 5.36% (decent calibration but unprofitable)
+- **Status:** ❌ NOT RECOMMENDED
+
+---
+
+## Updated Recommendations by Sport
+
+### NBA (Pro Basketball) 🏆 
+- **Moneyline:** ✅ +0.49% ROI (1,738 games) - High-confidence 80-100%: +15% avg ROI
+- **Spreads:** ❌ -3.33% ROI (broken calibration)
+- **Totals:** ✅ +2.57% ROI (1,657 games) - 0.91% ECE, exceptional!
+- **Best Use:** Moneyline high-confidence + ALL totals bets
+
+### NFL (Pro Football) 🏆 TOTALS BREAKTHROUGH
+- **Moneyline:** ✅ +5.06% ROI (752 games) - High-confidence 80-100%: +34% avg ROI
+- **Spreads:** ❌ -19.45% ROI (broken)
+- **Totals:** ✅ +8.19% ROI (669 games) - High divergence: +21.8% ROI 🔥
+- **Best Use:** Moneyline high-confidence + totals with >10% divergence
+
+### NCAAM (College Basketball) 🏆 TOTALS ELITE
+- **Moneyline:** ✅ +5.06% ROI (1,818 games) - 10-20% bin: +89% ROI
+- **Spreads:** ❌ Not backtested with 3 seasons
+- **Totals:** ✅ +13.22% ROI (933 games) - High divergence: +28.7% ROI 🔥🔥
+- **Best Use:** Moneyline high-confidence + ALL totals bets (especially high divergence)
+
+### CFB (College Football) ✅ MONEYLINE ONLY
+- **Moneyline:** ✅ +7.67% ROI (2,481 games) - Largest sample, 80-90%: +34% ROI
+- **Spreads:** ❌ -4.08% ROI (broken calibration)
+- **Totals:** ❌ -5.77% ROI (unprofitable)
+- **Best Use:** Moneyline high-confidence only (avoid spreads and totals)
 
 ---
 

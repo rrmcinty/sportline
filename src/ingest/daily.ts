@@ -97,11 +97,29 @@ async function ingestDate(
         const home = upsertTeam.get(sport, comp.homeTeam.id, comp.homeTeam.name, comp.homeTeam.abbreviation || null) as { id: number };
         const away = upsertTeam.get(sport, comp.awayTeam.id, comp.awayTeam.name, comp.awayTeam.abbreviation || null) as { id: number };
         
-        // Determine season (for NCAAM, season is the year games end, for CFB it's the year they start)
+        // Determine season based on sport calendar
+        // NBA/NHL: Oct-Jun (season = year it starts, so Jul-Dec = current year, Jan-Jun = prior year)
+        // NFL: Sep-Feb (season = year it starts, so Sep-Dec = current year, Jan-Feb = prior year)
+        // NCAAM: Nov-Apr (season = year it ends, so Nov-Dec = next year, Jan-Apr = current year)
+        // CFB: Aug-Jan (season = year it starts, current calendar year)
         const gameDate = new Date(comp.date);
         const year = gameDate.getFullYear();
-        const month = gameDate.getMonth() + 1;
-        const season = sport === 'ncaam' ? (month >= 11 ? year + 1 : year) : year;
+        const month = gameDate.getMonth() + 1; // 1-12
+        
+        let season: number;
+        if (sport === 'ncaam') {
+          // NCAAM season ends in spring, so Nov-Dec games belong to next year's season
+          season = month >= 11 ? year + 1 : year;
+        } else if (sport === 'nba' || sport === 'nhl') {
+          // NBA/NHL seasons start in October, games in Jan-Jun belong to prior year's season
+          season = month >= 7 ? year : year - 1;
+        } else if (sport === 'nfl') {
+          // NFL season starts in September, games in Jan-Feb belong to prior year's season
+          season = month >= 7 ? year : year - 1;
+        } else {
+          // CFB: use calendar year
+          season = year;
+        }
         
         const result = upsertGame.get(
           comp.eventId,

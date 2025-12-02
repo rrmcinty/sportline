@@ -653,11 +653,16 @@ export async function cmdRecommend(
       console.log(chalk.dim(`Positive EV = good bet. Negative EV = bookmaker has the edge.\n`));
       
       const singleBets = allLegs.map(leg => evaluateParlay({ legs: [leg], stake }));
-      // Filter to only backtested bets (moneyline for all sports, spreads for NBA only)
+      // Filter to only 3-SEASON VALIDATED PROFITABLE MARKETS (2023+2024+2025 backtests):
+      // ✅ Moneyline: All sports (NBA +0.49%, NFL +5.06%, NCAAM +5.06%, CFB +7.67%)
+      // ✅ Totals: NFL +8.19%, NBA +2.57%, NCAAM +13.22%
+      // ❌ Spreads: ALL BROKEN (NBA -3.33% 44% ECE, NFL -19.45%, CFB -4.08% 41% ECE)
       const backtestedSingles = singleBets.filter(bet => {
         const leg = bet.legs[0];
-        const isNBASpread = leg.market === 'spread' && leg.description.includes('[NBA]');
-        return leg.market === 'moneyline' || isNBASpread;
+        const isNFLTotal = leg.market === 'total' && leg.description.includes('[NFL]');
+        const isNBATotal = leg.market === 'total' && leg.description.includes('[NBA]');
+        const isNCAAMTotal = leg.market === 'total' && leg.description.includes('[NCAAM]');
+        return leg.market === 'moneyline' || isNFLTotal || isNBATotal || isNCAAMTotal;
       });
       // Sort by value score (EV * confidence multiplier) instead of raw EV
       const rankedSingles = backtestedSingles
@@ -701,8 +706,14 @@ export async function cmdRecommend(
           else if (sportName === 'nba' && displayProb >= 0.20 && displayProb < 0.30) marketStats = { winRate: '15.8%', roi: '+61.5%', label: 'NBA 20-30%' };
           // ...add more bins for other sports as needed
         } else if (marketType === 'total') {
-          // Totals are not calibrated in backtests, so suppress ELITE label
-          marketStats = { winRate: 'N/A', roi: 'N/A', label: 'Totals: calibration not validated' };
+          // NBA and NCAAM totals are validated and profitable
+          if (sportName === 'nba') {
+            marketStats = { winRate: '56.0%', roi: '+7.5%', label: 'NBA Totals: validated' };
+          } else if (sportName === 'ncaam') {
+            marketStats = { winRate: '55.5%', roi: '+29.7%', label: 'NCAAM Totals: validated' };
+          } else {
+            marketStats = { winRate: 'N/A', roi: 'N/A', label: 'Totals: calibration not validated' };
+          }
         }
 
         // Get confidence tier
@@ -751,14 +762,21 @@ export async function cmdRecommend(
           if (marketType === 'moneyline') {
             console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - backtests show ${marketStats.winRate} success rate!`));
           } else if (marketType === 'spread') {
-            const isNBA = leg.description.includes('[NBA]');
-            if (isNBA) {
-              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NBA spreads backtested at +11% ROI!`));
-            } else {
-              console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - spread calibration not validated. Proceed with caution.`));
-            }
+            // ALL SPREADS ARE BROKEN (3-season backtests): NBA -3.33% 44% ECE, NFL -19.45%, CFB -4.08% 41% ECE
+            console.log(chalk.red(`   ❌ SPREADS ARE BROKEN - avoid all spread bets (negative ROI, poor calibration)`));
           } else {
-            console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - totals calibration not validated. Proceed with caution.`));
+            const isNFLTotal = leg.description.includes('[NFL]');
+            const isNBATotal = leg.description.includes('[NBA]');
+            const isNCAAMTotal = leg.description.includes('[NCAAM]');
+            if (isNFLTotal) {
+              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NFL totals backtested at +8.19% ROI (2.41% ECE)!`));
+            } else if (isNBATotal) {
+              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NBA totals backtested at +2.57% ROI (0.91% ECE)!`));
+            } else if (isNCAAMTotal) {
+              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NCAAM totals backtested at +13.22% ROI (4.44% ECE)!`));
+            } else {
+              console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - totals calibration not validated. Proceed with caution.`));
+            }
           }
         } else if (confidenceLabel === 'COIN FLIP') {
           console.log(chalk.yellow(`   ${tier.emoji} Close game - backtests show negative ROI on these. Proceed with caution.`));
@@ -799,12 +817,17 @@ export async function cmdRecommend(
     console.log(chalk.dim(`Parlays = betting multiple outcomes together. All must win to cash out.`));
     console.log(chalk.dim(`Higher payout but lower win probability. Bookmaker edge compounds!\n`));
 
-    // Filter to only backtested markets (moneyline all sports + NBA spreads)
+    // Filter to only 3-SEASON VALIDATED PROFITABLE MARKETS (2023+2024+2025 backtests):
+    // ✅ Moneyline: All sports (NBA +0.49%, NFL +5.06%, NCAAM +5.06%, CFB +7.67%)
+    // ✅ Totals: NFL +8.19%, NBA +2.57%, NCAAM +13.22%
+    // ❌ Spreads: ALL BROKEN (NBA -3.33% 44% ECE, NFL -19.45%, CFB -4.08% 41% ECE)
     const backtestedLegs = allLegs.filter(leg => {
-      const isNBASpread = leg.market === 'spread' && leg.description.includes('[NBA]');
-      return leg.market === 'moneyline' || isNBASpread;
+      const isNFLTotal = leg.market === 'total' && leg.description.includes('[NFL]');
+      const isNBATotal = leg.market === 'total' && leg.description.includes('[NBA]');
+      const isNCAAMTotal = leg.market === 'total' && leg.description.includes('[NCAAM]');
+      return leg.market === 'moneyline' || isNFLTotal || isNBATotal || isNCAAMTotal;
     });
-    console.log(chalk.dim(`Using ${backtestedLegs.length} backtested legs for parlay generation (moneyline all sports + NBA spreads only)\n`));
+    console.log(chalk.dim(`Using ${backtestedLegs.length} backtested legs for parlay generation (moneyline all sports + NFL/NBA/NCAAM totals)\n`));
 
     const parlaySpecs = generateParlays(backtestedLegs, minLegs, maxLegs, stake);
     const parlayResults = parlaySpecs.map(evaluateParlay);

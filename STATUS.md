@@ -222,12 +222,40 @@ Totals Model (Regression):
 - [x] **Betting Guardrails** ✅ **COMPLETED** - Probability caps, backtest stats, moneyline-only recommendations
 - [x] **Totals Model Investigation** ✅ **COMPLETED** - Found/fixed missing features bug, NBA works but others inverted
 - [x] **Spread Backtesting** ✅ **COMPLETED** - All 4 sports validated, only NBA is profitable (+11.02% ROI!)
+- [x] **3-Season Validation** ✅ **COMPLETED** - Retrained/backtested all models with 2023+2024+2025 data
+- [x] **Totals Classification Ensemble** ✅ **COMPLETED** - Replaced regression with binary classification (Over/Under)
+- [x] **Production Filtering Fix** ✅ **COMPLETED** - Removed broken NBA spreads from recommendations after 3-season backtest revealed -3.33% ROI
 - [ ] **Totals Model Fix** - Investigate NFL/CFB/NCAAM systematic inversion (low predictions → goes Over)
 - [ ] **Team Strength Tiers** - Categorical features for Elite/Strong/Average/Weak based on rolling performance
 - [ ] Track actual betting results vs predictions (logging + ROI table)
 - [ ] Add model performance dashboard (daily snapshot + rolling metrics)
 - [ ] Persist individual model predictions (new table) for auditing & backtests
- - [ ] Add NHL to default recommend filters and confidence tiers (moneyline only)
+- [ ] Add NHL to default recommend filters and confidence tiers (moneyline only)
+
+---
+
+## 🛡️ PRODUCTION SAFEGUARDS CHECKLIST
+
+**Before adding any market to recommendations, ALWAYS:**
+1. ✅ Run 3-season backtest (2023+2024+2025) for maximum sample size
+2. ✅ Verify **both** ROI > 0% **and** ECE < 10% (calibration matters!)
+3. ✅ Update **both** filter locations in commands.ts:
+   - Line ~656-662: Single bet filtering (`backtestedSingles`)
+   - Line ~808-814: Parlay filtering (`backtestedLegs`)
+4. ✅ Update confidence tier messages (line ~760-778) with correct ROI/ECE stats
+5. ✅ Update BACKTEST_RESULTS.md with new metrics
+6. ✅ Update STATUS.md with validation status
+7. ✅ Add inline comments with exact backtest results to prevent regression
+
+**Current Validated Markets (3-season backtests 2023+2024+2025):**
+- ✅ **Moneyline (all sports):** NBA +0.49%, NFL +5.06%, NCAAM +5.06%, CFB +7.67%
+- ✅ **Totals:** NFL +8.19%, NBA +2.57%, NCAAM +13.22%
+- ❌ **Spreads:** ALL BROKEN (NBA -3.33% 44% ECE, NFL -19.45%, CFB -4.08% 41% ECE)
+
+**Why This Checklist Exists:**
+- 2-season NBA spreads: +11.02% ROI → looked profitable ✅
+- 3-season NBA spreads: -3.33% ROI → actually broken ❌
+- Without systematic validation, we recommended broken bets to users
 
 ### 📊 Improvement History
 | Date | Feature | Moneyline Accuracy | Spread Accuracy | ECE (Moneyline) | Notes |

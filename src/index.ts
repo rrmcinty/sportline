@@ -45,8 +45,8 @@ program
 program
   .command("find")
   .description("Search for games by team name")
-  .requiredOption("-t, --team <name>", "Team name or abbreviation (e.g., 'UNC', 'Duke', 'NC State')")
-  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
+  .requiredOption("-t, --team <name>", "Team name or abbreviation (e.g., 'Lakers', 'Celtics', 'Duke')")
+  .requiredOption("--sport <sport>", "Sport (ncaam|cfb|nfl|nba|nhl)")
   .option("-d, --date <date>", "Start date in YYYYMMDD format (default: today)")
   .option("--days <number>", "Number of days to search ahead (default: 7)", "7")
   .action(async (options) => {
