@@ -5,7 +5,7 @@
  */
 
 import { Command } from "commander";
-import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets } from "./cli/commands.js";
+import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats } from "./cli/commands.js";
 import { cmdSearchTeam } from "./cli/search.js";
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
@@ -97,6 +97,7 @@ program
   .option("--favorites-only", "Filter to favorites on moneylines (keep spreads/totals)", false)
   .option("--include-dogs", "Include underdogs (disables suppression guardrails)", false)
   .option("--include-parlays", "Include parlay recommendations (default: singles only)", false)
+  .option("--interactive", "Prompt to select which bets you actually placed", false)
   .action(async (options) => {
     const sports: Sport[] | undefined = options.sport ? [options.sport.toLowerCase() as Sport] : undefined;
     const date = options.date || todayYYYYMMDD();
@@ -111,8 +112,25 @@ program
       parseFloat(options.divergence),
       Boolean(options.favoritesOnly),
       Boolean(options.includeDogs),
-      Boolean(options.includeParlays)
+      Boolean(options.includeParlays),
+      Boolean(options.interactive)
     );
+  });
+
+// results command
+program
+  .command("results")
+  .description("Check outcomes of tracked bets and calculate P&L")
+  .action(async () => {
+    await cmdResults();
+  });
+
+// stats command
+program
+  .command("stats")
+  .description("Show performance statistics for tracked bets")
+  .action(async () => {
+    await cmdStats();
   });
 
 // data ingest command

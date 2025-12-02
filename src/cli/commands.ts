@@ -17,6 +17,8 @@ import { getHomeWinModelProbabilities, getHomeSpreadCoverProbabilities, getTotal
 import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
 import { getLatestBacktestForConfig, type BacktestResults } from "../model/backtest-storage.js";
 import { getOptimalSeasons } from "../model/optimal-config.js";
+import { logRecommendedBet, markBetsAsPlaced, type TrackedBet } from "../tracking/bet-logger.js";
+import * as readline from "readline";
 
 /**
  * Fetch and display games for a date
@@ -359,7 +361,8 @@ export async function cmdRecommend(
   divergenceThreshold: number = 0,
   favoritesOnly: boolean = false,
   includeDogsFlag: boolean = false,
-  includeParlays: boolean = false
+  includeParlays: boolean = false,
+  interactive: boolean = false
 ): Promise<void> {
   try {
     // If no sports specified, check all sports
@@ -755,6 +758,63 @@ export async function cmdRecommend(
       rankedSingles.sort((a, b) => b.roi - a.roi);
       const topRankedSingles = rankedSingles.slice(0, topN).map(x => x.bet);
       
+      // Auto-log all recommendations to tracking file
+      const loggedBetIds: string[] = [];
+      for (const { bet, roi: binRoi } of rankedSingles.slice(0, topN)) {
+        const leg = bet.legs[0];
+        let displayProb = bet.probability;
+        if (displayProb > 0.97) displayProb = 0.97;
+        if (displayProb < 0.03) displayProb = 0.03;
+        
+        const matchupInfo = eventIdToMatchup.get(leg.eventId);
+        const sportName: Sport = matchupInfo?.sport?.toLowerCase() as Sport || 'nba';
+        const marketType = leg.market as "moneyline" | "spread" | "total";
+        const backtestStats = await getBacktestStats(sportName, marketType, displayProb);
+        
+        // Extract team/side from description (e.g., "SYR ML +190 [NCAAM]")
+        const sideMatch = leg.description.match(/^([A-Z]+)/);
+        const side = sideMatch ? sideMatch[1] : 'unknown';
+        
+        // Generate unique bet ID
+        const datePart = matchupInfo?.date ? new Date(matchupInfo.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+        const betId = `${datePart}-${sportName}-${leg.eventId}-${marketType}-${side}`;
+        loggedBetIds.push(betId);
+        
+        // Determine bin from probability
+        let bin = '50-60%';
+        if (displayProb < 0.10) bin = '0-10%';
+        else if (displayProb < 0.20) bin = '10-20%';
+        else if (displayProb < 0.30) bin = '20-30%';
+        else if (displayProb < 0.40) bin = '30-40%';
+        else if (displayProb < 0.50) bin = '40-50%';
+        else if (displayProb < 0.60) bin = '50-60%';
+        else if (displayProb < 0.70) bin = '60-70%';
+        else if (displayProb < 0.80) bin = '70-80%';
+        else if (displayProb < 0.90) bin = '80-90%';
+        else bin = '90-100%';
+        
+        // Log this recommendation
+        await logRecommendedBet({
+          id: betId,
+          timestamp: new Date().toISOString(),
+          sport: sportName,
+          eventId: leg.eventId,
+          matchup: matchupInfo ? `${matchupInfo.away} @ ${matchupInfo.home}` : '',
+          date: matchupInfo?.date || '',
+          pick: leg.description,
+          side,
+          market: marketType,
+          line: leg.line,
+          odds: leg.odds,
+          modelProbability: displayProb,
+          bin,
+          historicalROI: backtestStats?.roi || 0,
+          historicalWinRate: backtestStats?.winRate || 0,
+          historicalSampleSize: backtestStats?.gamesAnalyzed || 0,
+          expectedValue: bet.ev
+        });
+      }
+      
       // Show confidence tier distribution
       const tiers = { ELITE: 0, HIGH: 0, MEDIUM: 0, 'COIN FLIP': 0 };
       backtestedSingles.forEach(bet => {
@@ -910,6 +970,74 @@ export async function cmdRecommend(
         console.log(chalk.yellow(`⚠️  INSIGHT: High bookmaker edge today. All bets lose ${Math.abs(rankedSingles[0]?.roi || 0).toFixed(1)}% on average.`));
       }
       console.log();
+      
+      // Interactive prompt to mark bets as actually placed
+      if (interactive && loggedBetIds.length > 0) {
+        console.log(chalk.bold.cyan('\n📝 Track Your Bets\n'));
+        console.log(chalk.dim('Which of these bets did you actually place?'));
+        console.log(chalk.dim(`Enter numbers (e.g., "1,3,5"), "all", or "none":\n`));
+        
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        });
+        
+        const answer = await new Promise<string>((resolve) => {
+          rl.question(chalk.cyan('Your selection: '), (ans) => {
+            rl.close();
+            resolve(ans.trim().toLowerCase());
+          });
+        });
+        
+        if (answer && answer !== 'none') {
+          let selectedIndices: number[] = [];
+          
+          if (answer === 'all') {
+            selectedIndices = loggedBetIds.map((_, i) => i);
+          } else {
+            // Parse comma-separated numbers
+            const parts = answer.split(',').map(s => s.trim());
+            selectedIndices = parts
+              .map(p => parseInt(p) - 1) // Convert to 0-indexed
+              .filter(n => n >= 0 && n < loggedBetIds.length);
+          }
+          
+          if (selectedIndices.length > 0) {
+            // Prompt for stake amount(s)
+            const stakeAnswer = await new Promise<string>((resolve) => {
+              const rl2 = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+              });
+              rl2.question(chalk.cyan(`Stake amount per bet ($). You can enter one value (e.g., 10) or comma-separated values matching your selection (e.g., 10,25,10): `), (ans) => {
+                rl2.close();
+                resolve(ans.trim());
+              });
+            });
+            
+            let stakes: number | number[] = 10;
+            if (stakeAnswer.includes(',')) {
+              stakes = stakeAnswer.split(',').map(s => parseFloat(s.trim()) || 0);
+            } else {
+              stakes = parseFloat(stakeAnswer) || 10;
+            }
+            const selectedBetIds = selectedIndices.map(i => loggedBetIds[i]);
+            await markBetsAsPlaced(selectedBetIds, stakes);
+            
+            if (Array.isArray(stakes)) {
+              console.log(chalk.green(`\n✅ Tracked ${selectedIndices.length} bet(s) with per-bet stakes: ${stakes.map(s => `$${s}`).join(', ')}`));
+            } else {
+              console.log(chalk.green(`\n✅ Tracked ${selectedIndices.length} bet(s) with $${stakes} stake each`));
+            }
+            console.log(chalk.dim(`Run ${chalk.white('sportline results')} to check outcomes later\n`));
+          }
+        } else {
+          console.log(chalk.dim('\n📋 All bets logged as recommendations only\n'));
+        }
+      } else if (loggedBetIds.length > 0) {
+        console.log(chalk.dim(`\n💾 Logged ${loggedBetIds.length} recommendation(s) to tracking file`));
+        console.log(chalk.dim(`   Run with ${chalk.white('--interactive')} to mark which bets you actually placed\n`));
+      }
     }
 
     // Skip parlays unless explicitly requested
@@ -1008,4 +1136,137 @@ function printParlay(rank: number, parlay: ParlayResult, isPositiveEV: boolean, 
     console.log(chalk.dim(legDisplay));
   }
   console.log();
+}
+
+/**
+ * Check results of tracked bets and update outcomes
+ */
+export async function cmdResults(): Promise<void> {
+  const { loadTrackedBets, updateBetResults } = await import("../tracking/bet-logger.js");
+  const { getDb } = await import("../db/index.js");
+  
+  console.log(chalk.bold.cyan('\n🎯 Checking Bet Results...\n'));
+  
+  const data = await loadTrackedBets();
+  const pendingBets = data.bets.filter(b => b.status === 'pending');
+  
+  if (pendingBets.length === 0) {
+    console.log(chalk.yellow('No pending bets to check'));
+    return;
+  }
+  
+  const db = getDb();
+  let updated = 0;
+  
+  for (const bet of pendingBets) {
+    // Query database for final score
+    const game = db.prepare(`
+      SELECT home_score, away_score 
+      FROM games 
+      WHERE espn_event_id = ? AND home_score IS NOT NULL AND away_score IS NOT NULL
+    `).get(bet.eventId) as { home_score: number; away_score: number } | undefined;
+    
+    if (game) {
+      await updateBetResults(bet.id, game.home_score, game.away_score);
+      updated++;
+      
+      const isWin = bet.status === 'won';
+      const statusIcon = isWin ? chalk.green('✅ WON') : chalk.red('❌ LOST');
+      console.log(`${statusIcon} ${bet.pick} - ${bet.matchup}`);
+      console.log(chalk.dim(`   Final: ${game.away_score}-${game.home_score}`));
+      if (bet.actuallyBet && bet.result) {
+        const profitColor = bet.result.actualProfit! >= 0 ? chalk.green : chalk.red;
+        console.log(profitColor(`   Profit: $${bet.result.actualProfit!.toFixed(2)}`));
+      }
+      console.log();
+    }
+  }
+  
+  if (updated === 0) {
+    console.log(chalk.yellow(`No games have finished yet (${pendingBets.length} pending)`));
+  } else {
+    console.log(chalk.green(`\n✅ Updated ${updated} bet result(s)`));
+    console.log(chalk.dim(`Run ${chalk.white('sportline stats')} to see your overall performance\n`));
+  }
+}
+
+/**
+ * Show statistics for tracked bets
+ */
+export async function cmdStats(): Promise<void> {
+  const { getBetStats, loadTrackedBets } = await import("../tracking/bet-logger.js");
+  
+  console.log(chalk.bold.cyan('\n📊 Bet Tracking Statistics\n'));
+  
+  const stats = await getBetStats();
+  const data = await loadTrackedBets();
+  
+  // All recommendations
+  console.log(chalk.bold('All Recommendations (from model):'));
+  console.log(chalk.dim(`  Total: ${stats.allRecommended.count} bets`));
+  console.log(chalk.dim(`  Pending: ${stats.allRecommended.pending}`));
+  console.log(chalk.green(`  Won: ${stats.allRecommended.won}`));
+  console.log(chalk.red(`  Lost: ${stats.allRecommended.lost}`));
+  
+  if (stats.allRecommended.won + stats.allRecommended.lost > 0) {
+    const winRate = (stats.allRecommended.won / (stats.allRecommended.won + stats.allRecommended.lost)) * 100;
+    console.log(chalk.cyan(`  Win Rate: ${winRate.toFixed(1)}%`));
+  }
+  console.log();
+  
+  // Actual bets
+  console.log(chalk.bold('Your Actual Bets:'));
+  if (stats.actuallyBet.count === 0) {
+    console.log(chalk.yellow('  No bets tracked yet'));
+    console.log(chalk.dim(`  Run ${chalk.white('sportline recommend --interactive')} to track bets\n`));
+    return;
+  }
+  
+  console.log(chalk.dim(`  Total: ${stats.actuallyBet.count} bets`));
+  console.log(chalk.dim(`  Pending: ${stats.actuallyBet.pending}`));
+  console.log(chalk.green(`  Won: ${stats.actuallyBet.won}`));
+  console.log(chalk.red(`  Lost: ${stats.actuallyBet.lost}`));
+  console.log(chalk.cyan(`  Total Staked: $${stats.actuallyBet.totalStaked.toFixed(2)}`));
+  
+  const profitColor = stats.actuallyBet.totalProfit >= 0 ? chalk.green : chalk.red;
+  console.log(profitColor(`  Total Profit: $${stats.actuallyBet.totalProfit.toFixed(2)}`));
+  
+  if (stats.actuallyBet.won + stats.actuallyBet.lost > 0) {
+    const winRate = (stats.actuallyBet.won / (stats.actuallyBet.won + stats.actuallyBet.lost)) * 100;
+    console.log(chalk.cyan(`  Win Rate: ${winRate.toFixed(1)}%`));
+    
+    const roiColor = stats.actuallyBet.roi >= 0 ? chalk.green.bold : chalk.red.bold;
+    const roiSign = stats.actuallyBet.roi >= 0 ? '+' : '';
+    console.log(roiColor(`  ROI: ${roiSign}${stats.actuallyBet.roi.toFixed(1)}%`));
+  }
+  console.log();
+  
+  // Breakdown by bin
+  const betsWithResults = data.bets.filter(b => b.actuallyBet && b.status !== 'pending');
+  if (betsWithResults.length > 0) {
+    console.log(chalk.bold('Performance by Confidence Bin:'));
+    
+    const binStats = new Map<string, { won: number; lost: number; profit: number; staked: number }>();
+    for (const bet of betsWithResults) {
+      if (!binStats.has(bet.bin)) {
+        binStats.set(bet.bin, { won: 0, lost: 0, profit: 0, staked: 0 });
+      }
+      const stat = binStats.get(bet.bin)!;
+      if (bet.status === 'won') stat.won++;
+      if (bet.status === 'lost') stat.lost++;
+      stat.profit += bet.result?.actualProfit || 0;
+      stat.staked += bet.stake || 0;
+    }
+    
+    for (const [bin, stat] of Array.from(binStats.entries()).sort()) {
+      const total = stat.won + stat.lost;
+      const winRate = (stat.won / total) * 100;
+      const roi = stat.staked > 0 ? (stat.profit / stat.staked) * 100 : 0;
+      const roiColor = roi >= 0 ? chalk.green : chalk.red;
+      const roiSign = roi >= 0 ? '+' : '';
+      
+      console.log(chalk.dim(`  ${bin}: ${stat.won}W-${stat.lost}L (${winRate.toFixed(0)}%) - ${roiColor(roiSign + roi.toFixed(1) + '% ROI')}`));
+    }
+    console.log();
+  }
 }
