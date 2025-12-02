@@ -85,11 +85,11 @@ export const OPTIMAL_CONFIGS: Record<Sport, Record<string, OptimalConfig>> = {
   },
   ncaam: {
     moneyline: {
-      seasons: [2023, 2024, 2025],
-      reason: 'More data improves calibration and ROI (+1.95% vs 2-season)',
-      expectedROI: 5.06,
-      expectedECE: 9.83,
-      sampleSize: 1818
+      seasons: [2024, 2025],
+      reason: 'Recent meta performs better; +3.00% ROI with better calibration',
+      expectedROI: 3.00,
+      expectedECE: 11.80,
+      sampleSize: 930
     },
     spread: {
       seasons: [2024, 2025],
@@ -99,11 +99,11 @@ export const OPTIMAL_CONFIGS: Record<Sport, Record<string, OptimalConfig>> = {
       sampleSize: 364
     },
     total: {
-      seasons: [2023, 2024, 2025],
-      reason: 'ELITE +13.22% ROI; high divergence picks +28.7%',
-      expectedROI: 13.22,
-      expectedECE: 4.44,
-      sampleSize: 933
+      seasons: [2024, 2025],
+      reason: 'Recent seasons for consistency with moneyline',
+      expectedROI: 0,
+      expectedECE: 0,
+      sampleSize: 0
     }
   },
   nhl: {

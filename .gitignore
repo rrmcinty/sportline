@@ -7,5 +7,5 @@ dist/
 *.db
 *.db-shm
 *.db-wal
-data/
+!data/backtest-results
 models/
