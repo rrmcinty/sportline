@@ -7,6 +7,7 @@ import type { Sport } from "../models/types.js";
 import { getDb } from "../db/index.js";
 import { computeFeatures, type GameFeatures } from "./features.js";
 import { fitIsotonicCalibration, type CalibrationCurve } from "./calibration.js";
+import { getOptimalSeasons, getOptimalConfig, shouldAvoidMarket } from "./optimal-config.js";
 import { writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
 
@@ -18,11 +19,14 @@ function trainLogisticRegression(
   labels: number[],
   learningRate: number = 0.01,
   iterations: number = 1000,
-  lambda: number = 0.5
+  lambda: number = 0.5,
+  sampleWeights?: number[]
 ): number[] {
   const numFeatures = features[0].length;
   const weights = new Array(numFeatures).fill(0);
   const n = features.length;
+  const useWeights = Array.isArray(sampleWeights) && sampleWeights.length === n;
+  const weightSum = useWeights ? (sampleWeights as number[]).reduce((a, b) => a + b, 0) : n;
 
   for (let iter = 0; iter < iterations; iter++) {
     // Compute gradient
@@ -33,15 +37,16 @@ function trainLogisticRegression(
       const y = labels[i];
       const prediction = sigmoid(dot(x, weights));
       const error = prediction - y;
+      const w = useWeights ? (sampleWeights as number[])[i] : 1;
 
       for (let j = 0; j < numFeatures; j++) {
-        gradient[j] += error * x[j];
+        gradient[j] += w * error * x[j];
       }
     }
 
     // Update weights with L2 regularization penalty
     for (let j = 0; j < numFeatures; j++) {
-      weights[j] -= (learningRate / n) * (gradient[j] + lambda * weights[j]);
+      weights[j] -= (learningRate / weightSum) * (gradient[j] + lambda * weights[j]);
     }
   }
 
@@ -57,35 +62,68 @@ function dot(a: number[], b: number[]): number {
 }
 
 /**
+ * Compute exponential-decay recency weights based on sample dates.
+ * More recent dates receive higher weight. Half-life controls decay speed.
+ */
+function computeRecencyWeights(dates: string[], halfLifeDays: number = 120): number[] {
+  if (!dates.length) return [];
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const times = dates.map(d => new Date(d).getTime());
+  const maxT = Math.max(...times);
+  const hlMs = halfLifeDays * msPerDay;
+  const ln2 = Math.log(2);
+  const weights = times.map(t => Math.exp(-ln2 * (maxT - t) / hlMs));
+  return weights;
+}
+
+/**
  * Train predictive model for a sport/season
+ * Automatically uses optimal season configuration per market unless overridden
  */
 export async function cmdModelTrain(
   sport: Sport,
-  seasons: number[],
+  seasons: number[] | null,
   markets: string[],
   calibrate: string
 ): Promise<void> {
   try {
-    const seasonsStr = seasons.length === 1 ? `season ${seasons[0]}` : `seasons ${seasons.join(", ")}`;
-    console.log(chalk.bold.cyan(`\n🤖 Training ${sport.toUpperCase()} model for ${seasonsStr}...\n`));
-    console.log(chalk.gray(`Markets: ${markets.join(", ")}`));
-    console.log(chalk.gray(`Calibration: ${calibrate}\n`));
-
     const db = getDb();
-
-    // Compute features for all games
-    console.log(chalk.dim("Computing features..."));
-    const gameFeatures = computeFeatures(db, sport, seasons);
-    console.log(chalk.dim(`Features computed for ${gameFeatures.length} games\n`));
 
     // Train models for each requested market
     for (const market of markets) {
+      // Use optimal seasons for this sport/market if not specified
+      const useSeasons = seasons || getOptimalSeasons(sport, market);
+      
+      // Check if this market should be avoided
+      if (shouldAvoidMarket(sport, market)) {
+        const config = getOptimalConfig(sport, market);
+        console.log(chalk.yellow(`\n⚠️  WARNING: ${sport.toUpperCase()} ${market} is unprofitable (${config?.expectedROI.toFixed(2)}% ROI)`));
+        console.log(chalk.yellow(`   Training anyway, but this market is NOT recommended for production use.\n`));
+      }
+
+      const optimalConfig = getOptimalConfig(sport, market);
+      const seasonsStr = useSeasons.length === 1 ? `season ${useSeasons[0]}` : `seasons ${useSeasons.join(", ")}`;
+      
+      console.log(chalk.bold.cyan(`\n🤖 Training ${sport.toUpperCase()} ${market.toUpperCase()} for ${seasonsStr}...`));
+      
+      if (optimalConfig && (!seasons || seasons.length === 0)) {
+        console.log(chalk.dim(`   Using optimal config: ${optimalConfig.reason}`));
+        console.log(chalk.dim(`   Expected: ${optimalConfig.expectedROI >= 0 ? '+' : ''}${optimalConfig.expectedROI.toFixed(2)}% ROI, ${optimalConfig.expectedECE.toFixed(2)}% ECE`));
+      }
+      
+      console.log(chalk.gray(`   Calibration: ${calibrate}\n`));
+
+      // Compute features for all games
+      console.log(chalk.dim("Computing features..."));
+      const gameFeatures = computeFeatures(db, sport, useSeasons);
+      console.log(chalk.dim(`Features computed for ${gameFeatures.length} games\n`));
+
       if (market === 'moneyline') {
-        await trainMoneylineModel(db, sport, seasons, gameFeatures, calibrate);
+        await trainMoneylineModel(db, sport, useSeasons, gameFeatures, calibrate);
       } else if (market === 'spread') {
-        await trainSpreadModel(db, sport, seasons, gameFeatures, calibrate);
+        await trainSpreadModel(db, sport, useSeasons, gameFeatures, calibrate);
       } else if (market === 'total') {
-        await trainTotalClassificationModel(db, sport, seasons, gameFeatures);
+        await trainTotalClassificationModel(db, sport, useSeasons, gameFeatures);
       }
     }
   } catch (error) {
@@ -212,7 +250,7 @@ async function trainMoneylineModel(
     const baseTrainLabels = trainIndices.map(i => baseData.labels[i]);
     const baseVal = valIndices.map(i => baseData.features[i]);
     const baseValLabels = valIndices.map(i => baseData.labels[i]);
-    const baseWeights = trainLogisticRegression(baseTrain, baseTrainLabels);
+    const baseWeights = trainLogisticRegression(baseTrain, baseTrainLabels, 0.01, 1000, 0.5);
     
     // Train MARKET-AWARE model (10 features, with market)
     console.log(chalk.dim("Training MARKET-AWARE model (with market feature)..."));
@@ -220,7 +258,7 @@ async function trainMoneylineModel(
     const marketTrainLabels = trainIndices.map(i => marketAwareData.labels[i]);
     const marketVal = valIndices.map(i => marketAwareData.features[i]);
     const marketValLabels = valIndices.map(i => marketAwareData.labels[i]);
-    const marketWeights = trainLogisticRegression(marketTrain, marketTrainLabels);
+    const marketWeights = trainLogisticRegression(marketTrain, marketTrainLabels, 0.01, 1000, 0.5);
 
     // Compute ensemble predictions (70% base, 30% market-aware)
     const ensembleWeight = { base: 0.7, market: 0.3 };
@@ -471,7 +509,7 @@ async function trainSpreadModel(
 
   // Train logistic regression
   console.log(chalk.dim("Training logistic regression..."));
-  const weights = trainLogisticRegression(trainFeatures, trainLabels);
+  const weights = trainLogisticRegression(trainFeatures, trainLabels, 0.01, 1000, 0.5);
 
   // Compute training accuracy
   let trainCorrect = 0;
@@ -723,7 +761,7 @@ async function trainTotalClassificationModel(
   const baseXtrainScaled = baseXtrain.map(scaleBase);
   const baseXvalScaled = baseXval.map(scaleBase);
   
-  // Train logistic regression
+  // Train logistic regression with recency weights
   const baseWeights = trainLogisticRegression(baseXtrainScaled, baseYtrain, 0.01, 1000, 0.5);
   
   // Validation metrics
@@ -777,7 +815,7 @@ async function trainTotalClassificationModel(
   const marketXtrainScaled = marketXtrain.map(scaleMarket);
   const marketXvalScaled = marketXval.map(scaleMarket);
   
-  // Train logistic regression
+  // Train logistic regression with recency weights
   const marketWeights = trainLogisticRegression(marketXtrainScaled, marketYtrain, 0.01, 1000, 0.5);
   
   // Validation metrics

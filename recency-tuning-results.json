@@ -1,0 +1,114 @@
+[
+  {
+    "sport": "nfl",
+    "halfLife": 60,
+    "roi": 4.59,
+    "ece": 5.88,
+    "bets": 467
+  },
+  {
+    "sport": "nhl",
+    "halfLife": 60,
+    "roi": 37.28,
+    "ece": 8.2,
+    "bets": 2335
+  },
+  {
+    "sport": "ncaam",
+    "halfLife": 60,
+    "roi": 2.86,
+    "ece": 11.75,
+    "bets": 930
+  },
+  {
+    "sport": "cfb",
+    "halfLife": 60,
+    "roi": 12.62,
+    "ece": 6.8,
+    "bets": 1589
+  },
+  {
+    "sport": "nfl",
+    "halfLife": 90,
+    "roi": 4.59,
+    "ece": 5.88,
+    "bets": 467
+  },
+  {
+    "sport": "nhl",
+    "halfLife": 90,
+    "roi": 37.28,
+    "ece": 8.2,
+    "bets": 2335
+  },
+  {
+    "sport": "ncaam",
+    "halfLife": 90,
+    "roi": 2.86,
+    "ece": 11.75,
+    "bets": 930
+  },
+  {
+    "sport": "cfb",
+    "halfLife": 90,
+    "roi": 12.62,
+    "ece": 6.8,
+    "bets": 1589
+  },
+  {
+    "sport": "nfl",
+    "halfLife": 120,
+    "roi": 4.59,
+    "ece": 5.88,
+    "bets": 467
+  },
+  {
+    "sport": "nhl",
+    "halfLife": 120,
+    "roi": 37.28,
+    "ece": 8.2,
+    "bets": 2335
+  },
+  {
+    "sport": "ncaam",
+    "halfLife": 120,
+    "roi": 2.86,
+    "ece": 11.75,
+    "bets": 930
+  },
+  {
+    "sport": "cfb",
+    "halfLife": 120,
+    "roi": 12.62,
+    "ece": 6.8,
+    "bets": 1589
+  },
+  {
+    "sport": "nfl",
+    "halfLife": 180,
+    "roi": 4.59,
+    "ece": 5.88,
+    "bets": 467
+  },
+  {
+    "sport": "nhl",
+    "halfLife": 180,
+    "roi": 37.28,
+    "ece": 8.2,
+    "bets": 2335
+  },
+  {
+    "sport": "ncaam",
+    "halfLife": 180,
+    "roi": 2.86,
+    "ece": 11.75,
+    "bets": 930
+  },
+  {
+    "sport": "cfb",
+    "halfLife": 180,
+    "roi": 12.62,
+    "ece": 6.8,
+    "bets": 1589
+  }
+]

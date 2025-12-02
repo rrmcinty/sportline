@@ -7,6 +7,7 @@ import { getDb } from "../db/index.js";
 import { getHomeWinModelProbabilities, getTotalOverModelProbabilities, getHomeSpreadCoverProbabilities } from "./apply.js";
 import { computeFeatures } from "./features.js";
 import type { Sport } from "../models/types.js";
+import { saveBacktestResults, type BacktestResults, type CalibrationBin } from "./backtest-storage.js";
 
 interface BacktestResult {
   bin: string;
@@ -409,6 +410,26 @@ export async function backtestMoneyline(sport: Sport, seasons: number[]): Promis
   console.log(`   Low-confidence bets (40-60%): ${(lowConfWinRate * 100).toFixed(1)}% win rate (${lowConfidence.length} bets)`);
 
   console.log("\n═══════════════════════════════════════════════════════════════════════\n");
+
+  // Save backtest results to disk
+  const backtestResults: BacktestResults = {
+    sport,
+    market: "moneyline",
+    seasons,
+    timestamp: new Date().toISOString(),
+    totalGames: games.length,
+    gamesWithPredictions: predictedGames,
+    gamesWithOdds: results.length,
+    overallROI: totalROI,
+    overallECE: totalError,
+    totalProfit,
+    totalBets,
+    calibration: calibration.map(c => ({
+      ...c,
+      roi: c.bets > 0 ? ((c.profit / (c.bets * 10)) * 100) : 0
+    }))
+  };
+  await saveBacktestResults(backtestResults);
 }
 
 /**
@@ -662,6 +683,26 @@ export async function backtestSpreads(sport: Sport, seasons: number[]): Promise<
   }
 
   console.log("\n═══════════════════════════════════════════════════════════════════════\n");
+
+  // Save backtest results to disk
+  const backtestResults: BacktestResults = {
+    sport,
+    market: "spread",
+    seasons,
+    timestamp: new Date().toISOString(),
+    totalGames: games.length,
+    gamesWithPredictions: predictedGames,
+    gamesWithOdds: results.length,
+    overallROI: roi,
+    overallECE: ece,
+    totalProfit,
+    totalBets,
+    calibration: calibration.map(c => {
+      const roiBin = (c.profit / (c.bets * 10)) * 100;
+      return { ...c, roi: roiBin };
+    })
+  };
+  await saveBacktestResults(backtestResults);
 }
 
 /**
@@ -1064,4 +1105,24 @@ export async function backtestTotals(sport: Sport, seasons: number[]): Promise<v
   console.log(`   Low-confidence bets (40-60%): ${(lowConfWinRate * 100).toFixed(1)}% win rate (${lowConfidence.length} bets)`);
 
   console.log("\n═══════════════════════════════════════════════════════════════════════\n");
+
+  // Save backtest results to disk
+  const backtestResults: BacktestResults = {
+    sport,
+    market: "total",
+    seasons,
+    timestamp: new Date().toISOString(),
+    totalGames: games.length,
+    gamesWithPredictions: predictedGames,
+    gamesWithOdds: results.length,
+    overallROI: totalROI,
+    overallECE: totalError,
+    totalProfit,
+    totalBets,
+    calibration: calibration.map(c => ({
+      ...c,
+      roi: c.bets > 0 ? ((c.profit / (c.bets * 10)) * 100) : 0
+    }))
+  };
+  await saveBacktestResults(backtestResults);
 }

@@ -10,6 +10,7 @@ import { cmdSearchTeam } from "./cli/search.js";
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
 import { cmdModelPredict } from "./model/predict.js";
+import { cmdShowOptimalConfigs } from "./cli/show-configs.js";
 import { runDailyIngest } from "./ingest/daily.js";
 import type { Sport } from "./models/types.js";
 
@@ -97,7 +98,7 @@ program
   .option("--include-dogs", "Include underdogs (disables suppression guardrails)", false)
   .option("--include-parlays", "Include parlay recommendations (default: singles only)", false)
   .action(async (options) => {
-    const sports: Sport[] | undefined = options.sport ? [options.sport as Sport] : undefined;
+    const sports: Sport[] | undefined = options.sport ? [options.sport.toLowerCase() as Sport] : undefined;
     const date = options.date || todayYYYYMMDD();
     await cmdRecommend(
       sports,
@@ -146,16 +147,23 @@ const model = program
   .description("Model training and prediction commands");
 
 model
+  .command("configs")
+  .description("Show optimal training configurations per sport/market")
+  .action(() => {
+    cmdShowOptimalConfigs();
+  });
+
+model
   .command("train")
   .description("Train predictive model for a sport/season")
-  .option("--sport <sport>", "Sport (ncaam|cfb)", "ncaam")
-  .requiredOption("--season <years>", "Season year(s) (e.g., 2025 or 2024,2025 for multi-season)")
+  .option("--sport <sport>", "Sport (ncaam|cfb|nfl|nba|nhl)", "ncaam")
+  .option("--season <years>", "Season year(s) (e.g., 2025 or 2024,2025). Omit to use optimal config per market.")
   .option("--markets <markets>", "Markets to train (comma-separated)", "moneyline,spread,total")
   .option("--calibrate <method>", "Calibration method (isotonic|platt)", "isotonic")
   .action(async (options) => {
     const sport: Sport = options.sport;
     const markets = options.markets.split(",");
-    const seasons = options.season.split(",").map((s: string) => parseInt(s.trim()));
+    const seasons = options.season ? options.season.split(",").map((s: string) => parseInt(s.trim())) : null;
     await cmdModelTrain(sport, seasons, markets, options.calibrate);
   });
 

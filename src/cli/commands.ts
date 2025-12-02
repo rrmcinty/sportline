@@ -15,6 +15,8 @@ import { fetchOdds as fetchOddsNba, normalizeOdds as normalizeOddsNba } from "..
 import { evaluateParlay, generateParlays, rankParlaysByEV, filterPositiveEV } from "../parlay/eval.js";
 import { getHomeWinModelProbabilities, getHomeSpreadCoverProbabilities, getTotalOverModelProbabilities } from "../model/apply.js";
 import type { BetLeg, Competition, ParlayResult } from "../models/types.js";
+import { getLatestBacktestForConfig, type BacktestResults } from "../model/backtest-storage.js";
+import { getOptimalSeasons } from "../model/optimal-config.js";
 
 /**
  * Fetch and display games for a date
@@ -279,6 +281,70 @@ export async function cmdBets(
     process.exit(1);
   }
 }
+/**
+ * Get backtest stats for a specific market/sport combination
+ * If probability is provided, returns stats for that probability bin
+ */
+async function getBacktestStats(
+  sport: Sport, 
+  market: "moneyline" | "spread" | "total",
+  probability?: number
+): Promise<{
+  roi: number | null;
+  ece: number | null;
+  winRate: number | null;
+  seasons: number[];
+  gamesAnalyzed: number;
+  hasData: boolean;
+} | null> {
+  try {
+    const optimalSeasons = getOptimalSeasons(sport, market);
+    if (!optimalSeasons) return null;
+
+    const backtest = await getLatestBacktestForConfig(sport, market, optimalSeasons);
+    if (!backtest) return null;
+
+    // If probability specified, find the matching calibration bin
+    if (probability !== undefined) {
+      const bin = backtest.calibration.find(b => {
+        const [minStr, maxStr] = b.bin.split('-').map(s => parseFloat(s.replace('%', '')) / 100);
+        return probability >= minStr && probability < maxStr;
+      });
+
+      if (bin && bin.count > 0) {
+        const binWinRate = bin.actual; // Actual win rate in this bin
+        return {
+          roi: bin.roi,
+          ece: Math.abs(bin.predicted - bin.actual),
+          winRate: binWinRate,
+          seasons: backtest.seasons,
+          gamesAnalyzed: bin.count,
+          hasData: true
+        };
+      }
+    }
+
+    // Fall back to overall stats if no probability specified or bin not found
+    const totalWins = backtest.calibration.reduce((sum, bin) => {
+      const binWinRate = bin.roi > 0 ? 0.5 + (bin.roi / 200) : 0.5 + (bin.roi / 200);
+      return sum + (bin.bets * binWinRate);
+    }, 0);
+    const totalBets = backtest.totalBets;
+    const winRate = totalBets > 0 ? (totalWins / totalBets) : null;
+
+    return {
+      roi: backtest.overallROI,
+      ece: backtest.overallECE,
+      winRate,
+      seasons: backtest.seasons,
+      gamesAnalyzed: backtest.gamesWithOdds,
+      hasData: true
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
 /**
  * Generate and rank parlay recommendations
  */
@@ -653,35 +719,53 @@ export async function cmdRecommend(
       console.log(chalk.dim(`Positive EV = good bet. Negative EV = bookmaker has the edge.\n`));
       
       const singleBets = allLegs.map(leg => evaluateParlay({ legs: [leg], stake }));
-      // Filter to only 3-SEASON VALIDATED PROFITABLE MARKETS (2023+2024+2025 backtests):
-      // ✅ Moneyline: All sports (NBA +0.49%, NFL +5.06%, NCAAM +5.06%, CFB +7.67%)
-      // ✅ Totals: NFL +8.19%, NBA +2.57%, NCAAM +13.22%
-      // ❌ Spreads: ALL BROKEN (NBA -3.33% 44% ECE, NFL -19.45%, CFB -4.08% 41% ECE)
-      const backtestedSingles = singleBets.filter(bet => {
+      
+      // ONLY SHOW BETS WITH BACKTEST DATA
+      const backtestedSingles = [];
+      for (const bet of singleBets) {
         const leg = bet.legs[0];
-        const isNFLTotal = leg.market === 'total' && leg.description.includes('[NFL]');
-        const isNBATotal = leg.market === 'total' && leg.description.includes('[NBA]');
-        const isNCAAMTotal = leg.market === 'total' && leg.description.includes('[NCAAM]');
-        return leg.market === 'moneyline' || isNFLTotal || isNBATotal || isNCAAMTotal;
-      });
-      // Sort by value score (EV * confidence multiplier) instead of raw EV
-      const rankedSingles = backtestedSingles
-        .map(bet => ({ bet, valueScore: getValueScore(bet) }))
-        .sort((a, b) => b.valueScore - a.valueScore)
-        .slice(0, topN)
-        .map(x => x.bet);
+        const matchupInfo = eventIdToMatchup.get(leg.eventId);
+        const sportName: Sport = matchupInfo?.sport?.toLowerCase() as Sport || 'nba';
+        const marketType = leg.market as "moneyline" | "spread" | "total";
+        
+        // Check if we have backtest data for this sport/market (don't pass probability here)
+        const backtestStats = await getBacktestStats(sportName, marketType);
+        if (backtestStats && backtestStats.hasData) {
+          backtestedSingles.push(bet);
+        }
+      }
+      
+      // Sort by bin-specific ROI (highest to lowest)
+      const rankedSingles = [];
+      for (const bet of backtestedSingles) {
+        const leg = bet.legs[0];
+        let displayProb = bet.probability;
+        if (displayProb > 0.97) displayProb = 0.97;
+        if (displayProb < 0.03) displayProb = 0.03;
+        
+        const matchupInfo = eventIdToMatchup.get(leg.eventId);
+        const sportName: Sport = matchupInfo?.sport?.toLowerCase() as Sport || 'nba';
+        const marketType = leg.market as "moneyline" | "spread" | "total";
+        const backtestStats = await getBacktestStats(sportName, marketType, displayProb);
+        
+        const roi = backtestStats?.roi !== null && backtestStats?.roi !== undefined ? backtestStats.roi : -999;
+        rankedSingles.push({ bet, roi });
+      }
+      
+      rankedSingles.sort((a, b) => b.roi - a.roi);
+      const topRankedSingles = rankedSingles.slice(0, topN).map(x => x.bet);
       
       // Show confidence tier distribution
       const tiers = { ELITE: 0, HIGH: 0, MEDIUM: 0, 'COIN FLIP': 0 };
-      singleBets.forEach(bet => {
+      backtestedSingles.forEach(bet => {
         const prob = bet.legs[0]?.impliedProbability || 0.5;
         const tier = getConfidenceTier(prob).tier;
         tiers[tier as keyof typeof tiers]++;
       });
       console.log(chalk.dim(`Confidence distribution: 🏆 ${tiers.ELITE} Elite | ⭐ ${tiers.HIGH} High | 📊 ${tiers.MEDIUM} Medium | ⚠️ ${tiers['COIN FLIP']} Coin Flip\n`));
       
-      for (let i = 0; i < rankedSingles.length; i++) {
-        const bet = rankedSingles[i];
+      for (let i = 0; i < topRankedSingles.length; i++) {
+        const bet = topRankedSingles[i];
         const leg = bet.legs[0];
         const evColor = bet.ev >= 0 ? chalk.green : chalk.red;
         const evSign = bet.ev >= 0 ? '+' : '';
@@ -694,26 +778,37 @@ export async function cmdRecommend(
         // Get market type
         const marketType = leg.market;
         // Get sport from eventIdToMatchup map
-        let sportName = 'nba';
+        let sportName: Sport = 'nba';
         const matchupInfo = eventIdToMatchup.get(leg.eventId);
-        if (matchupInfo && matchupInfo.sport) sportName = matchupInfo.sport.toLowerCase();
+        if (matchupInfo && matchupInfo.sport) sportName = matchupInfo.sport.toLowerCase() as Sport;
 
-        // Market-specific backtest stats
-        let marketStats = { winRate: 'N/A', roi: 'N/A', label: '' };
-        if (marketType === 'moneyline') {
-          // Use moneyline bins from BACKTEST_RESULTS.md
-          if (sportName === 'nba' && displayProb >= 0.80) marketStats = { winRate: '90.7%', roi: '+25.9%', label: 'NBA 80-90%' };
-          else if (sportName === 'nba' && displayProb >= 0.20 && displayProb < 0.30) marketStats = { winRate: '15.8%', roi: '+61.5%', label: 'NBA 20-30%' };
-          // ...add more bins for other sports as needed
-        } else if (marketType === 'total') {
-          // NBA and NCAAM totals are validated and profitable
-          if (sportName === 'nba') {
-            marketStats = { winRate: '56.0%', roi: '+7.5%', label: 'NBA Totals: validated' };
-          } else if (sportName === 'ncaam') {
-            marketStats = { winRate: '55.5%', roi: '+29.7%', label: 'NCAAM Totals: validated' };
-          } else {
-            marketStats = { winRate: 'N/A', roi: 'N/A', label: 'Totals: calibration not validated' };
-          }
+        // Load actual backtest stats for this sport/market
+        const backtestStats = await getBacktestStats(sportName, marketType as "moneyline" | "spread" | "total", displayProb);
+        let marketStats = { 
+          winRate: 'N/A', 
+          roi: 'N/A', 
+          label: '',
+          seasonsLabel: '',
+          gamesLabel: ''
+        };
+        
+        if (backtestStats && backtestStats.hasData) {
+          const roiSign = backtestStats.roi! >= 0 ? '+' : '';
+          marketStats = {
+            winRate: backtestStats.winRate ? `${(backtestStats.winRate * 100).toFixed(1)}%` : 'N/A',
+            roi: backtestStats.roi !== null ? `${roiSign}${backtestStats.roi.toFixed(1)}%` : 'N/A',
+            label: `${sportName.toUpperCase()} ${marketType}`,
+            seasonsLabel: `${backtestStats.seasons.join(', ')}`,
+            gamesLabel: `${backtestStats.gamesAnalyzed} games`
+          };
+        } else {
+          marketStats = { 
+            winRate: 'N/A', 
+            roi: 'N/A', 
+            label: `${sportName.toUpperCase()} ${marketType}: no backtest data`, 
+            seasonsLabel: '',
+            gamesLabel: ''
+          };
         }
 
         // Get confidence tier
@@ -741,13 +836,33 @@ export async function cmdRecommend(
         // Calculate potential profit if bet wins
         const potentialProfit = bet.payout - stake;
 
-        // Suppress ELITE/HIGH label for totals
-        let confidenceLabel = tier.tier;
-        if (marketType === 'total' && (tier.tier === 'ELITE' || tier.tier === 'HIGH')) {
-          confidenceLabel = 'UNVERIFIED';
+        // Create descriptive label based on probability and ROI
+        let confidenceLabel = '';
+        if (displayProb >= 0.80 || displayProb <= 0.20) {
+          confidenceLabel = `${(displayProb * 100).toFixed(0)}% probability`;
+        } else if (displayProb >= 0.70 || displayProb <= 0.30) {
+          confidenceLabel = `${(displayProb * 100).toFixed(0)}% probability`;
+        } else if (displayProb >= 0.60 || displayProb <= 0.40) {
+          confidenceLabel = `${(displayProb * 100).toFixed(0)}% probability`;
+        } else {
+          confidenceLabel = `${(displayProb * 100).toFixed(0)}% probability (toss-up)`;
         }
 
-        console.log(chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel} CONFIDENCE]`));
+        // Add ROI-based qualifier if we have backtest data
+        if (marketStats.roi !== 'N/A') {
+          const roiNum = parseFloat(marketStats.roi.replace('%', ''));
+          if (roiNum >= 10) {
+            confidenceLabel += ' - Strong value';
+          } else if (roiNum >= 0) {
+            confidenceLabel += ' - Slight edge';
+          } else if (roiNum >= -10) {
+            confidenceLabel += ' - Bookmaker edge';
+          } else {
+            confidenceLabel += ' - Poor value';
+          }
+        }
+
+        console.log(chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel}]`));
         if (matchupDisplay) {
           console.log(`   ${matchupDisplay}`);
         }
@@ -755,31 +870,22 @@ export async function cmdRecommend(
         console.log(`   If you win: ${chalk.green('$' + bet.payout.toFixed(2) + ' total')} ${chalk.dim('($' + potentialProfit.toFixed(2) + ' profit)')}`);
         console.log(`   Win chance: ${chalk.cyan((displayProb * 100).toFixed(1) + '%')}${isModelProb ? chalk.dim(' (model)') : ''}`);
         if (marketStats.label) {
-          console.log(chalk.dim(`   Historical: ${marketStats.winRate} win rate, ${marketStats.roi} ROI (${marketStats.label})`));
+          const gamesInfo = marketStats.gamesLabel ? chalk.dim(` | ${marketStats.gamesLabel}`) : '';
+          const seasonsInfo = marketStats.seasonsLabel ? chalk.dim(` | seasons ${marketStats.seasonsLabel}`) : '';
+          console.log(chalk.dim(`   Historical: ${marketStats.winRate} win rate, ${marketStats.roi} ROI - ${marketStats.label}${gamesInfo}${seasonsInfo}`));
         }
-        console.log(`   Expected value: ${evColor(evSign + '$' + bet.ev.toFixed(2))} ${chalk.dim('average profit per bet')}${isModelProb ? chalk.dim(' (model)') : ''}`);
-        if (confidenceLabel === 'ELITE' || confidenceLabel === 'HIGH') {
-          if (marketType === 'moneyline') {
-            console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - backtests show ${marketStats.winRate} success rate!`));
-          } else if (marketType === 'spread') {
-            // ALL SPREADS ARE BROKEN (3-season backtests): NBA -3.33% 44% ECE, NFL -19.45%, CFB -4.08% 41% ECE
-            console.log(chalk.red(`   ❌ SPREADS ARE BROKEN - avoid all spread bets (negative ROI, poor calibration)`));
+        console.log(`   Expected value: ${evColor(evSign + '$' + bet.ev.toFixed(2))} ${chalk.dim('per $10 bet')}${isModelProb ? chalk.dim(' (model)') : ''}`);
+        if (marketStats.winRate !== 'N/A' && marketStats.roi !== 'N/A') {
+          const roiNum = parseFloat(marketStats.roi.replace('%', ''));
+          if (roiNum >= 10) {
+            console.log(chalk.green.bold(`   ${tier.emoji} Strong historical performance: ${marketStats.winRate} win rate, ${marketStats.roi} ROI in this range!`));
+          } else if (roiNum >= 0) {
+            console.log(chalk.green(`   ${tier.emoji} Profitable historically: ${marketStats.winRate} win rate, ${marketStats.roi} ROI in this range.`));
+          } else if (roiNum >= -10) {
+            console.log(chalk.yellow(`   ⚠️ Bookmaker has edge: ${marketStats.winRate} win rate, ${marketStats.roi} ROI historically.`));
           } else {
-            const isNFLTotal = leg.description.includes('[NFL]');
-            const isNBATotal = leg.description.includes('[NBA]');
-            const isNCAAMTotal = leg.description.includes('[NCAAM]');
-            if (isNFLTotal) {
-              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NFL totals backtested at +8.19% ROI (2.41% ECE)!`));
-            } else if (isNBATotal) {
-              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NBA totals backtested at +2.57% ROI (0.91% ECE)!`));
-            } else if (isNCAAMTotal) {
-              console.log(chalk.green.bold(`   ${tier.emoji} ${confidenceLabel} confidence bet - NCAAM totals backtested at +13.22% ROI (4.44% ECE)!`));
-            } else {
-              console.log(chalk.yellow(`   ${tier.emoji} ${confidenceLabel} confidence bet - totals calibration not validated. Proceed with caution.`));
-            }
+            console.log(chalk.red(`   ❌ Poor value: ${marketStats.winRate} win rate, ${marketStats.roi} ROI historically.`));
           }
-        } else if (confidenceLabel === 'COIN FLIP') {
-          console.log(chalk.yellow(`   ${tier.emoji} Close game - backtests show negative ROI on these. Proceed with caution.`));
         }
         if (bet.ev >= 0) {
           console.log(chalk.green.bold(`   ✨ This bet has positive expected value!`));
@@ -788,7 +894,7 @@ export async function cmdRecommend(
       }
 
       // Show interpretation
-      const bestBet = rankedSingles.length > 0 ? rankedSingles[0] : null;
+      const bestBet = topRankedSingles.length > 0 ? topRankedSingles[0] : null;
       const bestEV = bestBet?.ev || 0;
       const bestTier = bestBet ? getConfidenceTier(bestBet.probability) : null;
       

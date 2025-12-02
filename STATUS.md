@@ -162,11 +162,12 @@
   - [x] Implemented probability display cap at 97% (prevents 99.9% overconfidence)
   - [x] Added market-specific backtest stat lookup (shows historical win rate, ROI)
   - [x] Suppressed ELITE/HIGH confidence labels for unvalidated markets (totals, spreads)
-  - [x] Filtered recommend command to show only validated bets (moneyline all sports, NBA spreads)
+  - [x] **Recommend command ONLY shows bets with backtest data** - no hardcoded stats, no untested markets
+  - [x] Backtest results persistence system (JSON files in data/backtest-results/)
+  - [x] Historical performance displayed inline: win rate, ROI, games analyzed, seasons used
   - [x] Added --include-parlays flag (parlays hidden by default, EV compounds negatively)
   - [x] Enhanced bet display with confidence tiers and backtest-based warnings
   - [x] Added divergence analysis tools for model investigation
-  - [x] NBA spreads now shown in recommendations (+11.02% backtested ROI)
 
 ### 🔄 Current Model Performance (CFB 2025) - After Normalization Revert
 **Training Data:** 1,241 games (filtered from 1,750 completed) - excludes games where either team has <5 completed games
@@ -225,6 +226,8 @@ Totals Model (Regression):
 - [x] **3-Season Validation** ✅ **COMPLETED** - Retrained/backtested all models with 2023+2024+2025 data
 - [x] **Totals Classification Ensemble** ✅ **COMPLETED** - Replaced regression with binary classification (Over/Under)
 - [x] **Production Filtering Fix** ✅ **COMPLETED** - Removed broken NBA spreads from recommendations after 3-season backtest revealed -3.33% ROI
+- [x] **Backtest Results Persistence** ✅ **COMPLETED** - Auto-save backtest results to JSON, recommend command loads and displays historical performance
+- [x] **Optimal Config System** ✅ **COMPLETED** - Auto-select best training windows per sport/market, analyze which configs are profitable
 - [ ] **Totals Model Fix** - Investigate NFL/CFB/NCAAM systematic inversion (low predictions → goes Over)
 - [ ] **Team Strength Tiers** - Categorical features for Elite/Strong/Average/Weak based on rolling performance
 - [ ] Track actual betting results vs predictions (logging + ROI table)

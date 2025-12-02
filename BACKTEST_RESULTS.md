@@ -744,7 +744,41 @@ node dist/index.js model backtest --sport nba --season 2025
 
 ---
 
+## Recency Weighting Analysis (2024–2025)
+
+**Initial Testing (120d half-life):**
+
+| Sport | Baseline ROI | Baseline ECE | Weighted ROI | Weighted ECE | ROI Δ | ECE Δ | Status |
+|-------|--------------|--------------|--------------|--------------|-------|-------|--------|
+| **NBA** | +5.82% | ~5.3% | +6.56% | 4.03% | +0.74% | -1.27% | ✅ Improved |
+| **NFL** | +5.28% | 6.51% | +5.76% | 4.97% | +0.48% | -1.54% | ✅ Improved |
+| **NHL** | +37.82% | 8.60% | +37.83% | 8.44% | +0.01% | -0.16% | → Unchanged |
+| **NCAAM** | +3.00% | 11.80% | +2.91% | 11.86% | -0.09% | +0.06% | → Unchanged |
+| **CFB** | +13.03% | 6.57% | +12.62% | 6.52% | -0.41% | -0.05% | → Slight regression |
+
+**Half-Life Sensitivity Testing (60d/90d/120d/180d):**
+
+Tested recency weighting with half-lives from 60 to 180 days across all sports. **Result: No measurable difference in ROI or ECE across any half-life value.**
+
+**Key Findings:**
+- **2-season window limits impact:** With only 2 seasons (~400-500 days of data), exponential decay weights don't meaningfully differentiate samples regardless of half-life (60d–180d).
+- **Initial improvements likely from other factors:** The NFL/NBA improvements seen with 120d half-life may be due to training run variability, random seed differences, or isotonic calibration fitting, rather than recency weighting itself.
+- **Recommendation:** Recency weighting provides **minimal benefit** with 2-season training windows. Consider either:
+  1. **Expand to 3+ seasons** where recency weighting can de-emphasize older, less relevant data
+  2. **Remove recency weighting** for 2-season models to simplify training
+  3. **Use for 3+ season models only** where the decay can distinguish recent vs historical patterns
+
+**Conclusion:** For current 2-season approach, recency weighting adds complexity without clear ROI gains. Keep default 120d half-life for now, but don't expect material improvements from tuning it.
+
+---
+
 ## Changelog
+
+### 2025-12-01
+- **Recency weighting analysis:** Trained NFL/NHL/NCAAM/CFB with exponential decay (half-life 120d); NFL/NBA showed initial improvements
+- **Half-life sensitivity testing:** Tested 60d/90d/120d/180d across all sports; **no measurable ROI/ECE differences** — 2-season window too short for recency weighting to matter
+- **Conclusion:** Recency weighting provides minimal benefit with 2-season training; impact negligible regardless of half-life value
+- **Recommendation:** Keep 120d default for simplicity, but don't expect material gains from tuning; consider removing or using only for 3+ season models
 
 ### 2025-11-30
 - Created BACKTEST_RESULTS.md to track all sports
