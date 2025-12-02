@@ -6,7 +6,7 @@ import { fetchEvents as fetchEventsNfl } from "../espn/nfl/events.js";
 import { fetchEvents as fetchEventsNba } from "../espn/nba/events.js";
 import { fetchNHLEvents } from "../espn/nhl/events.js";
 import type { Sport } from "../models/types.js";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { applyCalibration, type CalibrationCurve } from "./calibration.js";
 
@@ -207,14 +207,28 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   const latestRun = db.prepare(`SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%total%' ORDER BY finished_at DESC LIMIT 1`).get(sport) as { run_id: string; artifacts_path: string } | undefined;
   if (!latestRun) return undefined;
 
-  const modelPath = join(latestRun.artifacts_path, 'model.json');
-  let model: { market: string; predictionType?: string; weights: number[]; featureNames: string[]; seasons?: number[]; means?: number[]; stds?: number[]; sigma?: number; calibration?: CalibrationCurve | null };
+  // Check for ensemble classification model (new approach)
+  const ensemblePath = join(latestRun.artifacts_path, 'ensemble.json');
+  const baseModelPath = join(latestRun.artifacts_path, 'base_model.json');
+  const marketModelPath = join(latestRun.artifacts_path, 'market_model.json');
+  
+  let useEnsemble = false;
+  let baseModel: any;
+  let marketModel: any;
+  let ensembleConfig: any;
+  
   try {
-    model = JSON.parse(readFileSync(modelPath, 'utf-8'));
-  } catch {
-    return undefined;
+    if (existsSync(ensemblePath) && existsSync(baseModelPath) && existsSync(marketModelPath)) {
+      // New ensemble classification approach
+      ensembleConfig = JSON.parse(readFileSync(ensemblePath, 'utf-8'));
+      baseModel = JSON.parse(readFileSync(baseModelPath, 'utf-8'));
+      marketModel = JSON.parse(readFileSync(marketModelPath, 'utf-8'));
+      useEnsemble = true;
+    }
+  } catch (error) {
+    // Fall back to legacy model if ensemble files don't exist
+    useEnsemble = false;
   }
-  if (model.market !== 'total') return undefined;
 
   // Use database only - no API fetches during backtest/predictions
   const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
@@ -222,90 +236,145 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   nextDayT.setDate(nextDayT.getDate() + 1);
   const nextDayPrefixT = nextDayT.toISOString().slice(0, 10);
 
-  const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2025]);
-  const featureMap = new Map<number, number[]>();
-  for (const f of allFeatures) {
-    if (f.totalLine !== null) {
-      // Build regression feature vector matching featureNames
-      const vecMap: Record<string, number> = {
-        homePointsAvg5: f.homePointsAvg5,
-        awayPointsAvg5: f.awayPointsAvg5,
-        homeOppPointsAvg5: f.homeOppPointsAvg5,
-        awayOppPointsAvg5: f.awayOppPointsAvg5,
-        homeWinRate5: f.homeWinRate5,
-        awayWinRate5: f.awayWinRate5,
-        homeAvgMargin5: f.homeAvgMargin5,
-        awayAvgMargin5: f.awayAvgMargin5,
-        homeOppAvgMargin5: f.homeOppAvgMargin5,
-        awayOppAvgMargin5: f.awayOppAvgMargin5,
-        homeOppWinRate5: f.homeOppWinRate5,
-        awayOppWinRate5: f.awayOppWinRate5,
-        homePace5: f.homePace5,
-        awayPace5: f.awayPace5,
-        homeOffEff5: f.homeOffEff5,
-        awayOffEff5: f.awayOffEff5,
-        homeDefEff5: f.homeDefEff5,
-        awayDefEff5: f.awayDefEff5,
-        homePointsAvg10: f.homePointsAvg10,
-        awayPointsAvg10: f.awayPointsAvg10,
-        homeOppPointsAvg10: f.homeOppPointsAvg10,
-        awayOppPointsAvg10: f.awayOppPointsAvg10,
-        homeWinRate10: f.homeWinRate10,
-        awayWinRate10: f.awayWinRate10,
-        homeAvgMargin10: f.homeAvgMargin10,
-        awayAvgMargin10: f.awayAvgMargin10,
-        homeOppAvgMargin10: f.homeOppAvgMargin10,
-        awayOppAvgMargin10: f.awayOppAvgMargin10,
-        homeOppWinRate10: f.homeOppWinRate10,
-        awayOppWinRate10: f.awayOppWinRate10,
-        homePace10: f.homePace10,
-        awayPace10: f.awayPace10,
-        homeOffEff10: f.homeOffEff10,
-        awayOffEff10: f.awayOffEff10,
-        homeDefEff10: f.homeDefEff10,
-        awayDefEff10: f.awayDefEff10
-      };
-      const featureVector = model.featureNames.map(n => vecMap[n] ?? 0);
-      featureMap.set(f.gameId, featureVector);
-    }
-  }
+  const seasons = useEnsemble ? (baseModel.seasons || [2025]) : [2025];
+  const allFeatures = computeFeatures(db, sport, Array.isArray(seasons) && seasons.length ? seasons : [2025]);
 
   // Query games matching date prefix
   const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefixT) as Array<{ id: number; espn_event_id: string }>;
   if (!rows.length) return undefined;
 
   const probs = new Map<string, number>();
-  if ((model as any).predictionType === 'regression' && model.means && model.stds && model.sigma) {
-    const bias = (model as any).bias || 0;
-    function normalCdf(z: number): number {
-      const t = 1 / (1 + 0.5 * Math.abs(z));
-      const tau = t * Math.exp(-z*z - 1.26551223 + 1.00002368*t + 0.37409196*t*t + 0.09678418*t*t*t - 0.18628806*t*t*t*t + 0.27886807*t*t*t*t*t - 1.13520398*t*t*t*t*t*t + 1.48851587*t*t*t*t*t*t*t - 0.82215223*t*t*t*t*t*t*t*t + 0.17087277*t*t*t*t*t*t*t*t*t);
-      const erf = z >= 0 ? 1 - tau : tau - 1;
-      return 0.5 * (1 + erf);
-    }
+
+  if (useEnsemble) {
+    // ========== ENSEMBLE CLASSIFICATION APPROACH ==========
     for (const r of rows) {
-      const xRaw = featureMap.get(r.id);
-      if (!xRaw) continue;
-      // Scale
-      const xScaled = xRaw.map((v,i) => (v - model.means![i]) / model.stds![i]);
-      const predictedScore = xScaled.reduce((acc,v,i)=>acc + v * model.weights[i],0) + bias;
-      // Need total line from features list: retrieve from allFeatures by gameId
       const f = allFeatures.find(ff => ff.gameId === r.id);
-      const line = f?.totalLine ?? null;
-      if (line === null) continue;
-      const z = (line - predictedScore) / model.sigma;
-      const pOver = 1 - normalCdf(z);
-      probs.set(r.espn_event_id, pOver);
+      if (!f || f.totalLine === null) continue;
+
+      // Build base features (37 features: 36 base stats + line)
+      const baseFeat = [
+        f.homePointsAvg5, f.awayPointsAvg5, f.homeOppPointsAvg5, f.awayOppPointsAvg5,
+        f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5,
+        f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.homeOppWinRate5, f.awayOppWinRate5,
+        f.homePace5, f.awayPace5, f.homeOffEff5, f.awayOffEff5, f.homeDefEff5, f.awayDefEff5,
+        f.homePointsAvg10, f.awayPointsAvg10, f.homeOppPointsAvg10, f.awayOppPointsAvg10,
+        f.homeWinRate10, f.awayWinRate10, f.homeAvgMargin10, f.awayAvgMargin10,
+        f.homeOppAvgMargin10, f.awayOppAvgMargin10, f.homeOppWinRate10, f.awayOppWinRate10,
+        f.homePace10, f.awayPace10, f.homeOffEff10, f.awayOffEff10,
+        f.homeDefEff10, f.awayDefEff10,
+        f.totalLine  // 37th feature
+      ];
+
+      // Standardize base features
+      const baseScaled = baseFeat.map((v, i) => (v - baseModel.means[i]) / baseModel.stds[i]);
+      
+      // Predict with base model
+      const baseZ = baseScaled.reduce((acc, v, i) => acc + v * baseModel.weights[i], 0);
+      const baseProb = sigmoid(baseZ);
+
+      // Build market-aware features (38 features: 37 base + totalMarketImpliedProb)
+      const marketFeat = [...baseFeat, f.totalMarketImpliedProb ?? 0.5];
+      
+      // Standardize market features
+      const marketScaled = marketFeat.map((v, i) => (v - marketModel.means[i]) / marketModel.stds[i]);
+      
+      // Predict with market model
+      const marketZ = marketScaled.reduce((acc, v, i) => acc + v * marketModel.weights[i], 0);
+      const marketProb = sigmoid(marketZ);
+
+      // Ensemble: 70% base + 30% market-aware
+      const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
+      
+      probs.set(r.espn_event_id, ensembleProb);
     }
   } else {
-    // Fallback: treat as logistic classification legacy
-    for (const r of rows) {
-      const x = featureMap.get(r.id);
-      if (!x) continue;
-      const z = x.reduce((acc,v,i)=>acc+v*model.weights[i],0);
-      const rawProb = sigmoid(z);
-      probs.set(r.espn_event_id, rawProb);
+    // ========== LEGACY REGRESSION FALLBACK ==========
+    const modelPath = join(latestRun.artifacts_path, 'model.json');
+    let model: { market: string; predictionType?: string; weights: number[]; featureNames: string[]; seasons?: number[]; means?: number[]; stds?: number[]; sigma?: number; calibration?: CalibrationCurve | null };
+    try {
+      model = JSON.parse(readFileSync(modelPath, 'utf-8'));
+    } catch {
+      return undefined;
+    }
+    if (model.market !== 'total') return undefined;
+
+    const featureMap = new Map<number, number[]>();
+    for (const f of allFeatures) {
+      if (f.totalLine !== null) {
+        const vecMap: Record<string, number> = {
+          homePointsAvg5: f.homePointsAvg5,
+          awayPointsAvg5: f.awayPointsAvg5,
+          homeOppPointsAvg5: f.homeOppPointsAvg5,
+          awayOppPointsAvg5: f.awayOppPointsAvg5,
+          homeWinRate5: f.homeWinRate5,
+          awayWinRate5: f.awayWinRate5,
+          homeAvgMargin5: f.homeAvgMargin5,
+          awayAvgMargin5: f.awayAvgMargin5,
+          homeOppAvgMargin5: f.homeOppAvgMargin5,
+          awayOppAvgMargin5: f.awayOppAvgMargin5,
+          homeOppWinRate5: f.homeOppWinRate5,
+          awayOppWinRate5: f.awayOppWinRate5,
+          homePace5: f.homePace5,
+          awayPace5: f.awayPace5,
+          homeOffEff5: f.homeOffEff5,
+          awayOffEff5: f.awayOffEff5,
+          homeDefEff5: f.homeDefEff5,
+          awayDefEff5: f.awayDefEff5,
+          homePointsAvg10: f.homePointsAvg10,
+          awayPointsAvg10: f.awayPointsAvg10,
+          homeOppPointsAvg10: f.homeOppPointsAvg10,
+          awayOppPointsAvg10: f.awayOppPointsAvg10,
+          homeWinRate10: f.homeWinRate10,
+          awayWinRate10: f.awayWinRate10,
+          homeAvgMargin10: f.homeAvgMargin10,
+          awayAvgMargin10: f.awayAvgMargin10,
+          homeOppAvgMargin10: f.homeOppAvgMargin10,
+          awayOppAvgMargin10: f.awayOppAvgMargin10,
+          homeOppWinRate10: f.homeOppWinRate10,
+          awayOppWinRate10: f.awayOppWinRate10,
+          homePace10: f.homePace10,
+          awayPace10: f.awayPace10,
+          homeOffEff10: f.homeOffEff10,
+          awayOffEff10: f.awayOffEff10,
+          homeDefEff10: f.homeDefEff10,
+          awayDefEff10: f.awayDefEff10,
+          totalMarketImpliedProb: f.totalMarketImpliedProb ?? 0.5
+        };
+        const featureVector = model.featureNames.map(n => vecMap[n] ?? 0);
+        featureMap.set(f.gameId, featureVector);
+      }
+    }
+
+    if ((model as any).predictionType === 'regression' && model.means && model.stds && model.sigma) {
+      const bias = (model as any).bias || 0;
+      function normalCdf(z: number): number {
+        const t = 1 / (1 + 0.5 * Math.abs(z));
+        const tau = t * Math.exp(-z*z - 1.26551223 + 1.00002368*t + 0.37409196*t*t + 0.09678418*t*t*t - 0.18628806*t*t*t*t + 0.27886807*t*t*t*t*t - 1.13520398*t*t*t*t*t*t + 1.48851587*t*t*t*t*t*t*t - 0.82215223*t*t*t*t*t*t*t*t + 0.17087277*t*t*t*t*t*t*t*t*t);
+        const erf = z >= 0 ? tau - 1 : 1 - tau;
+        return 0.5 * (1 + erf);
+      }
+      for (const r of rows) {
+        const xRaw = featureMap.get(r.id);
+        if (!xRaw) continue;
+        const xScaled = xRaw.map((v,i) => (v - model.means![i]) / model.stds![i]);
+        const predictedScore = xScaled.reduce((acc,v,i)=>acc + v * model.weights[i],0) + bias;
+        const f = allFeatures.find(ff => ff.gameId === r.id);
+        const line = f?.totalLine ?? null;
+        if (line === null) continue;
+        const z = (line - predictedScore) / model.sigma;
+        const pOver = 1 - normalCdf(z);
+        probs.set(r.espn_event_id, pOver);
+      }
+    } else {
+      for (const r of rows) {
+        const x = featureMap.get(r.id);
+        if (!x) continue;
+        const z = x.reduce((acc,v,i)=>acc+v*model.weights[i],0);
+        const rawProb = sigmoid(z);
+        probs.set(r.espn_event_id, rawProb);
+      }
     }
   }
+
   return probs;
 }

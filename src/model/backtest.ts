@@ -737,12 +737,14 @@ export async function backtestTotals(sport: Sport, seasons: number[]): Promise<v
     const modelProb = predictions.get(game.espn_event_id);
     if (!modelProb) continue; // No model prediction for this game
 
-    // Get market odds
+    // Get market odds (EXCLUDE live odds to prevent contamination)
     const odds = db.prepare(`
       SELECT market, line, price_over, price_under
       FROM odds
-      WHERE game_id = ? AND market = 'total'
-      ORDER BY timestamp DESC
+      WHERE game_id = ? 
+        AND market = 'total'
+        AND provider NOT LIKE '%Live Odds%'
+      ORDER BY timestamp ASC
       LIMIT 1
     `).get(game.id) as { market: string; line: number; price_over: number; price_under: number } | undefined;
 

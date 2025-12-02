@@ -197,4 +197,18 @@ model
     }
   });
 
+model
+  .command("diagnostics-totals")
+  .description("Debug totals model predictions with detailed diagnostics")
+  .option("--sport <sport>", "Sport (ncaam|cfb|nfl|nba)", "nfl")
+  .requiredOption("--season <years>", "Season year(s) (e.g., 2025 or 2024,2025)")
+  .option("--limit <number>", "Number of games to analyze", "20")
+  .action(async (options) => {
+    const sport: Sport = options.sport;
+    const seasons = options.season.split(",").map((s: string) => parseInt(s.trim()));
+    const limit = parseInt(options.limit);
+    const { cmdTotalsDiagnostics } = await import("./model/diagnostics-totals.js");
+    await cmdTotalsDiagnostics(sport, seasons, limit);
+  });
+
 program.parse();
