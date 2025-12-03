@@ -19,6 +19,10 @@ import { getLatestBacktestForConfig, type BacktestResults } from "../model/backt
 import { getOptimalSeasons } from "../model/optimal-config.js";
 import { logRecommendedBet, markBetsAsPlaced, type TrackedBet } from "../tracking/bet-logger.js";
 import * as readline from "readline";
+import { trainUnderdogModel } from "../underdog/underdog-train.js";
+import { predictUnderdogs, displayUnderdogPredictions } from "../underdog/underdog-predict.js";
+import { backtestUnderdogModel, compareUnderdogVsMainModel } from "../underdog/underdog-backtest.js";
+import type { UnderdogTier } from "../underdog/types.js";
 
 /**
  * Fetch and display games for a date
@@ -1268,5 +1272,56 @@ export async function cmdStats(): Promise<void> {
       console.log(chalk.dim(`  ${bin}: ${stat.won}W-${stat.lost}L (${winRate.toFixed(0)}%) - ${roiColor(roiSign + roi.toFixed(1) + '% ROI')}`));
     }
     console.log();
+  }
+}
+
+/**
+ * Underdog model commands
+ */
+export async function cmdUnderdogTrain(
+  tiers: UnderdogTier[],
+  seasons: number[]
+): Promise<void> {
+  try {
+    await trainUnderdogModel("ncaam", seasons, tiers);
+  } catch (error) {
+    console.error(chalk.red("Error training underdog model:"), error);
+    process.exit(1);
+  }
+}
+
+export async function cmdUnderdogPredict(
+  date: string,
+  minOdds: number,
+  maxOdds: number
+): Promise<void> {
+  try {
+    const predictions = await predictUnderdogs("ncaam", date, minOdds, maxOdds);
+    displayUnderdogPredictions(predictions);
+  } catch (error) {
+    console.error(chalk.red("Error predicting underdogs:"), error);
+    process.exit(1);
+  }
+}
+
+export async function cmdUnderdogBacktest(
+  seasons: number[],
+  tiers?: UnderdogTier[],
+  minEdge?: number
+): Promise<void> {
+  try {
+    await backtestUnderdogModel("ncaam", seasons, tiers, minEdge);
+  } catch (error) {
+    console.error(chalk.red("Error backtesting underdog model:"), error);
+    process.exit(1);
+  }
+}
+
+export async function cmdUnderdogCompare(seasons: number[]): Promise<void> {
+  try {
+    await compareUnderdogVsMainModel("ncaam", seasons);
+  } catch (error) {
+    console.error(chalk.red("Error comparing models:"), error);
+    process.exit(1);
   }
 }
