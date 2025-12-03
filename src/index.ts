@@ -154,10 +154,11 @@ data
 data
   .command("daily")
   .description("Daily update: fetch new games and update scores from latest DB date to today")
-  .option("--sports <sports>", "Sports to update (comma-separated: cfb,ncaam)", "cfb,ncaam")
+  .option("--sports <sports>", "Sports to update (comma-separated: cfb,ncaam,nba,nfl,nhl)", "cfb,ncaam,nba,nfl,nhl")
   .action(async (options) => {
-    const sports = options.sports.split(",").filter((s: string) => s === 'cfb' || s === 'ncaam') as Sport[];
-    await runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam']);
+    const validSports = ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'];
+    const sports = options.sports.split(",").filter((s: string) => validSports.includes(s)) as Sport[];
+    await runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam', 'nba', 'nfl', 'nhl']);
   });
 
 // model commands (parent + subcommands)

@@ -6,8 +6,14 @@
 import { getDb } from "../db/index.js";
 import { fetchEvents as fetchCfbEvents } from "../espn/cfb/events.js";
 import { fetchEvents as fetchNcaamEvents } from "../espn/ncaam/events.js";
+import { fetchEvents as fetchNbaEvents } from "../espn/nba/events.js";
+import { fetchEvents as fetchNflEvents } from "../espn/nfl/events.js";
+import { fetchNHLEvents } from "../espn/nhl/events.js";
 import { fetchOdds as fetchCfbOdds } from "../espn/cfb/odds.js";
 import { fetchOdds as fetchNcaamOdds } from "../espn/ncaam/odds.js";
+import { fetchOdds as fetchNbaOdds } from "../espn/nba/odds.js";
+import { fetchOdds as fetchNflOdds } from "../espn/nfl/odds.js";
+import { fetchNHLOdds } from "../espn/nhl/odds.js";
 import type { Sport } from "../models/types.js";
 import chalk from "chalk";
 
@@ -66,8 +72,17 @@ async function ingestDate(
   date: string,
   stats: IngestStats
 ): Promise<void> {
-  const fetchEvents = sport === 'cfb' ? fetchCfbEvents : fetchNcaamEvents;
-  const fetchOdds = sport === 'cfb' ? fetchCfbOdds : fetchNcaamOdds;
+  const fetchEvents = sport === 'cfb' ? fetchCfbEvents 
+    : sport === 'ncaam' ? fetchNcaamEvents
+    : sport === 'nba' ? fetchNbaEvents
+    : sport === 'nfl' ? fetchNflEvents
+    : fetchNHLEvents;
+  
+  const fetchOdds = sport === 'cfb' ? fetchCfbOdds 
+    : sport === 'ncaam' ? fetchNcaamOdds
+    : sport === 'nba' ? fetchNbaOdds
+    : sport === 'nfl' ? fetchNflOdds
+    : fetchNHLOdds;
   
   try {
     const competitions = await fetchEvents(date);
@@ -89,8 +104,9 @@ async function ingestDate(
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
       ON CONFLICT(espn_event_id) 
       DO UPDATE SET home_score=excluded.home_score, away_score=excluded.away_score, status=excluded.status
-      RETURNING id, (SELECT COUNT(*) FROM games WHERE espn_event_id = excluded.espn_event_id AND home_score IS NULL) as was_new
     `);
+    
+    const getGameId = db.prepare(`SELECT id FROM games WHERE espn_event_id = ?`);
     
     for (const comp of competitions) {
       try {
@@ -121,7 +137,10 @@ async function ingestDate(
           season = year;
         }
         
-        const result = upsertGame.get(
+        const hadScoresBefore = db.prepare(`SELECT home_score, away_score FROM games WHERE espn_event_id = ?`)
+          .get(comp.eventId) as { home_score: number | null; away_score: number | null } | undefined;
+        
+        upsertGame.run(
           comp.eventId,
           sport,
           comp.date,
@@ -132,12 +151,15 @@ async function ingestDate(
           comp.awayScore,
           comp.venue || null,
           comp.status
-        ) as { id: number; was_new: number } | undefined;
+        );
+        
+        const result = getGameId.get(comp.eventId) as { id: number } | undefined;
         
         if (result) {
-          if (result.was_new > 0) {
+          // Track if this was a new game or an update
+          if (!hadScoresBefore) {
             stats.gamesAdded++;
-          } else if (comp.homeScore !== null && comp.awayScore !== null) {
+          } else if (hadScoresBefore.home_score === null && comp.homeScore !== null) {
             stats.gamesUpdated++;
           }
           
@@ -277,8 +299,9 @@ export async function runDailyIngest(sports: Sport[] = ['cfb', 'ncaam']): Promis
 
 // CLI entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const sports = process.argv.slice(2).filter(arg => arg === 'cfb' || arg === 'ncaam') as Sport[];
-  runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam'])
+  const validSports = ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'];
+  const sports = process.argv.slice(2).filter(arg => validSports.includes(arg)) as Sport[];
+  runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'])
     .catch(err => {
       console.error(chalk.red(`Fatal error: ${err}`));
       process.exit(1);

@@ -512,6 +512,23 @@ export async function cmdRecommend(
     const sportDisplay = sports ? sports.join(", ").toUpperCase() : "ALL SPORTS";
     console.log(chalk.bold.cyan(`\n🔍 Analyzing ${sportDisplay} games on ${dateRangeDisplay}...\n`));
 
+    // Show all pending bets (your active positions)
+    const { loadTrackedBets } = await import("../tracking/bet-logger.js");
+    const trackedData = await loadTrackedBets();
+    const pendingBets = trackedData.bets.filter(b => b.actuallyBet && b.status === 'pending');
+    
+    if (pendingBets.length > 0) {
+      console.log(chalk.bold.green('📌 Your Pending Bets:\n'));
+      for (const bet of pendingBets) {
+        const placements = bet.placements || [];
+        const totalStake = placements.reduce((sum, p) => sum + p.stake, 0);
+        const betDate = new Date(bet.date);
+        const dateStr = betDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        console.log(chalk.green(`  ✓ ${bet.pick} - $${totalStake.toFixed(2)} - ${dateStr}`));
+      }
+      console.log();
+    }
+
     // Fetch all games and odds across all sports and dates
     const allCompetitions: Array<Competition & { sport: Sport }> = [];
     
