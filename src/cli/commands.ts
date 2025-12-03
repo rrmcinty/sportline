@@ -38,6 +38,13 @@ const UNDERDOG_ROI_BY_SPORT: Record<string, { roi: number; bucket: string }> = {
 };
 
 /**
+ * NFL Spread ROI by confidence bucket (from backtest analysis)
+ */
+const NFL_SPREAD_ROI_BY_BUCKET: Record<string, { roi: number; winRate: number; count: number }> = {
+  "50-60%": { roi: 36.4, winRate: 71.4, count: 14 }
+};
+
+/**
  * Check if a bet matches the profitable underdog profile
  */
 function matchesOptimalProfile(game: UnderdogGameFeatures): boolean {
@@ -61,6 +68,79 @@ function matchesOptimalProfile(game: UnderdogGameFeatures): boolean {
   if (hasMarketOverreaction) factorCount++;
   
   return factorCount >= 2;
+}
+
+/**
+ * Load latest NFL spread model
+ */
+function loadNFLSpreadModel(): { baseWeights: number[]; marketWeights: number[] } | null {
+  const { readdirSync, statSync, readFileSync } = require("fs");
+  const { join } = require("path");
+  
+  const modelsDir = join(process.cwd(), "models", "nfl-spread");
+  
+  try {
+    const dirs = readdirSync(modelsDir)
+      .filter((d: string) => {
+        const fullPath = join(modelsDir, d);
+        return statSync(fullPath).isDirectory();
+      })
+      .map((d: string) => ({
+        name: d,
+        path: join(modelsDir, d),
+        timestamp: parseInt(d.split('_').pop() || '0', 10)
+      }))
+      .sort((a: any, b: any) => b.timestamp - a.timestamp);
+    
+    if (dirs.length === 0) return null;
+    
+    const latest = dirs[0];
+    const basePath = join(latest.path, "base_model.json");
+    const marketPath = join(latest.path, "market_model.json");
+    
+    const baseModel = JSON.parse(readFileSync(basePath, "utf-8"));
+    const marketModel = JSON.parse(readFileSync(marketPath, "utf-8"));
+    
+    return {
+      baseWeights: baseModel.weights,
+      marketWeights: marketModel.weights
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
+ * Check if NFL spread bet matches profitable profile
+ * Returns { isProfitable, bucket, roi } if match found, null otherwise
+ */
+function checkNFLSpreadProfile(
+  sport: string,
+  market: string,
+  line: number | null,
+  homeATSRecord: number | null,
+  modelProbability: number
+): { isProfitable: boolean; bucket: string; roi: number; winRate: number } | null {
+  // Only apply to NFL spreads
+  if (sport !== 'nfl' || market !== 'spread') return null;
+  
+  // Check if in profitable bucket (50-60% confidence)
+  if (modelProbability < 0.5 || modelProbability >= 0.6) return null;
+  
+  // Check spread size (avoid tight spreads ≤3, prefer ≥3.5)
+  const spreadSize = Math.abs(line || 0);
+  if (spreadSize < 3.5) return null;
+  
+  // Check home ATS record (weaker is better, ≤35%)
+  if (homeATSRecord !== null && homeATSRecord > 0.35) return null;
+  
+  const bucketData = NFL_SPREAD_ROI_BY_BUCKET["50-60%"];
+  return {
+    isProfitable: true,
+    bucket: "50-60%",
+    roi: bucketData.roi,
+    winRate: bucketData.winRate
+  };
 }
 
 /**
@@ -815,7 +895,30 @@ export async function cmdRecommend(
           }
         }
         
-        rankedSingles.push({ bet, roi, underdogInfo });
+        // Check for profitable NFL spread (50-60% confidence bucket)
+        let spreadBoost = 0;
+        let spreadInfo: { isProfitableSpread: boolean; bucket: string; roi: number; winRate: number } | null = null;
+        
+        if (marketType === "spread" && sportName === "nfl") {
+          // We need home ATS record - for now, use placeholder (TODO: compute from features)
+          const homeATSRecord = null; // Placeholder - would need to compute from game data
+          const spreadLine = leg.line ?? null;
+          const spreadProfile = checkNFLSpreadProfile(sportName, marketType, spreadLine, homeATSRecord, displayProb);
+          
+          if (spreadProfile && spreadProfile.isProfitable) {
+            // Apply boost to ranking - profitable spread gets 50% of historical ROI as boost
+            spreadBoost = spreadProfile.roi * 0.5; // ~18 point boost for 36.4% ROI
+            roi += spreadBoost;
+            spreadInfo = {
+              isProfitableSpread: true,
+              bucket: spreadProfile.bucket,
+              roi: spreadProfile.roi,
+              winRate: spreadProfile.winRate
+            };
+          }
+        }
+        
+        rankedSingles.push({ bet, roi, underdogInfo, spreadInfo });
       }
       
       rankedSingles.sort((a, b) => b.roi - a.roi);
@@ -908,6 +1011,7 @@ export async function cmdRecommend(
         // Retrieve underdog info for this bet
         const rankedEntry = rankedSingles.find(r => r.bet === bet);
         const underdogInfo = rankedEntry?.underdogInfo;
+        const spreadInfo = rankedEntry?.spreadInfo;
 
         // Load actual backtest stats for this sport/market
         const backtestStats = await getBacktestStats(sportName, marketType as "moneyline" | "spread" | "total", displayProb);
@@ -993,6 +1097,8 @@ export async function cmdRecommend(
         let titlePrefix = '';
         if (underdogInfo?.isProfitableUnderdog) {
           titlePrefix = chalk.bold.magenta('🐶 ');
+        } else if (spreadInfo?.isProfitableSpread) {
+          titlePrefix = chalk.bold.green('🏈 ');
         }
 
         console.log(titlePrefix + chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel}]`));
@@ -1000,6 +1106,11 @@ export async function cmdRecommend(
         // Add underdog info line if applicable
         if (underdogInfo?.isProfitableUnderdog) {
           console.log(chalk.magenta(`   💎 Profitable underdog profile: +${underdogInfo.roi.toFixed(1)}% historical ROI in ${underdogInfo.sport.toUpperCase()} ${UNDERDOG_ROI_BY_SPORT[underdogInfo.sport].bucket}`));
+        }
+        
+        // Add NFL spread info line if applicable
+        if (spreadInfo?.isProfitableSpread) {
+          console.log(chalk.green(`   🏈 Profitable NFL spread profile: +${spreadInfo.roi.toFixed(1)}% historical ROI in ${spreadInfo.bucket} confidence bucket (${spreadInfo.winRate.toFixed(1)}% win rate)`));
         }
         
         if (matchupDisplay) {
@@ -1456,3 +1567,35 @@ export async function cmdUnderdogAnalyze(
   }
 }
 
+/**
+ * NFL Spread commands
+ */
+export async function cmdNFLSpreadTrain(seasons: number[]): Promise<void> {
+  try {
+    const { trainNFLSpreadModel } = await import("../spreads/nfl/nfl-spread-train.js");
+    await trainNFLSpreadModel(seasons);
+  } catch (error) {
+    console.error(chalk.red("Error training NFL spread model:"), error);
+    process.exit(1);
+  }
+}
+
+export async function cmdNFLSpreadBacktest(seasons: number[]): Promise<void> {
+  try {
+    const { backtestNFLSpreadModel } = await import("../spreads/nfl/nfl-spread-backtest.js");
+    await backtestNFLSpreadModel(seasons);
+  } catch (error) {
+    console.error(chalk.red("Error backtesting NFL spread model:"), error);
+    process.exit(1);
+  }
+}
+
+export async function cmdNFLSpreadAnalyze(seasons: number[], buckets?: string[]): Promise<void> {
+  try {
+    const { analyzeNFLSpreadTraits } = await import("../spreads/nfl/nfl-spread-analyze.js");
+    await analyzeNFLSpreadTraits(seasons, buckets as any);
+  } catch (error) {
+    console.error(chalk.red("Error analyzing NFL spread traits:"), error);
+    process.exit(1);
+  }
+}

@@ -5,7 +5,7 @@
  */
 
 import { Command } from "commander";
-import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare, cmdUnderdogAnalyze } from "./cli/commands.js";
+import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare, cmdUnderdogAnalyze, cmdNFLSpreadTrain, cmdNFLSpreadBacktest, cmdNFLSpreadAnalyze } from "./cli/commands.js";
 import { cmdSearchTeam } from "./cli/search.js";
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
@@ -312,6 +312,40 @@ underdog
     const minOdds = options.minOdds ? parseInt(options.minOdds) : undefined;
     const maxOdds = options.maxOdds ? parseInt(options.maxOdds) : undefined;
     await cmdUnderdogAnalyze(options.sport, seasons, tiers, minOdds, maxOdds);
+  });
+
+// NFL spread commands (dedicated profitability-focused module)
+const nflSpread = program
+  .command("nfl-spread")
+  .description("🏈 Dedicated NFL spread model trained on 3 seasons");
+
+nflSpread
+  .command("train")
+  .description("Train NFL spread model on 2023-2025 data")
+  .option("--seasons <years>", "Season years (e.g., 2023,2024,2025)", "2023,2024,2025")
+  .action(async (options) => {
+    const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
+    await cmdNFLSpreadTrain(seasons);
+  });
+
+nflSpread
+  .command("backtest")
+  .description("Backtest NFL spread model and identify profitable buckets")
+  .option("--seasons <years>", "Season years (e.g., 2023,2024,2025)", "2023,2024,2025")
+  .action(async (options) => {
+    const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
+    await cmdNFLSpreadBacktest(seasons);
+  });
+
+nflSpread
+  .command("analyze")
+  .description("Analyze winning vs losing traits in profitable buckets")
+  .option("--seasons <years>", "Season years (e.g., 2023,2024,2025)", "2023,2024,2025")
+  .option("--buckets <buckets>", "Specific buckets to analyze (e.g., '40-50%,50-60%')")
+  .action(async (options) => {
+    const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
+    const buckets = options.buckets ? options.buckets.split(",") : undefined;
+    await cmdNFLSpreadAnalyze(seasons, buckets);
   });
 
 program.parse();
