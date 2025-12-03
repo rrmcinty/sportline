@@ -7,7 +7,7 @@ import chalk from "chalk";
  * Analyze common traits among winning underdogs in specific odds ranges
  */
 export function analyzeWinningUnderdogs(
-  sport: "ncaam",
+  sport: "ncaam" | "cfb" | "nfl" | "nba" | "nhl",
   seasons: number[],
   tiers: UnderdogTier[],
   minOdds?: number,

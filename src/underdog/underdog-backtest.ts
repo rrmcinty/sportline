@@ -339,10 +339,10 @@ function calculateECE(predictions: number[], actuals: number[], numBins: number 
 }
 
 /**
- * Compare underdog model vs main model
+ * Compare underdog model performance vs main model
  */
 export async function compareUnderdogVsMainModel(
-  sport: "ncaam",
+  sport: "ncaam" | "cfb" | "nfl" | "nba" | "nhl",
   seasons: number[]
 ): Promise<void> {
   console.log(chalk.bold.cyan(`\n🔍 Comparing UNDERDOG MODEL vs MAIN MODEL...\n`));
@@ -351,7 +351,7 @@ export async function compareUnderdogVsMainModel(
   
   // Run underdog backtest
   console.log(chalk.bold("1️⃣  Underdog-Specific Model:"));
-  const underdogResults = await backtestUnderdogModel(sport, seasons, undefined, 0.03);
+  const underdogResults = await backtestUnderdogModel(sport as any, seasons, undefined, 0.03);
   
   if (!underdogResults) {
     console.log(chalk.red("Could not run underdog backtest."));

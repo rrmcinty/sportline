@@ -193,7 +193,7 @@ function getFeatureNames(includeMarket: boolean): string[] {
  * Train underdog model for specific tier(s)
  */
 export async function trainUnderdogModel(
-  sport: "ncaam",  // Start with NCAAM only
+  sport: "ncaam" | "cfb" | "nfl" | "nba" | "nhl",
   seasons: number[],
   tiers: UnderdogTier[]
 ): Promise<void> {

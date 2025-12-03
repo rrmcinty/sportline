@@ -50,7 +50,7 @@ function weightedAvg(values: number[], weights: number[]): number {
  */
 export function computeUnderdogFeatures(
   db: Database.Database,
-  sport: string,
+  sport: "ncaam" | "cfb" | "nfl" | "nba" | "nhl",
   seasons: number[]
 ): UnderdogGameFeatures[] {
   // Start with standard features

@@ -38,7 +38,7 @@ export interface UnderdogModel {
   weights: number[];
   featureNames: string[];
   tier: UnderdogTier;
-  sport: string;
+  sport: "ncaam" | "cfb" | "nfl" | "nba" | "nhl";
   seasons: number[];
   timestamp: string;
   metrics: {

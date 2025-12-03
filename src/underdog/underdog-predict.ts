@@ -74,7 +74,7 @@ function extractUnderdogFeatures(game: UnderdogGameFeatures, includeMarket: bool
 /**
  * Load latest underdog model for sport
  */
-function loadLatestModel(sport: "ncaam"): { baseModel: UnderdogModel; marketModel: UnderdogModel; modelDir: string } | null {
+function loadLatestModel(sport: "ncaam" | "cfb" | "nfl" | "nba" | "nhl"): { baseModel: UnderdogModel; marketModel: UnderdogModel; modelDir: string } | null {
   const modelsDir = join(process.cwd(), "models", `underdog-${sport}`);
   
   try {
@@ -147,7 +147,7 @@ function matchesOptimalProfile(game: UnderdogGameFeatures): boolean {
  * Generate underdog predictions for upcoming games
  */
 export async function predictUnderdogs(
-  sport: "ncaam",
+  sport: "ncaam" | "cfb" | "nfl" | "nba" | "nhl",
   date: string,
   minOdds: number = 110,
   maxOdds: number = 300,

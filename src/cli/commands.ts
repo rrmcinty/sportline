@@ -1315,11 +1315,12 @@ export async function cmdStats(): Promise<void> {
  * Underdog model commands
  */
 export async function cmdUnderdogTrain(
+  sport: string,
   tiers: UnderdogTier[],
   seasons: number[]
 ): Promise<void> {
   try {
-    await trainUnderdogModel("ncaam", seasons, tiers);
+    await trainUnderdogModel(sport as any, seasons, tiers);
   } catch (error) {
     console.error(chalk.red("Error training underdog model:"), error);
     process.exit(1);
@@ -1327,13 +1328,14 @@ export async function cmdUnderdogTrain(
 }
 
 export async function cmdUnderdogPredict(
+  sport: string,
   date: string,
   minOdds: number,
   maxOdds: number,
   filterOptimal: boolean = false
 ): Promise<void> {
   try {
-    const predictions = await predictUnderdogs("ncaam", date, minOdds, maxOdds, filterOptimal);
+    const predictions = await predictUnderdogs(sport as any, date, minOdds, maxOdds, filterOptimal);
     displayUnderdogPredictions(predictions, filterOptimal);
   } catch (error) {
     console.error(chalk.red("Error predicting underdogs:"), error);
@@ -1342,21 +1344,22 @@ export async function cmdUnderdogPredict(
 }
 
 export async function cmdUnderdogBacktest(
+  sport: string,
   seasons: number[],
   tiers?: UnderdogTier[],
   minEdge?: number
 ): Promise<void> {
   try {
-    await backtestUnderdogModel("ncaam", seasons, tiers, minEdge);
+    await backtestUnderdogModel(sport as any, seasons, tiers, minEdge);
   } catch (error) {
     console.error(chalk.red("Error backtesting underdog model:"), error);
     process.exit(1);
   }
 }
 
-export async function cmdUnderdogCompare(seasons: number[]): Promise<void> {
+export async function cmdUnderdogCompare(sport: string, seasons: number[]): Promise<void> {
   try {
-    await compareUnderdogVsMainModel("ncaam", seasons);
+    await compareUnderdogVsMainModel(sport as any, seasons);
   } catch (error) {
     console.error(chalk.red("Error comparing models:"), error);
     process.exit(1);
@@ -1364,6 +1367,7 @@ export async function cmdUnderdogCompare(seasons: number[]): Promise<void> {
 }
 
 export async function cmdUnderdogAnalyze(
+  sport: string,
   seasons: number[],
   tiers: string[],
   minOdds?: number,
@@ -1371,7 +1375,7 @@ export async function cmdUnderdogAnalyze(
 ): Promise<void> {
   try {
     const underdogTiers = tiers as UnderdogTier[];
-    analyzeWinningUnderdogs("ncaam", seasons, underdogTiers, minOdds, maxOdds);
+    analyzeWinningUnderdogs(sport as any, seasons, underdogTiers, minOdds, maxOdds);
   } catch (error) {
     console.error(chalk.red("Error analyzing winners:"), error);
     process.exit(1);

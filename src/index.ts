@@ -241,22 +241,24 @@ model
 // underdog commands (experimental module)
 const underdog = program
   .command("underdog")
-  .description("🐕 Underdog-specific model (experimental - NCAAM only)");
+  .description("🐕 Underdog-specific model for all sports");
 
 underdog
   .command("train")
-  .description("Train underdog-specific model on NCAAM historical data")
+  .description("Train underdog-specific model on historical data")
+  .requiredOption("--sport <sport>", "Sport (ncaam|cfb|nfl|nba|nhl)")
   .option("--tiers <tiers>", "Underdog tiers to train (moderate|heavy|extreme or comma-separated)", "moderate,heavy")
-  .option("--seasons <years>", "Season years (e.g., 2022,2023,2024,2025)", "2022,2023,2024,2025")
+  .option("--seasons <years>", "Season years (e.g., 2022,2023,2024,2025)", "2024,2025")
   .action(async (options) => {
     const tiers = options.tiers.split(",").map((t: string) => t.trim() as UnderdogTier);
     const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
-    await cmdUnderdogTrain(tiers, seasons);
+    await cmdUnderdogTrain(options.sport, tiers, seasons);
   });
 
 underdog
   .command("predict")
   .description("Generate underdog-specific predictions for upcoming games")
+  .requiredOption("--sport <sport>", "Sport (ncaam|cfb|nfl|nba|nhl)")
   .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
   .option("--min-odds <number>", "Minimum underdog odds (e.g., 110 for +110)", "110")
   .option("--max-odds <number>", "Maximum underdog odds (e.g., 300 for +300)", "300")
@@ -264,6 +266,7 @@ underdog
   .action(async (options) => {
     const date = options.date || todayYYYYMMDD();
     await cmdUnderdogPredict(
+      options.sport,
       date, 
       parseInt(options.minOdds), 
       parseInt(options.maxOdds),
@@ -274,6 +277,7 @@ underdog
 underdog
   .command("backtest")
   .description("Backtest underdog model on historical games")
+  .requiredOption("--sport <sport>", "Sport (ncaam|cfb|nfl|nba|nhl)")
   .requiredOption("--seasons <years>", "Season years (e.g., 2022,2023,2024,2025)")
   .option("--tiers <tiers>", "Underdog tiers to test (moderate|heavy|extreme or comma-separated)")
   .option("--min-edge <number>", "Minimum edge threshold (default: 0.03)", "0.03")
@@ -281,21 +285,23 @@ underdog
     const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
     const tiers = options.tiers ? options.tiers.split(",").map((t: string) => t.trim() as UnderdogTier) : undefined;
     const minEdge = parseFloat(options.minEdge);
-    await cmdUnderdogBacktest(seasons, tiers, minEdge);
+    await cmdUnderdogBacktest(options.sport, seasons, tiers, minEdge);
   });
 
 underdog
   .command("compare")
   .description("Compare underdog model vs main model performance")
+  .requiredOption("--sport <sport>", "Sport (ncaam|cfb|nfl|nba|nhl)")
   .requiredOption("--seasons <years>", "Season years (e.g., 2023,2024,2025)")
   .action(async (options) => {
     const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
-    await cmdUnderdogCompare(seasons);
+    await cmdUnderdogCompare(options.sport, seasons);
   });
 
 underdog
   .command("analyze")
   .description("Analyze common traits among winning underdogs")
+  .requiredOption("--sport <sport>", "Sport (ncaam|cfb|nfl|nba|nhl)")
   .requiredOption("--seasons <years>", "Season years (e.g., 2022,2023,2024)")
   .option("--tiers <tiers>", "Underdog tiers (moderate|heavy|extreme or comma-separated)", "moderate")
   .option("--min-odds <number>", "Minimum odds (e.g., 100 for +100)")
@@ -305,7 +311,7 @@ underdog
     const tiers = options.tiers.split(",").map((t: string) => t.trim());
     const minOdds = options.minOdds ? parseInt(options.minOdds) : undefined;
     const maxOdds = options.maxOdds ? parseInt(options.maxOdds) : undefined;
-    await cmdUnderdogAnalyze(seasons, tiers, minOdds, maxOdds);
+    await cmdUnderdogAnalyze(options.sport, seasons, tiers, minOdds, maxOdds);
   });
 
 program.parse();
