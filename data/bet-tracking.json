@@ -2,7 +2,7 @@
   "bets": [
     {
       "id": "2025-12-03-ncaam-401806366-moneyline-SYR",
-      "timestamp": "2025-12-02T23:46:46.173Z",
+      "timestamp": "2025-12-03T00:15:40.674Z",
       "sport": "ncaam",
       "eventId": "401806366",
       "matchup": "TENN @ SYR",
@@ -25,12 +25,16 @@
         {
           "stake": 10,
           "placedAt": "2025-12-02T23:47:40.272Z"
+        },
+        {
+          "stake": 10,
+          "placedAt": "2025-12-03T00:16:42.843Z"
         }
       ]
     },
     {
       "id": "2025-12-03-ncaam-401806364-moneyline-FLA",
-      "timestamp": "2025-12-02T23:46:46.174Z",
+      "timestamp": "2025-12-03T00:15:40.669Z",
       "sport": "ncaam",
       "eventId": "401806364",
       "matchup": "FLA @ DUKE",
@@ -53,12 +57,16 @@
         {
           "stake": 10,
           "placedAt": "2025-12-02T23:47:40.272Z"
+        },
+        {
+          "stake": 10,
+          "placedAt": "2025-12-03T00:16:42.843Z"
         }
       ]
     },
     {
       "id": "2025-12-03-ncaam-401806365-moneyline-UNC",
-      "timestamp": "2025-12-02T23:46:46.174Z",
+      "timestamp": "2025-12-03T00:15:40.672Z",
       "sport": "ncaam",
       "eventId": "401806365",
       "matchup": "UNC @ UK",
@@ -81,6 +89,10 @@
         {
           "stake": 10,
           "placedAt": "2025-12-02T23:47:40.272Z"
+        },
+        {
+          "stake": 10,
+          "placedAt": "2025-12-03T00:16:42.843Z"
         }
       ]
     },
@@ -215,7 +227,166 @@
       "actuallyBet": false,
       "status": "pending",
       "placements": []
+    },
+    {
+      "id": "2025-12-03-nba-401810176-moneyline-MIN",
+      "timestamp": "2025-12-03T00:15:40.675Z",
+      "sport": "nba",
+      "eventId": "401810176",
+      "matchup": "MIN @ NO",
+      "date": "2025-12-03T01:00Z",
+      "pick": "MIN ML -650 [NBA]",
+      "side": "MIN",
+      "market": "moneyline",
+      "odds": -650,
+      "modelProbability": 0.8316498316498315,
+      "bin": "80-90%",
+      "historicalROI": 28.225713928432146,
+      "historicalWinRate": 0.9440559440559441,
+      "historicalSampleSize": 143,
+      "expectedValue": -0.40404040404040664,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-03-nba-401810178-moneyline-OKC",
+      "timestamp": "2025-12-03T00:15:40.676Z",
+      "sport": "nba",
+      "eventId": "401810178",
+      "matchup": "OKC @ GS",
+      "date": "2025-12-03T04:00Z",
+      "pick": "OKC ML -600 [NBA]",
+      "side": "OKC",
+      "market": "moneyline",
+      "odds": -600,
+      "modelProbability": 0.8223350253807106,
+      "bin": "80-90%",
+      "historicalROI": 28.225713928432146,
+      "historicalWinRate": 0.9440559440559441,
+      "historicalSampleSize": 143,
+      "expectedValue": -0.4060913705583751,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-03-nba-401810173-moneyline-PHI",
+      "timestamp": "2025-12-03T00:15:40.677Z",
+      "sport": "nba",
+      "eventId": "401810173",
+      "matchup": "WSH @ PHI",
+      "date": "2025-12-03T00:00Z",
+      "pick": "PHI ML -800 [NBA]",
+      "side": "PHI",
+      "market": "moneyline",
+      "odds": -800,
+      "modelProbability": 0.8524590163934427,
+      "bin": "80-90%",
+      "historicalROI": 28.225713928432146,
+      "historicalWinRate": 0.9440559440559441,
+      "historicalSampleSize": 143,
+      "expectedValue": -0.4098360655737707,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-03-nhl-401802770-moneyline-VGK",
+      "timestamp": "2025-12-03T00:15:40.677Z",
+      "sport": "nhl",
+      "eventId": "401802770",
+      "matchup": "CHI @ VGK",
+      "date": "2025-12-03T03:00Z",
+      "pick": "VGK ML -290 [NHL]",
+      "side": "VGK",
+      "market": "moneyline",
+      "odds": -290,
+      "modelProbability": 0.7135512302607419,
+      "bin": "70-80%",
+      "historicalROI": 27.1211034941203,
+      "historicalWinRate": 0.8333333333333334,
+      "historicalSampleSize": 12,
+      "expectedValue": -0.40396621373485075,
+      "recommended": true,
+      "actuallyBet": true,
+      "status": "pending",
+      "placements": [
+        {
+          "stake": 10,
+          "placedAt": "2025-12-03T00:16:42.843Z"
+        }
+      ]
+    },
+    {
+      "id": "2025-12-03-nhl-401802763-moneyline-DET",
+      "timestamp": "2025-12-03T00:15:40.679Z",
+      "sport": "nhl",
+      "eventId": "401802763",
+      "matchup": "BOS @ DET",
+      "date": "2025-12-03T00:00Z",
+      "pick": "DET ML -192 [NHL]",
+      "side": "DET",
+      "market": "moneyline",
+      "odds": -192,
+      "modelProbability": 0.6309403437815976,
+      "bin": "60-70%",
+      "historicalROI": 12.49981609089212,
+      "historicalWinRate": 0.6926406926406926,
+      "historicalSampleSize": 231,
+      "expectedValue": -0.4044489383215346,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-03-nhl-401802764-moneyline-FLA",
+      "timestamp": "2025-12-03T00:15:40.680Z",
+      "sport": "nhl",
+      "eventId": "401802764",
+      "matchup": "TOR @ FLA",
+      "date": "2025-12-03T00:30Z",
+      "pick": "FLA ML -170 [NHL]",
+      "side": "FLA",
+      "market": "moneyline",
+      "odds": -170,
+      "modelProbability": 0.6037569709421778,
+      "bin": "60-70%",
+      "historicalROI": 12.49981609089212,
+      "historicalWinRate": 0.6926406926406926,
+      "historicalSampleSize": 231,
+      "expectedValue": -0.4109186968007048,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-03-nba-401810177-moneyline-SA",
+      "timestamp": "2025-12-03T00:15:40.681Z",
+      "sport": "nba",
+      "eventId": "401810177",
+      "matchup": "MEM @ SA",
+      "date": "2025-12-03T01:00Z",
+      "pick": "SA ML -205 [NBA]",
+      "side": "SA",
+      "market": "moneyline",
+      "odds": -205,
+      "modelProbability": 0.644729178800233,
+      "bin": "60-70%",
+      "historicalROI": 3.955606738827474,
+      "historicalWinRate": 0.672514619883041,
+      "historicalSampleSize": 171,
+      "expectedValue": -0.4076878276062903,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
     }
   ],
-  "lastUpdated": "2025-12-02T23:47:40.272Z"
+  "lastUpdated": "2025-12-03T00:16:42.843Z"
 }
