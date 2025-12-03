@@ -1936,12 +1936,6 @@
           "placedAt": "2025-12-03T13:24:59.480Z"
         }
       ],
-      "result": {
-        "homeScore": 0,
-        "awayScore": 0,
-        "actualProfit": 0,
-        "settledAt": "2025-12-03T13:18:36.814Z"
-      },
       "stake": 10
     },
     {
@@ -1963,14 +1957,8 @@
       "expectedValue": -1.2554446475113838,
       "recommended": true,
       "actuallyBet": false,
-      "status": "lost",
-      "placements": [],
-      "result": {
-        "homeScore": 0,
-        "awayScore": 0,
-        "actualProfit": 0,
-        "settledAt": "2025-12-03T13:18:36.815Z"
-      }
+      "status": "pending",
+      "placements": []
     },
     {
       "id": "2025-12-04-nba-401810180-moneyline-DEN",
@@ -2138,12 +2126,6 @@
           "placedAt": "2025-12-03T13:24:59.480Z"
         }
       ],
-      "result": {
-        "homeScore": 0,
-        "awayScore": 0,
-        "actualProfit": 0,
-        "settledAt": "2025-12-03T13:18:36.817Z"
-      },
       "stake": 10
     },
     {
@@ -2200,12 +2182,6 @@
           "placedAt": "2025-12-03T13:24:59.480Z"
         }
       ],
-      "result": {
-        "homeScore": 0,
-        "awayScore": 0,
-        "actualProfit": 0,
-        "settledAt": "2025-12-03T13:18:36.818Z"
-      },
       "stake": 10
     },
     {
@@ -2227,13 +2203,13 @@
       "expectedValue": 2.6551730599128387,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 0,
         "awayScore": 0,
         "actualProfit": 0,
-        "settledAt": "2025-12-03T13:18:36.818Z"
+        "settledAt": "2025-12-03T22:34:34.077Z"
       }
     },
     {
@@ -2255,13 +2231,13 @@
       "expectedValue": 2.0627825799925326,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 0,
         "awayScore": 0,
         "actualProfit": 0,
-        "settledAt": "2025-12-03T13:18:36.819Z"
+        "settledAt": "2025-12-03T22:34:34.078Z"
       }
     },
     {
@@ -2283,8 +2259,14 @@
       "expectedValue": 2.861627886563463,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 0,
+        "awayScore": 0,
+        "actualProfit": 0,
+        "settledAt": "2025-12-03T22:34:34.078Z"
+      }
     },
     {
       "id": "2025-12-04-nhl-401802775-moneyline-ANA",
@@ -2305,8 +2287,14 @@
       "expectedValue": 0.9841156583775561,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 0,
+        "awayScore": 0,
+        "actualProfit": 0,
+        "settledAt": "2025-12-03T22:34:34.079Z"
+      }
     },
     {
       "id": "2025-12-04-nhl-401802773-moneyline-MTL",
@@ -2327,8 +2315,14 @@
       "expectedValue": 0.7626155394653367,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 0,
+        "awayScore": 0,
+        "actualProfit": 0,
+        "settledAt": "2025-12-03T22:34:34.080Z"
+      }
     },
     {
       "id": "2025-12-04-nhl-401802774-moneyline-PHI",
@@ -2349,8 +2343,14 @@
       "expectedValue": 0.4251821709262469,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 0,
+        "awayScore": 0,
+        "actualProfit": 0,
+        "settledAt": "2025-12-03T22:34:34.080Z"
+      }
     },
     {
       "id": "2025-12-04-nhl-401802772-moneyline-NJ",
@@ -2371,9 +2371,15 @@
       "expectedValue": 0.16499807276398215,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 0,
+        "awayScore": 0,
+        "actualProfit": 0,
+        "settledAt": "2025-12-03T22:34:34.081Z"
+      }
     }
   ],
-  "lastUpdated": "2025-12-03T13:30:14.514Z"
+  "lastUpdated": "2025-12-03T22:34:34.081Z"
 }

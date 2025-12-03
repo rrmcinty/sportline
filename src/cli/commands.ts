@@ -1431,14 +1431,14 @@ export async function cmdResults(): Promise<void> {
   let updated = 0;
   
   for (const bet of pendingBets) {
-    // Query database for final score
+    // Query database for final score (only from completed games)
     const game = db.prepare(`
-      SELECT home_score, away_score 
+      SELECT home_score, away_score, status
       FROM games 
-      WHERE espn_event_id = ? AND home_score IS NOT NULL AND away_score IS NOT NULL
-    `).get(bet.eventId) as { home_score: number; away_score: number } | undefined;
+      WHERE espn_event_id = ? AND home_score IS NOT NULL AND away_score IS NOT NULL AND status IN ('post', 'STATUS_FINAL')
+    `).get(bet.eventId) as { home_score: number; away_score: number; status: string } | undefined;
     
-    if (game) {
+    if (game && (game.home_score > 0 || game.away_score > 0)) {
       await updateBetResults(bet.id, game.home_score, game.away_score);
       updated++;
       
