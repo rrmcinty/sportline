@@ -27,14 +27,20 @@ import { computeUnderdogFeatures } from "../underdog/underdog-features.js";
 import type { UnderdogTier, UnderdogPrediction, UnderdogGameFeatures } from "../underdog/types.js";
 
 /**
- * Underdog ROI by sport (from analysis)
+ * Underdog ROI by sport (from comprehensive analysis across all sports)
+ * 
+ * Analysis Summary:
+ * - NFL +100-149: +6.71% ROI, 47.3% win rate, HOME dogs win more (47.8%)
+ * - NBA +100-149: +5.27% ROI, 46.8% win rate, AWAY dogs win more (54.4%)
+ * - CFB +100-149: +4.90% ROI, 46.8% win rate, AWAY dogs win more (58.9%)
+ * - NCAAM +100-149: -7.55% ROI ❌ NOT PROFITABLE
+ * - NHL +150-199: -0.12% ROI ❌ NOT PROFITABLE
  */
 const UNDERDOG_ROI_BY_SPORT: Record<string, { roi: number; bucket: string }> = {
   nfl: { roi: 6.71, bucket: "+100 to +149" },
   nba: { roi: 5.27, bucket: "+100 to +149" },
-  cfb: { roi: 4.90, bucket: "+100 to +149" },
-  ncaam: { roi: -7.55, bucket: "+100 to +149" },
-  nhl: { roi: -0.12, bucket: "+150 to +199" }
+  cfb: { roi: 4.90, bucket: "+100 to +149" }
+  // NCAAM and NHL excluded - negative ROI
 };
 
 /**
@@ -45,30 +51,21 @@ const NFL_SPREAD_ROI_BY_BUCKET: Record<string, { roi: number; winRate: number; c
 };
 
 /**
- * Check if a bet matches the profitable underdog profile
+ * Sport-specific underdog home/away preferences from analysis
+ * 
+ * Key Finding: Home vs Away varies significantly by sport!
+ * - NFL: Home dogs win more (47.8% vs 41.1% away)
+ * - NBA: Away dogs win more (54.4% away)
+ * - CFB: Away dogs win more (58.9% away)
+ * - NCAAM: Home dogs win more (47.8%) - but NOT profitable overall
+ * - NHL: Away dogs win more (77.8%) - but NOT profitable overall
  */
-function matchesOptimalProfile(game: UnderdogGameFeatures): boolean {
-  // Based on analysis of +100 to +149 bucket:
-  // 1. Home underdogs win more (47.8% vs 41.1%)
-  // 2. Conference strength diff positive (0.047 vs 0.023)
-  // 3. Recent dog trend negative (bounce-back candidates: -3.1 vs -0.14)
-  // 4. Market overreaction present (75.7% have >5%)
-  
-  const isHomeUnderdog = game.homeAsUnderdog === 1;
-  const hasRecentDogLosses = game.recentDogTrend10 < -1.5; // Bounce-back spot
-  const hasConfStrength = game.confStrengthDiff > 0; // Decent conference
-  const hasMarketOverreaction = game.marketOverreaction > 0.05; // 5%+ overreaction
-  
-  // Must be home dog with at least 2 of the 3 other factors
-  if (!isHomeUnderdog) return false;
-  
-  let factorCount = 0;
-  if (hasRecentDogLosses) factorCount++;
-  if (hasConfStrength) factorCount++;
-  if (hasMarketOverreaction) factorCount++;
-  
-  return factorCount >= 2;
-}
+const UNDERDOG_HOME_AWAY_PREFERENCE: Record<string, 'home' | 'away'> = {
+  nfl: 'home',    // +6.71% ROI - Home dogs: 47.8% win rate
+  nba: 'away',    // +5.27% ROI - Away dogs: 54.4% win rate
+  cfb: 'away'     // +4.90% ROI - Away dogs: 58.9% win rate
+  // NCAAM and NHL excluded - not profitable
+};
 
 /**
  * Load latest NFL spread model
@@ -876,22 +873,34 @@ export async function cmdRecommend(
         
         let roi = backtestStats?.roi !== null && backtestStats?.roi !== undefined ? backtestStats.roi : -999;
         
-        // Check for profitable underdog (moneyline underdogs in +100 to +149 range for NFL/NBA/CFB)
+        // Check for profitable underdog (sport-specific home/away preference)
+        // NBA: Away underdogs perform better | NFL/CFB/NCAAM: Home underdogs perform better
         let underdogBoost = 0;
         let underdogInfo: { isProfitableUnderdog: boolean; roi: number; sport: string } | null = null;
         
         if (marketType === "moneyline" && leg.odds >= 100 && leg.odds <= 149) {
-          // Check if sport is profitable for underdogs
           const underdogData = UNDERDOG_ROI_BY_SPORT[sportName];
+          
+          // Only proceed if sport has positive underdog ROI
           if (underdogData && underdogData.roi > 0) {
-            // Apply boost to ranking - profitable underdog gets 3-5 percentage point boost
-            underdogBoost = underdogData.roi * 0.5; // 50% of historical ROI as boost
-            roi += underdogBoost;
-            underdogInfo = {
-              isProfitableUnderdog: true,
-              roi: underdogData.roi,
-              sport: sportName
-            };
+            const preference = UNDERDOG_HOME_AWAY_PREFERENCE[sportName] || 'home';
+            const isHomeUnderdog = leg.description.includes(matchupInfo?.home || '___NOMATCH___');
+            const isAwayUnderdog = leg.description.includes(matchupInfo?.away || '___NOMATCH___');
+            
+            // Check if this underdog matches the sport's preferred location
+            const matchesPreference = (preference === 'home' && isHomeUnderdog) || 
+                                     (preference === 'away' && isAwayUnderdog);
+            
+            if (matchesPreference) {
+              // Apply boost to ranking - profitable underdog gets 3-5 percentage point boost
+              underdogBoost = underdogData.roi * 0.5; // 50% of historical ROI as boost
+              roi += underdogBoost;
+              underdogInfo = {
+                isProfitableUnderdog: true,
+                roi: underdogData.roi,
+                sport: sportName
+              };
+            }
           }
         }
         
