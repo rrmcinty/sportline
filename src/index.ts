@@ -5,7 +5,7 @@
  */
 
 import { Command } from "commander";
-import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare } from "./cli/commands.js";
+import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare, cmdUnderdogAnalyze } from "./cli/commands.js";
 import { cmdSearchTeam } from "./cli/search.js";
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
@@ -260,9 +260,15 @@ underdog
   .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
   .option("--min-odds <number>", "Minimum underdog odds (e.g., 110 for +110)", "110")
   .option("--max-odds <number>", "Maximum underdog odds (e.g., 300 for +300)", "300")
+  .option("--optimal", "Filter to optimal profile (home dogs, bounce-back spots, narrow gaps)")
   .action(async (options) => {
     const date = options.date || todayYYYYMMDD();
-    await cmdUnderdogPredict(date, parseInt(options.minOdds), parseInt(options.maxOdds));
+    await cmdUnderdogPredict(
+      date, 
+      parseInt(options.minOdds), 
+      parseInt(options.maxOdds),
+      options.optimal || false
+    );
   });
 
 underdog
@@ -285,6 +291,21 @@ underdog
   .action(async (options) => {
     const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
     await cmdUnderdogCompare(seasons);
+  });
+
+underdog
+  .command("analyze")
+  .description("Analyze common traits among winning underdogs")
+  .requiredOption("--seasons <years>", "Season years (e.g., 2022,2023,2024)")
+  .option("--tiers <tiers>", "Underdog tiers (moderate|heavy|extreme or comma-separated)", "moderate")
+  .option("--min-odds <number>", "Minimum odds (e.g., 100 for +100)")
+  .option("--max-odds <number>", "Maximum odds (e.g., 149 for +149)")
+  .action(async (options) => {
+    const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
+    const tiers = options.tiers.split(",").map((t: string) => t.trim());
+    const minOdds = options.minOdds ? parseInt(options.minOdds) : undefined;
+    const maxOdds = options.maxOdds ? parseInt(options.maxOdds) : undefined;
+    await cmdUnderdogAnalyze(seasons, tiers, minOdds, maxOdds);
   });
 
 program.parse();

@@ -22,6 +22,7 @@ import * as readline from "readline";
 import { trainUnderdogModel } from "../underdog/underdog-train.js";
 import { predictUnderdogs, displayUnderdogPredictions } from "../underdog/underdog-predict.js";
 import { backtestUnderdogModel, compareUnderdogVsMainModel } from "../underdog/underdog-backtest.js";
+import { analyzeWinningUnderdogs } from "../underdog/analyze-winners.js";
 import type { UnderdogTier } from "../underdog/types.js";
 
 /**
@@ -1044,6 +1045,41 @@ export async function cmdRecommend(
       }
     }
 
+    // UNDERDOG ALERT SECTION - check for optimal underdog opportunities
+    if (sportsToCheck.includes('ncaam')) {
+      try {
+        const underdogPredictions = await predictUnderdogs(
+          "ncaam",
+          date,
+          100, // Min odds
+          200, // Max odds (sweet spot)
+          true // Filter to optimal profile only
+        );
+        
+        if (underdogPredictions.length > 0) {
+          console.log(chalk.bold.magenta(`\n🐕 UNDERDOG ALERT`));
+          console.log(chalk.dim(`   Found ${underdogPredictions.length} optimal underdog opportunity(ies) (home dogs, bounce-back spots)\n`));
+          
+          for (let i = 0; i < Math.min(3, underdogPredictions.length); i++) {
+            const p = underdogPredictions[i];
+            const underdogName = p.underdogTeam === "home" ? p.homeTeam : p.awayTeam;
+            const favoriteName = p.underdogTeam === "home" ? p.awayTeam : p.homeTeam;
+            
+            console.log(chalk.bold(`${i + 1}. 🐶 ${underdogName} +${p.odds}`) + chalk.dim(` at home vs ${favoriteName}`));
+            console.log(chalk.cyan(`   Model: ${(p.modelProbability * 100).toFixed(1)}% | Market: ${(p.marketProbability * 100).toFixed(1)}% | Edge: +${(p.edge * 100).toFixed(1)}%`));
+            console.log(chalk.dim(`   Matches winning profile: home dog + bounce-back situation`));
+            console.log(chalk.dim(`   Kelly bet: ${(p.kelleySizing * 100).toFixed(1)}% of bankroll\n`));
+          }
+          
+          if (underdogPredictions.length > 3) {
+            console.log(chalk.dim(`   + ${underdogPredictions.length - 3} more (run 'sportline underdog predict --optimal' for full list)\n`));
+          }
+        }
+      } catch (err) {
+        // Silently skip if underdog model not available
+      }
+    }
+
     // Skip parlays unless explicitly requested
     if (!includeParlays) {
       console.log(chalk.dim(`\n💡 Tip: Parlays combine multiple bets but have worse EV (bookmaker edge compounds).`));
@@ -1293,11 +1329,12 @@ export async function cmdUnderdogTrain(
 export async function cmdUnderdogPredict(
   date: string,
   minOdds: number,
-  maxOdds: number
+  maxOdds: number,
+  filterOptimal: boolean = false
 ): Promise<void> {
   try {
-    const predictions = await predictUnderdogs("ncaam", date, minOdds, maxOdds);
-    displayUnderdogPredictions(predictions);
+    const predictions = await predictUnderdogs("ncaam", date, minOdds, maxOdds, filterOptimal);
+    displayUnderdogPredictions(predictions, filterOptimal);
   } catch (error) {
     console.error(chalk.red("Error predicting underdogs:"), error);
     process.exit(1);
@@ -1325,3 +1362,19 @@ export async function cmdUnderdogCompare(seasons: number[]): Promise<void> {
     process.exit(1);
   }
 }
+
+export async function cmdUnderdogAnalyze(
+  seasons: number[],
+  tiers: string[],
+  minOdds?: number,
+  maxOdds?: number
+): Promise<void> {
+  try {
+    const underdogTiers = tiers as UnderdogTier[];
+    analyzeWinningUnderdogs("ncaam", seasons, underdogTiers, minOdds, maxOdds);
+  } catch (error) {
+    console.error(chalk.red("Error analyzing winners:"), error);
+    process.exit(1);
+  }
+}
+

@@ -275,9 +275,9 @@ export async function trainUnderdogModel(
   const baseWeights = trainLogisticRegression(
     baseFeatures,
     baseLabels,
-    0.01,  // learning rate
-    1500,  // iterations (more for underdog complexity)
-    0.3,   // lambda (less regularization to capture underdog patterns)
+    0.003, // learning rate (even lower)
+    600,   // iterations (reduced more)
+    3.0,   // lambda (stronger regularization: 1.5 -> 3.0)
     sampleWeights
   );
   
@@ -288,9 +288,9 @@ export async function trainUnderdogModel(
   const marketWeights = trainLogisticRegression(
     marketFeatures,
     baseLabels,
-    0.01,
-    1500,
-    0.3,
+    0.003,
+    600,
+    3.0,
     sampleWeights
   );
   

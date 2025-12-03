@@ -117,13 +117,41 @@ function kelleySizing(modelProb: number, odds: number): number {
 }
 
 /**
+ * Check if game matches optimal winning profile
+ */
+function matchesOptimalProfile(game: UnderdogGameFeatures): boolean {
+  // Based on analysis of +100 to +149 bucket:
+  // 1. Home underdogs win more (47.8% vs 41.1%)
+  // 2. Conference strength diff positive (0.047 vs 0.023)
+  // 3. Recent dog trend negative (bounce-back candidates: -3.1 vs -0.14)
+  // 4. Market overreaction present (75.7% have >5%)
+  // 5. Losing favorites have narrow conference gap and are overvalued
+  
+  const isHomeUnderdog = game.homeAsUnderdog === 1;
+  const hasRecentDogLosses = game.recentDogTrend10 < -1.5; // Bounce-back spot
+  const hasConfStrength = game.confStrengthDiff > 0; // Decent conference
+  const hasMarketOverreaction = game.marketOverreaction > 0.05; // 5%+ overreaction
+  
+  // Must be home dog with at least 2 of the 3 other factors
+  if (!isHomeUnderdog) return false;
+  
+  let factorCount = 0;
+  if (hasRecentDogLosses) factorCount++;
+  if (hasConfStrength) factorCount++;
+  if (hasMarketOverreaction) factorCount++;
+  
+  return factorCount >= 2;
+}
+
+/**
  * Generate underdog predictions for upcoming games
  */
 export async function predictUnderdogs(
   sport: "ncaam",
   date: string,
   minOdds: number = 110,
-  maxOdds: number = 300
+  maxOdds: number = 300,
+  filterOptimal: boolean = false
 ): Promise<UnderdogPrediction[]> {
   console.log(chalk.bold.cyan(`\n🐕 Generating underdog predictions for ${sport.toUpperCase()}...\n`));
   console.log(chalk.dim(`   Date: ${date}`));
@@ -143,20 +171,28 @@ export async function predictUnderdogs(
   
   const db = getDb();
   
-  // Get current season
-  const currentYear = new Date(date).getFullYear();
-  const currentMonth = new Date(date).getMonth() + 1;
-  const currentSeason = currentMonth >= 11 ? currentYear + 1 : currentYear;
+  // Convert YYYYMMDD to YYYY-MM-DD for comparison
+  const isoDate = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
+  
+  // Get the actual season from database for this date
+  const seasonQuery = db.prepare(`
+    SELECT DISTINCT season 
+    FROM games 
+    WHERE sport = ? AND date LIKE ?
+    LIMIT 1
+  `).get(sport, `${isoDate}%`) as { season: number } | undefined;
+  
+  const currentSeason = seasonQuery ? seasonQuery.season : 2025;
   
   // Compute features for games on this date
   console.log(chalk.dim("Computing features..."));
   const allFeatures = computeUnderdogFeatures(db, sport, [currentSeason]);
-  const gamesOnDate = allFeatures.filter(f => f.date === date);
+  const gamesOnDate = allFeatures.filter(f => f.date.startsWith(isoDate));
   
   console.log(chalk.dim(`Found ${gamesOnDate.length} games on ${date}\n`));
   
   // Filter to underdog games in odds range
-  const underdogGames = gamesOnDate.filter(g => {
+  let underdogGames = gamesOnDate.filter(g => {
     if (!g.underdogTier) return false;
     
     const underdogMarketProb = g.underdogTeam === "home"
@@ -168,7 +204,16 @@ export async function predictUnderdogs(
     return odds >= minOdds && odds <= maxOdds;
   });
   
-  console.log(chalk.dim(`Filtered to ${underdogGames.length} underdogs in odds range\n`));
+  console.log(chalk.dim(`Filtered to ${underdogGames.length} underdogs in odds range`));
+  
+  // Apply optimal profile filter if requested
+  if (filterOptimal) {
+    const beforeFilter = underdogGames.length;
+    underdogGames = underdogGames.filter(matchesOptimalProfile);
+    console.log(chalk.dim(`Applied optimal profile filter: ${underdogGames.length}/${beforeFilter} games match\n`));
+  } else {
+    console.log();
+  }
   
   if (underdogGames.length === 0) {
     console.log(chalk.yellow("No underdog games found in specified range."));
@@ -252,13 +297,17 @@ export async function predictUnderdogs(
 /**
  * Display underdog predictions in a formatted table
  */
-export function displayUnderdogPredictions(predictions: UnderdogPrediction[]): void {
+export function displayUnderdogPredictions(predictions: UnderdogPrediction[], filterOptimal: boolean = false): void {
   if (predictions.length === 0) {
     console.log(chalk.yellow("\nNo underdog opportunities found with sufficient edge.\n"));
     return;
   }
   
-  console.log(chalk.bold.green(`\n✅ Found ${predictions.length} underdog opportunities:\n`));
+  const header = filterOptimal 
+    ? `\n✅ Found ${predictions.length} OPTIMAL underdog opportunities (home dogs, bounce-back spots):\n`
+    : `\n✅ Found ${predictions.length} underdog opportunities:\n`;
+  
+  console.log(chalk.bold.green(header));
   
   for (let i = 0; i < predictions.length; i++) {
     const p = predictions[i];
