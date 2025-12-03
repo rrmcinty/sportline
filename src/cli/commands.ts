@@ -23,7 +23,45 @@ import { trainUnderdogModel } from "../underdog/underdog-train.js";
 import { predictUnderdogs, displayUnderdogPredictions } from "../underdog/underdog-predict.js";
 import { backtestUnderdogModel, compareUnderdogVsMainModel } from "../underdog/underdog-backtest.js";
 import { analyzeWinningUnderdogs } from "../underdog/analyze-winners.js";
-import type { UnderdogTier } from "../underdog/types.js";
+import { computeUnderdogFeatures } from "../underdog/underdog-features.js";
+import type { UnderdogTier, UnderdogPrediction, UnderdogGameFeatures } from "../underdog/types.js";
+
+/**
+ * Underdog ROI by sport (from analysis)
+ */
+const UNDERDOG_ROI_BY_SPORT: Record<string, { roi: number; bucket: string }> = {
+  nfl: { roi: 6.71, bucket: "+100 to +149" },
+  nba: { roi: 5.27, bucket: "+100 to +149" },
+  cfb: { roi: 4.90, bucket: "+100 to +149" },
+  ncaam: { roi: -7.55, bucket: "+100 to +149" },
+  nhl: { roi: -0.12, bucket: "+150 to +199" }
+};
+
+/**
+ * Check if a bet matches the profitable underdog profile
+ */
+function matchesOptimalProfile(game: UnderdogGameFeatures): boolean {
+  // Based on analysis of +100 to +149 bucket:
+  // 1. Home underdogs win more (47.8% vs 41.1%)
+  // 2. Conference strength diff positive (0.047 vs 0.023)
+  // 3. Recent dog trend negative (bounce-back candidates: -3.1 vs -0.14)
+  // 4. Market overreaction present (75.7% have >5%)
+  
+  const isHomeUnderdog = game.homeAsUnderdog === 1;
+  const hasRecentDogLosses = game.recentDogTrend10 < -1.5; // Bounce-back spot
+  const hasConfStrength = game.confStrengthDiff > 0; // Decent conference
+  const hasMarketOverreaction = game.marketOverreaction > 0.05; // 5%+ overreaction
+  
+  // Must be home dog with at least 2 of the 3 other factors
+  if (!isHomeUnderdog) return false;
+  
+  let factorCount = 0;
+  if (hasRecentDogLosses) factorCount++;
+  if (hasConfStrength) factorCount++;
+  if (hasMarketOverreaction) factorCount++;
+  
+  return factorCount >= 2;
+}
 
 /**
  * Fetch and display games for a date
@@ -756,8 +794,28 @@ export async function cmdRecommend(
         const marketType = leg.market as "moneyline" | "spread" | "total";
         const backtestStats = await getBacktestStats(sportName, marketType, displayProb);
         
-        const roi = backtestStats?.roi !== null && backtestStats?.roi !== undefined ? backtestStats.roi : -999;
-        rankedSingles.push({ bet, roi });
+        let roi = backtestStats?.roi !== null && backtestStats?.roi !== undefined ? backtestStats.roi : -999;
+        
+        // Check for profitable underdog (moneyline underdogs in +100 to +149 range for NFL/NBA/CFB)
+        let underdogBoost = 0;
+        let underdogInfo: { isProfitableUnderdog: boolean; roi: number; sport: string } | null = null;
+        
+        if (marketType === "moneyline" && leg.odds >= 100 && leg.odds <= 149) {
+          // Check if sport is profitable for underdogs
+          const underdogData = UNDERDOG_ROI_BY_SPORT[sportName];
+          if (underdogData && underdogData.roi > 0) {
+            // Apply boost to ranking - profitable underdog gets 3-5 percentage point boost
+            underdogBoost = underdogData.roi * 0.5; // 50% of historical ROI as boost
+            roi += underdogBoost;
+            underdogInfo = {
+              isProfitableUnderdog: true,
+              roi: underdogData.roi,
+              sport: sportName
+            };
+          }
+        }
+        
+        rankedSingles.push({ bet, roi, underdogInfo });
       }
       
       rankedSingles.sort((a, b) => b.roi - a.roi);
@@ -847,6 +905,10 @@ export async function cmdRecommend(
         const matchupInfo = eventIdToMatchup.get(leg.eventId);
         if (matchupInfo && matchupInfo.sport) sportName = matchupInfo.sport.toLowerCase() as Sport;
 
+        // Retrieve underdog info for this bet
+        const rankedEntry = rankedSingles.find(r => r.bet === bet);
+        const underdogInfo = rankedEntry?.underdogInfo;
+
         // Load actual backtest stats for this sport/market
         const backtestStats = await getBacktestStats(sportName, marketType as "moneyline" | "spread" | "total", displayProb);
         let marketStats = { 
@@ -927,7 +989,19 @@ export async function cmdRecommend(
           }
         }
 
-        console.log(chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel}]`));
+        // Add underdog indicator to title if applicable
+        let titlePrefix = '';
+        if (underdogInfo?.isProfitableUnderdog) {
+          titlePrefix = chalk.bold.magenta('🐶 ');
+        }
+
+        console.log(titlePrefix + chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel}]`));
+        
+        // Add underdog info line if applicable
+        if (underdogInfo?.isProfitableUnderdog) {
+          console.log(chalk.magenta(`   💎 Profitable underdog profile: +${underdogInfo.roi.toFixed(1)}% historical ROI in ${underdogInfo.sport.toUpperCase()} ${UNDERDOG_ROI_BY_SPORT[underdogInfo.sport].bucket}`));
+        }
+        
         if (matchupDisplay) {
           console.log(`   ${matchupDisplay}`);
         }
