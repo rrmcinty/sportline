@@ -512,19 +512,29 @@ export async function cmdRecommend(
     const sportDisplay = sports ? sports.join(", ").toUpperCase() : "ALL SPORTS";
     console.log(chalk.bold.cyan(`\n🔍 Analyzing ${sportDisplay} games on ${dateRangeDisplay}...\n`));
 
-    // Show all pending bets (your active positions)
+    // Show all pending bets (your active positions) and build a lookup for annotation later
     const { loadTrackedBets } = await import("../tracking/bet-logger.js");
     const trackedData = await loadTrackedBets();
     const pendingBets = trackedData.bets.filter(b => b.actuallyBet && b.status === 'pending');
+    // Build a map for quick lookup: key = `${sport}:${eventId}:${market}:${sideAbbrev}`
+    const placedLookup = new Map<string, { stake: number; odds: number }>();
+    for (const b of pendingBets) {
+      const placements = b.placements || [];
+      const totalStake = placements.reduce((sum, p) => sum + (p.stake || 0), 0) || (b.stake || 0);
+      const key = `${b.sport}:${b.eventId}:${b.market}:${b.side}`;
+      placedLookup.set(key, { stake: totalStake, odds: b.odds });
+    }
     
     if (pendingBets.length > 0) {
       console.log(chalk.bold.green('📌 Your Pending Bets:\n'));
       for (const bet of pendingBets) {
         const placements = bet.placements || [];
-        const totalStake = placements.reduce((sum, p) => sum + p.stake, 0);
+        const totalStake = placements.reduce((sum, p) => sum + (p.stake || 0), 0) || (bet.stake || 0);
         const betDate = new Date(bet.date);
         const dateStr = betDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        console.log(chalk.green(`  ✓ ${bet.pick} - $${totalStake.toFixed(2)} - ${dateStr}`));
+        const oddsDisplay = typeof bet.odds === 'number' ? (bet.odds >= 0 ? `+${bet.odds}` : `${bet.odds}`) : '';
+        // Include the raw odds in the line for quick reference
+        console.log(chalk.green(`  ✓ ${bet.pick}${oddsDisplay ? '' : ''} - $${totalStake.toFixed(2)} - ${dateStr}`));
       }
       console.log();
     }
@@ -1128,6 +1138,17 @@ export async function cmdRecommend(
         }
 
         console.log(titlePrefix + chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel}]`));
+        
+        // If this exact leg is already placed, annotate with stake and original odds
+        if (matchup) {
+          const sideAbbrev = (leg.team === 'home') ? matchup.home : (leg.team === 'away') ? matchup.away : undefined;
+          const placedKey = sideAbbrev ? `${matchup.sport}:${leg.eventId}:${leg.market}:${sideAbbrev}` : '';
+          if (placedKey && placedLookup.has(placedKey)) {
+            const placed = placedLookup.get(placedKey)!;
+            const placedOddsDisplay = placed.odds >= 0 ? `+${placed.odds}` : `${placed.odds}`;
+            console.log(chalk.yellow(`   📌 Already placed: $${placed.stake.toFixed(2)} at ${placedOddsDisplay}`));
+          }
+        }
         
         // Add underdog info line if applicable
         if (underdogInfo?.isProfitableUnderdog) {

@@ -25,10 +25,6 @@
         {
           "stake": 10,
           "placedAt": "2025-12-02T23:47:40.272Z"
-        },
-        {
-          "stake": 10,
-          "placedAt": "2025-12-03T00:16:42.843Z"
         }
       ],
       "result": {
@@ -63,10 +59,6 @@
         {
           "stake": 10,
           "placedAt": "2025-12-02T23:47:40.272Z"
-        },
-        {
-          "stake": 10,
-          "placedAt": "2025-12-03T00:16:42.843Z"
         }
       ],
       "result": {
@@ -101,10 +93,6 @@
         {
           "stake": 10,
           "placedAt": "2025-12-02T23:47:40.272Z"
-        },
-        {
-          "stake": 10,
-          "placedAt": "2025-12-03T00:16:42.843Z"
         }
       ],
       "result": {
@@ -379,7 +367,8 @@
         "awayScore": 3,
         "actualProfit": 3.597122302158273,
         "settledAt": "2025-12-03T13:05:54.999Z"
-      }
+      },
+      "stake": 10
     },
     {
       "id": "2025-12-03-nhl-401802763-moneyline-DET",
@@ -1923,31 +1912,37 @@
     },
     {
       "id": "2025-12-04-nba-401810187-moneyline-MIA",
-      "timestamp": "2025-12-03T13:14:58.733Z",
+      "timestamp": "2025-12-03T13:30:14.510Z",
       "sport": "nba",
       "eventId": "401810187",
       "matchup": "MIA @ DAL",
       "date": "2025-12-04T01:30Z",
-      "pick": "MIA ML -180 [NBA] (model)",
+      "pick": "MIA ML -198 [NBA] (model)",
       "side": "MIA",
       "market": "moneyline",
-      "odds": -180,
-      "modelProbability": 0.6813017898014107,
+      "odds": -198,
+      "modelProbability": 0.6815670093197467,
       "bin": "60-70%",
       "historicalROI": 3.955606738827474,
       "historicalWinRate": 0.672514619883041,
       "historicalSampleSize": 171,
-      "expectedValue": 0.5980278413552771,
+      "expectedValue": 0.2579277160244704,
       "recommended": true,
-      "actuallyBet": false,
-      "status": "lost",
-      "placements": [],
+      "actuallyBet": true,
+      "status": "pending",
+      "placements": [
+        {
+          "stake": 10,
+          "placedAt": "2025-12-03T13:24:59.480Z"
+        }
+      ],
       "result": {
         "homeScore": 0,
         "awayScore": 0,
         "actualProfit": 0,
         "settledAt": "2025-12-03T13:18:36.814Z"
-      }
+      },
+      "stake": 10
     },
     {
       "id": "2025-12-04-nba-401810179-moneyline-CLE",
@@ -2119,7 +2114,7 @@
     },
     {
       "id": "2025-12-04-nba-401810186-moneyline-DET",
-      "timestamp": "2025-12-03T13:14:58.733Z",
+      "timestamp": "2025-12-03T13:30:14.510Z",
       "sport": "nba",
       "eventId": "401810186",
       "matchup": "DET @ MIL",
@@ -2128,22 +2123,28 @@
       "side": "DET",
       "market": "moneyline",
       "odds": -180,
-      "modelProbability": 0.6818653438425475,
+      "modelProbability": 0.6763738985586631,
       "bin": "60-70%",
       "historicalROI": 3.955606738827474,
       "historicalWinRate": 0.672514619883041,
       "historicalSampleSize": 171,
-      "expectedValue": 0.6067942375507389,
+      "expectedValue": 0.5213717553569825,
       "recommended": true,
-      "actuallyBet": false,
-      "status": "lost",
-      "placements": [],
+      "actuallyBet": true,
+      "status": "pending",
+      "placements": [
+        {
+          "stake": 10,
+          "placedAt": "2025-12-03T13:24:59.480Z"
+        }
+      ],
       "result": {
         "homeScore": 0,
         "awayScore": 0,
         "actualProfit": 0,
         "settledAt": "2025-12-03T13:18:36.817Z"
-      }
+      },
+      "stake": 10
     },
     {
       "id": "2025-12-04-nba-401810185-moneyline-HOU",
@@ -2175,7 +2176,7 @@
     },
     {
       "id": "2025-12-04-nba-401810179-moneyline-POR",
-      "timestamp": "2025-12-03T13:14:58.731Z",
+      "timestamp": "2025-12-03T13:30:14.509Z",
       "sport": "nba",
       "eventId": "401810179",
       "matchup": "POR @ CLE",
@@ -2184,26 +2185,32 @@
       "side": "POR",
       "market": "moneyline",
       "odds": 370,
-      "modelProbability": 0.2750240434261575,
+      "modelProbability": 0.2767940989871617,
       "bin": "20-30%",
       "historicalROI": 5.111698009859566,
       "historicalWinRate": 0.22058823529411764,
       "historicalSampleSize": 68,
-      "expectedValue": 2.9261300410294027,
+      "expectedValue": 3.009322652396598,
       "recommended": true,
-      "actuallyBet": false,
-      "status": "lost",
-      "placements": [],
+      "actuallyBet": true,
+      "status": "pending",
+      "placements": [
+        {
+          "stake": 10,
+          "placedAt": "2025-12-03T13:24:59.480Z"
+        }
+      ],
       "result": {
         "homeScore": 0,
         "awayScore": 0,
         "actualProfit": 0,
         "settledAt": "2025-12-03T13:18:36.818Z"
-      }
+      },
+      "stake": 10
     },
     {
       "id": "2025-12-04-nba-401810181-moneyline-SA",
-      "timestamp": "2025-12-03T13:14:58.733Z",
+      "timestamp": "2025-12-03T13:30:14.511Z",
       "sport": "nba",
       "eventId": "401810181",
       "matchup": "SA @ ORL",
@@ -2212,15 +2219,15 @@
       "side": "SA",
       "market": "moneyline",
       "odds": 270,
-      "modelProbability": 0.3520717663660934,
+      "modelProbability": 0.3420317043219686,
       "bin": "30-40%",
       "historicalROI": -0.09089522314553339,
       "historicalWinRate": 0.36507936507936506,
       "historicalSampleSize": 126,
-      "expectedValue": 3.026655355545456,
+      "expectedValue": 2.6551730599128387,
       "recommended": true,
       "actuallyBet": false,
-      "status": "lost",
+      "status": "pending",
       "placements": [],
       "result": {
         "homeScore": 0,
@@ -2231,7 +2238,7 @@
     },
     {
       "id": "2025-12-04-nba-401810184-moneyline-BKN",
-      "timestamp": "2025-12-03T13:14:58.734Z",
+      "timestamp": "2025-12-03T13:30:14.511Z",
       "sport": "nba",
       "eventId": "401810184",
       "matchup": "BKN @ CHI",
@@ -2240,15 +2247,15 @@
       "side": "BKN",
       "market": "moneyline",
       "odds": 260,
-      "modelProbability": 0.3346009069214908,
+      "modelProbability": 0.33507729388868146,
       "bin": "30-40%",
       "historicalROI": -0.09089522314553339,
       "historicalWinRate": 0.36507936507936506,
       "historicalSampleSize": 126,
-      "expectedValue": 2.045632649173669,
+      "expectedValue": 2.0627825799925326,
       "recommended": true,
       "actuallyBet": false,
-      "status": "lost",
+      "status": "pending",
       "placements": [],
       "result": {
         "homeScore": 0,
@@ -2256,7 +2263,117 @@
         "actualProfit": 0,
         "settledAt": "2025-12-03T13:18:36.819Z"
       }
+    },
+    {
+      "id": "2025-12-04-nhl-401802776-moneyline-SJ",
+      "timestamp": "2025-12-03T13:30:14.512Z",
+      "sport": "nhl",
+      "eventId": "401802776",
+      "matchup": "WSH @ SJ",
+      "date": "2025-12-04T03:00Z",
+      "pick": "SJ ML +130 [NHL] (model)",
+      "side": "SJ",
+      "market": "moneyline",
+      "odds": 130,
+      "modelProbability": 0.559201212459281,
+      "bin": "50-60%",
+      "historicalROI": -5.017684756341358,
+      "historicalWinRate": 0.5146299483648882,
+      "historicalSampleSize": 581,
+      "expectedValue": 2.861627886563463,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-04-nhl-401802775-moneyline-ANA",
+      "timestamp": "2025-12-03T13:30:14.512Z",
+      "sport": "nhl",
+      "eventId": "401802775",
+      "matchup": "UTA @ ANA",
+      "date": "2025-12-04T03:00Z",
+      "pick": "ANA ML -112 [NHL] (model)",
+      "side": "ANA",
+      "market": "moneyline",
+      "odds": -112,
+      "modelProbability": 0.5802929027067388,
+      "bin": "50-60%",
+      "historicalROI": -5.017684756341358,
+      "historicalWinRate": 0.5146299483648882,
+      "historicalSampleSize": 581,
+      "expectedValue": 0.9841156583775561,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-04-nhl-401802773-moneyline-MTL",
+      "timestamp": "2025-12-03T13:30:14.512Z",
+      "sport": "nhl",
+      "eventId": "401802773",
+      "matchup": "WPG @ MTL",
+      "date": "2025-12-04T00:30Z",
+      "pick": "MTL ML -105 [NHL] (model)",
+      "side": "MTL",
+      "market": "moneyline",
+      "odds": -105,
+      "modelProbability": 0.5512559178750539,
+      "bin": "50-60%",
+      "historicalROI": -5.017684756341358,
+      "historicalWinRate": 0.5146299483648882,
+      "historicalSampleSize": 581,
+      "expectedValue": 0.7626155394653367,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-04-nhl-401802774-moneyline-PHI",
+      "timestamp": "2025-12-03T13:30:14.513Z",
+      "sport": "nhl",
+      "eventId": "401802774",
+      "matchup": "BUF @ PHI",
+      "date": "2025-12-04T00:30Z",
+      "pick": "PHI ML -120 [NHL] (model)",
+      "side": "PHI",
+      "market": "moneyline",
+      "odds": -120,
+      "modelProbability": 0.5686463002323406,
+      "bin": "50-60%",
+      "historicalROI": -5.017684756341358,
+      "historicalWinRate": 0.5146299483648882,
+      "historicalSampleSize": 581,
+      "expectedValue": 0.4251821709262469,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
+    },
+    {
+      "id": "2025-12-04-nhl-401802772-moneyline-NJ",
+      "timestamp": "2025-12-03T13:30:14.513Z",
+      "sport": "nhl",
+      "eventId": "401802772",
+      "matchup": "DAL @ NJ",
+      "date": "2025-12-04T00:00Z",
+      "pick": "NJ ML -115 [NHL] (model)",
+      "side": "NJ",
+      "market": "moneyline",
+      "odds": -115,
+      "modelProbability": 0.5437091992408641,
+      "bin": "50-60%",
+      "historicalROI": -5.017684756341358,
+      "historicalWinRate": 0.5146299483648882,
+      "historicalSampleSize": 581,
+      "expectedValue": 0.16499807276398215,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
     }
   ],
-  "lastUpdated": "2025-12-03T13:18:36.819Z"
+  "lastUpdated": "2025-12-03T13:30:14.514Z"
 }
