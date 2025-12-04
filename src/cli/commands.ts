@@ -533,8 +533,8 @@ export async function cmdRecommend(
         const betDate = new Date(bet.date);
         const dateStr = betDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         const oddsDisplay = typeof bet.odds === 'number' ? (bet.odds >= 0 ? `+${bet.odds}` : `${bet.odds}`) : '';
-        // Include the raw odds in the line for quick reference
-        console.log(chalk.green(`  ✓ ${bet.pick}${oddsDisplay ? '' : ''} - $${totalStake.toFixed(2)} - ${dateStr}`));
+        // Display: ✓ MATCHUP PICK - $STAKE - DATE [SPORT]
+        console.log(chalk.green(`  ✓ ${bet.matchup} - ${bet.pick.split('[')[0].trim()} [${bet.sport.toUpperCase()}] - $${totalStake.toFixed(2)} - ${dateStr}`));
       }
       console.log();
     }

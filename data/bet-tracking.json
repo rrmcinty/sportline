@@ -3083,7 +3083,7 @@
     },
     {
       "id": "2025-12-05-nba-401810189-moneyline-WSH",
-      "timestamp": "2025-12-04T13:47:30.894Z",
+      "timestamp": "2025-12-04T13:59:07.129Z",
       "sport": "nba",
       "eventId": "401810189",
       "matchup": "BOS @ WSH",
@@ -3092,12 +3092,12 @@
       "side": "WSH",
       "market": "moneyline",
       "odds": 330,
-      "modelProbability": 0.2831797934780332,
+      "modelProbability": 0.2846510267657582,
       "bin": "20-30%",
       "historicalROI": 67.34749943105169,
       "historicalWinRate": 0.14285714285714285,
       "historicalSampleSize": 14,
-      "expectedValue": 2.176731119555427,
+      "expectedValue": 2.2399941509276022,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -3127,7 +3127,7 @@
     },
     {
       "id": "2025-12-05-nba-401810189-total-O",
-      "timestamp": "2025-12-04T13:47:30.887Z",
+      "timestamp": "2025-12-04T13:59:07.123Z",
       "sport": "nba",
       "eventId": "401810189",
       "matchup": "BOS @ WSH",
@@ -3137,12 +3137,12 @@
       "market": "total",
       "line": 230.5,
       "odds": -108,
-      "modelProbability": 0.7982279019830976,
+      "modelProbability": 0.7989002981910629,
       "bin": "70-80%",
       "historicalROI": 27.356379530292575,
       "historicalWinRate": 0.6666666666666666,
       "historicalSampleSize": 9,
-      "expectedValue": 5.373278112267064,
+      "expectedValue": 5.386227965161211,
       "recommended": true,
       "actuallyBet": true,
       "status": "pending",
@@ -3155,7 +3155,7 @@
     },
     {
       "id": "2025-12-05-nba-401810192-moneyline-NO",
-      "timestamp": "2025-12-04T13:47:30.885Z",
+      "timestamp": "2025-12-04T13:59:07.121Z",
       "sport": "nba",
       "eventId": "401810192",
       "matchup": "MIN @ NO",
@@ -3182,7 +3182,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802786-moneyline-CHI",
-      "timestamp": "2025-12-04T13:47:30.888Z",
+      "timestamp": "2025-12-04T13:59:07.124Z",
       "sport": "nhl",
       "eventId": "401802786",
       "matchup": "CHI @ LA",
@@ -3226,7 +3226,7 @@
     },
     {
       "id": "2025-12-05-nba-401810190-moneyline-BKN",
-      "timestamp": "2025-12-04T13:47:30.882Z",
+      "timestamp": "2025-12-04T13:59:07.119Z",
       "sport": "nba",
       "eventId": "401810190",
       "matchup": "UTAH @ BKN",
@@ -3235,12 +3235,12 @@
       "side": "BKN",
       "market": "moneyline",
       "odds": 150,
-      "modelProbability": 0.7445842335208877,
+      "modelProbability": 0.7452425950459454,
       "bin": "70-80%",
       "historicalROI": -17.664581865163257,
       "historicalWinRate": 0.5,
       "historicalSampleSize": 8,
-      "expectedValue": 8.614605838022193,
+      "expectedValue": 8.631064876148635,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -3248,7 +3248,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802782-moneyline-TOR",
-      "timestamp": "2025-12-04T13:47:30.889Z",
+      "timestamp": "2025-12-04T13:59:07.125Z",
       "sport": "nhl",
       "eventId": "401802782",
       "matchup": "TOR @ CAR",
@@ -3270,7 +3270,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802785-moneyline-SEA",
-      "timestamp": "2025-12-04T13:47:30.891Z",
+      "timestamp": "2025-12-04T13:59:07.126Z",
       "sport": "nhl",
       "eventId": "401802785",
       "matchup": "SEA @ EDM",
@@ -3292,7 +3292,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802778-moneyline-NYR",
-      "timestamp": "2025-12-04T13:47:30.893Z",
+      "timestamp": "2025-12-04T13:59:07.128Z",
       "sport": "nhl",
       "eventId": "401802778",
       "matchup": "NYR @ OTT",
@@ -3314,7 +3314,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802781-moneyline-NYI",
-      "timestamp": "2025-12-04T13:47:30.892Z",
+      "timestamp": "2025-12-04T13:59:07.127Z",
       "sport": "nhl",
       "eventId": "401802781",
       "matchup": "COL @ NYI",
@@ -3336,7 +3336,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802780-moneyline-NSH",
-      "timestamp": "2025-12-04T13:47:30.895Z",
+      "timestamp": "2025-12-04T13:59:07.130Z",
       "sport": "nhl",
       "eventId": "401802780",
       "matchup": "NSH @ FLA",
@@ -3379,5 +3379,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-04T13:53:16.920Z"
+  "lastUpdated": "2025-12-04T13:59:07.131Z"
 }
