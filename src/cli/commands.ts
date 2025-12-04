@@ -1135,8 +1135,17 @@ export async function cmdRecommend(
         
         // If this exact leg is already placed, annotate with stake and original odds
         if (matchup) {
-          const sideAbbrev = (leg.team === 'home') ? matchup.home : (leg.team === 'away') ? matchup.away : undefined;
-          const placedKey = sideAbbrev ? `${matchup.sport}:${leg.eventId}:${leg.market}:${sideAbbrev}` : '';
+          let placedKey = '';
+          if (leg.market === 'total') {
+            // For totals, extract Over/Under from description
+            const isOver = leg.description.includes('Over');
+            const side = isOver ? 'O' : 'U';  // 'O' for Over, 'U' for Under (as stored in bet-tracking.json)
+            placedKey = `${matchup.sport}:${leg.eventId}:${leg.market}:${side}`;
+          } else {
+            // For moneyline/spread, use home/away abbreviation
+            const sideAbbrev = (leg.team === 'home') ? matchup.home : (leg.team === 'away') ? matchup.away : undefined;
+            placedKey = sideAbbrev ? `${matchup.sport}:${leg.eventId}:${leg.market}:${sideAbbrev}` : '';
+          }
           if (placedKey && placedLookup.has(placedKey)) {
             const placed = placedLookup.get(placedKey)!;
             const placedOddsDisplay = placed.odds >= 0 ? `+${placed.odds}` : `${placed.odds}`;

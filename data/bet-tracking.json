@@ -3083,7 +3083,7 @@
     },
     {
       "id": "2025-12-05-nba-401810189-moneyline-WSH",
-      "timestamp": "2025-12-04T13:59:07.129Z",
+      "timestamp": "2025-12-04T14:02:16.471Z",
       "sport": "nba",
       "eventId": "401810189",
       "matchup": "BOS @ WSH",
@@ -3127,7 +3127,7 @@
     },
     {
       "id": "2025-12-05-nba-401810189-total-O",
-      "timestamp": "2025-12-04T13:59:07.123Z",
+      "timestamp": "2025-12-04T14:02:16.464Z",
       "sport": "nba",
       "eventId": "401810189",
       "matchup": "BOS @ WSH",
@@ -3155,7 +3155,7 @@
     },
     {
       "id": "2025-12-05-nba-401810192-moneyline-NO",
-      "timestamp": "2025-12-04T13:59:07.121Z",
+      "timestamp": "2025-12-04T14:02:16.462Z",
       "sport": "nba",
       "eventId": "401810192",
       "matchup": "MIN @ NO",
@@ -3182,7 +3182,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802786-moneyline-CHI",
-      "timestamp": "2025-12-04T13:59:07.124Z",
+      "timestamp": "2025-12-04T14:02:16.466Z",
       "sport": "nhl",
       "eventId": "401802786",
       "matchup": "CHI @ LA",
@@ -3226,7 +3226,7 @@
     },
     {
       "id": "2025-12-05-nba-401810190-moneyline-BKN",
-      "timestamp": "2025-12-04T13:59:07.119Z",
+      "timestamp": "2025-12-04T14:02:16.460Z",
       "sport": "nba",
       "eventId": "401810190",
       "matchup": "UTAH @ BKN",
@@ -3248,7 +3248,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802782-moneyline-TOR",
-      "timestamp": "2025-12-04T13:59:07.125Z",
+      "timestamp": "2025-12-04T14:02:16.467Z",
       "sport": "nhl",
       "eventId": "401802782",
       "matchup": "TOR @ CAR",
@@ -3270,7 +3270,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802785-moneyline-SEA",
-      "timestamp": "2025-12-04T13:59:07.126Z",
+      "timestamp": "2025-12-04T14:02:16.469Z",
       "sport": "nhl",
       "eventId": "401802785",
       "matchup": "SEA @ EDM",
@@ -3292,7 +3292,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802778-moneyline-NYR",
-      "timestamp": "2025-12-04T13:59:07.128Z",
+      "timestamp": "2025-12-04T14:02:16.470Z",
       "sport": "nhl",
       "eventId": "401802778",
       "matchup": "NYR @ OTT",
@@ -3314,21 +3314,21 @@
     },
     {
       "id": "2025-12-05-nhl-401802781-moneyline-NYI",
-      "timestamp": "2025-12-04T13:59:07.127Z",
+      "timestamp": "2025-12-04T14:02:16.468Z",
       "sport": "nhl",
       "eventId": "401802781",
       "matchup": "COL @ NYI",
       "date": "2025-12-05T00:00Z",
-      "pick": "NYI ML +170 [NHL] (model)",
+      "pick": "NYI ML +180 [NHL] (model)",
       "side": "NYI",
       "market": "moneyline",
-      "odds": 170,
-      "modelProbability": 0.48865493367257956,
+      "odds": 180,
+      "modelProbability": 0.48752171560272906,
       "bin": "40-50%",
       "historicalROI": 11.758110580645921,
       "historicalWinRate": 0.4636363636363636,
       "historicalSampleSize": 110,
-      "expectedValue": 3.193683209159648,
+      "expectedValue": 3.650608036876413,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -3336,7 +3336,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802780-moneyline-NSH",
-      "timestamp": "2025-12-04T13:59:07.130Z",
+      "timestamp": "2025-12-04T14:02:16.472Z",
       "sport": "nhl",
       "eventId": "401802780",
       "matchup": "NSH @ FLA",
@@ -3379,5 +3379,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-04T13:59:07.131Z"
+  "lastUpdated": "2025-12-04T14:02:16.473Z"
 }
