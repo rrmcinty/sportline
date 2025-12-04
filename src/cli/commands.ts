@@ -482,7 +482,8 @@ export async function cmdRecommend(
   favoritesOnly: boolean = false,
   includeDogsFlag: boolean = false,
   includeParlays: boolean = false,
-  interactive: boolean = false
+  interactive: boolean = false,
+  showAllBets: boolean = false
 ): Promise<void> {
   try {
     // If no sports specified, check all sports
@@ -865,10 +866,20 @@ export async function cmdRecommend(
         const sportName: Sport = matchupInfo?.sport?.toLowerCase() as Sport || 'nba';
         const marketType = leg.market as "moneyline" | "spread" | "total";
         
-        // Check if we have backtest data for this sport/market (don't pass probability here)
-        const backtestStats = await getBacktestStats(sportName, marketType);
+        // Check if we have backtest data for this sport/market
+        let displayProb = bet.probability;
+        if (displayProb > 0.97) displayProb = 0.97;
+        if (displayProb < 0.03) displayProb = 0.03;
+        
+        const backtestStats = await getBacktestStats(sportName, marketType, displayProb);
+        
+        // Filter out bets without backtest data OR with poor historical performance (ROI < -10%)
+        // Unless showAllBets flag is set
         if (backtestStats && backtestStats.hasData) {
-          backtestedSingles.push(bet);
+          const roi = backtestStats.roi !== null && backtestStats.roi !== undefined ? backtestStats.roi : -999;
+          if (showAllBets || roi >= -10) {
+            backtestedSingles.push(bet);
+          }
         }
       }
       
@@ -947,8 +958,16 @@ export async function cmdRecommend(
         rankedSingles.push({ bet, ev: bet.ev, roi, underdogInfo, spreadInfo });
       }
       
-      // Sort by EV (Expected Value) instead of historical ROI
-      rankedSingles.sort((a, b) => b.ev - a.ev);
+      // Sort by EV (Expected Value) with tiebreaker by historical ROI
+      rankedSingles.sort((a, b) => {
+        // Primary: Sort by EV
+        if (Math.abs(a.ev - b.ev) > 0.001) {
+          return b.ev - a.ev;
+        }
+        
+        // Secondary: If EVs are essentially equal, sort by historical ROI (higher is better)
+        return b.roi - a.roi;
+      });
       const topRankedSingles = rankedSingles.slice(0, topN).map(x => x.bet);
       
       // Auto-log all recommendations to tracking file

@@ -99,6 +99,7 @@ program
   .option("--include-dogs", "Include underdogs (disables suppression guardrails)", false)
   .option("--include-parlays", "Include parlay recommendations (default: singles only)", false)
   .option("--interactive", "Prompt to select which bets you actually placed", false)
+  .option("--all", "Show all bets including poor value (ROI < -10%)", false)
   .action(async (options) => {
     const sports: Sport[] | undefined = options.sport ? [options.sport.toLowerCase() as Sport] : undefined;
     const date = options.date || todayYYYYMMDD();
@@ -114,7 +115,8 @@ program
       Boolean(options.favoritesOnly),
       Boolean(options.includeDogs),
       Boolean(options.includeParlays),
-      Boolean(options.interactive)
+      Boolean(options.interactive),
+      Boolean(options.all)
     );
   });
 
