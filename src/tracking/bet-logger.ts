@@ -149,10 +149,12 @@ export async function updateBetResults(
   
   if (bet.market === "moneyline") {
     // Check if the team we bet on won
+    // Matchup format: "AWAY @ HOME", so if it ends with @ {side}, that's home team
     const isHomeBet = bet.matchup.endsWith(`@ ${bet.side}`);
     won = isHomeBet ? homeScore > awayScore : awayScore > homeScore;
   } else if (bet.market === "spread" && bet.line !== undefined) {
     // Spread logic (implement based on your needs)
+    // Matchup format: "AWAY @ HOME", so if it ends with @ {side}, that's home team
     const isHomeBet = bet.matchup.endsWith(`@ ${bet.side}`);
     const margin = homeScore - awayScore;
     won = isHomeBet ? margin + bet.line > 0 : -margin + bet.line > 0;

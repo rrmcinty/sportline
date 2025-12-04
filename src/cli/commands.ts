@@ -1397,22 +1397,25 @@ export async function cmdResults(): Promise<void> {
     const game = db.prepare(`
       SELECT home_score, away_score, status
       FROM games 
-      WHERE espn_event_id = ? AND home_score IS NOT NULL AND away_score IS NOT NULL AND status IN ('post', 'STATUS_FINAL')
+      WHERE espn_event_id = ? AND home_score IS NOT NULL AND away_score IS NOT NULL AND status IN ('post', 'final', 'STATUS_FINAL')
     `).get(bet.eventId) as { home_score: number; away_score: number; status: string } | undefined;
     
     if (game && (game.home_score > 0 || game.away_score > 0)) {
       await updateBetResults(bet.id, game.home_score, game.away_score);
       updated++;
       
-      const isWin = bet.status === 'won';
-      const statusIcon = isWin ? chalk.green('✅ WON') : chalk.red('❌ LOST');
-      console.log(`${statusIcon} ${bet.pick} - ${bet.matchup}`);
-      console.log(chalk.dim(`   Final: ${game.away_score}-${game.home_score}`));
-      if (bet.actuallyBet && bet.result) {
-        const profitColor = bet.result.actualProfit! >= 0 ? chalk.green : chalk.red;
-        console.log(profitColor(`   Profit: $${bet.result.actualProfit!.toFixed(2)}`));
+      // Only display if this was an actual bet placed, not just a recommendation
+      if (bet.actuallyBet) {
+        const isWin = bet.status === 'won';
+        const statusIcon = isWin ? chalk.green('✅ WON') : chalk.red('❌ LOST');
+        console.log(`${statusIcon} ${bet.pick} - ${bet.matchup}`);
+        console.log(chalk.dim(`   Final: ${game.away_score}-${game.home_score}`));
+        if (bet.result) {
+          const profitColor = bet.result.actualProfit! >= 0 ? chalk.green : chalk.red;
+          console.log(profitColor(`   Profit: $${bet.result.actualProfit!.toFixed(2)}`));
+        }
+        console.log();
       }
-      console.log();
     }
   }
   

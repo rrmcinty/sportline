@@ -243,13 +243,16 @@ async function ingestSport(db: any, sport: Sport, endDate: string): Promise<Inge
       await ingestDate(db, sport, date, stats);
     }
   } else {
-    // Start from latest date in DB
-    const startDate = latestDate.split('T')[0];
+    // Start from 3 days before latest date to catch game updates (scores, final status)
+    const latestDateObj = new Date(latestDate);
+    const threeDaysAgo = new Date(latestDateObj);
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const startDate = threeDaysAgo.toISOString().split('T')[0];
     const dates = generateDateRange(startDate, endDate);
     stats.datesChecked = dates.length;
     
-    console.log(chalk.dim(`  Latest DB date: ${startDate}`));
-    console.log(chalk.dim(`  Checking ${dates.length} dates (${startDate} to ${endDate})...`));
+    console.log(chalk.dim(`  Latest DB date: ${latestDate.split('T')[0]}`));
+    console.log(chalk.dim(`  Checking ${dates.length} dates (${startDate} to ${endDate}) to catch game updates...`));
     
     for (const date of dates) {
       await ingestDate(db, sport, date, stats);
