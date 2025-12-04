@@ -351,4 +351,54 @@ nflSpread
     await cmdNFLSpreadAnalyze(seasons, buckets);
   });
 
+// Convenience commands
+program
+  .command("update")
+  .description("Full workflow: ingest data, train models, settle bets, show stats")
+  .option("--days <days>", "Days to look back for game updates (default: 3)", "3")
+  .option("--sports <sports>", "Sports to update (comma-separated)", "cfb,ncaam,nba,nfl,nhl")
+  .action(async (options) => {
+    const { execSync } = await import("child_process");
+    const validSports = ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'];
+    const sports = options.sports.split(",").filter((s: string) => validSports.includes(s)).join(",");
+    const daysBack = parseInt(options.days, 10) || 3;
+    
+    try {
+      console.log("🔄 Starting full update workflow...\n");
+      
+      // Ingest
+      console.log("📥 Ingesting data...");
+      await runDailyIngest(sports.split(",") as Sport[], daysBack);
+      
+      // Train models
+      console.log("\n🧠 Training models...");
+      execSync("npm run train", { stdio: "inherit" });
+      
+      // Settle bets
+      console.log("\n✅ Settling bets...");
+      await cmdResults();
+      
+      // Show stats
+      console.log("\n📊 Showing stats...");
+      await cmdStats();
+      
+      console.log("\n✨ Update workflow complete!");
+    } catch (err) {
+      console.error("❌ Update failed:", err);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("settle")
+  .description("Check for finished games and settle pending bets")
+  .action(async () => {
+    try {
+      await cmdResults();
+    } catch (err) {
+      console.error("Error settling bets:", err);
+      process.exit(1);
+    }
+  });
+
 program.parse();
