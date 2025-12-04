@@ -872,7 +872,8 @@ export async function cmdRecommend(
         }
       }
       
-      // Sort by bin-specific ROI (highest to lowest)
+      // Sort by EV (Expected Value) - highest to lowest
+      // EV represents the forward-looking profit expectation for THIS specific bet
       const rankedSingles = [];
       for (const bet of backtestedSingles) {
         const leg = bet.legs[0];
@@ -941,10 +942,13 @@ export async function cmdRecommend(
           }
         }
         
-        rankedSingles.push({ bet, roi, underdogInfo, spreadInfo });
+        // Use EV as primary sort key (bet.ev is already calculated)
+        // Keep roi for display purposes (historical validation)
+        rankedSingles.push({ bet, ev: bet.ev, roi, underdogInfo, spreadInfo });
       }
       
-      rankedSingles.sort((a, b) => b.roi - a.roi);
+      // Sort by EV (Expected Value) instead of historical ROI
+      rankedSingles.sort((a, b) => b.ev - a.ev);
       const topRankedSingles = rankedSingles.slice(0, topN).map(x => x.bet);
       
       // Auto-log all recommendations to tracking file
