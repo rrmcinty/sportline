@@ -59,6 +59,18 @@ interface ESPNTeam {
   abbreviation?: string;
 }
 
+interface ESPNStatus {
+  type: {
+    id: string;
+    name: string;
+    state: string;
+    completed: boolean;
+    description: string;
+    detail: string;
+    shortDetail: string;
+  };
+}
+
 /**
  * Fetch NCAAM events for a specific date
  * @param date Date in YYYYMMDD format
@@ -172,6 +184,26 @@ async function fetchScore(url: string): Promise<number | null> {
 }
 
 /**
+ * Fetch status details
+ */
+async function fetchStatus(url: string): Promise<ESPNStatus | null> {
+  const cached = getCache<ESPNStatus>(url);
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const data = (await response.json()) as ESPNStatus;
+    setCache(url, data, 5 * 60 * 1000);
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
  * Parse ESPN event into Competition
  */
 async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
@@ -187,19 +219,23 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
     return null;
   }
 
-  // Fetch team details and scores in parallel
-  const [homeTeam, awayTeam, homeScore, awayScore] = await Promise.all([
+  // Fetch team details, scores, and status in parallel
+  const [homeTeam, awayTeam, homeScore, awayScore, status] = await Promise.all([
     fetchTeam(homeCompetitor.team.$ref),
     fetchTeam(awayCompetitor.team.$ref),
     homeCompetitor.score?.$ref ? fetchScore(homeCompetitor.score.$ref) : Promise.resolve(null),
     awayCompetitor.score?.$ref ? fetchScore(awayCompetitor.score.$ref) : Promise.resolve(null),
+    comp.status?.$ref ? fetchStatus(comp.status.$ref) : Promise.resolve(null),
   ]);
+
+  // Prefer human-readable shortDetail for display when available (e.g., "Dec 3, 9:00 PM ET")
+  const displayDate = status?.type?.shortDetail || event.date;
 
   return {
     id: comp.id,
     eventId: event.id,
     sport: "ncaam",
-    date: event.date,
+    date: displayDate,
     homeTeam: {
       id: homeTeam.id,
       name: homeTeam.displayName,
@@ -210,7 +246,7 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
       name: awayTeam.displayName,
       abbreviation: awayTeam.abbreviation,
     },
-    status: "scheduled",
+    status: status?.type?.completed ? "final" : (status?.type?.state === "in" ? "in-progress" : "scheduled"),
     venue: comp.venue?.fullName,
     homeScore,
     awayScore,

@@ -198,7 +198,7 @@ export async function cmdGamesFetch(sport: Sport, date: string): Promise<void> {
       console.log(chalk.bold(`Event ID: ${comp.eventId}`));
       console.log(chalk.gray(`  ${comp.awayTeam.name} @ ${comp.homeTeam.name}`));
       console.log(chalk.gray(`  Venue: ${comp.venue || "N/A"}`));
-      console.log(chalk.gray(`  Date: ${new Date(comp.date).toLocaleString()}`));
+      console.log(chalk.gray(`  Date: ${new Date(comp.date).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })}`));
       console.log();
     }
 
@@ -482,7 +482,8 @@ export async function cmdRecommend(
   favoritesOnly: boolean = false,
   includeDogsFlag: boolean = false,
   includeParlays: boolean = false,
-  interactive: boolean = false
+  interactive: boolean = false,
+  displayTimeZone?: string
 ): Promise<void> {
   try {
     // If no sports specified, check all sports
@@ -717,8 +718,9 @@ export async function cmdRecommend(
               const modelFavorsDog = modelProb > marketProb && marketProb < 0.5;
               const excessiveDivergence = Math.abs(modelProb - marketProb) > 0.20; // cap 20%
 
-              // Suppress severe dogs, and suppress dogs where model < market (no edge)
-              if (isSevereUnderdog && modelFavorsDog) {
+              // Suppress severe dogs only when the model does NOT favor the dog
+              // Previously suppressed even when model favored the dog (overly aggressive)
+              if (isSevereUnderdog && !modelFavorsDog) {
                 continue;
               }
               if (isUnderdog && !modelFavorsDog) {
@@ -758,6 +760,23 @@ export async function cmdRecommend(
     }
 
     console.log(chalk.gray(`Found ${allLegs.length} betting opportunities across ${allCompetitions.length} games`));
+    // Filter to only bets with highest historical ROI
+    allLegs.splice(0, allLegs.length, ...allLegs.filter(leg => {
+      const matchup = eventIdToMatchup.get(leg.eventId);
+      const sport = matchup?.sport;
+      if (!sport) return false;
+      // Only totals for NBA, NFL, NCAAM
+      if (["nba", "nfl", "ncaam"].includes(sport) && leg.market === "total") {
+        return true;
+      }
+      // Moneyline: high-confidence only (model probability >= 0.8)
+      if (["nba", "nfl", "ncaam", "cfb", "nhl"].includes(sport) && leg.market === "moneyline") {
+        const prob = leg.impliedProbability;
+        return prob >= 0.8;
+      }
+      // Otherwise, exclude
+      return false;
+    }));
     if (modelProbs.size > 0 || spreadModelProbs.size > 0 || totalModelProbs.size > 0) {
       const markets: string[] = [];
       if (modelProbs.size > 0) markets.push('moneylines');
@@ -978,7 +997,17 @@ export async function cmdRecommend(
         const side = sideMatch ? sideMatch[1] : 'unknown';
         
         // Generate unique bet ID
-        const datePart = matchupInfo?.date ? new Date(matchupInfo.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+        const todayIso = new Date().toISOString().split('T')[0];
+        let datePart = todayIso;
+        if (matchupInfo?.date) {
+          const parsedDate = new Date(matchupInfo.date);
+          if (!isNaN(parsedDate.getTime())) {
+            datePart = parsedDate.toISOString().split('T')[0];
+          } else {
+            // If date is a human-readable string (e.g., "Dec 3, 9:00 PM ET"), fallback to today's date for ID
+            datePart = todayIso;
+          }
+        }
         const betId = `${datePart}-${sportName}-${leg.eventId}-${marketType}-${side}`;
         loggedBetIds.push(betId);
         
@@ -1089,14 +1118,21 @@ export async function cmdRecommend(
         const matchup = eventIdToMatchup.get(leg.eventId);
         let matchupDisplay = '';
         if (matchup) {
-          const gameDate = new Date(matchup.date);
-          const dateStr = gameDate.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            timeZoneName: 'short'
-          });
+          let dateStr: string;
+          const parsed = new Date(matchup.date);
+          if (!isNaN(parsed.getTime())) {
+            dateStr = parsed.toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              timeZoneName: 'short',
+              timeZone: displayTimeZone || 'America/New_York'
+            });
+          } else {
+            // If date is a human-readable string (e.g., "Dec 3, 9:00 PM ET"), use as-is
+            dateStr = matchup.date;
+          }
           matchupDisplay = chalk.dim(`${matchup.away} @ ${matchup.home} - ${dateStr}`);
         }
 

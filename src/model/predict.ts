@@ -127,7 +127,8 @@ export async function cmdModelPredict(
     for (const s of scored) {
       const pct = (s.pHome * 100).toFixed(1) + "%";
       const color = s.pHome >= 0.5 ? chalk.green : chalk.yellow;
-      console.log(`${chalk.bold(s.away_name)} @ ${chalk.bold(s.home_name)}  →  Home win: ${color(pct)}  (${new Date(s.date).toLocaleString()})`);
+      const when = new Date(s.date).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short', timeZone: 'America/New_York' });
+      console.log(`${chalk.bold(s.away_name)} @ ${chalk.bold(s.home_name)}  →  Home win: ${color(pct)}  (${when})`);
     }
 
     console.log();
