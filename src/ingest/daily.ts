@@ -214,7 +214,7 @@ async function ingestDate(
 /**
  * Run daily ingestion for a sport
  */
-async function ingestSport(db: any, sport: Sport, endDate: string): Promise<IngestStats> {
+async function ingestSport(db: any, sport: Sport, endDate: string, daysBack: number = 3): Promise<IngestStats> {
   const stats: IngestStats = {
     sport,
     datesChecked: 0,
@@ -243,11 +243,11 @@ async function ingestSport(db: any, sport: Sport, endDate: string): Promise<Inge
       await ingestDate(db, sport, date, stats);
     }
   } else {
-    // Start from 3 days before latest date to catch game updates (scores, final status)
+    // Start from N days before latest date to catch game updates (scores, final status)
     const latestDateObj = new Date(latestDate);
-    const threeDaysAgo = new Date(latestDateObj);
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    const startDate = threeDaysAgo.toISOString().split('T')[0];
+    const lookbackDate = new Date(latestDateObj);
+    lookbackDate.setDate(lookbackDate.getDate() - daysBack);
+    const startDate = lookbackDate.toISOString().split('T')[0];
     const dates = generateDateRange(startDate, endDate);
     stats.datesChecked = dates.length;
     
@@ -270,7 +270,7 @@ async function ingestSport(db: any, sport: Sport, endDate: string): Promise<Inge
 /**
  * Main daily ingestion function
  */
-export async function runDailyIngest(sports: Sport[] = ['cfb', 'ncaam']): Promise<void> {
+export async function runDailyIngest(sports: Sport[] = ['cfb', 'ncaam'], daysBack: number = 3): Promise<void> {
   const db = getDb();
   const today = new Date().toISOString().split('T')[0];
   
@@ -279,7 +279,7 @@ export async function runDailyIngest(sports: Sport[] = ['cfb', 'ncaam']): Promis
   const allStats: IngestStats[] = [];
   
   for (const sport of sports) {
-    const stats = await ingestSport(db, sport, today);
+    const stats = await ingestSport(db, sport, today, daysBack);
     allStats.push(stats);
   }
   
@@ -303,8 +303,20 @@ export async function runDailyIngest(sports: Sport[] = ['cfb', 'ncaam']): Promis
 // CLI entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
   const validSports = ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'];
-  const sports = process.argv.slice(2).filter(arg => validSports.includes(arg)) as Sport[];
-  runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'])
+  const args = process.argv.slice(2);
+  
+  // Parse --days flag
+  let daysBack = 3;
+  const daysIndex = args.indexOf('--days');
+  if (daysIndex !== -1 && args[daysIndex + 1]) {
+    const parsed = parseInt(args[daysIndex + 1], 10);
+    if (!isNaN(parsed) && parsed > 0) {
+      daysBack = parsed;
+    }
+  }
+  
+  const sports = args.filter(arg => validSports.includes(arg)) as Sport[];
+  runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'], daysBack)
     .catch(err => {
       console.error(chalk.red(`Fatal error: ${err}`));
       process.exit(1);
