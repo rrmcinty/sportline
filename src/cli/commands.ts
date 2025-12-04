@@ -703,38 +703,25 @@ export async function cmdRecommend(
           }
         }
         
-        // Guardrails: suppress severe underdogs unless explicitly included
+        // Guardrails: suppress extreme underdogs unless explicitly included
+        // Exclude bets where model probability is below threshold (default: 0.10)
         const includeDogsEnv = process.env.SPORTLINE_INCLUDE_DOGS === '1' || false;
         const includeDogs = includeDogsEnv || includeDogsFlag;
+        const EXTREME_UNDERDOG_THRESHOLD = 0.10; // <10% model probability
         if (!includeDogs) {
-          const filtered: BetLeg[] = [];
-          for (const leg of legs) {
-            if (leg.market === 'moneyline') {
-              const marketProb = leg.marketImpliedProbability ?? leg.impliedProbability;
-              const isUnderdog = marketProb < 0.5 && leg.team ? true : marketProb < 0.5;
-              const isSevereUnderdog = marketProb < 0.20; // <20% implied
-              const modelProb = leg.impliedProbability;
-              const modelFavorsDog = modelProb > marketProb && marketProb < 0.5;
-              const excessiveDivergence = Math.abs(modelProb - marketProb) > 0.20; // cap 20%
-
-              // Suppress severe dogs, and suppress dogs where model < market (no edge)
-              if (isSevereUnderdog && modelFavorsDog) {
-                continue;
-              }
-              if (isUnderdog && !modelFavorsDog) {
-                continue;
-              }
-              if (excessiveDivergence) {
-                // cap divergence by blending toward market
-                const w = 0.75; // strong trust in market when divergence is huge
-                leg.impliedProbability = w * marketProb + (1 - w) * modelProb;
-              }
-              filtered.push(leg);
-            } else {
-              filtered.push(leg);
+          legs = legs.filter((leg: BetLeg) => {
+            // Only show moneyline and total bets, never spreads
+            if (leg.market === 'spread') {
+              return false;
             }
-          }
-          legs = filtered;
+            if (['moneyline', 'total'].includes(leg.market)) {
+              if (typeof leg.impliedProbability === 'number' && leg.impliedProbability < EXTREME_UNDERDOG_THRESHOLD) {
+                // Suppress extreme underdogs
+                return false;
+              }
+            }
+            return true;
+          });
         }
 
         // Optional: favorites-only filter
@@ -901,11 +888,11 @@ export async function cmdRecommend(
         let roi = backtestStats?.roi !== null && backtestStats?.roi !== undefined ? backtestStats.roi : -999;
         
         // Check for profitable underdog (sport-specific home/away preference)
-        // NBA: Away underdogs perform better | NFL/CFB/NCAAM: Home underdogs perform better
+        // Only moderate underdogs (+150 to +300) from sports with historical +ROI
         let underdogBoost = 0;
         let underdogInfo: { isProfitableUnderdog: boolean; roi: number; sport: string } | null = null;
         
-        if (marketType === "moneyline" && leg.odds >= 100 && leg.odds <= 149) {
+        if (marketType === "moneyline" && leg.odds >= 150 && leg.odds <= 300) {
           const underdogData = UNDERDOG_ROI_BY_SPORT[sportName];
           
           // Only proceed if sport has positive underdog ROI
@@ -1129,15 +1116,18 @@ export async function cmdRecommend(
           }
         }
 
-        // Add underdog indicator to title if applicable
+        // Build title with special indicators first, then tier emoji
         let titlePrefix = '';
         if (underdogInfo?.isProfitableUnderdog) {
-          titlePrefix = chalk.bold.magenta('🐶 ');
-        } else if (spreadInfo?.isProfitableSpread) {
-          titlePrefix = chalk.bold.green('🏈 ');
+          titlePrefix += chalk.bold.magenta('🐶 ');
         }
+        if (spreadInfo?.isProfitableSpread) {
+          titlePrefix += chalk.bold.green('🏈 ');
+        }
+        
+        let titleLine = titlePrefix + chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel}]`);
 
-        console.log(titlePrefix + chalk.bold(`${i + 1}. ${tier.emoji} ${cleanDescription}`) + chalk.dim(` [${confidenceLabel}]`));
+        console.log(titleLine);
         
         // If this exact leg is already placed, annotate with stake and original odds
         if (matchup) {
@@ -1277,40 +1267,8 @@ export async function cmdRecommend(
       }
     }
 
-    // UNDERDOG ALERT SECTION - check for optimal underdog opportunities
-    if (sportsToCheck.includes('ncaam')) {
-      try {
-        const underdogPredictions = await predictUnderdogs(
-          "ncaam",
-          date,
-          100, // Min odds
-          200, // Max odds (sweet spot)
-          true // Filter to optimal profile only
-        );
-        
-        if (underdogPredictions.length > 0) {
-          console.log(chalk.bold.magenta(`\n🐕 UNDERDOG ALERT`));
-          console.log(chalk.dim(`   Found ${underdogPredictions.length} optimal underdog opportunity(ies) (home dogs, bounce-back spots)\n`));
-          
-          for (let i = 0; i < Math.min(3, underdogPredictions.length); i++) {
-            const p = underdogPredictions[i];
-            const underdogName = p.underdogTeam === "home" ? p.homeTeam : p.awayTeam;
-            const favoriteName = p.underdogTeam === "home" ? p.awayTeam : p.homeTeam;
-            
-            console.log(chalk.bold(`${i + 1}. 🐶 ${underdogName} +${p.odds}`) + chalk.dim(` at home vs ${favoriteName}`));
-            console.log(chalk.cyan(`   Model: ${(p.modelProbability * 100).toFixed(1)}% | Market: ${(p.marketProbability * 100).toFixed(1)}% | Edge: +${(p.edge * 100).toFixed(1)}%`));
-            console.log(chalk.dim(`   Matches winning profile: home dog + bounce-back situation`));
-            console.log(chalk.dim(`   Kelly bet: ${(p.kelleySizing * 100).toFixed(1)}% of bankroll\n`));
-          }
-          
-          if (underdogPredictions.length > 3) {
-            console.log(chalk.dim(`   + ${underdogPredictions.length - 3} more (run 'sportline underdog predict --optimal' for full list)\n`));
-          }
-        }
-      } catch (err) {
-        // Silently skip if underdog model not available
-      }
-    }
+    // Note: Underdog flagging is now done inline in the main bet list (🐶 emoji)
+    // No separate underdog model predictions - just rule-based profile matching
 
     // Skip parlays unless explicitly requested
     if (!includeParlays) {

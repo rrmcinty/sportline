@@ -213,8 +213,8 @@ export async function trainUnderdogModel(
   const underdogGames = filterUnderdogGames(allFeatures, tiers);
   console.log(chalk.dim(`Filtered to ${underdogGames.length} underdog games (${tiers.join(", ")})\n`));
   
-  if (underdogGames.length < 100) {
-    console.log(chalk.red(`❌ Not enough underdog games (need at least 100, found ${underdogGames.length})`));
+  if (underdogGames.length < 50) {
+    console.log(chalk.red(`❌ Not enough underdog games (need at least 50, found ${underdogGames.length})`));
     return;
   }
   
