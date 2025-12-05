@@ -6,12 +6,12 @@
     2024,
     2025
   ],
-  "timestamp": "2025-12-05T03:36:21.491Z",
+  "timestamp": "2025-12-05T05:04:46.315Z",
   "totalGames": 346,
   "gamesWithPredictions": 350,
   "gamesWithOdds": 263,
   "overallROI": -6.22999174215373,
-  "overallECE": 0.09567686687010149,
+  "overallECE": 0.09568372457858411,
   "totalProfit": -163.8487828186431,
   "totalBets": 263,
   "calibration": [
@@ -35,7 +35,7 @@
     },
     {
       "bin": "40-50%",
-      "predicted": 0.4548256249201375,
+      "predicted": 0.4548018936394673,
       "actual": 0.5131578947368421,
       "count": 76,
       "bets": 76,

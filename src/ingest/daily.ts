@@ -124,8 +124,9 @@ async function ingestDate(
         
         let season: number;
         if (sport === 'ncaam') {
-          // NCAAM season ends in spring, so Nov-Dec games belong to next year's season
-          season = month >= 11 ? year + 1 : year;
+          // NCAAM season starts in November, season number = starting year
+          // Nov-Dec 2024 → season 2024, Jan-Apr 2025 → season 2024
+          season = month >= 11 ? year : year - 1;
         } else if (sport === 'nba' || sport === 'nhl') {
           // NBA/NHL seasons start in October, games in Jan-Jun belong to prior year's season
           season = month >= 7 ? year : year - 1;
