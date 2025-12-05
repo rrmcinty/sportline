@@ -812,7 +812,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777353-moneyline-IU",
-      "timestamp": "2025-12-05T19:03:55.199Z",
+      "timestamp": "2025-12-05T20:21:15.605Z",
       "sport": "cfb",
       "eventId": "401777353",
       "matchup": "IU @ OSU",
@@ -834,7 +834,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777326-moneyline-UNLV",
-      "timestamp": "2025-12-05T20:00:28.714Z",
+      "timestamp": "2025-12-05T20:16:58.133Z",
       "sport": "cfb",
       "eventId": "401777326",
       "matchup": "UNLV @ BOIS",
@@ -3639,7 +3639,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777328-moneyline-UVA",
-      "timestamp": "2025-12-05T19:03:55.204Z",
+      "timestamp": "2025-12-05T20:21:15.610Z",
       "sport": "cfb",
       "eventId": "401777328",
       "matchup": "DUKE @ UVA",
@@ -3661,7 +3661,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777328-moneyline-DUKE",
-      "timestamp": "2025-12-05T19:03:55.202Z",
+      "timestamp": "2025-12-05T20:21:15.609Z",
       "sport": "cfb",
       "eventId": "401777328",
       "matchup": "DUKE @ UVA",
@@ -3727,7 +3727,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777353-moneyline-OSU",
-      "timestamp": "2025-12-05T19:03:55.201Z",
+      "timestamp": "2025-12-05T20:21:15.607Z",
       "sport": "cfb",
       "eventId": "401777353",
       "matchup": "IU @ OSU",
@@ -3749,7 +3749,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777329-moneyline-WMU",
-      "timestamp": "2025-12-05T19:03:55.197Z",
+      "timestamp": "2025-12-05T20:21:15.603Z",
       "sport": "cfb",
       "eventId": "401777329",
       "matchup": "M-OH @ WMU",
@@ -3771,7 +3771,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777329-moneyline-M",
-      "timestamp": "2025-12-05T19:03:55.193Z",
+      "timestamp": "2025-12-05T20:21:15.599Z",
       "sport": "cfb",
       "eventId": "401777329",
       "matchup": "M-OH @ WMU",
@@ -4622,7 +4622,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401824034-moneyline-UK",
-      "timestamp": "2025-12-05T19:59:19.686Z",
+      "timestamp": "2025-12-05T20:16:58.130Z",
       "sport": "ncaam",
       "eventId": "401824034",
       "matchup": "GONZ @ UK",
@@ -4666,7 +4666,7 @@
     },
     {
       "id": "2025-12-06-nba-401810198-moneyline-UTAH",
-      "timestamp": "2025-12-05T19:59:19.677Z",
+      "timestamp": "2025-12-05T20:16:58.120Z",
       "sport": "nba",
       "eventId": "401810198",
       "matchup": "UTAH @ NY",
@@ -4693,7 +4693,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777352-moneyline-TROY",
-      "timestamp": "2025-12-05T20:00:28.713Z",
+      "timestamp": "2025-12-05T20:16:58.125Z",
       "sport": "cfb",
       "eventId": "401777352",
       "matchup": "TROY @ JMU",
@@ -4715,7 +4715,7 @@
     },
     {
       "id": "2025-12-06-nba-401810201-moneyline-PHX",
-      "timestamp": "2025-12-05T19:59:19.683Z",
+      "timestamp": "2025-12-05T20:16:58.127Z",
       "sport": "nba",
       "eventId": "401810201",
       "matchup": "PHX @ HOU",
@@ -4737,7 +4737,7 @@
     },
     {
       "id": "2025-12-06-nba-401810195-moneyline-ATL",
-      "timestamp": "2025-12-05T19:59:19.684Z",
+      "timestamp": "2025-12-05T20:16:58.128Z",
       "sport": "nba",
       "eventId": "401810195",
       "matchup": "DEN @ ATL",
@@ -4759,7 +4759,7 @@
     },
     {
       "id": "2025-12-06-nba-401810200-moneyline-IND",
-      "timestamp": "2025-12-05T19:59:19.687Z",
+      "timestamp": "2025-12-05T20:16:58.131Z",
       "sport": "nba",
       "eventId": "401810200",
       "matchup": "IND @ CHI",
@@ -4781,7 +4781,7 @@
     },
     {
       "id": "2025-12-06-nba-401810202-moneyline-MEM",
-      "timestamp": "2025-12-05T19:59:19.690Z",
+      "timestamp": "2025-12-05T20:16:58.134Z",
       "sport": "nba",
       "eventId": "401810202",
       "matchup": "LAC @ MEM",
@@ -4803,7 +4803,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777325-moneyline-JVST",
-      "timestamp": "2025-12-05T20:00:28.715Z",
+      "timestamp": "2025-12-05T20:16:58.135Z",
       "sport": "cfb",
       "eventId": "401777325",
       "matchup": "KENN @ JVST",
@@ -4847,7 +4847,7 @@
     },
     {
       "id": "2025-12-06-nba-401810204-moneyline-DAL",
-      "timestamp": "2025-12-05T19:59:19.679Z",
+      "timestamp": "2025-12-05T20:16:58.123Z",
       "sport": "nba",
       "eventId": "401810204",
       "matchup": "DAL @ OKC",
@@ -5211,7 +5211,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802802-moneyline-VAN",
-      "timestamp": "2025-12-05T19:03:55.206Z",
+      "timestamp": "2025-12-05T20:21:15.611Z",
       "sport": "nhl",
       "eventId": "401802802",
       "matchup": "MIN @ VAN",
@@ -5233,7 +5233,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802802-moneyline-MIN",
-      "timestamp": "2025-12-05T19:03:55.207Z",
+      "timestamp": "2025-12-05T20:21:15.613Z",
       "sport": "nhl",
       "eventId": "401802802",
       "matchup": "MIN @ VAN",
@@ -5255,7 +5255,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802795-moneyline-MTL",
-      "timestamp": "2025-12-05T19:03:55.208Z",
+      "timestamp": "2025-12-05T20:21:15.614Z",
       "sport": "nhl",
       "eventId": "401802795",
       "matchup": "MTL @ TOR",
@@ -5277,7 +5277,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802795-moneyline-TOR",
-      "timestamp": "2025-12-05T19:03:55.210Z",
+      "timestamp": "2025-12-05T20:21:15.616Z",
       "sport": "nhl",
       "eventId": "401802795",
       "matchup": "MTL @ TOR",
@@ -5298,5 +5298,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-05T20:00:28.719Z"
+  "lastUpdated": "2025-12-05T20:21:15.616Z"
 }

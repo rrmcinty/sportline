@@ -1785,6 +1785,7 @@ export async function cmdConvictionRecommend(
     console.log(chalk.dim(`Date Range: ${days} day${days > 1 ? 's' : ''} starting ${startDate}\n`));
     
     const allPredictions: any[] = [];
+    const debugCounts: Record<string, {raw:number, highConviction:number}> = {};
     const sports: Sport[] = ['nba', 'cfb', 'ncaam', 'nfl'];
     const db = getDb();
     
@@ -1795,32 +1796,77 @@ export async function cmdConvictionRecommend(
     for (const sport of sports) {
       const { fetchEvents, fetchOdds } = await getFetchers(sport);
       for (const date of dates) {
+        let rawCount = 0;
+        let highConvictionCount = 0;
         try {
-          // Get model predictions (returns Map<eventId, probability>)
           const probs = await getHomeWinModelProbabilities(sport, date);
-          if (!probs || probs.size === 0) continue;
-
-          // Get backtest calibration for buckets
+          console.log(chalk.cyan(`[DEBUG] ${sport} ${date} model probabilities:`));
+          if (probs && probs.size > 0) {
+            for (const [eventId, prob] of probs.entries()) {
+              console.log(chalk.cyan(`  eventId=${eventId}, prob=${(prob*100).toFixed(1)}%`));
+            }
+          } else {
+            console.log(chalk.cyan(`  No model probabilities returned.`));
+          }
           const backtest = await getLatestBacktestForConfig(sport, 'moneyline', [2024, 2025]);
           if (!backtest) continue;
-
-          // Fetch games from API (with caching)
           const competitions = await fetchEvents(date);
           if (!competitions || competitions.length === 0) continue;
-
+          console.log(chalk.cyan(`[DEBUG] ${sport} ${date} competitions:`));
+          competitions.forEach(comp => {
+            console.log(chalk.cyan(`  eventId=${comp.eventId}, home=${typeof comp.homeTeam === 'string' ? comp.homeTeam : comp.homeTeam.name}, away=${typeof comp.awayTeam === 'string' ? comp.awayTeam : comp.awayTeam.name}`));
+          });
           for (const comp of competitions) {
-            const modelProb = probs.get(comp.eventId);
-            if (!modelProb) continue;
+            // Always use comp.eventId (ESPN event ID) for model probability lookup
+            let modelProb: number | undefined = undefined;
+            if (probs && probs.has(comp.eventId)) {
+              modelProb = probs.get(comp.eventId);
+            }
 
-            // Fetch odds for this event (with caching)
+            // Fetch odds and normalize as usual
+            // ...existing code...
+
+            // Before filtering, log debug info for each event
+            if (modelProb !== undefined) {
+              // Build features and prediction if possible
+              // You may need to fetch odds and build features here
+              let odds = null;
+              // ...existing code to fetch odds...
+              // Build features for classifier
+              let features = null;
+              let prediction = null;
+              try {
+                // You may need to fill in actual values for these fields
+                features = createConvictionFeatures({
+                        gameId: Number(comp.eventId),
+                  date: comp.date,
+                  sport: comp.sport,
+                  market: 'moneyline',
+                  homeTeam: comp.homeTeam.name,
+                  awayTeam: comp.awayTeam.name,
+                  modelProbability: modelProb,
+                  marketProbability: 0.5, // TODO: use actual market implied prob from odds
+                  odds: odds ?? 0,
+                  bucketLabel: '', // TODO: fill with actual bucket label if available
+                  bucketHistoricalROI: 0,
+                  bucketWinRate: 0,
+                  bucketSampleSize: 0
+                });
+                prediction = makeConvictionPrediction(features, model, `${comp.homeTeam.name} ML ${odds ?? ''}`);
+              } catch (e) {
+                // If features or prediction can't be built, skip
+              }
+              if (prediction) {
+                console.log(`[DEBUG] ${comp.sport} ${comp.eventId}: prob=${(modelProb*100).toFixed(1)}%, score=${(prediction.convictionScore*100).toFixed(1)}%, confidence=${prediction.confidenceLevel}`);
+              } else {
+                console.log(`[DEBUG] ${comp.sport} ${comp.eventId}: prob=${(modelProb*100).toFixed(1)}%`);
+              }
+            }
+            if (!modelProb) continue;
             const oddsEntries = await fetchOdds(comp.eventId);
             if (!oddsEntries || oddsEntries.length === 0) continue;
-
-            // Use .name for teams (API returns Team objects)
             const homeTeamName = typeof comp.homeTeam === 'string' ? comp.homeTeam : comp.homeTeam.name;
             const awayTeamName = typeof comp.awayTeam === 'string' ? comp.awayTeam : comp.awayTeam.name;
-
-            // Normalize odds using the same logic as cmdRecommend
             const { normalizeOdds } = await getFetchers(sport);
             const legs = normalizeOdds(
               comp.eventId,
@@ -1828,39 +1874,27 @@ export async function cmdConvictionRecommend(
               homeTeamName,
               awayTeamName
             );
-
-            // Find the moneyline leg for the pick
             const pickLeg = legs.find(leg => leg.market === 'moneyline' && (
               (modelProb >= 0.5 && (leg.team === 'home' || leg.team === homeTeamName)) ||
               (modelProb < 0.5 && (leg.team === 'away' || leg.team === awayTeamName))
             ));
             if (!pickLeg) continue;
-
-            // Find calibration bucket
             const marketProb = pickLeg.impliedProbability;
             const bucket = backtest.calibration.find(b => {
               const [min, max] = b.bin.split('-').map(s => parseFloat(s) / 100);
               return modelProb >= min && modelProb < max;
             });
             if (!bucket) continue;
-
-            // Determine pick (home or away) and corresponding odds
             const pick = modelProb >= 0.5 ? homeTeamName : awayTeamName;
             const pickOdds = pickLeg.odds;
             const openingPickOdds = pickOdds;
-
-            // Store extra metadata for display
             const metadata = {
               gameTime: comp.date,
               openingOdds: openingPickOdds,
               latestOdds: pickOdds,
               oddsMovement: pickOdds - openingPickOdds
             };
-
-            // Use a dummy numeric gameId (API has string eventId)
             const gameId = 0;
-
-            // Create features
             const features = createConvictionFeatures({
               gameId,
               date: date,
@@ -1876,23 +1910,30 @@ export async function cmdConvictionRecommend(
               bucketWinRate: bucket.actual,
               bucketSampleSize: bucket.count
             });
-
-            // Make conviction prediction
+            rawCount++;
             const convictionPred = makeConvictionPrediction(features, model, pick);
             if (convictionPred.isHighConviction) {
+              highConvictionCount++;
               allPredictions.push({ ...convictionPred, metadata });
             }
           }
         } catch (error) {
-          // Skip sports/dates with no data
           continue;
         }
+        debugCounts[`${sport}:${date}`] = {raw: rawCount, highConviction: highConvictionCount};
       }
     }
     
+    // Debug output for prediction counts
+    console.log(chalk.magenta.bold("\n[DEBUG] Prediction counts per sport/date:"));
+    Object.entries(debugCounts).forEach(([key, val]) => {
+      console.log(chalk.magenta(`${key}: raw=${val.raw}, highConviction=${val.highConviction}`));
+    });
+
     // Filter and sort by expected value (best bets first)
     const betAmount = 10;
     let filtered = filterHighConvictionPredictions(allPredictions, minConfidence);
+    console.log(chalk.magenta(`[DEBUG] After confidence filter: ${filtered.length} bets remain`));
     if (!showAll) {
       filtered = filtered.filter(bet => {
         let profit = 0;
@@ -1903,15 +1944,15 @@ export async function cmdConvictionRecommend(
         }
         return profit >= betAmount * 0.4;
       });
+      console.log(chalk.magenta(`[DEBUG] After profit filter: ${filtered.length} bets remain`));
     }
     const sorted = filtered.sort((a, b) => {
-      // Primary: Sort by expected value (highest first)
       if (Math.abs(b.expectedValue - a.expectedValue) > 0.01) {
         return b.expectedValue - a.expectedValue;
       }
-      // Secondary: Sort by conviction score
       return b.convictionScore - a.convictionScore;
     });
+    console.log(chalk.magenta(`[DEBUG] After sorting: ${sorted.length} bets remain`));
     
     if (sorted.length === 0) {
       console.log(chalk.yellow(`\n⚠️  No high-conviction opportunities found for the specified date range.`));
