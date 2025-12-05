@@ -1,3 +1,34 @@
+// Helper to format a game date string for display
+function formatGameDate(dateStr: string | Date | undefined): string {
+  if (!dateStr) return '';
+  const d = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
+  return d.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/New_York',
+    timeZoneName: 'short'
+  });
+}
+// Helper to build a date range array from a start date and number of days
+function buildDateRange(start: string, days: number): string[] {
+  const dates: string[] = [];
+  const baseDate = new Date(
+    parseInt(start.slice(0, 4)),
+    parseInt(start.slice(4, 6)) - 1,
+    parseInt(start.slice(6, 8))
+  );
+  for (let i = 0; i < days; i++) {
+    const d = new Date(baseDate);
+    d.setDate(baseDate.getDate() + i);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    dates.push(`${year}${month}${day}`);
+  }
+  return dates;
+}
 /**
  * CLI command handlers
  */
@@ -493,24 +524,8 @@ export async function cmdRecommend(
   try {
     // If no sports specified, check all sports
     const sportsToCheck: Sport[] = sports || ["ncaam", "cfb", "nfl", "nba", "nhl"];
-    
-    // Generate date range if days > 1
-    const dates: string[] = [];
-    const startDate = new Date(
-      parseInt(date.slice(0, 4)),
-      parseInt(date.slice(4, 6)) - 1,
-      parseInt(date.slice(6, 8))
-    );
-    
-    for (let i = 0; i < days; i++) {
-      const d = new Date(startDate);
-      d.setDate(d.getDate() + i);
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      dates.push(`${year}${month}${day}`);
-    }
-    
+    // Generate date range
+    const dates = buildDateRange(date, days);
     const dateRangeDisplay = days === 1 
       ? date 
       : `${date} through ${dates[dates.length - 1]} (${days} days)`;
@@ -1108,14 +1123,7 @@ export async function cmdRecommend(
         const matchup = eventIdToMatchup.get(leg.eventId);
         let matchupDisplay = '';
         if (matchup) {
-          const gameDate = new Date(matchup.date);
-          const dateStr = gameDate.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            timeZoneName: 'short'
-          });
+          const dateStr = formatGameDate(matchup.date);
           matchupDisplay = chalk.dim(`${matchup.away} @ ${matchup.home} - ${dateStr}`);
         }
 
