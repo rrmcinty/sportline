@@ -1788,21 +1788,7 @@ export async function cmdConvictionRecommend(
     const db = getDb();
     
     // Use the date(s) exactly as passed in, no shifting
-    const dates: string[] = [];
-    const baseDate = new Date(
-      parseInt(startDate.slice(0, 4)),
-      parseInt(startDate.slice(4, 6)) - 1,
-      parseInt(startDate.slice(6, 8))
-    );
-    for (let i = 0; i < days; i++) {
-      const d = new Date(baseDate);
-      d.setDate(baseDate.getDate() + i);
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      const dateStr = `${year}${month}${day}`;
-      dates.push(dateStr);
-    }
+    const dates = buildDateRange(startDate, days);
     
     // Fetch games for each sport and date
     for (const sport of sports) {
@@ -1944,17 +1930,9 @@ export async function cmdConvictionRecommend(
         // Format actual event date and time from the database, if available
         let dateStr = '';
         if (bet.metadata && bet.metadata.gameTime) {
-          const eventDate = new Date(bet.metadata.gameTime);
-          dateStr = eventDate.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            timeZone: 'America/New_York',
-            timeZoneName: 'short'
-          });
+          dateStr = formatGameDate(bet.metadata.gameTime);
         } else {
-          dateStr = `${bet.date.slice(0,4)}-${bet.date.slice(4,6)}-${bet.date.slice(6,8)}`;
+          dateStr = formatGameDate(bet.date);
         }
         
         // Calculate profit on $10 bet
