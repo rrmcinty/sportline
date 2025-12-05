@@ -32,7 +32,8 @@ export interface BetLeg {
   market: MarketType;
   team?: TeamSide; // undefined for totals
   line?: number; // spread value or total value
-  odds: number; // American odds (e.g., -110, +150)
+  odds: number; // American odds (e.g., -110, +150) - opening odds
+  currentOdds?: number; // Current/live odds for comparison (undefined if same as opening)
   decimalOdds: number;
   impliedProbability: number;
   marketImpliedProbability?: number; // Original vig-free market probability (before model override)
@@ -66,13 +67,19 @@ export interface OddsEntry {
   spread?: number;
   overUnder?: number;
   homeTeamOdds: {
-    moneyLine?: number;
-    spreadOdds?: number;
+    moneyLine?: number; // opening odds
+    currentMoneyLine?: number; // current odds
+    spreadOdds?: number; // opening odds
+    currentSpreadOdds?: number; // current odds
   };
   awayTeamOdds: {
-    moneyLine?: number;
-    spreadOdds?: number;
+    moneyLine?: number; // opening odds
+    currentMoneyLine?: number; // current odds
+    spreadOdds?: number; // opening odds
+    currentSpreadOdds?: number; // current odds
   };
-  overOdds?: number;
-  underOdds?: number;
+  overOdds?: number; // opening odds
+  currentOverOdds?: number; // current odds
+  underOdds?: number; // opening odds
+  currentUnderOdds?: number; // current odds
 }

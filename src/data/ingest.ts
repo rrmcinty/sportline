@@ -267,3 +267,138 @@ export async function cmdDataIngest(
     process.exit(1);
   }
 }
+
+/**
+ * Fetch and store opening odds for today's games (for historical backtest accuracy)
+ * Run this in the morning or a few hours before games start
+ */
+export async function cmdOddsRefresh(sports?: string[]): Promise<void> {
+  initDb();
+  const db = getDb();
+
+  const sportsToProcess = sports && sports.length > 0 
+    ? (sports as Sport[]) 
+    : ["ncaam", "cfb", "nfl", "nba", "nhl"];
+
+  let totalOdds = 0;
+
+  console.log(chalk.bold.cyan(`\n📊 Refreshing opening odds for today's games...\n`));
+
+  for (const sport of sportsToProcess) {
+    let fetchOdds: (eventId: string) => Promise<any[]>;
+    
+    switch (sport) {
+      case "ncaam":
+        fetchOdds = fetchOddsNcaam;
+        break;
+      case "cfb":
+        fetchOdds = fetchOddsCfb;
+        break;
+      case "nfl":
+        fetchOdds = fetchOddsNfl;
+        break;
+      case "nhl":
+        fetchOdds = fetchOddsNhl;
+        break;
+      case "nba":
+        fetchOdds = fetchOddsNba;
+        break;
+      default:
+        continue;
+    }
+
+    // Get today's games that don't have odds yet (or need updated odds)
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const todayStart = new Date(`${today}T00:00:00Z`).getTime();
+    const todayEnd = new Date(`${today}T23:59:59Z`).getTime();
+
+    const games = db.prepare(`
+      SELECT id, espn_event_id, date
+      FROM games
+      WHERE sport = ? 
+        AND datetime(date) >= datetime(?)
+        AND datetime(date) < datetime(?, '+1 day')
+      ORDER BY date ASC
+    `).all(sport, today, today) as Array<{ id: number; espn_event_id: string; date: string }>;
+
+    if (games.length === 0) {
+      continue;
+    }
+
+    console.log(chalk.dim(`${sport.toUpperCase()}: Found ${games.length} games today`));
+
+    const insertOdds = db.prepare(`
+      INSERT OR REPLACE INTO odds (game_id, provider, market, line, price_home, price_away, price_over, price_under, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    for (const game of games) {
+      try {
+        const oddsEntries = await fetchOdds(game.espn_event_id);
+        
+        if (oddsEntries.length > 0) {
+          for (const entry of oddsEntries) {
+            // Use current time as timestamp - this is the "opening odds" we fetched today
+            const timestamp = new Date().toISOString();
+
+            // Moneyline
+            if (entry.homeTeamOdds?.moneyLine && entry.awayTeamOdds?.moneyLine) {
+              insertOdds.run(
+                game.id,
+                entry.provider?.name || 'Unknown',
+                'moneyline',
+                null,
+                entry.homeTeamOdds.moneyLine,
+                entry.awayTeamOdds.moneyLine,
+                null,
+                null,
+                timestamp
+              );
+              totalOdds++;
+            }
+
+            // Spread
+            if (entry.spread !== undefined && entry.homeTeamOdds?.spreadOdds && entry.awayTeamOdds?.spreadOdds) {
+              insertOdds.run(
+                game.id,
+                entry.provider?.name || 'Unknown',
+                'spread',
+                entry.spread,
+                entry.homeTeamOdds.spreadOdds,
+                entry.awayTeamOdds.spreadOdds,
+                null,
+                null,
+                timestamp
+              );
+              totalOdds++;
+            }
+
+            // Total
+            if (entry.overUnder !== undefined && entry.overOdds && entry.underOdds) {
+              insertOdds.run(
+                game.id,
+                entry.provider?.name || 'Unknown',
+                'total',
+                entry.overUnder,
+                null,
+                null,
+                entry.overOdds,
+                entry.underOdds,
+                timestamp
+              );
+              totalOdds++;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn(chalk.yellow(`  ⚠️  Failed to fetch odds for ${game.espn_event_id}`));
+      }
+
+      // Rate limit
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+  }
+
+  console.log(chalk.green.bold(`\n✅ Odds refresh complete!`));
+  console.log(chalk.gray(`Odds entries updated: ${totalOdds}\n`));
+}

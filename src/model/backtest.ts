@@ -89,12 +89,12 @@ export async function backtestMoneyline(sport: Sport, seasons: number[]): Promis
     const modelProb = predictions.get(game.espn_event_id);
     if (!modelProb) continue; // No model prediction for this game
 
-    // Get market odds
+    // Get opening market odds (earliest available, reflects initial market assessment)
     const odds = db.prepare(`
       SELECT market, line, price_home, price_away
       FROM odds
       WHERE game_id = ? AND market = 'moneyline'
-      ORDER BY timestamp DESC
+      ORDER BY timestamp ASC
       LIMIT 1
     `).get(game.id) as { market: string; line: number | null; price_home: number; price_away: number } | undefined;
 
@@ -504,12 +504,12 @@ export async function backtestSpreads(sport: Sport, seasons: number[]): Promise<
     const modelProb = predictions.get(game.espn_event_id);
     if (!modelProb) continue; // No model prediction for this game
 
-    // Get spread odds
+    // Get opening spread odds (earliest available, reflects initial market assessment)
     const odds = db.prepare(`
       SELECT market, line, price_home, price_away
       FROM odds
       WHERE game_id = ? AND market = 'spread'
-      ORDER BY timestamp DESC
+      ORDER BY timestamp ASC
       LIMIT 1
     `).get(game.id) as { market: string; line: number | null; price_home: number; price_away: number } | undefined;
 

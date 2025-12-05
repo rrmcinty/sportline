@@ -14,6 +14,27 @@ function sigmoid(z: number): number {
   return 1 / (1 + Math.exp(-z));
 }
 
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+// Blend model probability toward market-implied probability to avoid extreme swings
+// Keeps final prob within ±15 percentage points of market and clips tails
+function blendWithMarket(modelProb: number, marketProb: number): number {
+  const band = 0.15; // allow at most 15 points away from market
+  const delta = clamp(modelProb - marketProb, -band, band);
+  const blended = marketProb + delta;
+  // Prevent extreme confidence; keep within [5%, 95%], but also avoid >75% on clear underdogs
+  const capped = clamp(blended, 0.05, 0.95);
+  if (marketProb < 0.45 && capped > marketProb + 0.20) {
+    return marketProb + 0.20;
+  }
+  if (marketProb > 0.55 && capped < marketProb - 0.20) {
+    return marketProb - 0.20;
+  }
+  return capped;
+}
+
 function getFetchEvents(sport: Sport) {
   if (sport === "cfb") return fetchEventsCfb;
   if (sport === "nfl") return fetchEventsNfl;
@@ -39,13 +60,13 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   let baseModel: { type: string; weights: number[]; featureNames: string[]; seasons?: number[] } | undefined;
   let marketModel: { type: string; weights: number[]; featureNames: string[]; seasons?: number[] } | undefined;
   let ensembleConfig: { baseWeight: number; marketWeight: number; seasons?: number[] } | undefined;
-  let seasons: number[] = [2025];
+  let seasons: number[] = [2024, 2025];
 
   try {
     ensembleConfig = JSON.parse(readFileSync(ensemblePath, "utf-8"));
     baseModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "base_model.json"), "utf-8")) as any;
     marketModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "market_model.json"), "utf-8")) as any;
-    seasons = ensembleConfig?.seasons || baseModel?.seasons || marketModel?.seasons || [2025];
+    seasons = ensembleConfig?.seasons || baseModel?.seasons || marketModel?.seasons || [2024, 2025];
     isEnsemble = true;
   } catch {
     // Fall back to single model
@@ -53,7 +74,7 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     try {
       const model = JSON.parse(readFileSync(modelPath, "utf-8"));
       baseModel = { type: 'single', weights: model.weights, featureNames: model.featureNames } as any;
-      seasons = model.seasons || [model.season] || [2025];
+      seasons = model.seasons || (model.season ? [model.season] : undefined) || [2024, 2025];
     } catch {
       return undefined; // no artifacts
     }
@@ -94,21 +115,9 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
       const marketProb = sigmoid(marketZ);
       
       const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
-      // Clip extreme predictions to prevent overconfidence on outliers
-      const clippedProb = Math.max(0.05, Math.min(0.95, ensembleProb));
-      
-      // For extreme market lines (massive underdogs/favorites), trust market more than model
-      // If market < 10% or > 90%, blend more toward market to prevent overconfidence
       const marketImplied = features.market[features.market.length - 1]; // Last feature is market implied prob
-      let finalProb = clippedProb;
-      if (marketImplied < 0.15) {
-        // Massive underdog - blend 90% market, 10% model to prevent overconfidence
-        finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
-      } else if (marketImplied > 0.85) {
-        // Massive favorite - blend 90% market, 10% model
-        finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
-      }
-      
+      // Tight blend: keep within ±15 pts of market to avoid 90% underdogs
+      const finalProb = blendWithMarket(ensembleProb, marketImplied);
       probs.set(r.espn_event_id, finalProb);
     }
   } else if (baseModel) {
@@ -119,18 +128,10 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
       
       const z = x.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
       const rawProb = sigmoid(z);
-      // Clip extreme predictions to prevent overconfidence on outliers
       const clippedProb = Math.max(0.05, Math.min(0.95, rawProb));
-      
-      // For single model with market feature, apply same extreme line logic
       if (x.length === 10) { // Has market feature
         const marketImplied = x[x.length - 1];
-        let finalProb = clippedProb;
-        if (marketImplied < 0.15) {
-          finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
-        } else if (marketImplied > 0.85) {
-          finalProb = 0.90 * marketImplied + 0.10 * clippedProb;
-        }
+        const finalProb = blendWithMarket(clippedProb, marketImplied);
         probs.set(r.espn_event_id, finalProb);
       } else {
         probs.set(r.espn_event_id, clippedProb);
@@ -168,7 +169,7 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
   const nextDayPrefix = nextDay.toISOString().slice(0, 10);
 
   // Compute features for season
-  const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2025]);
+  const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2024, 2025]);
   const featureMap = new Map<number, number[]>();
   for (const f of allFeatures) {
     // Only include if spread data is available
@@ -236,8 +237,8 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   nextDayT.setDate(nextDayT.getDate() + 1);
   const nextDayPrefixT = nextDayT.toISOString().slice(0, 10);
 
-  const seasons = useEnsemble ? (baseModel.seasons || [2025]) : [2025];
-  const allFeatures = computeFeatures(db, sport, Array.isArray(seasons) && seasons.length ? seasons : [2025]);
+  const seasons = useEnsemble ? (baseModel.seasons || [2024, 2025]) : [2024, 2025];
+  const allFeatures = computeFeatures(db, sport, Array.isArray(seasons) && seasons.length ? seasons : [2024, 2025]);
 
   // Query games matching date prefix
   const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefixT) as Array<{ id: number; espn_event_id: string }>;

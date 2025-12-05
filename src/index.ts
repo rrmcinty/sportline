@@ -5,7 +5,7 @@
  */
 
 import { Command } from "commander";
-import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare, cmdUnderdogAnalyze, cmdNFLSpreadTrain, cmdNFLSpreadBacktest, cmdNFLSpreadAnalyze } from "./cli/commands.js";
+import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare, cmdUnderdogAnalyze, cmdNFLSpreadTrain, cmdNFLSpreadBacktest, cmdNFLSpreadAnalyze, cmdOddsRefreshCLI } from "./cli/commands.js";
 import { cmdSearchTeam } from "./cli/search.js";
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
@@ -163,6 +163,16 @@ data
     const sports = options.sports.split(",").filter((s: string) => validSports.includes(s)) as Sport[];
     const daysBack = parseInt(options.days, 10) || 3;
     await runDailyIngest(sports.length > 0 ? sports : ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'], daysBack);
+  });
+
+data
+  .command("odds-refresh")
+  .description("Refresh opening odds for today's games (for backtest accuracy)")
+  .option("--sports <sports>", "Sports to update (comma-separated: cfb,ncaam,nba,nfl,nhl)", "cfb,ncaam,nba,nfl,nhl")
+  .action(async (options) => {
+    const validSports = ['cfb', 'ncaam', 'nba', 'nfl', 'nhl'];
+    const sports = options.sports.split(",").filter((s: string) => validSports.includes(s)) as Sport[];
+    await cmdOddsRefreshCLI(sports.length > 0 ? sports : ['cfb', 'ncaam', 'nba', 'nfl', 'nhl']);
   });
 
 // model commands (parent + subcommands)

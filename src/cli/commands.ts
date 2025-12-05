@@ -25,6 +25,7 @@ import { backtestUnderdogModel, compareUnderdogVsMainModel } from "../underdog/u
 import { analyzeWinningUnderdogs } from "../underdog/analyze-winners.js";
 import { computeUnderdogFeatures } from "../underdog/underdog-features.js";
 import type { UnderdogTier, UnderdogPrediction, UnderdogGameFeatures } from "../underdog/types.js";
+import { cmdOddsRefresh } from "../data/ingest.js";
 
 /**
  * Underdog ROI by sport (from comprehensive analysis across all sports)
@@ -1036,6 +1037,8 @@ export async function cmdRecommend(
       });
       console.log(chalk.dim(`Confidence distribution: 🏆 ${tiers.ELITE} Elite | ⭐ ${tiers.HIGH} High | 📊 ${tiers.MEDIUM} Medium | ⚠️ ${tiers['COIN FLIP']} Coin Flip\n`));
       
+      const MIN_SAMPLE_FOR_STRONG = 100; // require 100+ games before bold historical claims
+
       for (let i = 0; i < topRankedSingles.length; i++) {
         const bet = topRankedSingles[i];
         const leg = bet.legs[0];
@@ -1068,9 +1071,11 @@ export async function cmdRecommend(
           seasonsLabel: '',
           gamesLabel: ''
         };
+        let sampleSize = 0;
         
         if (backtestStats && backtestStats.hasData) {
           const roiSign = backtestStats.roi! >= 0 ? '+' : '';
+          sampleSize = backtestStats.gamesAnalyzed || 0;
           marketStats = {
             winRate: backtestStats.winRate ? `${(backtestStats.winRate * 100).toFixed(1)}%` : 'N/A',
             roi: backtestStats.roi !== null ? `${roiSign}${backtestStats.roi.toFixed(1)}%` : 'N/A',
@@ -1186,17 +1191,34 @@ export async function cmdRecommend(
           console.log(`   ${matchupDisplay}`);
         }
         console.log(chalk.dim(`   Market: ${marketType === 'moneyline' ? 'Moneyline (win outright)' : marketType === 'spread' ? 'Point Spread' : 'Total Points'}`));
+        
+        // Display opening and current odds
+        const openingOddsStr = `${leg.odds >= 0 ? '+' : ''}${leg.odds}`;
+        if (leg.currentOdds !== undefined) {
+          const currentOddsStr = `${leg.currentOdds >= 0 ? '+' : ''}${leg.currentOdds}`;
+          const oddsChange = leg.currentOdds - leg.odds;
+          const oddsChangeStr = oddsChange > 0 ? chalk.green(`+${oddsChange}`) : chalk.red(`${oddsChange}`);
+          console.log(`   Odds: ${chalk.cyan(openingOddsStr)} (opening) → ${chalk.yellow(currentOddsStr)} ${oddsChangeStr}`);
+        } else {
+          console.log(`   Odds: ${chalk.cyan(openingOddsStr)}`);
+        }
+        
         console.log(`   If you win: ${chalk.green('$' + bet.payout.toFixed(2) + ' total')} ${chalk.dim('($' + potentialProfit.toFixed(2) + ' profit)')}`);
         console.log(`   Win chance: ${chalk.cyan((displayProb * 100).toFixed(1) + '%')}${isModelProb ? chalk.dim(' (model)') : ''}`);
+        const smallSample = sampleSize > 0 && sampleSize < MIN_SAMPLE_FOR_STRONG;
+
         if (marketStats.label) {
           const gamesInfo = marketStats.gamesLabel ? chalk.dim(` | ${marketStats.gamesLabel}`) : '';
           const seasonsInfo = marketStats.seasonsLabel ? chalk.dim(` | seasons ${marketStats.seasonsLabel}`) : '';
-          console.log(chalk.dim(`   Historical: ${marketStats.winRate} win rate, ${marketStats.roi} ROI - ${marketStats.label}${gamesInfo}${seasonsInfo}`));
+          const sampleNote = smallSample ? chalk.yellow.dim(' | small sample') : '';
+          console.log(chalk.dim(`   Historical: ${marketStats.winRate} win rate, ${marketStats.roi} ROI - ${marketStats.label}${gamesInfo}${seasonsInfo}${sampleNote}`));
         }
         console.log(`   Expected value: ${evColor(evSign + '$' + bet.ev.toFixed(2))} ${chalk.dim('per $10 bet')}${isModelProb ? chalk.dim(' (model)') : ''}`);
         if (marketStats.winRate !== 'N/A' && marketStats.roi !== 'N/A') {
           const roiNum = parseFloat(marketStats.roi.replace('%', ''));
-          if (roiNum >= 10) {
+          if (smallSample) {
+            console.log(chalk.yellow(`   ⚠️ Historical sample too small for confidence (${sampleSize} games).`));
+          } else if (roiNum >= 10) {
             console.log(chalk.green.bold(`   ${tier.emoji} Strong historical performance: ${marketStats.winRate} win rate, ${marketStats.roi} ROI in this range!`));
           } else if (roiNum >= 0) {
             console.log(chalk.green(`   ${tier.emoji} Profitable historically: ${marketStats.winRate} win rate, ${marketStats.roi} ROI in this range.`));
@@ -1636,6 +1658,18 @@ export async function cmdNFLSpreadAnalyze(seasons: number[], buckets?: string[])
     await analyzeNFLSpreadTraits(seasons, buckets as any);
   } catch (error) {
     console.error(chalk.red("Error analyzing NFL spread traits:"), error);
+    process.exit(1);
+  }
+}
+
+/**
+ * Refresh opening odds for today's games (run in morning or before games)
+ */
+export async function cmdOddsRefreshCLI(sports?: string[]): Promise<void> {
+  try {
+    await cmdOddsRefresh(sports);
+  } catch (error) {
+    console.error(chalk.red("Error refreshing odds:"), error);
     process.exit(1);
   }
 }
