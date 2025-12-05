@@ -388,10 +388,12 @@ conviction
   .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
   .option("--days <days>", "Number of days to look ahead (default: 1)", "1")
   .option("--min-confidence <level>", "Minimum confidence (VERY_HIGH|HIGH|MEDIUM)", "HIGH")
+  .option("--all", "Show all bets, including those with less than 40% profit")
   .action(async (options) => {
     const date = options.date || todayYYYYMMDD();
     const days = parseInt(options.days || "1", 10);
-    await cmdConvictionRecommend(date, days, options.minConfidence);
+    const showAll = !!options.all;
+    await cmdConvictionRecommend(date, days, options.minConfidence, showAll);
   });
 
 // Convenience commands

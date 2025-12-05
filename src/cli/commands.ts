@@ -1761,7 +1761,8 @@ export async function cmdConvictionBacktest(
 export async function cmdConvictionRecommend(
   startDate: string,
   days: number = 1,
-  minConfidence: 'VERY_HIGH' | 'HIGH' | 'MEDIUM' = 'HIGH'
+  minConfidence: 'VERY_HIGH' | 'HIGH' | 'MEDIUM' = 'HIGH',
+  showAll: boolean = false
 ): Promise<void> {
   try {
     const { loadConvictionModel } = await import("../conviction/train.js");
@@ -1891,8 +1892,9 @@ export async function cmdConvictionRecommend(
     
     // Filter and sort by expected value (best bets first)
     const betAmount = 10;
-    const filtered = filterHighConvictionPredictions(allPredictions, minConfidence)
-      .filter(bet => {
+    let filtered = filterHighConvictionPredictions(allPredictions, minConfidence);
+    if (!showAll) {
+      filtered = filtered.filter(bet => {
         let profit = 0;
         if (bet.odds > 0) {
           profit = (bet.odds / 100) * betAmount;
@@ -1901,6 +1903,7 @@ export async function cmdConvictionRecommend(
         }
         return profit >= betAmount * 0.4;
       });
+    }
     const sorted = filtered.sort((a, b) => {
       // Primary: Sort by expected value (highest first)
       if (Math.abs(b.expectedValue - a.expectedValue) > 0.01) {
