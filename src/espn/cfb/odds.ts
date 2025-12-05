@@ -116,12 +116,23 @@ export function normalizeOdds(
 
   // Moneylines
   if (entry.homeTeamOdds.moneyLine !== undefined && entry.awayTeamOdds.moneyLine !== undefined) {
-    const homeProb = impliedProbability(entry.homeTeamOdds.moneyLine);
-    const awayProb = impliedProbability(entry.awayTeamOdds.moneyLine);
+    const homeOdds = entry.homeTeamOdds.moneyLine;
+    const awayOdds = entry.awayTeamOdds.moneyLine;
+    const homeProb = impliedProbability(homeOdds);
+    const awayProb = impliedProbability(awayOdds);
     const [homeFair, awayFair] = removeVig ? removeVigUtil(homeProb, awayProb) : [homeProb, awayProb];
 
-    legs.push(createBetLeg(eventId, "moneyline", "home", undefined, entry.homeTeamOdds.moneyLine, entry.homeTeamOdds.currentMoneyLine, entry.provider.name, `${homeTeamName} ML ${formatAmericanOdds(entry.homeTeamOdds.moneyLine)}`, homeFair));
-    legs.push(createBetLeg(eventId, "moneyline", "away", undefined, entry.awayTeamOdds.moneyLine, entry.awayTeamOdds.currentMoneyLine, entry.provider.name, `${awayTeamName} ML ${formatAmericanOdds(entry.awayTeamOdds.moneyLine)}`, awayFair));
+    // Determine favorite/underdog
+    let homeLabel = "underdog";
+    let awayLabel = "underdog";
+    if (homeOdds < awayOdds) {
+      homeLabel = "favorite";
+    } else if (awayOdds < homeOdds) {
+      awayLabel = "favorite";
+    }
+
+    legs.push(createBetLeg(eventId, "moneyline", "home", undefined, homeOdds, entry.homeTeamOdds.currentMoneyLine, entry.provider.name, `${homeTeamName} ML ${formatAmericanOdds(homeOdds)}`, homeFair));
+    legs.push(createBetLeg(eventId, "moneyline", "away", undefined, awayOdds, entry.awayTeamOdds.currentMoneyLine, entry.provider.name, `${awayTeamName} ML ${formatAmericanOdds(awayOdds)}`, awayFair));
   }
 
   // Spreads

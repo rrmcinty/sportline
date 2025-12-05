@@ -351,11 +351,14 @@ export async function cmdBets(
       if (!mLegs.length) continue;
       const title = market === "moneyline" ? "Moneylines" : market === "spread" ? "Spreads" : "Totals";
       console.log(chalk.bold(`${title}`));
+      const minProfitPercent = 0.4; // Only show bets with at least 40% ROI
       for (const leg of mLegs) {
         const result = evaluateParlay({ legs: [leg], stake });
+        const profit = result.payout - stake;
+        if (profit < stake * minProfitPercent) continue;
         const evColor = result.ev >= 0 ? chalk.green : chalk.red;
         const evSign = result.ev >= 0 ? "+" : "";
-        
+
         // Get model prediction for this leg
         let modelPrediction = "";
         if (market === "moneyline" && modelProbs) {
@@ -377,11 +380,9 @@ export async function cmdBets(
             modelPrediction = ` [Model: ${(prob * 100).toFixed(1)}%]`;
           }
         }
-        
-        // Calculate potential profit (payout - stake)
-        const profit = result.payout - stake;
+
         const profitDisplay = profit > 0 ? ` | Profit: ${chalk.green("$" + profit.toFixed(2))}` : "";
-        
+
         console.log(
           `  ${leg.description} → ${(leg.impliedProbability * 100).toFixed(2)}%${chalk.cyan(modelPrediction)} | EV: ${evColor(evSign + "$" + result.ev.toFixed(2))} (${evColor(evSign + result.roi.toFixed(2) + "%")})${profitDisplay}`
         );
@@ -389,11 +390,14 @@ export async function cmdBets(
       console.log();
     }
 
-    const best = markets.moneyline
+    const minProfitPercent = 0.4; // Only show bets with at least 40% ROI
+    const allLegs = markets.moneyline
       .concat(markets.spread)
-      .concat(markets.total)
+      .concat(markets.total);
+    const filteredResults = allLegs
       .map(l => evaluateParlay({ legs: [l], stake }))
-      .sort((a,b) => b.ev - a.ev)[0];
+      .filter(r => (r.payout - stake) >= stake * minProfitPercent);
+    const best = filteredResults.sort((a,b) => b.ev - a.ev)[0];
     if (best) {
       const prefix = best.ev >= 0 ? chalk.green.bold("✨ Potential +EV") : chalk.dim("Least negative EV");
       console.log(prefix + chalk.dim(`: ${best.legs[0].description} (EV $${best.ev.toFixed(2)}, ROI ${best.roi.toFixed(2)}%)`));
@@ -1897,32 +1901,20 @@ export async function cmdConvictionRecommend(
       return b.convictionScore - a.convictionScore;
     });
     
-    // Filter out bets with less than 40% profit potential on $10 bet
-    const finalFiltered = sorted.filter(bet => {
-      const betAmount = 10;
-      let profit = 0;
-      if (bet.odds > 0) {
-        profit = (bet.odds / 100) * betAmount;
-      } else {
-        profit = (100 / Math.abs(bet.odds)) * betAmount;
-      }
-      return profit >= 4; // 40% of $10 stake
-    });
-    
-    if (finalFiltered.length === 0) {
+    if (sorted.length === 0) {
       console.log(chalk.yellow(`\n⚠️  No high-conviction opportunities found for the specified date range.`));
       console.log(chalk.dim(`Try expanding the date range with --days or lowering --min-confidence\n`));
       return;
     }
     
     // Display ranked by EV (no grouping)
-    console.log(chalk.green.bold(`\n✅ Found ${finalFiltered.length} high-conviction bet${finalFiltered.length > 1 ? 's' : ''} (ranked by expected value):\n`));
+    console.log(chalk.green.bold(`\n✅ Found ${sorted.length} high-conviction bet${sorted.length > 1 ? 's' : ''} (ranked by expected value):\n`));
     // Display ranked by EV (no grouping)
-    console.log(chalk.green.bold(`\n✅ Found ${finalFiltered.length} high-conviction bet${finalFiltered.length > 1 ? 's' : ''} (ranked by expected value):\n`));
+    console.log(chalk.green.bold(`\n✅ Found ${sorted.length} high-conviction bet${sorted.length > 1 ? 's' : ''} (ranked by expected value):\n`));
     console.log(chalk.cyan(`${'─'.repeat(80)}`));
     
-    for (let i = 0; i < finalFiltered.length; i++) {
-      const bet = finalFiltered[i];
+    for (let i = 0; i < sorted.length; i++) {
+      const bet = sorted[i];
       const rank = i + 1;
       const confidenceEmoji = bet.confidenceLevel === 'VERY_HIGH' ? '🔥' : bet.confidenceLevel === 'HIGH' ? '⭐' : '✓';
       const metadata = (bet as any).metadata;

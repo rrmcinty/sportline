@@ -179,11 +179,12 @@ export function makeConvictionPrediction(
   const expectedValue = winProb * profitIfWin - (1 - winProb) * lossIfLoss;
 
   // Build reasoning
+  let oddsLabel = features.odds < 0 ? "favorite" : "underdog";
   let reasoning = "";
   if (confidenceLevel === "PASS") {
     reasoning = `Conviction score ${(convictionScore * 100).toFixed(1)}% too low. Not a high-conviction opportunity.`;
   } else {
-    reasoning = `${matchedProfileName}: `;
+    reasoning = `${matchedProfileName} (${oddsLabel}): `;
     if (matchedProfile) {
       reasoning += `Historical ${(matchedProfile.roi).toFixed(1)}% ROI on ${matchedProfile.sampleSize} games. `;
     }
