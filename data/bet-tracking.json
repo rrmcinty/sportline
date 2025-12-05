@@ -834,7 +834,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777326-moneyline-UNLV",
-      "timestamp": "2025-12-05T19:02:03.564Z",
+      "timestamp": "2025-12-05T20:00:28.714Z",
       "sport": "cfb",
       "eventId": "401777326",
       "matchup": "UNLV @ BOIS",
@@ -3441,7 +3441,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777326-moneyline-BOIS",
-      "timestamp": "2025-12-05T16:20:58.511Z",
+      "timestamp": "2025-12-05T20:00:28.718Z",
       "sport": "cfb",
       "eventId": "401777326",
       "matchup": "UNLV @ BOIS",
@@ -3507,7 +3507,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777324-moneyline-UNT",
-      "timestamp": "2025-12-05T16:20:58.509Z",
+      "timestamp": "2025-12-05T20:00:28.715Z",
       "sport": "cfb",
       "eventId": "401777324",
       "matchup": "UNT @ TULN",
@@ -3573,7 +3573,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777324-moneyline-TULN",
-      "timestamp": "2025-12-05T16:20:58.511Z",
+      "timestamp": "2025-12-05T20:00:28.717Z",
       "sport": "cfb",
       "eventId": "401777324",
       "matchup": "UNT @ TULN",
@@ -4622,7 +4622,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401824034-moneyline-UK",
-      "timestamp": "2025-12-05T19:02:03.561Z",
+      "timestamp": "2025-12-05T19:59:19.686Z",
       "sport": "ncaam",
       "eventId": "401824034",
       "matchup": "GONZ @ UK",
@@ -4666,7 +4666,7 @@
     },
     {
       "id": "2025-12-06-nba-401810198-moneyline-UTAH",
-      "timestamp": "2025-12-05T19:02:03.550Z",
+      "timestamp": "2025-12-05T19:59:19.677Z",
       "sport": "nba",
       "eventId": "401810198",
       "matchup": "UTAH @ NY",
@@ -4693,7 +4693,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777352-moneyline-TROY",
-      "timestamp": "2025-12-05T19:02:03.556Z",
+      "timestamp": "2025-12-05T20:00:28.713Z",
       "sport": "cfb",
       "eventId": "401777352",
       "matchup": "TROY @ JMU",
@@ -4715,7 +4715,7 @@
     },
     {
       "id": "2025-12-06-nba-401810201-moneyline-PHX",
-      "timestamp": "2025-12-05T19:02:03.558Z",
+      "timestamp": "2025-12-05T19:59:19.683Z",
       "sport": "nba",
       "eventId": "401810201",
       "matchup": "PHX @ HOU",
@@ -4737,7 +4737,7 @@
     },
     {
       "id": "2025-12-06-nba-401810195-moneyline-ATL",
-      "timestamp": "2025-12-05T19:02:03.560Z",
+      "timestamp": "2025-12-05T19:59:19.684Z",
       "sport": "nba",
       "eventId": "401810195",
       "matchup": "DEN @ ATL",
@@ -4759,7 +4759,7 @@
     },
     {
       "id": "2025-12-06-nba-401810200-moneyline-IND",
-      "timestamp": "2025-12-05T19:02:03.563Z",
+      "timestamp": "2025-12-05T19:59:19.687Z",
       "sport": "nba",
       "eventId": "401810200",
       "matchup": "IND @ CHI",
@@ -4781,7 +4781,7 @@
     },
     {
       "id": "2025-12-06-nba-401810202-moneyline-MEM",
-      "timestamp": "2025-12-05T19:02:03.565Z",
+      "timestamp": "2025-12-05T19:59:19.690Z",
       "sport": "nba",
       "eventId": "401810202",
       "matchup": "LAC @ MEM",
@@ -4803,7 +4803,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777325-moneyline-JVST",
-      "timestamp": "2025-12-05T19:02:03.566Z",
+      "timestamp": "2025-12-05T20:00:28.715Z",
       "sport": "cfb",
       "eventId": "401777325",
       "matchup": "KENN @ JVST",
@@ -4847,7 +4847,7 @@
     },
     {
       "id": "2025-12-06-nba-401810204-moneyline-DAL",
-      "timestamp": "2025-12-05T19:02:03.554Z",
+      "timestamp": "2025-12-05T19:59:19.679Z",
       "sport": "nba",
       "eventId": "401810204",
       "matchup": "DAL @ OKC",
@@ -4874,7 +4874,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777352-moneyline-JMU",
-      "timestamp": "2025-12-05T16:20:58.510Z",
+      "timestamp": "2025-12-05T20:00:28.716Z",
       "sport": "cfb",
       "eventId": "401777352",
       "matchup": "TROY @ JMU",
@@ -4896,7 +4896,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777325-moneyline-KENN",
-      "timestamp": "2025-12-05T16:20:58.512Z",
+      "timestamp": "2025-12-05T20:00:28.719Z",
       "sport": "cfb",
       "eventId": "401777325",
       "matchup": "KENN @ JVST",
@@ -5298,5 +5298,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-05T19:03:55.210Z"
+  "lastUpdated": "2025-12-05T20:00:28.719Z"
 }
