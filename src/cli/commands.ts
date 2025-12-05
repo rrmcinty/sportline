@@ -1971,67 +1971,67 @@ export async function cmdConvictionRecommend(
       const rank = i + 1;
       const confidenceEmoji = bet.confidenceLevel === 'VERY_HIGH' ? '🔥' : bet.confidenceLevel === 'HIGH' ? '⭐' : '✓';
       const metadata = (bet as any).metadata;
-        
-        // Format actual event date and time from the database, if available
-        let dateStr = '';
-        if (bet.metadata && bet.metadata.gameTime) {
-          dateStr = formatGameDate(bet.metadata.gameTime);
-        } else {
-          dateStr = formatGameDate(bet.date);
+
+      // Format actual event date and time from the database, if available
+      let dateStr = '';
+      if (bet.metadata && bet.metadata.gameTime) {
+        dateStr = formatGameDate(bet.metadata.gameTime);
+      } else {
+        dateStr = formatGameDate(bet.date);
+      }
+
+      // Calculate profit on $10 bet
+      const betAmount = 10;
+      let profit = 0;
+      if (bet.odds > 0) {
+        profit = (bet.odds / 100) * betAmount;
+      } else {
+        profit = (100 / Math.abs(bet.odds)) * betAmount;
+      }
+      const totalReturn = betAmount + profit;
+
+      // Odds movement
+      let oddsMovement = '';
+      if (metadata) {
+        const movement = metadata.oddsMovement;
+        if (movement !== 0) {
+          const movementStr = movement > 0 ? `+${movement}` : `${movement}`;
+          const movementColor = movement > 0 ? chalk.green : chalk.red;
+          oddsMovement = ` (${metadata.openingOdds > 0 ? '+' : ''}${metadata.openingOdds} → ${movementColor(movementStr)})`;
         }
-        
-        // Calculate profit on $10 bet
-        const betAmount = 10;
-        let profit = 0;
-        if (bet.odds > 0) {
-          profit = (bet.odds / 100) * betAmount;
-        } else {
-          profit = (100 / Math.abs(bet.odds)) * betAmount;
-        }
-        const totalReturn = betAmount + profit;
-        
-        // Odds movement
-        let oddsMovement = '';
-        if (metadata) {
-          const movement = metadata.oddsMovement;
-          if (movement !== 0) {
-            const movementStr = movement > 0 ? `+${movement}` : `${movement}`;
-            const movementColor = movement > 0 ? chalk.green : chalk.red;
-            oddsMovement = ` (${metadata.openingOdds > 0 ? '+' : ''}${metadata.openingOdds} → ${movementColor(movementStr)})`;
-          }
-        }
-        
+      }
+
       // Header line with rank
       const profileTag = bet.matchedProfileName !== 'No Match' ? chalk.dim(`[${bet.matchedProfileName}]`) : '';
-      console.log(`\n${chalk.dim(`#${rank}`)} ${confidenceEmoji} ${chalk.bold.white(bet.pick)} ${chalk.dim('ML')} ${chalk.yellow(bet.odds > 0 ? '+' : '')}${chalk.yellow(bet.odds)}${oddsMovement} ${chalk.dim(`[${bet.sport.toUpperCase()}]`)} ${profileTag}`);        // Game info
-        console.log(`   ${bet.awayTeam} @ ${bet.homeTeam} - ${dateStr}`);
-        
-        // Market and odds info
-        console.log(`   ${chalk.dim('Odds:')} ${bet.odds > 0 ? '+' : ''}${bet.odds} ${chalk.dim('|')} ${chalk.dim('If you win:')} ${chalk.green('$' + totalReturn.toFixed(2))} ${chalk.dim('total')} ${chalk.green('($' + profit.toFixed(2) + ' profit)')}`);
-        
-        // Model vs market
-        // Calculate market probability from odds
-        let marketProb = 0.5;
-        if (bet.odds > 0) {
-          marketProb = 100 / (bet.odds + 100);
-        } else {
-          marketProb = Math.abs(bet.odds) / (Math.abs(bet.odds) + 100);
-        }
-        const edge = bet.modelProbability - marketProb;
-        const edgeColor = edge > 0 ? chalk.green : chalk.red;
-        console.log(`   ${chalk.dim('Model:')} ${(bet.modelProbability * 100).toFixed(1)}% ${chalk.dim('vs Market:')} ${(marketProb * 100).toFixed(1)}% ${chalk.dim('|')} ${chalk.dim('Edge:')} ${edgeColor((edge * 100).toFixed(1) + '%')}`);
-        
-        // Historical performance
-        if (bet.matchedProfile) {
-          console.log(`   ${chalk.dim('Historical:')} ${(bet.matchedProfile.winRate * 100).toFixed(1)}% win rate, ${chalk.green(bet.matchedProfile.roi.toFixed(1) + '% ROI')} ${chalk.dim(`| ${bet.matchedProfile.sampleSize} games`)}`);
-        }
-        
-        // Expected value
-        const ev = bet.expectedValue;
-        const evColor = ev > 0 ? chalk.green : chalk.red;
-        console.log(`   ${chalk.dim('Expected value:')} ${evColor('$' + ev.toFixed(2))} ${chalk.dim('per $10 bet')} ${chalk.dim('|')} ${chalk.dim('Confidence:')} ${chalk.bold(bet.confidenceLevel)} ${chalk.dim(`(${(bet.convictionScore * 100).toFixed(1)}%)`)}`);
+      console.log(`\n${chalk.dim(`#${rank}`)} ${confidenceEmoji} ${chalk.bold.white(bet.pick)} ${chalk.dim('ML')} ${chalk.yellow(bet.odds > 0 ? '+' : '')}${chalk.yellow(bet.odds)}${oddsMovement} ${chalk.dim(`[${bet.sport.toUpperCase()}]`)} ${profileTag}`);
+      console.log(`   ${bet.awayTeam} @ ${bet.homeTeam} - ${dateStr}`);
+      console.log(`   ${chalk.dim('Odds:')} ${bet.odds > 0 ? '+' : ''}${bet.odds} ${chalk.dim('|')} ${chalk.dim('If you win:')} ${chalk.green('$' + totalReturn.toFixed(2))} ${chalk.dim('total')} ${chalk.green('($' + profit.toFixed(2) + ' profit)')}`);
+      // Model vs market
+      let marketProb = 0.5;
+      if (bet.odds > 0) {
+        marketProb = 100 / (bet.odds + 100);
+      } else {
+        marketProb = Math.abs(bet.odds) / (Math.abs(bet.odds) + 100);
+      }
+      const edge = bet.modelProbability - marketProb;
+      const edgeColor = edge > 0 ? chalk.green : chalk.red;
+      console.log(`   ${chalk.dim('Model:')} ${(bet.modelProbability * 100).toFixed(1)}% ${chalk.dim('vs Market:')} ${(marketProb * 100).toFixed(1)}% ${chalk.dim('|')} ${chalk.dim('Edge:')} ${edgeColor((edge * 100).toFixed(1) + '%')}`);
+      if (bet.matchedProfile) {
+        console.log(`   ${chalk.dim('Historical:')} ${(bet.matchedProfile.winRate * 100).toFixed(1)}% win rate, ${chalk.green(bet.matchedProfile.roi.toFixed(1) + '% ROI')} ${chalk.dim(`| ${bet.matchedProfile.sampleSize} games`)}`);
+      }
+      const ev = bet.expectedValue;
+      const evColor = ev > 0 ? chalk.green : chalk.red;
+      console.log(`   ${chalk.dim('Expected value:')} ${evColor('$' + ev.toFixed(2))} ${chalk.dim('per $10 bet')} ${chalk.dim('|')} ${chalk.dim('Confidence:')} ${chalk.bold(bet.confidenceLevel)} ${chalk.dim(`(${(bet.convictionScore * 100).toFixed(1)}%)`)}`);
     }
-    
+
+    // Emoji legend at the bottom
+    console.log(chalk.bold('─────────────────────────────'));
+    console.log(chalk.bold('Emoji Legend'));
+    console.log(chalk.bold(''));
+    console.log('⭐  — High Confidence (model probability 60% or higher)');
+    console.log('🔥  — Very High Confidence (model probability 80% or higher)');
+    console.log(chalk.bold('─────────────────────────────'));
+
     console.log(chalk.blue(`\n${'═'.repeat(80)}`));
     console.log(chalk.dim(`\nTo place bets, use: sportline bets place\n`));
   } catch (error) {
