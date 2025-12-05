@@ -1792,80 +1792,81 @@ export async function cmdConvictionRecommend(
     
     // Fetch games for each sport and date
     for (const sport of sports) {
+      const { fetchEvents, fetchOdds } = await getFetchers(sport);
       for (const date of dates) {
         try {
           // Get model predictions (returns Map<eventId, probability>)
           const probs = await getHomeWinModelProbabilities(sport, date);
           if (!probs || probs.size === 0) continue;
-          
+
           // Get backtest calibration for buckets
           const backtest = await getLatestBacktestForConfig(sport, 'moneyline', [2024, 2025]);
           if (!backtest) continue;
-          
-          // Get game details from database
-          const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
-          const games = db.prepare(`
-            SELECT g.id, g.espn_event_id, ht.name as home_team, at.name as away_team, g.date
-            FROM games g
-            JOIN teams ht ON g.home_team_id = ht.id
-            JOIN teams at ON g.away_team_id = at.id
-            WHERE g.sport = ? AND g.date LIKE ? || '%'
-          `).all(sport, isoPrefix) as Array<{ id: number; espn_event_id: string; home_team: string; away_team: string; date: string }>;
-          
-          // Create conviction features and predictions
-          for (const game of games) {
-            const modelProb = probs.get(game.espn_event_id);
+
+          // Fetch games from API (with caching)
+          const competitions = await fetchEvents(date);
+          if (!competitions || competitions.length === 0) continue;
+
+          for (const comp of competitions) {
+            const modelProb = probs.get(comp.eventId);
             if (!modelProb) continue;
-            
-            // Get odds (both opening and latest for movement tracking)
-            const allOdds = db.prepare(`
-              SELECT price_home, price_away, timestamp
-              FROM odds
-              WHERE game_id = ? AND market = 'moneyline'
-              ORDER BY timestamp ASC
-            `).all(game.id) as Array<{ price_home: number; price_away: number; timestamp: string }>;
-            
-            if (!allOdds || allOdds.length === 0) continue;
-            
-            const openingOdds = allOdds[0];
-            const latestOdds = allOdds[allOdds.length - 1];
-            
-            // Calculate market implied probability
-            const homeDecimal = latestOdds.price_home < 0 ? 100 / Math.abs(latestOdds.price_home) + 1 : latestOdds.price_home / 100 + 1;
-            const awayDecimal = latestOdds.price_away < 0 ? 100 / Math.abs(latestOdds.price_away) + 1 : latestOdds.price_away / 100 + 1;
-            const totalImplied = 1 / homeDecimal + 1 / awayDecimal;
-            const marketProb = (1 / homeDecimal) / totalImplied;
-            
+
+            // Fetch odds for this event (with caching)
+            const oddsEntries = await fetchOdds(comp.eventId);
+            if (!oddsEntries || oddsEntries.length === 0) continue;
+
+            // Use .name for teams (API returns Team objects)
+            const homeTeamName = typeof comp.homeTeam === 'string' ? comp.homeTeam : comp.homeTeam.name;
+            const awayTeamName = typeof comp.awayTeam === 'string' ? comp.awayTeam : comp.awayTeam.name;
+
+            // Normalize odds using the same logic as cmdRecommend
+            const { normalizeOdds } = await getFetchers(sport);
+            const legs = normalizeOdds(
+              comp.eventId,
+              oddsEntries,
+              homeTeamName,
+              awayTeamName
+            );
+
+            // Find the moneyline leg for the pick
+            const pickLeg = legs.find(leg => leg.market === 'moneyline' && (
+              (modelProb >= 0.5 && (leg.team === 'home' || leg.team === homeTeamName)) ||
+              (modelProb < 0.5 && (leg.team === 'away' || leg.team === awayTeamName))
+            ));
+            if (!pickLeg) continue;
+
             // Find calibration bucket
+            const marketProb = pickLeg.impliedProbability;
             const bucket = backtest.calibration.find(b => {
               const [min, max] = b.bin.split('-').map(s => parseFloat(s) / 100);
               return modelProb >= min && modelProb < max;
             });
-            
             if (!bucket) continue;
-            
+
             // Determine pick (home or away) and corresponding odds
-            const isHomeUnderdog = modelProb < 0.5;
-            const pick = modelProb >= 0.5 ? game.home_team : game.away_team;
-            const pickOdds = modelProb >= 0.5 ? latestOdds.price_home : latestOdds.price_away;
-            const openingPickOdds = modelProb >= 0.5 ? openingOdds.price_home : openingOdds.price_away;
-            
+            const pick = modelProb >= 0.5 ? homeTeamName : awayTeamName;
+            const pickOdds = pickLeg.odds;
+            const openingPickOdds = pickOdds;
+
             // Store extra metadata for display
             const metadata = {
-              gameTime: game.date,
+              gameTime: comp.date,
               openingOdds: openingPickOdds,
               latestOdds: pickOdds,
               oddsMovement: pickOdds - openingPickOdds
             };
-            
+
+            // Use a dummy numeric gameId (API has string eventId)
+            const gameId = 0;
+
             // Create features
             const features = createConvictionFeatures({
-              gameId: game.id,
+              gameId,
               date: date,
               sport: sport,
               market: 'moneyline',
-              homeTeam: game.home_team,
-              awayTeam: game.away_team,
+              homeTeam: homeTeamName,
+              awayTeam: awayTeamName,
               modelProbability: modelProb,
               marketProbability: marketProb,
               odds: pickOdds,
@@ -1874,7 +1875,7 @@ export async function cmdConvictionRecommend(
               bucketWinRate: bucket.actual,
               bucketSampleSize: bucket.count
             });
-            
+
             // Make conviction prediction
             const convictionPred = makeConvictionPrediction(features, model, pick);
             if (convictionPred.isHighConviction) {
