@@ -5,7 +5,7 @@
  */
 
 import { Command } from "commander";
-import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare, cmdUnderdogAnalyze, cmdNFLSpreadTrain, cmdNFLSpreadBacktest, cmdNFLSpreadAnalyze, cmdOddsRefreshCLI } from "./cli/commands.js";
+import { cmdGamesFetch, cmdOddsImport, cmdRecommend, cmdBets, cmdResults, cmdStats, cmdUnderdogTrain, cmdUnderdogPredict, cmdUnderdogBacktest, cmdUnderdogCompare, cmdUnderdogAnalyze, cmdNFLSpreadTrain, cmdNFLSpreadBacktest, cmdNFLSpreadAnalyze, cmdOddsRefreshCLI, cmdConvictionTrain, cmdConvictionBacktest, cmdConvictionRecommend } from "./cli/commands.js";
 import { cmdSearchTeam } from "./cli/search.js";
 import { cmdDataIngest } from "./data/ingest.js";
 import { cmdModelTrain } from "./model/train.js";
@@ -361,6 +361,35 @@ nflSpread
     const seasons = options.seasons.split(",").map((s: string) => parseInt(s.trim()));
     const buckets = options.buckets ? options.buckets.split(",") : undefined;
     await cmdNFLSpreadAnalyze(seasons, buckets);
+  });
+
+// High-conviction betting classifier commands
+const conviction = program
+  .command("conviction")
+  .description("🎯 High-conviction betting classifier (specialized for golden profiles)");
+
+conviction
+  .command("train")
+  .description("Train conviction classifier on NBA + CFB golden profiles")
+  .action(async () => {
+    await cmdConvictionTrain();
+  });
+
+conviction
+  .command("backtest")
+  .description("Backtest conviction classifier on 2+ seasons with 95% CI")
+  .action(async () => {
+    await cmdConvictionBacktest();
+  });
+
+conviction
+  .command("recommend")
+  .description("Get high-conviction betting recommendations for today")
+  .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
+  .option("--min-confidence <level>", "Minimum confidence (VERY_HIGH|HIGH|MEDIUM)", "HIGH")
+  .action(async (options) => {
+    const date = options.date || todayYYYYMMDD();
+    await cmdConvictionRecommend(date, options.minConfidence);
   });
 
 // Convenience commands

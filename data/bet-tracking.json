@@ -3083,7 +3083,7 @@
     },
     {
       "id": "2025-12-05-nba-401810189-moneyline-WSH",
-      "timestamp": "2025-12-05T04:12:12.870Z",
+      "timestamp": "2025-12-05T04:51:37.173Z",
       "sport": "nba",
       "eventId": "401810189",
       "matchup": "BOS @ WSH",
@@ -3110,7 +3110,7 @@
     },
     {
       "id": "2025-12-05-nba-401810188-moneyline-GS",
-      "timestamp": "2025-12-05T04:12:12.877Z",
+      "timestamp": "2025-12-05T04:51:37.177Z",
       "sport": "nba",
       "eventId": "401810188",
       "matchup": "GS @ PHI",
@@ -3165,7 +3165,7 @@
     },
     {
       "id": "2025-12-05-nba-401810192-moneyline-NO",
-      "timestamp": "2025-12-05T04:12:12.864Z",
+      "timestamp": "2025-12-05T04:51:37.169Z",
       "sport": "nba",
       "eventId": "401810192",
       "matchup": "MIN @ NO",
@@ -3241,7 +3241,7 @@
     },
     {
       "id": "2025-12-05-nba-401810190-moneyline-BKN",
-      "timestamp": "2025-12-05T04:12:12.868Z",
+      "timestamp": "2025-12-05T04:51:37.172Z",
       "sport": "nba",
       "eventId": "401810190",
       "matchup": "UTAH @ BKN",
@@ -3867,7 +3867,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802779-moneyline-PIT",
-      "timestamp": "2025-12-05T04:12:12.881Z",
+      "timestamp": "2025-12-05T04:51:37.180Z",
       "sport": "nhl",
       "eventId": "401802779",
       "matchup": "PIT @ TB",
@@ -3977,7 +3977,7 @@
     },
     {
       "id": "2025-12-05-nba-401810192-total-U",
-      "timestamp": "2025-12-05T04:12:12.874Z",
+      "timestamp": "2025-12-05T04:51:37.175Z",
       "sport": "nba",
       "eventId": "401810192",
       "matchup": "MIN @ NO",
@@ -4045,7 +4045,7 @@
     },
     {
       "id": "2025-12-05-nba-401810188-total-U",
-      "timestamp": "2025-12-05T04:12:12.878Z",
+      "timestamp": "2025-12-05T04:51:37.178Z",
       "sport": "nba",
       "eventId": "401810188",
       "matchup": "GS @ PHI",
@@ -4183,7 +4183,7 @@
     },
     {
       "id": "2025-12-05-nhl-401802777-moneyline-BOS",
-      "timestamp": "2025-12-05T04:12:12.872Z",
+      "timestamp": "2025-12-05T04:51:37.174Z",
       "sport": "nhl",
       "eventId": "401802777",
       "matchup": "STL @ BOS",
@@ -4469,7 +4469,7 @@
     },
     {
       "id": "2025-12-05-nfl-401772947-total-U",
-      "timestamp": "2025-12-05T04:12:12.875Z",
+      "timestamp": "2025-12-05T04:51:37.176Z",
       "sport": "nfl",
       "eventId": "401772947",
       "matchup": "DAL @ DET",
@@ -4479,12 +4479,12 @@
       "market": "total",
       "line": 54,
       "odds": -110,
-      "modelProbability": 0.5943326277578342,
+      "modelProbability": 0.5905568901979075,
       "bin": "50-60%",
       "historicalROI": -4.406856768945743,
       "historicalWinRate": 0.5,
       "historicalSampleSize": 90,
-      "expectedValue": 1.3463501662859283,
+      "expectedValue": 1.2742679037782345,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -4492,7 +4492,7 @@
     },
     {
       "id": "2025-12-05-nfl-401772947-moneyline-DET",
-      "timestamp": "2025-12-05T04:12:12.879Z",
+      "timestamp": "2025-12-05T04:51:37.179Z",
       "sport": "nfl",
       "eventId": "401772947",
       "matchup": "DAL @ DET",
@@ -4501,12 +4501,12 @@
       "side": "DET",
       "market": "moneyline",
       "odds": -218,
-      "modelProbability": 0.716179889476757,
+      "modelProbability": 0.7169128115082499,
       "bin": "70-80%",
       "historicalROI": 22.485798429975613,
       "historicalWinRate": 0.8918918918918919,
       "historicalSampleSize": 37,
-      "expectedValue": 0.4470277455783833,
+      "expectedValue": 0.4577189935607091,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -4557,5 +4557,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-05T04:18:00.608Z"
+  "lastUpdated": "2025-12-05T04:51:37.181Z"
 }

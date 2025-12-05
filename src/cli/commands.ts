@@ -1673,3 +1673,100 @@ export async function cmdOddsRefreshCLI(sports?: string[]): Promise<void> {
     process.exit(1);
   }
 }
+
+/**
+ * Train conviction classifier
+ */
+export async function cmdConvictionTrain(
+  sports?: string[],
+  markets?: string[]
+): Promise<void> {
+  try {
+    const { trainConvictionClassifier } = await import("../conviction/train.js");
+    
+    const configs = [
+      { sport: 'nba' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
+      { sport: 'cfb' as const, market: 'moneyline' as const, seasons: [2024, 2025] }
+    ];
+    
+    const model = await trainConvictionClassifier(configs);
+    console.log(chalk.green.bold(`\n✅ Conviction classifier trained successfully`));
+    console.log(chalk.dim(`Run 'conviction backtest' to validate on historical data\n`));
+  } catch (error) {
+    console.error(chalk.red("Error training conviction classifier:"), error);
+    process.exit(1);
+  }
+}
+
+/**
+ * Backtest conviction classifier
+ */
+export async function cmdConvictionBacktest(
+  sport?: string,
+  seasons?: number[]
+): Promise<void> {
+  try {
+    const { backtestConvictionClassifier, saveConvictionBacktestResults } = await import("../conviction/backtest.js");
+    const { loadConvictionModel } = await import("../conviction/train.js");
+    
+    const model = loadConvictionModel();
+    if (!model) {
+      console.error(chalk.red("No trained conviction model found. Run 'conviction train' first."));
+      process.exit(1);
+    }
+    
+    // Backtest on NBA and CFB
+    const configs = [
+      { sport: 'nba' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
+      { sport: 'cfb' as const, market: 'moneyline' as const, seasons: [2024, 2025] }
+    ];
+    
+    for (const config of configs) {
+      const results = await backtestConvictionClassifier(
+        config.sport,
+        config.market,
+        config.seasons,
+        model
+      );
+      await saveConvictionBacktestResults(results);
+    }
+    
+    console.log(chalk.green.bold(`\n✅ Backtests complete`));
+    console.log(chalk.dim(`Results saved to data/conviction-backtests/\n`));
+  } catch (error) {
+    console.error(chalk.red("Error backtesting conviction classifier:"), error);
+    process.exit(1);
+  }
+}
+
+/**
+ * Get high-conviction recommendations
+ */
+export async function cmdConvictionRecommend(
+  date: string,
+  minConfidence?: 'VERY_HIGH' | 'HIGH' | 'MEDIUM'
+): Promise<void> {
+  try {
+    const { loadConvictionModel } = await import("../conviction/train.js");
+    const { filterHighConvictionPredictions, sortByConviction } = await import("../conviction/apply.js");
+    
+    const model = loadConvictionModel();
+    if (!model) {
+      console.error(chalk.red("No trained conviction model found. Run 'conviction train' first."));
+      process.exit(1);
+    }
+    
+    console.log(chalk.blue.bold(`\n🎯 HIGH-CONVICTION BETTING OPPORTUNITIES`));
+    console.log(chalk.blue(`═`.repeat(60)));
+    console.log(chalk.dim(`\nModel: Specialized classifier trained on golden profiles`));
+    console.log(chalk.dim(`Sports: NBA underdogs (20-40%), CFB underdogs (10-40%), High-confidence favorites (70-80%)`));
+    console.log(chalk.dim(`Confidence Level: ${minConfidence || 'HIGH'} or better\n`));
+    
+    // TODO: Implement actual recommendation generation
+    console.log(chalk.yellow(`\n⏳ Coming soon: Integration with live game predictions`));
+    console.log(chalk.dim(`Currently used internally by conviction backtest system\n`));
+  } catch (error) {
+    console.error(chalk.red("Error getting conviction recommendations:"), error);
+    process.exit(1);
+  }
+}
