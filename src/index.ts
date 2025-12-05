@@ -386,10 +386,12 @@ conviction
   .command("recommend")
   .description("Get high-conviction betting recommendations for today")
   .option("-d, --date <date>", "Date in YYYYMMDD format (default: today)")
+  .option("--days <days>", "Number of days to look ahead (default: 1)", "1")
   .option("--min-confidence <level>", "Minimum confidence (VERY_HIGH|HIGH|MEDIUM)", "HIGH")
   .action(async (options) => {
     const date = options.date || todayYYYYMMDD();
-    await cmdConvictionRecommend(date, options.minConfidence);
+    const days = parseInt(options.days || "1", 10);
+    await cmdConvictionRecommend(date, days, options.minConfidence);
   });
 
 // Convenience commands

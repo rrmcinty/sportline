@@ -1686,7 +1686,9 @@ export async function cmdConvictionTrain(
     
     const configs = [
       { sport: 'nba' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
-      { sport: 'cfb' as const, market: 'moneyline' as const, seasons: [2024, 2025] }
+      { sport: 'cfb' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
+      { sport: 'ncaam' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
+      { sport: 'nfl' as const, market: 'moneyline' as const, seasons: [2024, 2025] }
     ];
     
     const model = await trainConvictionClassifier(configs);
@@ -1715,10 +1717,12 @@ export async function cmdConvictionBacktest(
       process.exit(1);
     }
     
-    // Backtest on NBA and CFB
+    // Backtest on NBA, CFB, NCAAM, and NFL
     const configs = [
       { sport: 'nba' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
-      { sport: 'cfb' as const, market: 'moneyline' as const, seasons: [2024, 2025] }
+      { sport: 'cfb' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
+      { sport: 'ncaam' as const, market: 'moneyline' as const, seasons: [2024, 2025] },
+      { sport: 'nfl' as const, market: 'moneyline' as const, seasons: [2024, 2025] }
     ];
     
     for (const config of configs) {
@@ -1743,12 +1747,16 @@ export async function cmdConvictionBacktest(
  * Get high-conviction recommendations
  */
 export async function cmdConvictionRecommend(
-  date: string,
-  minConfidence?: 'VERY_HIGH' | 'HIGH' | 'MEDIUM'
+  startDate: string,
+  days: number = 1,
+  minConfidence: 'VERY_HIGH' | 'HIGH' | 'MEDIUM' = 'HIGH'
 ): Promise<void> {
   try {
     const { loadConvictionModel } = await import("../conviction/train.js");
-    const { filterHighConvictionPredictions, sortByConviction } = await import("../conviction/apply.js");
+    const { createConvictionFeatures, makeConvictionPrediction, filterHighConvictionPredictions, sortByConviction, groupByProfile } = await import("../conviction/apply.js");
+    const { getHomeWinModelProbabilities } = await import("../model/apply.js");
+    const { getLatestBacktestForConfig } = await import("../model/backtest-storage.js");
+    const { getDb } = await import("../db/index.js");
     
     const model = loadConvictionModel();
     if (!model) {
@@ -1759,12 +1767,211 @@ export async function cmdConvictionRecommend(
     console.log(chalk.blue.bold(`\n🎯 HIGH-CONVICTION BETTING OPPORTUNITIES`));
     console.log(chalk.blue(`═`.repeat(60)));
     console.log(chalk.dim(`\nModel: Specialized classifier trained on golden profiles`));
-    console.log(chalk.dim(`Sports: NBA underdogs (20-40%), CFB underdogs (10-40%), High-confidence favorites (70-80%)`));
-    console.log(chalk.dim(`Confidence Level: ${minConfidence || 'HIGH'} or better\n`));
+    console.log(chalk.dim(`Sports: NBA (30-40% + 70-90%), CFB (30-90%), NCAAM (30-40% + 60-80%), NFL (30-40% + 60-90%)`));
+    console.log(chalk.dim(`Confidence Level: ${minConfidence} or better`));
+    console.log(chalk.dim(`Date Range: ${days} day${days > 1 ? 's' : ''} starting ${startDate}\n`));
     
-    // TODO: Implement actual recommendation generation
-    console.log(chalk.yellow(`\n⏳ Coming soon: Integration with live game predictions`));
-    console.log(chalk.dim(`Currently used internally by conviction backtest system\n`));
+    const allPredictions: any[] = [];
+    const sports: Sport[] = ['nba', 'cfb', 'ncaam', 'nfl'];
+    const db = getDb();
+    
+    // Generate dates
+    const dates: string[] = [];
+    for (let i = 0; i < days; i++) {
+      const d = new Date(
+        parseInt(startDate.slice(0, 4)),
+        parseInt(startDate.slice(4, 6)) - 1,
+        parseInt(startDate.slice(6, 8))
+      );
+      d.setDate(d.getDate() + i);
+      const dateStr = d.toISOString().slice(0, 10).replace(/-/g, '');
+      dates.push(dateStr);
+    }
+    
+    // Fetch games for each sport and date
+    for (const sport of sports) {
+      for (const date of dates) {
+        try {
+          // Get model predictions (returns Map<eventId, probability>)
+          const probs = await getHomeWinModelProbabilities(sport, date);
+          if (!probs || probs.size === 0) continue;
+          
+          // Get backtest calibration for buckets
+          const backtest = await getLatestBacktestForConfig(sport, 'moneyline', [2024, 2025]);
+          if (!backtest) continue;
+          
+          // Get game details from database
+          const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+          const games = db.prepare(`
+            SELECT g.id, g.espn_event_id, ht.name as home_team, at.name as away_team, g.date
+            FROM games g
+            JOIN teams ht ON g.home_team_id = ht.id
+            JOIN teams at ON g.away_team_id = at.id
+            WHERE g.sport = ? AND g.date LIKE ? || '%'
+          `).all(sport, isoPrefix) as Array<{ id: number; espn_event_id: string; home_team: string; away_team: string; date: string }>;
+          
+          // Create conviction features and predictions
+          for (const game of games) {
+            const modelProb = probs.get(game.espn_event_id);
+            if (!modelProb) continue;
+            
+            // Get odds (both opening and latest for movement tracking)
+            const allOdds = db.prepare(`
+              SELECT price_home, price_away, timestamp
+              FROM odds
+              WHERE game_id = ? AND market = 'moneyline'
+              ORDER BY timestamp ASC
+            `).all(game.id) as Array<{ price_home: number; price_away: number; timestamp: string }>;
+            
+            if (!allOdds || allOdds.length === 0) continue;
+            
+            const openingOdds = allOdds[0];
+            const latestOdds = allOdds[allOdds.length - 1];
+            
+            // Calculate market implied probability
+            const homeDecimal = latestOdds.price_home < 0 ? 100 / Math.abs(latestOdds.price_home) + 1 : latestOdds.price_home / 100 + 1;
+            const awayDecimal = latestOdds.price_away < 0 ? 100 / Math.abs(latestOdds.price_away) + 1 : latestOdds.price_away / 100 + 1;
+            const totalImplied = 1 / homeDecimal + 1 / awayDecimal;
+            const marketProb = (1 / homeDecimal) / totalImplied;
+            
+            // Find calibration bucket
+            const bucket = backtest.calibration.find(b => {
+              const [min, max] = b.bin.split('-').map(s => parseFloat(s) / 100);
+              return modelProb >= min && modelProb < max;
+            });
+            
+            if (!bucket) continue;
+            
+            // Determine pick (home or away) and corresponding odds
+            const isHomeUnderdog = modelProb < 0.5;
+            const pick = modelProb >= 0.5 ? game.home_team : game.away_team;
+            const pickOdds = modelProb >= 0.5 ? latestOdds.price_home : latestOdds.price_away;
+            const openingPickOdds = modelProb >= 0.5 ? openingOdds.price_home : openingOdds.price_away;
+            
+            // Store extra metadata for display
+            const metadata = {
+              gameTime: game.date,
+              openingOdds: openingPickOdds,
+              latestOdds: pickOdds,
+              oddsMovement: pickOdds - openingPickOdds
+            };
+            
+            // Create features
+            const features = createConvictionFeatures({
+              gameId: game.id,
+              date: date,
+              sport: sport,
+              market: 'moneyline',
+              homeTeam: game.home_team,
+              awayTeam: game.away_team,
+              modelProbability: modelProb,
+              marketProbability: marketProb,
+              odds: pickOdds,
+              bucketLabel: bucket.bin,
+              bucketHistoricalROI: bucket.roi,
+              bucketWinRate: bucket.actual,
+              bucketSampleSize: bucket.count
+            });
+            
+            // Make conviction prediction
+            const convictionPred = makeConvictionPrediction(features, model, pick);
+            if (convictionPred.isHighConviction) {
+              allPredictions.push({ ...convictionPred, metadata });
+            }
+          }
+        } catch (error) {
+          // Skip sports/dates with no data
+          continue;
+        }
+      }
+    }
+    
+    // Filter and sort by expected value (best bets first)
+    const filtered = filterHighConvictionPredictions(allPredictions, minConfidence);
+    const sorted = filtered.sort((a, b) => {
+      // Primary: Sort by expected value (highest first)
+      if (Math.abs(b.expectedValue - a.expectedValue) > 0.01) {
+        return b.expectedValue - a.expectedValue;
+      }
+      // Secondary: Sort by conviction score
+      return b.convictionScore - a.convictionScore;
+    });
+    
+    if (sorted.length === 0) {
+      console.log(chalk.yellow(`\n⚠️  No high-conviction opportunities found for the specified date range.`));
+      console.log(chalk.dim(`Try expanding the date range with --days or lowering --min-confidence\n`));
+      return;
+    }
+    
+    // Display ranked by EV (no grouping)
+    console.log(chalk.green.bold(`\n✅ Found ${sorted.length} high-conviction bet${sorted.length > 1 ? 's' : ''} (ranked by expected value):\n`));
+    // Display ranked by EV (no grouping)
+    console.log(chalk.green.bold(`\n✅ Found ${sorted.length} high-conviction bet${sorted.length > 1 ? 's' : ''} (ranked by expected value):\n`));
+    console.log(chalk.cyan(`${'─'.repeat(80)}`));
+    
+    for (let i = 0; i < sorted.length; i++) {
+      const bet = sorted[i];
+      const rank = i + 1;
+      const confidenceEmoji = bet.confidenceLevel === 'VERY_HIGH' ? '🔥' : bet.confidenceLevel === 'HIGH' ? '⭐' : '✓';
+      const metadata = (bet as any).metadata;
+        
+        // Format date and time
+        const dateStr = `${bet.date.slice(0,4)}-${bet.date.slice(4,6)}-${bet.date.slice(6,8)}`;
+        
+        // Calculate profit on $10 bet
+        const betAmount = 10;
+        let profit = 0;
+        if (bet.odds > 0) {
+          profit = (bet.odds / 100) * betAmount;
+        } else {
+          profit = (100 / Math.abs(bet.odds)) * betAmount;
+        }
+        const totalReturn = betAmount + profit;
+        
+        // Odds movement
+        let oddsMovement = '';
+        if (metadata) {
+          const movement = metadata.oddsMovement;
+          if (movement !== 0) {
+            const movementStr = movement > 0 ? `+${movement}` : `${movement}`;
+            const movementColor = movement > 0 ? chalk.green : chalk.red;
+            oddsMovement = ` (${metadata.openingOdds > 0 ? '+' : ''}${metadata.openingOdds} → ${movementColor(movementStr)})`;
+          }
+        }
+        
+      // Header line with rank
+      const profileTag = bet.matchedProfileName !== 'No Match' ? chalk.dim(`[${bet.matchedProfileName}]`) : '';
+      console.log(`\n${chalk.dim(`#${rank}`)} ${confidenceEmoji} ${chalk.bold.white(bet.pick)} ${chalk.dim('ML')} ${chalk.yellow(bet.odds > 0 ? '+' : '')}${chalk.yellow(bet.odds)}${oddsMovement} ${chalk.dim(`[${bet.sport.toUpperCase()}]`)} ${profileTag}`);        // Game info
+        console.log(`   ${bet.awayTeam} @ ${bet.homeTeam} - ${dateStr}`);
+        
+        // Market and odds info
+        console.log(`   ${chalk.dim('Odds:')} ${bet.odds > 0 ? '+' : ''}${bet.odds} ${chalk.dim('|')} ${chalk.dim('If you win:')} ${chalk.green('$' + totalReturn.toFixed(2))} ${chalk.dim('total')} ${chalk.green('($' + profit.toFixed(2) + ' profit)')}`);
+        
+        // Model vs market
+        // Calculate market probability from odds
+        let marketProb = 0.5;
+        if (bet.odds > 0) {
+          marketProb = 100 / (bet.odds + 100);
+        } else {
+          marketProb = Math.abs(bet.odds) / (Math.abs(bet.odds) + 100);
+        }
+        const edge = bet.modelProbability - marketProb;
+        const edgeColor = edge > 0 ? chalk.green : chalk.red;
+        console.log(`   ${chalk.dim('Model:')} ${(bet.modelProbability * 100).toFixed(1)}% ${chalk.dim('vs Market:')} ${(marketProb * 100).toFixed(1)}% ${chalk.dim('|')} ${chalk.dim('Edge:')} ${edgeColor((edge * 100).toFixed(1) + '%')}`);
+        
+        // Historical performance
+        if (bet.matchedProfile) {
+          console.log(`   ${chalk.dim('Historical:')} ${(bet.matchedProfile.winRate * 100).toFixed(1)}% win rate, ${chalk.green(bet.matchedProfile.roi.toFixed(1) + '% ROI')} ${chalk.dim(`| ${bet.matchedProfile.sampleSize} games`)}`);
+        }
+        
+        // Expected value
+        const ev = bet.expectedValue;
+        const evColor = ev > 0 ? chalk.green : chalk.red;
+        console.log(`   ${chalk.dim('Expected value:')} ${evColor('$' + ev.toFixed(2))} ${chalk.dim('per $10 bet')} ${chalk.dim('|')} ${chalk.dim('Confidence:')} ${chalk.bold(bet.confidenceLevel)} ${chalk.dim(`(${(bet.convictionScore * 100).toFixed(1)}%)`)}`);
+    }
+    
+    console.log(chalk.blue(`\n${'═'.repeat(80)}`));
+    console.log(chalk.dim(`\nTo place bets, use: sportline bets place\n`));
   } catch (error) {
     console.error(chalk.red("Error getting conviction recommendations:"), error);
     process.exit(1);

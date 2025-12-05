@@ -5,7 +5,7 @@
     2024,
     2025
   ],
-  "timestamp": "2025-12-05T04:53:16.009Z",
+  "timestamp": "2025-12-05T05:39:50.900Z",
   "totalBets": 1623,
   "totalHighConvictionBets": 1623,
   "wins": 1223,
@@ -14,9 +14,9 @@
   "winRate": 0.7535428219346888,
   "roi": 22.710880689609567,
   "totalProfit": 3685.9759359236327,
-  "roiLowerBound": 18.208526503419193,
-  "roiUpperBound": 27.330530540467496,
-  "roiPointEstimate": 22.72635192208,
+  "roiLowerBound": 18.17522620403706,
+  "roiUpperBound": 27.365890972483914,
+  "roiPointEstimate": 22.73355633758578,
   "byProfile": [
     {
       "profileName": "No Match",
