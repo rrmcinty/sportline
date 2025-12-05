@@ -1897,20 +1897,32 @@ export async function cmdConvictionRecommend(
       return b.convictionScore - a.convictionScore;
     });
     
-    if (sorted.length === 0) {
+    // Filter out bets with less than 40% profit potential on $10 bet
+    const finalFiltered = sorted.filter(bet => {
+      const betAmount = 10;
+      let profit = 0;
+      if (bet.odds > 0) {
+        profit = (bet.odds / 100) * betAmount;
+      } else {
+        profit = (100 / Math.abs(bet.odds)) * betAmount;
+      }
+      return profit >= 4; // 40% of $10 stake
+    });
+    
+    if (finalFiltered.length === 0) {
       console.log(chalk.yellow(`\n⚠️  No high-conviction opportunities found for the specified date range.`));
       console.log(chalk.dim(`Try expanding the date range with --days or lowering --min-confidence\n`));
       return;
     }
     
     // Display ranked by EV (no grouping)
-    console.log(chalk.green.bold(`\n✅ Found ${sorted.length} high-conviction bet${sorted.length > 1 ? 's' : ''} (ranked by expected value):\n`));
+    console.log(chalk.green.bold(`\n✅ Found ${finalFiltered.length} high-conviction bet${finalFiltered.length > 1 ? 's' : ''} (ranked by expected value):\n`));
     // Display ranked by EV (no grouping)
-    console.log(chalk.green.bold(`\n✅ Found ${sorted.length} high-conviction bet${sorted.length > 1 ? 's' : ''} (ranked by expected value):\n`));
+    console.log(chalk.green.bold(`\n✅ Found ${finalFiltered.length} high-conviction bet${finalFiltered.length > 1 ? 's' : ''} (ranked by expected value):\n`));
     console.log(chalk.cyan(`${'─'.repeat(80)}`));
     
-    for (let i = 0; i < sorted.length; i++) {
-      const bet = sorted[i];
+    for (let i = 0; i < finalFiltered.length; i++) {
+      const bet = finalFiltered[i];
       const rank = i + 1;
       const confidenceEmoji = bet.confidenceLevel === 'VERY_HIGH' ? '🔥' : bet.confidenceLevel === 'HIGH' ? '⭐' : '✓';
       const metadata = (bet as any).metadata;
