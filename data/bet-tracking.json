@@ -834,7 +834,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777326-moneyline-UNLV",
-      "timestamp": "2025-12-05T06:05:08.116Z",
+      "timestamp": "2025-12-05T06:07:02.815Z",
       "sport": "cfb",
       "eventId": "401777326",
       "matchup": "UNLV @ BOIS",
@@ -4622,7 +4622,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401824034-moneyline-UK",
-      "timestamp": "2025-12-05T06:05:08.113Z",
+      "timestamp": "2025-12-05T06:07:02.812Z",
       "sport": "ncaam",
       "eventId": "401824034",
       "matchup": "GONZ @ UK",
@@ -4666,7 +4666,7 @@
     },
     {
       "id": "2025-12-06-nba-401810198-moneyline-UTAH",
-      "timestamp": "2025-12-05T06:05:08.103Z",
+      "timestamp": "2025-12-05T06:07:02.805Z",
       "sport": "nba",
       "eventId": "401810198",
       "matchup": "UTAH @ NY",
@@ -4688,7 +4688,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777352-moneyline-TROY",
-      "timestamp": "2025-12-05T06:05:08.107Z",
+      "timestamp": "2025-12-05T06:07:02.807Z",
       "sport": "cfb",
       "eventId": "401777352",
       "matchup": "TROY @ JMU",
@@ -4710,7 +4710,7 @@
     },
     {
       "id": "2025-12-06-nba-401810201-moneyline-PHX",
-      "timestamp": "2025-12-05T06:05:08.109Z",
+      "timestamp": "2025-12-05T06:07:02.809Z",
       "sport": "nba",
       "eventId": "401810201",
       "matchup": "PHX @ HOU",
@@ -4732,7 +4732,7 @@
     },
     {
       "id": "2025-12-06-nba-401810195-moneyline-ATL",
-      "timestamp": "2025-12-05T06:05:08.111Z",
+      "timestamp": "2025-12-05T06:07:02.810Z",
       "sport": "nba",
       "eventId": "401810195",
       "matchup": "DEN @ ATL",
@@ -4754,7 +4754,7 @@
     },
     {
       "id": "2025-12-06-nba-401810200-moneyline-IND",
-      "timestamp": "2025-12-05T06:05:08.114Z",
+      "timestamp": "2025-12-05T06:07:02.813Z",
       "sport": "nba",
       "eventId": "401810200",
       "matchup": "IND @ CHI",
@@ -4776,7 +4776,7 @@
     },
     {
       "id": "2025-12-06-nba-401810202-moneyline-MEM",
-      "timestamp": "2025-12-05T06:05:08.117Z",
+      "timestamp": "2025-12-05T06:07:02.816Z",
       "sport": "nba",
       "eventId": "401810202",
       "matchup": "LAC @ MEM",
@@ -4798,7 +4798,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777325-moneyline-JVST",
-      "timestamp": "2025-12-05T06:05:08.118Z",
+      "timestamp": "2025-12-05T06:07:02.817Z",
       "sport": "cfb",
       "eventId": "401777325",
       "matchup": "KENN @ JVST",
@@ -4820,7 +4820,7 @@
     },
     {
       "id": "2025-12-06-nba-401810196-moneyline-SA",
-      "timestamp": "2025-12-05T06:05:08.120Z",
+      "timestamp": "2025-12-05T06:07:02.818Z",
       "sport": "nba",
       "eventId": "401810196",
       "matchup": "SA @ CLE",
@@ -4841,5 +4841,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-05T06:05:20.134Z"
+  "lastUpdated": "2025-12-05T06:07:02.818Z"
 }

@@ -144,51 +144,60 @@ export async function updateBetResults(
   
   if (!bet || bet.status !== "pending") return;
   
-  // Determine if bet won
+  // Determine bet outcome
+  let status: "won" | "lost" | "push" = "lost";
   let won = false;
-  
   if (bet.market === "moneyline") {
-    // Check if the team we bet on won
-    // Matchup format: "AWAY @ HOME", so if it ends with @ {side}, that's home team
     const isHomeBet = bet.matchup.endsWith(`@ ${bet.side}`);
     won = isHomeBet ? homeScore > awayScore : awayScore > homeScore;
+    status = won ? "won" : "lost";
   } else if (bet.market === "spread" && bet.line !== undefined) {
-    // Spread logic (implement based on your needs)
-    // Matchup format: "AWAY @ HOME", so if it ends with @ {side}, that's home team
     const isHomeBet = bet.matchup.endsWith(`@ ${bet.side}`);
     const margin = homeScore - awayScore;
-    won = isHomeBet ? margin + bet.line > 0 : -margin + bet.line > 0;
+    const resultValue = isHomeBet ? margin + bet.line : -margin + bet.line;
+    if (resultValue === 0) {
+      status = "push";
+    } else {
+      won = resultValue > 0;
+      status = won ? "won" : "lost";
+    }
   } else if (bet.market === "total" && bet.line !== undefined) {
-    // Total logic
     const total = homeScore + awayScore;
-    const isOver = bet.side.toLowerCase().includes("over");
-    won = isOver ? total > bet.line : total < bet.line;
+    if (total === bet.line) {
+      status = "push";
+    } else {
+      const isOver = bet.side.toLowerCase().includes("over");
+      won = isOver ? total > bet.line : total < bet.line;
+      status = won ? "won" : "lost";
+    }
   }
-  
+
   // Calculate profit
   let actualProfit = 0;
   const totalStake = (bet.placements || []).reduce((sum, p) => sum + p.stake, 0) || bet.stake || 0;
   if (bet.actuallyBet && totalStake > 0) {
-    if (won) {
+    if (status === "won") {
       // Calculate payout from American odds
       if (bet.odds > 0) {
         actualProfit = (bet.odds / 100) * totalStake;
       } else {
         actualProfit = (100 / Math.abs(bet.odds)) * totalStake;
       }
-    } else {
+    } else if (status === "lost") {
       actualProfit = -totalStake;
+    } else if (status === "push") {
+      actualProfit = 0;
     }
   }
-  
-  bet.status = won ? "won" : "lost";
+
+  bet.status = status;
   bet.result = {
     homeScore,
     awayScore,
     actualProfit,
     settledAt: new Date().toISOString()
   };
-  
+
   await saveTrackedBets(data);
 }
 
