@@ -125,6 +125,9 @@ export interface ConvictionPrediction {
   
   // Reasoning
   reasoning: string;  // Explanation of why this is/isn't high conviction
+
+  // Optional metadata (e.g., event date/time, odds movement)
+  metadata?: any;
 }
 
 /**

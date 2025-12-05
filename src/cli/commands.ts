@@ -1779,16 +1779,20 @@ export async function cmdConvictionRecommend(
     const sports: Sport[] = ['nba', 'cfb', 'ncaam', 'nfl'];
     const db = getDb();
     
-    // Generate dates
+    // Use the date(s) exactly as passed in, no shifting
     const dates: string[] = [];
+    const baseDate = new Date(
+      parseInt(startDate.slice(0, 4)),
+      parseInt(startDate.slice(4, 6)) - 1,
+      parseInt(startDate.slice(6, 8))
+    );
     for (let i = 0; i < days; i++) {
-      const d = new Date(
-        parseInt(startDate.slice(0, 4)),
-        parseInt(startDate.slice(4, 6)) - 1,
-        parseInt(startDate.slice(6, 8))
-      );
-      d.setDate(d.getDate() + i);
-      const dateStr = d.toISOString().slice(0, 10).replace(/-/g, '');
+      const d = new Date(baseDate);
+      d.setDate(baseDate.getDate() + i);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${year}${month}${day}`;
       dates.push(dateStr);
     }
     
@@ -1891,7 +1895,17 @@ export async function cmdConvictionRecommend(
     }
     
     // Filter and sort by expected value (best bets first)
-    const filtered = filterHighConvictionPredictions(allPredictions, minConfidence);
+    const betAmount = 10;
+    const filtered = filterHighConvictionPredictions(allPredictions, minConfidence)
+      .filter(bet => {
+        let profit = 0;
+        if (bet.odds > 0) {
+          profit = (bet.odds / 100) * betAmount;
+        } else {
+          profit = (100 / Math.abs(bet.odds)) * betAmount;
+        }
+        return profit >= betAmount * 0.4;
+      });
     const sorted = filtered.sort((a, b) => {
       // Primary: Sort by expected value (highest first)
       if (Math.abs(b.expectedValue - a.expectedValue) > 0.01) {
@@ -1919,8 +1933,21 @@ export async function cmdConvictionRecommend(
       const confidenceEmoji = bet.confidenceLevel === 'VERY_HIGH' ? '🔥' : bet.confidenceLevel === 'HIGH' ? '⭐' : '✓';
       const metadata = (bet as any).metadata;
         
-        // Format date and time
-        const dateStr = `${bet.date.slice(0,4)}-${bet.date.slice(4,6)}-${bet.date.slice(6,8)}`;
+        // Format actual event date and time from the database, if available
+        let dateStr = '';
+        if (bet.metadata && bet.metadata.gameTime) {
+          const eventDate = new Date(bet.metadata.gameTime);
+          dateStr = eventDate.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZone: 'America/New_York',
+            timeZoneName: 'short'
+          });
+        } else {
+          dateStr = `${bet.date.slice(0,4)}-${bet.date.slice(4,6)}-${bet.date.slice(6,8)}`;
+        }
         
         // Calculate profit on $10 bet
         const betAmount = 10;
