@@ -1544,7 +1544,7 @@ export async function cmdStats(): Promise<void> {
   const betsWithResults = data.bets.filter(b => b.actuallyBet && b.status !== 'pending');
   if (betsWithResults.length > 0) {
     console.log(chalk.bold('Performance by Confidence Bin:'));
-    
+
     const binStats = new Map<string, { won: number; lost: number; profit: number; staked: number }>();
     for (const bet of betsWithResults) {
       if (!binStats.has(bet.bin)) {
@@ -1556,15 +1556,43 @@ export async function cmdStats(): Promise<void> {
       stat.profit += bet.result?.actualProfit || 0;
       stat.staked += bet.stake || 0;
     }
-    
+
     for (const [bin, stat] of Array.from(binStats.entries()).sort()) {
       const total = stat.won + stat.lost;
       const winRate = (stat.won / total) * 100;
       const roi = stat.staked > 0 ? (stat.profit / stat.staked) * 100 : 0;
       const roiColor = roi >= 0 ? chalk.green : chalk.red;
       const roiSign = roi >= 0 ? '+' : '';
-      
       console.log(chalk.dim(`  ${bin}: ${stat.won}W-${stat.lost}L (${winRate.toFixed(0)}%) - ${roiColor(roiSign + roi.toFixed(1) + '% ROI')}`));
+    }
+    console.log();
+
+    // Granular stats by sport and bin
+    const sportBinStats: Record<string, Record<string, { won: number; lost: number; profit: number; staked: number }>> = {};
+    for (const bet of betsWithResults) {
+      const sport = bet.sport || 'unknown';
+      const bin = bet.bin || 'unknown';
+      if (!sportBinStats[sport]) sportBinStats[sport] = {};
+      if (!sportBinStats[sport][bin]) sportBinStats[sport][bin] = { won: 0, lost: 0, profit: 0, staked: 0 };
+      const stat = sportBinStats[sport][bin];
+      if (bet.status === 'won') stat.won++;
+      if (bet.status === 'lost') stat.lost++;
+      stat.profit += bet.result?.actualProfit || 0;
+      stat.staked += bet.stake || 0;
+    }
+
+    console.log(chalk.bold('Performance by Sport & Bin:'));
+    for (const sport of Object.keys(sportBinStats).sort()) {
+      console.log(chalk.bold(`  ${sport.toUpperCase()}:`));
+      for (const bin of Object.keys(sportBinStats[sport]).sort()) {
+        const stat = sportBinStats[sport][bin];
+        const total = stat.won + stat.lost;
+        const winRate = total > 0 ? (stat.won / total) * 100 : 0;
+        const roi = stat.staked > 0 ? (stat.profit / stat.staked) * 100 : 0;
+        const roiColor = roi >= 0 ? chalk.green : chalk.red;
+        const roiSign = roi >= 0 ? '+' : '';
+        console.log(chalk.dim(`    ${bin}: ${stat.won}W-${stat.lost}L (${winRate.toFixed(0)}%) - ${roiColor(roiSign + roi.toFixed(1) + '% ROI')}`));
+      }
     }
     console.log();
   }

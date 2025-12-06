@@ -4688,7 +4688,7 @@
       "expectedValue": 10.22826598987286,
       "recommended": true,
       "actuallyBet": true,
-      "status": "pending",
+      "status": "lost",
       "placements": [
         {
           "stake": 10,
@@ -4699,7 +4699,7 @@
         "homeScore": 146,
         "awayScore": 112,
         "actualProfit": -10,
-        "settledAt": "2025-12-06T04:27:20.361Z"
+        "settledAt": "2025-12-06T04:37:25.267Z"
       }
     },
     {
@@ -4721,13 +4721,13 @@
       "expectedValue": 6.1772141275109895,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 31,
         "awayScore": 14,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:27:20.362Z"
+        "settledAt": "2025-12-06T04:37:25.268Z"
       }
     },
     {
@@ -4749,7 +4749,7 @@
       "expectedValue": 5.497544566599208,
       "recommended": true,
       "actuallyBet": true,
-      "status": "pending",
+      "status": "lost",
       "placements": [
         {
           "stake": 10,
@@ -4760,7 +4760,7 @@
         "homeScore": 117,
         "awayScore": 98,
         "actualProfit": -10,
-        "settledAt": "2025-12-06T04:27:20.363Z"
+        "settledAt": "2025-12-06T04:37:25.269Z"
       }
     },
     {
@@ -4782,13 +4782,13 @@
       "expectedValue": 3.9053856231300195,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 133,
         "awayScore": 134,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:27:20.364Z"
+        "settledAt": "2025-12-06T04:37:25.270Z"
       }
     },
     {
@@ -4810,13 +4810,13 @@
       "expectedValue": 3.7906936665230493,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "won",
       "placements": [],
       "result": {
         "homeScore": 105,
         "awayScore": 120,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:27:20.365Z"
+        "settledAt": "2025-12-06T04:37:25.271Z"
       }
     },
     {
@@ -4838,13 +4838,13 @@
       "expectedValue": 2.7523856858846916,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "won",
       "placements": [],
       "result": {
         "homeScore": 107,
         "awayScore": 98,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:27:20.366Z"
+        "settledAt": "2025-12-06T04:37:25.272Z"
       }
     },
     {
@@ -4866,13 +4866,13 @@
       "expectedValue": 2.478950626837948,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 15,
         "awayScore": 19,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:27:20.367Z"
+        "settledAt": "2025-12-06T04:37:25.272Z"
       }
     },
     {
@@ -5403,7 +5403,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401819877-moneyline-ISU",
-      "timestamp": "2025-12-06T04:34:21.643Z",
+      "timestamp": "2025-12-06T04:39:49.521Z",
       "sport": "ncaam",
       "eventId": "401819877",
       "matchup": "ISU @ PUR",
@@ -5469,7 +5469,7 @@
     },
     {
       "id": "2025-12-07-ncaam-401826916-moneyline-MISS",
-      "timestamp": "2025-12-06T04:34:21.644Z",
+      "timestamp": "2025-12-06T04:39:49.522Z",
       "sport": "ncaam",
       "eventId": "401826916",
       "matchup": "MISS @ SJU",
@@ -5579,7 +5579,7 @@
     },
     {
       "id": "2025-12-07-ncaam-401811099-moneyline-TENN",
-      "timestamp": "2025-12-06T04:34:21.645Z",
+      "timestamp": "2025-12-06T04:39:49.524Z",
       "sport": "ncaam",
       "eventId": "401811099",
       "matchup": "ILL @ TENN",
@@ -5601,7 +5601,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401817235-moneyline-MSU",
-      "timestamp": "2025-12-06T04:34:21.646Z",
+      "timestamp": "2025-12-06T04:39:49.525Z",
       "sport": "ncaam",
       "eventId": "401817235",
       "matchup": "DUKE @ MSU",
@@ -5623,7 +5623,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401825402-moneyline-USC",
-      "timestamp": "2025-12-06T04:34:21.647Z",
+      "timestamp": "2025-12-06T04:39:49.526Z",
       "sport": "ncaam",
       "eventId": "401825402",
       "matchup": "WASH @ USC",
@@ -5645,7 +5645,7 @@
     },
     {
       "id": "2025-12-07-ncaam-401823480-moneyline-AUB",
-      "timestamp": "2025-12-06T04:34:21.648Z",
+      "timestamp": "2025-12-06T04:39:49.527Z",
       "sport": "ncaam",
       "eventId": "401823480",
       "matchup": "AUB @ ARIZ",
@@ -5667,7 +5667,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401817246-moneyline-IU",
-      "timestamp": "2025-12-06T04:34:21.649Z",
+      "timestamp": "2025-12-06T04:39:49.527Z",
       "sport": "ncaam",
       "eventId": "401817246",
       "matchup": "LOU @ IU",
@@ -5689,7 +5689,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401826791-moneyline-ARK",
-      "timestamp": "2025-12-06T04:34:21.650Z",
+      "timestamp": "2025-12-06T04:39:49.528Z",
       "sport": "ncaam",
       "eventId": "401826791",
       "matchup": "FRES @ ARK",
@@ -5711,7 +5711,7 @@
     },
     {
       "id": "2025-12-07-ncaam-401823480-moneyline-ARIZ",
-      "timestamp": "2025-12-06T04:34:21.650Z",
+      "timestamp": "2025-12-06T04:39:49.529Z",
       "sport": "ncaam",
       "eventId": "401823480",
       "matchup": "AUB @ ARIZ",
@@ -5733,7 +5733,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401817246-moneyline-LOU",
-      "timestamp": "2025-12-06T04:34:21.651Z",
+      "timestamp": "2025-12-06T04:39:49.530Z",
       "sport": "ncaam",
       "eventId": "401817246",
       "matchup": "LOU @ IU",
@@ -5889,5 +5889,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-06T04:37:01.717Z"
+  "lastUpdated": "2025-12-06T04:39:49.530Z"
 }
