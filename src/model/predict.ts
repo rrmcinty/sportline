@@ -164,6 +164,23 @@ export async function cmdModelPredict(
       })
       .sort((a, b) => b.pHome - a.pHome);
 
+    // Dynamically import odds fetchers/normalizers for the sport
+    let fetchOdds: ((eventId: string) => Promise<any>) | undefined = undefined;
+    let normalizeOdds: ((eventId: string, oddsEntries: any[], homeTeam: string, awayTeam: string) => any[]) | undefined = undefined;
+    if (sport === "cfb") {
+      ({ fetchOdds, normalizeOdds } = await import("../espn/cfb/odds.js"));
+    } else if (sport === "ncaam") {
+      ({ fetchOdds, normalizeOdds } = await import("../espn/ncaam/odds.js"));
+    } else if (sport === "nfl") {
+      ({ fetchOdds, normalizeOdds } = await import("../espn/nfl/odds.js"));
+    } else if (sport === "nba") {
+      ({ fetchOdds, normalizeOdds } = await import("../espn/nba/odds.js"));
+    } else if (sport === "nhl") {
+      const nhlOdds = await import("../espn/nhl/odds.js");
+      fetchOdds = nhlOdds.fetchNHLOdds;
+      normalizeOdds = nhlOdds.normalizeOdds;
+    }
+
     for (const s of scored) {
       const pct = (s.pHome * 100).toFixed(1) + "%";
       const home = s.pHome >= 0.5 ? chalk.green.bold(s.home_name) : chalk.bold(s.home_name);
@@ -171,8 +188,70 @@ export async function cmdModelPredict(
       const winnerProb = (s.pHome * 100).toFixed(1) + "%";
       // Home team is green if predicted winner, otherwise yellow
       const probColor = s.pHome >= 0.5 ? chalk.green(winnerProb) : chalk.yellow(winnerProb);
-      // Show event ID for cross-referencing
-      console.log(`[${chalk.cyan(s.espn_event_id)}]  ${away} @ ${home}  →  Home win: ${probColor}  (${new Date(s.date).toLocaleString()})`);
+      // Show prediction line without event ID (odds are now shown below)
+      console.log(`${away} @ ${home}  →  Home win: ${probColor}  (${new Date(s.date).toLocaleString()})`);
+
+      // Fetch and display market odds for this event
+      if (fetchOdds && normalizeOdds) {
+        try {
+          const oddsEntries = await fetchOdds(s.espn_event_id);
+          if (oddsEntries && oddsEntries.length > 0) {
+            const legs = normalizeOdds(
+              s.espn_event_id,
+              oddsEntries,
+              s.home_name,
+              s.away_name
+            );
+            // Show moneyline odds for both teams
+            const moneylines = legs.filter((l: any) => l.market === "moneyline");
+            if (moneylines.length > 0) {
+              console.log(chalk.gray("  Market Moneylines (vig-free):"));
+              for (const leg of moneylines) {
+                const color = leg.impliedProbability > 0.5 ? chalk.green : chalk.yellow;
+                let oddsStr = `${leg.description} → ${(leg.impliedProbability * 100).toFixed(1)}%`;
+                if (leg.currentOdds && leg.currentOdds !== leg.odds) {
+                  oddsStr += chalk.dim(` (current: ${leg.currentOdds > 0 ? "+" : ""}${leg.currentOdds})`);
+                }
+                console.log("    " + color(oddsStr));
+              }
+            }
+            // Show spread odds
+            const spreads = legs.filter((l: any) => l.market === "spread");
+            if (spreads.length > 0) {
+              console.log(chalk.gray("  Market Spreads (vig-free):"));
+              for (const leg of spreads) {
+                let oddsStr = `${leg.description} → ${(leg.impliedProbability * 100).toFixed(1)}%`;
+                if (leg.currentOdds && leg.currentOdds !== leg.odds) {
+                  oddsStr += chalk.dim(` (current: ${leg.currentOdds > 0 ? "+" : ""}${leg.currentOdds})`);
+                }
+                console.log("    " + chalk.cyan(oddsStr));
+              }
+            }
+            // Show totals odds
+            const totals = legs.filter((l: any) => l.market === "total");
+            if (totals.length > 0) {
+              console.log(chalk.gray("  Market Totals (vig-free):"));
+              for (const leg of totals) {
+                let oddsStr = `${leg.description} → ${(leg.impliedProbability * 100).toFixed(1)}%`;
+                if (leg.currentOdds && leg.currentOdds !== leg.odds) {
+                  oddsStr += chalk.dim(` (current: ${leg.currentOdds > 0 ? "+" : ""}${leg.currentOdds})`);
+                }
+                console.log("    " + chalk.magenta(oddsStr));
+              }
+            }
+          } else {
+            console.log(chalk.gray("  No market odds available for this event."));
+          }
+        } catch (err) {
+          let msg = "";
+          if (err && typeof err === "object" && "message" in err && typeof (err as any).message === "string") {
+            msg = (err as any).message;
+          } else {
+            msg = String(err);
+          }
+          console.log(chalk.red("  Error fetching market odds: " + msg));
+        }
+      }
     }
 
     console.log();
