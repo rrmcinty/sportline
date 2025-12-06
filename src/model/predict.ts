@@ -31,6 +31,7 @@ export async function cmdModelPredict(
   sport: Sport,
   date: string
 ): Promise<void> {
+
   try {
     console.log(chalk.bold.cyan(`\n🔮 Generating predictions for ${sport.toUpperCase()} on ${date}...\n`));
 
@@ -56,6 +57,34 @@ export async function cmdModelPredict(
       trainedAt: string;
       calibration?: CalibrationCurve | null;
     };
+
+    // Try to load metrics.json for training/validation stats
+    let metrics: any = null;
+    try {
+      const metricsPath = join(latestRun.artifacts_path, "metrics.json");
+      metrics = JSON.parse(readFileSync(metricsPath, "utf-8"));
+    } catch {}
+
+    if (metrics) {
+      console.log(chalk.magenta.bold("Model Training/Validation Stats:"));
+      if (metrics.numTrainingSamples !== undefined && metrics.numValidationSamples !== undefined) {
+        console.log(chalk.magenta(`  Training samples: ${metrics.numTrainingSamples}`));
+        console.log(chalk.magenta(`  Validation samples: ${metrics.numValidationSamples}`));
+      }
+      if (metrics.validationAccuracy !== undefined) {
+        console.log(chalk.magenta(`  Validation accuracy: ${metrics.validationAccuracy.toFixed(2)}%`));
+      }
+      if (metrics.brierScore !== undefined) {
+        console.log(chalk.magenta(`  Brier score: ${metrics.brierScore.toFixed(4)}`));
+      }
+      if (metrics.logLoss !== undefined) {
+        console.log(chalk.magenta(`  Log loss: ${metrics.logLoss.toFixed(4)}`));
+      }
+      if (metrics.splitDate) {
+        console.log(chalk.magenta(`  Train/validation split date: ${metrics.splitDate}`));
+      }
+      console.log();
+    }
 
     // 2) Ensure games for date exist in DB (upsert teams and games)
     const fetchEvents = getFetchEvents(sport);
@@ -119,15 +148,31 @@ export async function cmdModelPredict(
         const x = featureMap.get(r.game_id) || [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5];
         const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
         const rawProb = sigmoid(z);
-        const pHome = model.calibration ? applyCalibration(rawProb, model.calibration) : rawProb;
+        let pHome = rawProb;
+        const cal = model.calibration;
+        if (
+          cal &&
+          typeof cal === 'object' &&
+          Array.isArray(cal.x) &&
+          Array.isArray(cal.y) &&
+          cal.x.length > 0 &&
+          cal.y.length > 0
+        ) {
+          pHome = applyCalibration(rawProb, cal);
+        }
         return { ...r, pHome };
       })
       .sort((a, b) => b.pHome - a.pHome);
 
     for (const s of scored) {
       const pct = (s.pHome * 100).toFixed(1) + "%";
-      const color = s.pHome >= 0.5 ? chalk.green : chalk.yellow;
-      console.log(`${chalk.bold(s.away_name)} @ ${chalk.bold(s.home_name)}  →  Home win: ${color(pct)}  (${new Date(s.date).toLocaleString()})`);
+      const home = s.pHome >= 0.5 ? chalk.green.bold(s.home_name) : chalk.bold(s.home_name);
+      const away = chalk.bold(s.away_name);
+      const winnerProb = (s.pHome * 100).toFixed(1) + "%";
+      // Home team is green if predicted winner, otherwise yellow
+      const probColor = s.pHome >= 0.5 ? chalk.green(winnerProb) : chalk.yellow(winnerProb);
+      // Show event ID for cross-referencing
+      console.log(`[${chalk.cyan(s.espn_event_id)}]  ${away} @ ${home}  →  Home win: ${probColor}  (${new Date(s.date).toLocaleString()})`);
     }
 
     console.log();

@@ -105,15 +105,18 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
   
   if (isEnsemble && baseModel && marketModel && ensembleConfig) {
     // Ensemble prediction: blend base (no market) + market-aware
+    // Try to load calibration from baseModel (if present)
+    const calibration = (baseModel as any).calibration || null;
     for (const r of rows) {
       const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
-      
       const baseZ = features.base.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
-      const baseProb = sigmoid(baseZ);
-      
+      let baseProb = sigmoid(baseZ);
+      if (calibration) {
+        baseProb = applyCalibration(baseProb, calibration);
+      }
       const marketZ = features.market.reduce((acc: number, v: number, i: number) => acc + v * (marketModel as any).weights[i], 0);
-      const marketProb = sigmoid(marketZ);
-      
+      let marketProb = sigmoid(marketZ);
+      // Optionally calibrate marketProb if desired (not typical)
       const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
       const marketImplied = features.market[features.market.length - 1]; // Last feature is market implied prob
       // Tight blend: keep within ±15 pts of market to avoid 90% underdogs
@@ -122,12 +125,15 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     }
   } else if (baseModel) {
     // Single model fallback
+    const calibration = (baseModel as any).calibration || null;
     for (const r of rows) {
       const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
       const x = (baseModel as any).featureNames.length === 9 ? features.base : features.market;
-      
       const z = x.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
-      const rawProb = sigmoid(z);
+      let rawProb = sigmoid(z);
+      if (calibration) {
+        rawProb = applyCalibration(rawProb, calibration);
+      }
       const clippedProb = Math.max(0.05, Math.min(0.95, rawProb));
       if (x.length === 10) { // Has market feature
         const marketImplied = x[x.length - 1];
@@ -138,7 +144,6 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
       }
     }
   }
-  
   return probs;
 }
 
@@ -248,6 +253,8 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
 
   if (useEnsemble) {
     // ========== ENSEMBLE CLASSIFICATION APPROACH ==========
+    // Try to load calibration from baseModel (if present)
+    const calibration = baseModel.calibration || null;
     for (const r of rows) {
       const f = allFeatures.find(ff => ff.gameId === r.id);
       if (!f || f.totalLine === null) continue;
@@ -271,7 +278,10 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
       
       // Predict with base model
       const baseZ = baseScaled.reduce((acc, v, i) => acc + v * baseModel.weights[i], 0);
-      const baseProb = sigmoid(baseZ);
+      let baseProb = sigmoid(baseZ);
+      if (calibration) {
+        baseProb = applyCalibration(baseProb, calibration);
+      }
 
       // Build market-aware features (38 features: 37 base + totalMarketImpliedProb)
       const marketFeat = [...baseFeat, f.totalMarketImpliedProb ?? 0.5];

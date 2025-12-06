@@ -100,6 +100,7 @@ program
   .option("--include-parlays", "Include parlay recommendations (default: singles only)", false)
   .option("--interactive", "Prompt to select which bets you actually placed", false)
   .option("--all", "Show all bets including poor value (ROI < -10%)", false)
+  .option("--confidence-bin <range>", "Only show bets in specific confidence bin (e.g., '80-100', '70-80', '40-60')", "")
   .action(async (options) => {
     const sports: Sport[] | undefined = options.sport ? [options.sport.toLowerCase() as Sport] : undefined;
     const date = options.date || todayYYYYMMDD();
@@ -116,7 +117,8 @@ program
       Boolean(options.includeDogs),
       Boolean(options.includeParlays),
       Boolean(options.interactive),
-      Boolean(options.all)
+      Boolean(options.all),
+      options.confidenceBin || ""
     );
   });
 

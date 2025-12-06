@@ -1,3 +1,50 @@
+// Platt scaling: fit logistic regression to map raw scores to calibrated probabilities
+function fitPlattScaling(preds: number[], labels: number[]): { a: number, b: number } {
+  // Use Newton's method for logistic regression with no regularization
+  let a = 0, b = 0, lr = 0.01;
+  for (let iter = 0; iter < 200; iter++) {
+    let da = 0, db = 0;
+    for (let i = 0; i < preds.length; i++) {
+      const x = preds[i];
+      const y = labels[i];
+      const p = 1 / (1 + Math.exp(-(a * x + b)));
+      da += (p - y) * x;
+      db += (p - y);
+    }
+    a -= lr * da / preds.length;
+    b -= lr * db / preds.length;
+  }
+  return { a, b };
+}
+
+// Reliability diagram: bin predictions and compute average predicted/actual for each bin
+function computeReliabilityDiagram(preds: number[], labels: number[], numBins = 10) {
+  const bins = [];
+  for (let i = 0; i < numBins; i++) {
+    bins.push({
+      binStart: i / numBins,
+      binEnd: (i + 1) / numBins,
+      predicted: 0,
+      actual: 0,
+      count: 0
+    });
+  }
+  for (let i = 0; i < preds.length; i++) {
+    const p = preds[i];
+    const y = labels[i];
+    const binIdx = Math.min(Math.floor(p * numBins), numBins - 1);
+    bins[binIdx].predicted += p;
+    bins[binIdx].actual += y;
+    bins[binIdx].count++;
+  }
+  for (const bin of bins) {
+    if (bin.count > 0) {
+      bin.predicted /= bin.count;
+      bin.actual /= bin.count;
+    }
+  }
+  return bins;
+}
 /**
  * Model training command handlers
  */
@@ -337,6 +384,7 @@ async function trainMoneylineModel(
     const artifactsPath = join(process.cwd(), "models", sport, runId);
     mkdirSync(artifactsPath, { recursive: true });
 
+
     // Save base model
     const baseModel = {
       type: 'base',
@@ -369,6 +417,54 @@ async function trainMoneylineModel(
       trainedAt: new Date().toISOString()
     };
     writeFileSync(join(artifactsPath, "ensemble.json"), JSON.stringify(ensembleConfig, null, 2));
+
+    // Compute means/stds for normalization (market-aware features)
+    const marketFeatureNames = [
+      "homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage",
+      "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5",
+      "homeWinRate10", "awayWinRate10", "homeAvgMargin10", "awayAvgMargin10",
+      "homeOppWinRate10", "awayOppWinRate10", "homeOppAvgMargin10", "awayOppAvgMargin10",
+      "marketImpliedProb"
+    ];
+    const marketTrainFeatures = trainIndices.map(i => marketAwareData.features[i]);
+    const means = new Array(marketFeatureNames.length).fill(0);
+    const stds = new Array(marketFeatureNames.length).fill(0);
+    for (let j = 0; j < means.length; j++) {
+      for (let i = 0; i < marketTrainFeatures.length; i++) means[j] += marketTrainFeatures[i][j];
+      means[j] /= marketTrainFeatures.length;
+      for (let i = 0; i < marketTrainFeatures.length; i++) {
+        stds[j] += Math.pow(marketTrainFeatures[i][j] - means[j], 2);
+      }
+      stds[j] = Math.sqrt(stds[j] / marketTrainFeatures.length) || 1;
+    }
+
+    // Fit isotonic calibration on validation set (market-aware model)
+
+
+    // Calibration: Platt scaling and reliability diagram
+    const valProbs = marketVal.map(f => sigmoid(dot(f, marketWeights)));
+    const platt = fitPlattScaling(valProbs, marketValLabels);
+    const reliability = computeReliabilityDiagram(valProbs, marketValLabels);
+
+
+    // Unified model.json (for audit/compatibility)
+    const unifiedModel = {
+      market: 'moneyline',
+      predictionType: 'classification',
+      modelType: 'single',
+      weights: marketWeights,
+      means,
+      stds,
+      featureNames: marketFeatureNames,
+      sport,
+      seasons,
+      trainedAt: new Date().toISOString(),
+      calibration: {
+        platt,
+        reliability
+      }
+    };
+    writeFileSync(join(artifactsPath, "model.json"), JSON.stringify(unifiedModel, null, 2));
 
     const metrics = {
       baseMetrics,
@@ -596,17 +692,43 @@ async function trainSpreadModel(
   const artifactsPath = join(process.cwd(), "models", sport, runId);
   mkdirSync(artifactsPath, { recursive: true });
 
-  const model = {
+
+  // Compute means/stds for normalization
+  const means = new Array(trainFeatures[0].length).fill(0);
+  const stds = new Array(trainFeatures[0].length).fill(0);
+  for (let j = 0; j < means.length; j++) {
+    for (let i = 0; i < trainFeatures.length; i++) means[j] += trainFeatures[i][j];
+    means[j] /= trainFeatures.length;
+    for (let i = 0; i < trainFeatures.length; i++) {
+      stds[j] += Math.pow(trainFeatures[i][j] - means[j], 2);
+    }
+    stds[j] = Math.sqrt(stds[j] / trainFeatures.length) || 1;
+  }
+
+  // Fit isotonic calibration on validation set
+  // Calibration: Platt scaling and reliability diagram
+  const valProbs = valFeatures.map(f => sigmoid(dot(f, weights)));
+  const platt = fitPlattScaling(valProbs, valLabels);
+  const reliability = computeReliabilityDiagram(valProbs, valLabels);
+
+  // Unified model.json (for audit/compatibility)
+  const unifiedModel = {
     market: 'spread',
+    predictionType: 'classification',
+    modelType: 'single',
     weights,
+    means,
+    stds,
     featureNames: ["homeWinRate5", "awayWinRate5", "homeAvgMargin5", "awayAvgMargin5", "homeAdvantage", "homeOppWinRate5", "awayOppWinRate5", "homeOppAvgMargin5", "awayOppAvgMargin5", "homeWinRate10", "awayWinRate10", "homeAvgMargin10", "awayAvgMargin10", "homeOppWinRate10", "awayOppWinRate10", "homeOppAvgMargin10", "awayOppAvgMargin10", "spreadLine", "spreadMarketImpliedProb"],
     sport,
     seasons,
     trainedAt: new Date().toISOString(),
-    calibration: calibrationCurve
+    calibration: {
+      platt,
+      reliability
+    }
   };
-
-  writeFileSync(join(artifactsPath, "model.json"), JSON.stringify(model, null, 2));
+  writeFileSync(join(artifactsPath, "model.json"), JSON.stringify(unifiedModel, null, 2));
 
   const metrics = {
     market: 'spread',
@@ -883,7 +1005,7 @@ async function trainTotalClassificationModel(
     trainedAt: new Date().toISOString()
   };
   writeFileSync(join(artifactsPath, 'base_model.json'), JSON.stringify(baseModel, null, 2));
-  
+
   // Market-aware model
   const marketModel = {
     market: 'total',
@@ -898,7 +1020,44 @@ async function trainTotalClassificationModel(
     trainedAt: new Date().toISOString()
   };
   writeFileSync(join(artifactsPath, 'market_model.json'), JSON.stringify(marketModel, null, 2));
-  
+
+  // Fit isotonic calibration on validation set
+  // Calibration: Platt scaling and reliability diagram for market-aware model
+  const marketFeatureNames = [
+    'homePointsAvg5', 'awayPointsAvg5', 'homeOppPointsAvg5', 'awayOppPointsAvg5',
+    'homeWinRate5', 'awayWinRate5', 'homeAvgMargin5', 'awayAvgMargin5',
+    'homeOppAvgMargin5', 'awayOppAvgMargin5', 'homeOppWinRate5', 'awayOppWinRate5',
+    'homePace5', 'awayPace5', 'homeOffEff5', 'awayOffEff5', 'homeDefEff5', 'awayDefEff5',
+    'homePointsAvg10', 'awayPointsAvg10', 'homeOppPointsAvg10', 'awayOppPointsAvg10',
+    'homeWinRate10', 'awayWinRate10', 'homeAvgMargin10', 'awayAvgMargin10',
+    'homeOppAvgMargin10', 'awayOppAvgMargin10', 'homeOppWinRate10', 'awayOppWinRate10',
+    'homePace10', 'awayPace10', 'homeOffEff10', 'awayOffEff10',
+    'homeDefEff10', 'awayDefEff10',
+    'line', 'totalMarketImpliedProb'
+  ];
+  const valProbs = marketXvalScaled.map(f => sigmoid(dot(f, marketWeights)));
+  const platt = fitPlattScaling(valProbs, marketYval);
+  const reliability = computeReliabilityDiagram(valProbs, marketYval);
+
+  // Unified model.json (for audit/compatibility)
+  const unifiedModel = {
+    market: 'total',
+    predictionType: 'classification',
+    modelType: 'single',
+    weights: marketWeights,
+    means: marketMeans,
+    stds: marketStds,
+    featureNames: marketFeatureNames,
+    sport,
+    seasons,
+    trainedAt: new Date().toISOString(),
+    calibration: {
+      platt,
+      reliability
+    }
+  };
+  writeFileSync(join(artifactsPath, "model.json"), JSON.stringify(unifiedModel, null, 2));
+
   // Ensemble config
   const ensembleConfig = {
     market: 'total',
@@ -911,7 +1070,7 @@ async function trainTotalClassificationModel(
     trainedAt: new Date().toISOString()
   };
   writeFileSync(join(artifactsPath, 'ensemble.json'), JSON.stringify(ensembleConfig, null, 2));
-  
+
   // Metrics
   const metrics = {
     market: 'total',
@@ -926,7 +1085,7 @@ async function trainTotalClassificationModel(
     numValidationSamples: baseXval.length
   };
   writeFileSync(join(artifactsPath, 'metrics.json'), JSON.stringify(metrics, null, 2));
-  
+
   // Insert into model_runs
   db.prepare(`INSERT INTO model_runs (run_id, sport, season, config_json, started_at, finished_at, metrics_json, artifacts_path)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
@@ -940,6 +1099,6 @@ async function trainTotalClassificationModel(
       JSON.stringify(metrics),
       artifactsPath
     );
-  
+
   console.log(chalk.green.bold(`✅ Total classification ensemble trained and saved to ${artifactsPath}\n`));
 }
