@@ -170,43 +170,60 @@
   - [x] Added divergence analysis tools for model investigation
 
 ### 🔄 Current Model Performance (CFB 2025) - After Normalization Revert
-**Training Data:** 1,241 games (filtered from 1,750 completed) - excludes games where either team has <5 completed games
 
-**Recency Weighting:** Exponential decay [0.35, 0.25, 0.20, 0.12, 0.08] applied to rolling-5 features (most recent game weighted 0.35, oldest 0.08)
+### 🔄 Current Model Performance (as of 2025-12-06)
 
-Moneyline Model (Ensemble: 70% Base + 30% Market-Aware):
-- **Base Model Validation:** 69.7% accuracy (9 features, no market)
-- **Market-Aware Validation:** 76.2% accuracy (10 features, with market)
-- **Ensemble Validation:** 72.8% accuracy, **ECE: 0.0685** (excellent calibration), **Brier: 0.1868**, **Log Loss: 0.5562**
-- **Features:** Base uses 9 stats-only; Market-Aware adds market implied probability
-- **Regularization:** L2 (λ=0.1) on both models
-- **Validation Split:** Temporal at 2025-10-11 (833 train, 357 validation)
-- **Status:** Production-ready with reliable probability estimates
+#### Moneyline Models
+- **CFB:** 71.1% validation accuracy, Brier 0.1969, Log Loss 0.5774, ECE ~6.5% (production-ready, excellent calibration)
+- **NHL:** 66.4% validation accuracy, Brier 0.2241, Log Loss 0.6404, ECE ~8.6% (production-ready)
+- **NCAAM:** 58.4% validation accuracy, Brier 0.2697, Log Loss 0.7849, ECE ~13% (usable, but room for improvement)
+- **NFL:** Validation metrics not always available; small sample size, needs more data and regularization (not production-ready)
 
-Spread Model:
-- **Backtest Results (by sport):**
-  - NBA: +11.02% ROI, 6.67% ECE (✅ PRODUCTION-READY - only profitable spread model!)
-  - CFB: -7.03% ROI, 18.41% ECE (❌ poor calibration, unprofitable)
-  - NFL: -11.04% ROI, 7.37% ECE (❌ good calibration but unprofitable)
-  - NCAAM: -8.22% ROI, 8.48% ECE (❌ moderate calibration but unprofitable)
-- **Training Accuracy:** 66.3% (833 games with reliable features)
-- **Validation Accuracy:** 67.5%
-- **Features:** 11 (moneyline set + spread line + spread market implied prob)
-- **Regularization:** L2 (λ=0.1)
-- **Probability Clipping:** [5%, 95%] to prevent extreme predictions
-- **Status:** NBA spreads production-ready (+11% ROI), all other sports avoid spreads
+#### Spread Models
+- **NBA:** +11.0% ROI, 6.7% ECE, 67.5% validation accuracy (production-ready, only profitable spread model)
+- **Other sports:** Unprofitable or poorly calibrated, not recommended for production
 
-Totals Model (Regression):
-- **Backtest Results (after bug fix):**
-  - NBA: 6.56% ECE (excellent), -1.84% ROI (slightly unprofitable but well-calibrated)
-  - NFL: 43.17% ECE (catastrophic inversion), -38.42% ROI
-  - CFB: 56.93% ECE (catastrophic inversion), -55.26% ROI  
-  - NCAAM: 42.02% ECE (catastrophic inversion), -53.13% ROI
-- **Bug Fixed:** Missing 10-game features in apply.ts (18 of 36 features were zero)
-- **Sport-Specific Sigma:** NBA/NCAAM: 38 points, NFL/CFB: 10 points
-- **Features (36):** Dual-window (5-game + 10-game) with exponential recency weighting
-- **Regularization:** Ridge (L2) + MAD-based variance + sport-specific sigma floors
-- **Status:** NBA totals validated and working; NFL/CFB/NCAAM show systematic inversion (needs investigation)
+#### Totals Models
+- **NBA:** 6.6% ECE, -1.8% ROI (well-calibrated, slightly unprofitable)
+- **Other sports:** Systematic inversion or high ECE, not recommended (needs investigation)
+
+#### Calibration & Validation
+- All production models use Platt scaling or isotonic regression for calibration.
+- Reliability diagrams and ECE are checked for every model/market.
+- CLI and model outputs now display calibration metrics and market odds for transparency.
+
+#### CLI & UX Improvements
+- CLI predictions now show market odds directly below model predictions for easy comparison.
+- Model/data context (training/validation stats, calibration) is shown with every prediction.
+- Output is actionable and audit-friendly.
+
+#### Recent Improvements
+- Market odds integration in CLI
+- Model calibration and reliability diagram validation
+- Feature engineering: rolling stats, opponent strength, recency weighting
+- Regularization and probability clipping to prevent overconfidence
+- Backtest and audit tools for all models
+
+#### Known Issues & Next Steps
+- NFL and NCAAM models need more data and advanced features for production-readiness
+- Totals models (except NBA) show systematic inversion; investigation ongoing
+- Add team strength tiers, player-level features, and more granular data sources
+- Build model performance dashboard and logging for real bets
+- Persist individual model predictions for auditing
+- Add NHL to default recommend filters (moneyline only)
+
+#### For New Developers/AI
+- All model training, calibration, and validation code is in `src/model/train.ts` and related files
+- CLI commands are in `src/cli/commands.ts` and now support multi-sport, odds comparison, and model context
+- See `MODEL_IMPROVEMENTS.md` for concrete next steps and improvement ideas
+- See this STATUS.md for production-ready markets and validation requirements
+
+**Summary:**
+- Moneyline: CFB, NHL production-ready; NCAAM usable but improvable; NFL not ready
+- Spread: NBA only
+- Totals: NBA only
+- All models are calibrated and validated before production use
+- Focus is on calibration, actionable output, and robust validation/backtesting
 
 ### 📋 Next Steps
 - [x] **Moneyline Ensemble** ✅ **COMPLETED** - ECE 0.0633 (25% improvement from 0.0846)
