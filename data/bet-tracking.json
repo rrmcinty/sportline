@@ -812,7 +812,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777353-moneyline-IU",
-      "timestamp": "2025-12-07T00:39:24.567Z",
+      "timestamp": "2025-12-07T02:30:32.752Z",
       "sport": "cfb",
       "eventId": "401777353",
       "matchup": "IU @ OSU",
@@ -856,8 +856,14 @@
       "expectedValue": 3.149668265193359,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 38,
+        "awayScore": 21,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.868Z"
+      }
     },
     {
       "id": "2024-12-01-nfl-401671705-moneyline-HOU",
@@ -3463,8 +3469,14 @@
       "expectedValue": -2.787305735112091,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 38,
+        "awayScore": 21,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.870Z"
+      }
     },
     {
       "id": "2025-12-06-nhl-401802791-moneyline-ANA",
@@ -3529,8 +3541,14 @@
       "expectedValue": 0.4061151471049289,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 34,
+        "awayScore": 21,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.871Z"
+      }
     },
     {
       "id": "2025-12-06-nhl-401802787-moneyline-VGK",
@@ -3595,8 +3613,14 @@
       "expectedValue": -1.3545144387846548,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 34,
+        "awayScore": 21,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.872Z"
+      }
     },
     {
       "id": "2025-12-06-nhl-401802787-moneyline-NJ",
@@ -3705,8 +3729,14 @@
       "expectedValue": -1.612978278256465,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 7,
+        "awayScore": 28,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.872Z"
+      }
     },
     {
       "id": "2025-12-06-cfb-401777351-moneyline-ALA",
@@ -3727,8 +3757,14 @@
       "expectedValue": 0.9481141502365293,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 7,
+        "awayScore": 28,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.873Z"
+      }
     },
     {
       "id": "2025-12-07-cfb-401777353-moneyline-OSU",
@@ -3771,8 +3807,14 @@
       "expectedValue": 0.06079087262778948,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 23,
+        "awayScore": 13,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.874Z"
+      }
     },
     {
       "id": "2025-12-06-cfb-401777329-moneyline-M",
@@ -3793,8 +3835,14 @@
       "expectedValue": -0.5041073513220891,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 23,
+        "awayScore": 13,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.875Z"
+      }
     },
     {
       "id": "2025-12-06-cfb-401777327-moneyline-BYU",
@@ -3815,8 +3863,14 @@
       "expectedValue": 0.5200209363035295,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 34,
+        "awayScore": 7,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.876Z"
+      }
     },
     {
       "id": "2025-12-06-cfb-401777327-moneyline-TTU",
@@ -3837,8 +3891,14 @@
       "expectedValue": -0.7383221080870843,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 34,
+        "awayScore": 7,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.877Z"
+      }
     },
     {
       "id": "2025-12-07-nfl-401772899-moneyline-WSH",
@@ -4922,13 +4982,19 @@
       "expectedValue": 8.996028033954502,
       "recommended": true,
       "actuallyBet": true,
-      "status": "pending",
+      "status": "lost",
       "placements": [
         {
           "stake": 10,
           "placedAt": "2025-12-05T16:36:50.252Z"
         }
-      ]
+      ],
+      "result": {
+        "homeScore": 132,
+        "awayScore": 111,
+        "actualProfit": -10,
+        "settledAt": "2025-12-07T02:20:06.878Z"
+      }
     },
     {
       "id": "2025-12-06-cfb-401777352-moneyline-JMU",
@@ -5006,8 +5072,14 @@
       "expectedValue": 2.2204134408971914,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "lost",
+      "placements": [],
+      "result": {
+        "homeScore": 132,
+        "awayScore": 111,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.879Z"
+      }
     },
     {
       "id": "2025-12-06-nba-401810197-total-O",
@@ -5403,7 +5475,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401819877-moneyline-ISU",
-      "timestamp": "2025-12-07T00:39:24.571Z",
+      "timestamp": "2025-12-07T02:30:32.750Z",
       "sport": "ncaam",
       "eventId": "401819877",
       "matchup": "ISU @ PUR",
@@ -5412,12 +5484,12 @@
       "side": "ISU",
       "market": "moneyline",
       "odds": 190,
-      "modelProbability": 0.4721086612199574,
+      "modelProbability": 0.4809929789368105,
       "bin": "40-50%",
       "historicalROI": 10.693982440483902,
       "historicalWinRate": 0.40217391304347827,
       "historicalSampleSize": 92,
-      "expectedValue": 3.6911511753787654,
+      "expectedValue": 3.9487963891675033,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5425,7 +5497,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802798-moneyline-NSH",
-      "timestamp": "2025-12-07T00:39:24.569Z",
+      "timestamp": "2025-12-07T02:30:32.753Z",
       "sport": "nhl",
       "eventId": "401802798",
       "matchup": "NSH @ CAR",
@@ -5434,12 +5506,12 @@
       "side": "NSH",
       "market": "moneyline",
       "odds": 200,
-      "modelProbability": 0.4570165294666666,
+      "modelProbability": 0.4538320265069732,
       "bin": "40-50%",
       "historicalROI": 1.5958329443551145,
       "historicalWinRate": 0.475,
       "historicalSampleSize": 40,
-      "expectedValue": 3.7104958839999984,
+      "expectedValue": 3.614960795209196,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5469,7 +5541,7 @@
     },
     {
       "id": "2025-12-07-ncaam-401826916-moneyline-MISS",
-      "timestamp": "2025-12-07T00:39:24.562Z",
+      "timestamp": "2025-12-07T02:30:32.747Z",
       "sport": "ncaam",
       "eventId": "401826916",
       "matchup": "MISS @ SJU",
@@ -5478,12 +5550,12 @@
       "side": "MISS",
       "market": "moneyline",
       "odds": 700,
-      "modelProbability": 0.26648125533049993,
+      "modelProbability": 0.23845394843183865,
       "bin": "20-30%",
       "historicalROI": 79.12877587877144,
       "historicalWinRate": 0.06666666666666667,
       "historicalSampleSize": 75,
-      "expectedValue": 11.318500426439996,
+      "expectedValue": 9.076315874547092,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5491,7 +5563,7 @@
     },
     {
       "id": "2025-12-06-nhl-401802792-moneyline-NYR",
-      "timestamp": "2025-12-07T00:39:24.573Z",
+      "timestamp": "2025-12-07T02:30:32.756Z",
       "sport": "nhl",
       "eventId": "401802792",
       "matchup": "COL @ NYR",
@@ -5500,12 +5572,12 @@
       "side": "NYR",
       "market": "moneyline",
       "odds": 142,
-      "modelProbability": 0.529524371549672,
+      "modelProbability": 0.5268315280439482,
       "bin": "50-60%",
       "historicalROI": 0.04786244560250633,
       "historicalWinRate": 0.5159235668789809,
       "historicalSampleSize": 471,
-      "expectedValue": 2.814489791502062,
+      "expectedValue": 2.749322978663546,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5535,7 +5607,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802800-moneyline-CHI",
-      "timestamp": "2025-12-07T00:39:24.576Z",
+      "timestamp": "2025-12-07T02:30:32.758Z",
       "sport": "nhl",
       "eventId": "401802800",
       "matchup": "CHI @ LA",
@@ -5544,12 +5616,12 @@
       "side": "CHI",
       "market": "moneyline",
       "odds": 180,
-      "modelProbability": 0.45041813155750543,
+      "modelProbability": 0.45264376496108016,
       "bin": "40-50%",
       "historicalROI": 1.5958329443551145,
       "historicalWinRate": 0.475,
       "historicalSampleSize": 40,
-      "expectedValue": 2.6117076836101525,
+      "expectedValue": 2.6740254189102437,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5623,21 +5695,21 @@
     },
     {
       "id": "2025-12-06-ncaam-401825402-moneyline-USC",
-      "timestamp": "2025-12-06T04:39:49.526Z",
+      "timestamp": "2025-12-07T02:30:32.761Z",
       "sport": "ncaam",
       "eventId": "401825402",
       "matchup": "WASH @ USC",
       "date": "2025-12-06T23:00Z",
-      "pick": "USC ML -258 [NCAAM] (model)",
+      "pick": "USC ML -218 [NCAAM] (model)",
       "side": "USC",
       "market": "moneyline",
-      "odds": -258,
-      "modelProbability": 0.7353814237894838,
+      "odds": -218,
+      "modelProbability": 0.7678935775174025,
       "bin": "70-80%",
       "historicalROI": 21.774302987551366,
       "historicalWinRate": 0.868995633187773,
       "historicalSampleSize": 229,
-      "expectedValue": 0.2041298339781079,
+      "expectedValue": 1.2013833784648629,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5667,7 +5739,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401817246-moneyline-IU",
-      "timestamp": "2025-12-07T00:39:24.574Z",
+      "timestamp": "2025-12-07T02:30:32.755Z",
       "sport": "ncaam",
       "eventId": "401817246",
       "matchup": "IU @ LOU",
@@ -5676,12 +5748,12 @@
       "side": "IU",
       "market": "moneyline",
       "odds": 150,
-      "modelProbability": 0.5045799658582979,
+      "modelProbability": 0.5183224331481803,
       "bin": "50-60%",
       "historicalROI": 1.5986565838276672,
       "historicalWinRate": 0.6931067044381491,
       "historicalSampleSize": 1059,
-      "expectedValue": 2.6144991464574474,
+      "expectedValue": 2.9580608287045074,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5795,8 +5867,14 @@
       "expectedValue": 1.325207244362451,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 119,
+        "awayScore": 101,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.882Z"
+      }
     },
     {
       "id": "2025-12-06-nba-401810205-moneyline-BKN",
@@ -5817,8 +5895,14 @@
       "expectedValue": 1.3233478578672973,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 119,
+        "awayScore": 101,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T02:20:06.883Z"
+      }
     },
     {
       "id": "2025-12-07-nba-401810209-moneyline-MIA",
@@ -5890,7 +5974,7 @@
     },
     {
       "id": "2025-12-06-nhl-401802793-moneyline-CBJ",
-      "timestamp": "2025-12-07T00:39:24.579Z",
+      "timestamp": "2025-12-07T02:30:32.759Z",
       "sport": "nhl",
       "eventId": "401802793",
       "matchup": "CBJ @ FLA",
@@ -5899,12 +5983,12 @@
       "side": "CBJ",
       "market": "moneyline",
       "odds": 154,
-      "modelProbability": 0.46026443226503055,
+      "modelProbability": 0.4628744457904981,
       "bin": "40-50%",
       "historicalROI": 1.5958329443551145,
       "historicalWinRate": 0.475,
       "historicalSampleSize": 40,
-      "expectedValue": 1.6907165795317756,
+      "expectedValue": 1.757010923078651,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5912,7 +5996,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802794-moneyline-BOS",
-      "timestamp": "2025-12-07T00:39:24.581Z",
+      "timestamp": "2025-12-07T02:30:32.760Z",
       "sport": "nhl",
       "eventId": "401802794",
       "matchup": "NJ @ BOS",
@@ -5921,12 +6005,12 @@
       "side": "BOS",
       "market": "moneyline",
       "odds": -105,
-      "modelProbability": 0.5887549272104629,
+      "modelProbability": 0.5867579868459962,
       "bin": "50-60%",
       "historicalROI": 0.04786244560250633,
       "historicalWinRate": 0.5159235668789809,
       "historicalSampleSize": 471,
-      "expectedValue": 1.494739055061416,
+      "expectedValue": 1.455751171755164,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5955,5 +6039,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-07T00:39:24.581Z"
+  "lastUpdated": "2025-12-07T02:30:32.762Z"
 }
