@@ -7,6 +7,6 @@ dist/
 *.db
 *.db-shm
 *.db-wal
-!data/sportline.db
-!data/backtest-results
+data/sportline.db
+data/backtest-results
 models/
