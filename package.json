@@ -19,7 +19,7 @@
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "test": "echo \"No tests yet\" && exit 0",
-    "all": "npm run build && chmod +x dist/index.js && npm link",
+    "all": "npm i && npm run build && chmod +x dist/index.js && npm link",
     "ingest": "node dist/index.js data daily",
     "db:ingest:full": "npm run ingest:cfb:full && npm run ingest:ncaam:full && npm run ingest:nba:full && npm run ingest:nfl:full && npm run ingest:nhl:full",
     "ingest:cfb:full": "for y in 2021 2022 2023 2024 2025; do sportline data ingest --sport cfb --season $y; done",    
