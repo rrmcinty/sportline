@@ -812,7 +812,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777353-moneyline-IU",
-      "timestamp": "2025-12-07T00:28:01.028Z",
+      "timestamp": "2025-12-07T00:39:24.567Z",
       "sport": "cfb",
       "eventId": "401777353",
       "matchup": "IU @ OSU",
@@ -5403,7 +5403,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401819877-moneyline-ISU",
-      "timestamp": "2025-12-06T22:31:49.976Z",
+      "timestamp": "2025-12-07T00:39:24.571Z",
       "sport": "ncaam",
       "eventId": "401819877",
       "matchup": "ISU @ PUR",
@@ -5425,7 +5425,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802798-moneyline-NSH",
-      "timestamp": "2025-12-06T22:31:49.973Z",
+      "timestamp": "2025-12-07T00:39:24.569Z",
       "sport": "nhl",
       "eventId": "401802798",
       "matchup": "NSH @ CAR",
@@ -5434,12 +5434,12 @@
       "side": "NSH",
       "market": "moneyline",
       "odds": 200,
-      "modelProbability": 0.4564463325328173,
+      "modelProbability": 0.4570165294666666,
       "bin": "40-50%",
       "historicalROI": 1.5958329443551145,
       "historicalWinRate": 0.475,
       "historicalSampleSize": 40,
-      "expectedValue": 3.6933899759845197,
+      "expectedValue": 3.7104958839999984,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5469,7 +5469,7 @@
     },
     {
       "id": "2025-12-07-ncaam-401826916-moneyline-MISS",
-      "timestamp": "2025-12-06T22:31:49.966Z",
+      "timestamp": "2025-12-07T00:39:24.562Z",
       "sport": "ncaam",
       "eventId": "401826916",
       "matchup": "MISS @ SJU",
@@ -5491,7 +5491,7 @@
     },
     {
       "id": "2025-12-06-nhl-401802792-moneyline-NYR",
-      "timestamp": "2025-12-06T22:31:49.979Z",
+      "timestamp": "2025-12-07T00:39:24.573Z",
       "sport": "nhl",
       "eventId": "401802792",
       "matchup": "COL @ NYR",
@@ -5535,7 +5535,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802800-moneyline-CHI",
-      "timestamp": "2025-12-06T22:31:49.983Z",
+      "timestamp": "2025-12-07T00:39:24.576Z",
       "sport": "nhl",
       "eventId": "401802800",
       "matchup": "CHI @ LA",
@@ -5601,7 +5601,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401817235-moneyline-MSU",
-      "timestamp": "2025-12-06T22:31:49.985Z",
+      "timestamp": "2025-12-07T00:39:24.578Z",
       "sport": "ncaam",
       "eventId": "401817235",
       "matchup": "DUKE @ MSU",
@@ -5667,7 +5667,7 @@
     },
     {
       "id": "2025-12-06-ncaam-401817246-moneyline-IU",
-      "timestamp": "2025-12-06T22:31:49.982Z",
+      "timestamp": "2025-12-07T00:39:24.574Z",
       "sport": "ncaam",
       "eventId": "401817246",
       "matchup": "IU @ LOU",
@@ -5890,7 +5890,7 @@
     },
     {
       "id": "2025-12-06-nhl-401802793-moneyline-CBJ",
-      "timestamp": "2025-12-06T22:31:49.986Z",
+      "timestamp": "2025-12-07T00:39:24.579Z",
       "sport": "nhl",
       "eventId": "401802793",
       "matchup": "CBJ @ FLA",
@@ -5899,12 +5899,12 @@
       "side": "CBJ",
       "market": "moneyline",
       "odds": 154,
-      "modelProbability": 0.4617428533514395,
+      "modelProbability": 0.46026443226503055,
       "bin": "40-50%",
       "historicalROI": 1.5958329443551145,
       "historicalWinRate": 0.475,
       "historicalSampleSize": 40,
-      "expectedValue": 1.728268475126562,
+      "expectedValue": 1.6907165795317756,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5912,7 +5912,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802794-moneyline-BOS",
-      "timestamp": "2025-12-06T06:18:08.889Z",
+      "timestamp": "2025-12-07T00:39:24.581Z",
       "sport": "nhl",
       "eventId": "401802794",
       "matchup": "NJ @ BOS",
@@ -5921,12 +5921,12 @@
       "side": "BOS",
       "market": "moneyline",
       "odds": -105,
-      "modelProbability": 0.5886887876562575,
+      "modelProbability": 0.5887549272104629,
       "bin": "50-60%",
       "historicalROI": 0.04786244560250633,
       "historicalWinRate": 0.5159235668789809,
       "historicalSampleSize": 471,
-      "expectedValue": 1.4934477590031214,
+      "expectedValue": 1.494739055061416,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5955,5 +5955,5 @@
       "placements": []
     }
   ],
-  "lastUpdated": "2025-12-07T00:28:01.038Z"
+  "lastUpdated": "2025-12-07T00:39:24.581Z"
 }

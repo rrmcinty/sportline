@@ -1113,21 +1113,6 @@ export async function cmdRecommend(
           };
         }
 
-        // Minimal filter: Only show bets in bins with positive ROI and ECE < 0.10 unless showAllBets is true
-        const ece = backtestStats?.ece;
-        const roiNum = backtestStats?.roi ?? -100;
-        if (!showAllBets && (roiNum <= 0 || (ece !== undefined && ece !== null && ece >= 0.10))) {
-          continue;
-        }
-
-        // Bin-specific filter: If confidenceBin is specified, only show bets in that probability range
-        if (confidenceBin) {
-          const [minBin, maxBin] = confidenceBin.split('-').map(s => parseFloat(s) / 100);
-          if (displayProb < minBin || displayProb >= maxBin) {
-            continue;
-          }
-        }
-
         // Get confidence tier
         const tier = getConfidenceTier(displayProb);
 
