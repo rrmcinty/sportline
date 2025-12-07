@@ -1506,12 +1506,43 @@ export async function cmdStats(): Promise<void> {
   console.log(chalk.dim(`  Pending: ${stats.allRecommended.pending}`));
   console.log(chalk.green(`  Won: ${stats.allRecommended.won}`));
   console.log(chalk.red(`  Lost: ${stats.allRecommended.lost}`));
-  
+
   if (stats.allRecommended.won + stats.allRecommended.lost > 0) {
     const winRate = (stats.allRecommended.won / (stats.allRecommended.won + stats.allRecommended.lost)) * 100;
     console.log(chalk.cyan(`  Win Rate: ${winRate.toFixed(1)}%`));
   }
   console.log();
+
+  // Model stats by confidence bin, separated by sport
+  const modelBetsWithResults = data.bets.filter(b => b.recommended && b.status !== 'pending');
+  if (modelBetsWithResults.length > 0) {
+    console.log(chalk.bold('Model Performance by Confidence Bin:'));
+    // Group by sport first
+    const modelSportBinStats: Record<string, Map<string, { won: number; lost: number; profit: number; staked: number }>> = {};
+    for (const bet of modelBetsWithResults) {
+      const sport = bet.sport || 'unknown';
+      if (!modelSportBinStats[sport]) modelSportBinStats[sport] = new Map();
+      const binStats = modelSportBinStats[sport];
+      if (!binStats.has(bet.bin)) {
+        binStats.set(bet.bin, { won: 0, lost: 0, profit: 0, staked: 0 });
+      }
+      const stat = binStats.get(bet.bin)!;
+      if (bet.status === 'won') stat.won++;
+      if (bet.status === 'lost') stat.lost++;
+      stat.profit += bet.result?.actualProfit || 0;
+      stat.staked += bet.stake || 0;
+    }
+    for (const sport of Object.keys(modelSportBinStats).sort()) {
+      console.log(chalk.bold(`  ${sport.toUpperCase()}:`));
+      const binStats = modelSportBinStats[sport];
+      for (const [bin, stat] of Array.from(binStats.entries()).sort()) {
+        const total = stat.won + stat.lost;
+        const winRate = total > 0 ? (stat.won / total) * 100 : 0;
+        console.log(chalk.dim(`    ${bin}: ${stat.won}W-${stat.lost}L (${winRate.toFixed(0)}%)`));
+      }
+    }
+    console.log();
+  }
   
   // Actual bets
   console.log(chalk.bold('Your Actual Bets:'));

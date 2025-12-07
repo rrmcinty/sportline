@@ -6,6 +6,18 @@ import fetch from "node-fetch";
 import { getCache, setCache } from "../../cache/index.js";
 import type { Competition, Team } from "../../models/types.js";
 
+// Helper to fetch status from $ref (like NBA/CFB)
+async function fetchStatus(url: string): Promise<string> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return "scheduled";
+const data = await response.json() as { type?: { name?: string } };    // ESPN status type: { type: { name: "final" | "inprogress" | "scheduled" } }
+    return data.type?.name || "scheduled";
+  } catch {
+    return "scheduled";
+  }
+}
+
 // ESPN base URL for NHL
 const BASE_URL = "https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl";
 
@@ -64,11 +76,12 @@ export async function fetchNHLEvents(date: string): Promise<Competition[]> {
       if (!home || !away) continue;
 
       // Fetch team details and scores via $ref links (like NBA does)
-      const [homeTeamData, awayTeamData, homeScore, awayScore] = await Promise.all([
+      const [homeTeamData, awayTeamData, homeScore, awayScore, status] = await Promise.all([
         home.team?.$ref ? fetchTeamDetails(home.team.$ref) : Promise.resolve({ id: home.id, displayName: "Home", abbreviation: undefined as string | undefined }),
         away.team?.$ref ? fetchTeamDetails(away.team.$ref) : Promise.resolve({ id: away.id, displayName: "Away", abbreviation: undefined as string | undefined }),
         home.score?.$ref ? fetchScore(home.score.$ref) : Promise.resolve(null),
-        away.score?.$ref ? fetchScore(away.score.$ref) : Promise.resolve(null)
+        away.score?.$ref ? fetchScore(away.score.$ref) : Promise.resolve(null),
+        compData.status?.$ref ? fetchStatus(compData.status.$ref) : Promise.resolve(compData.status?.type?.name || "scheduled")
       ]);
 
       const homeTeam: Team = {
@@ -89,7 +102,7 @@ export async function fetchNHLEvents(date: string): Promise<Competition[]> {
         date: eventData.date,
         homeTeam,
         awayTeam,
-        status: compData.status?.type?.name || "scheduled",
+        status,
         venue: compData.venue?.fullName || undefined,
         homeScore,
         awayScore,
