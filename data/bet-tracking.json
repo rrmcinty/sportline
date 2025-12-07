@@ -758,7 +758,7 @@
     },
     {
       "id": "2025-12-07-nfl-401772792-moneyline-NO",
-      "timestamp": "2025-12-07T15:09:59.771Z",
+      "timestamp": "2025-12-07T23:15:12.921Z",
       "sport": "nfl",
       "eventId": "401772792",
       "matchup": "NO @ TB",
@@ -775,7 +775,7 @@
       "expectedValue": 6.346541786743515,
       "recommended": true,
       "actuallyBet": true,
-      "status": "won",
+      "status": "pending",
       "placements": [
         {
           "stake": 5,
@@ -786,12 +786,12 @@
         "homeScore": 20,
         "awayScore": 24,
         "actualProfit": 17.5,
-        "settledAt": "2025-12-07T21:39:42.076Z"
+        "settledAt": "2025-12-07T22:28:41.507Z"
       }
     },
     {
       "id": "2025-12-07-nfl-401772900-moneyline-ATL",
-      "timestamp": "2025-12-07T15:09:59.774Z",
+      "timestamp": "2025-12-07T23:15:12.923Z",
       "sport": "nfl",
       "eventId": "401772900",
       "matchup": "SEA @ ATL",
@@ -800,15 +800,15 @@
       "side": "ATL",
       "market": "moneyline",
       "odds": 320,
-      "modelProbability": 0.3772727272727272,
+      "modelProbability": 0.33950115237541933,
       "bin": "30-40%",
       "historicalROI": 20.663071959435158,
       "historicalWinRate": 0.21212121212121213,
       "historicalSampleSize": 33,
-      "expectedValue": 5.845454545454542,
+      "expectedValue": 4.259048399767613,
       "recommended": true,
       "actuallyBet": true,
-      "status": "lost",
+      "status": "pending",
       "placements": [
         {
           "stake": 5,
@@ -819,12 +819,12 @@
         "homeScore": 9,
         "awayScore": 37,
         "actualProfit": -5,
-        "settledAt": "2025-12-07T21:35:51.119Z"
+        "settledAt": "2025-12-07T22:28:41.509Z"
       }
     },
     {
       "id": "2025-12-07-nfl-401772794-moneyline-LV",
-      "timestamp": "2025-12-07T15:09:59.776Z",
+      "timestamp": "2025-12-07T23:15:12.929Z",
       "sport": "nfl",
       "eventId": "401772794",
       "matchup": "DEN @ LV",
@@ -833,12 +833,12 @@
       "side": "LV",
       "market": "moneyline",
       "odds": 350,
-      "modelProbability": 0.3485022350267111,
-      "bin": "30-40%",
-      "historicalROI": 20.663071959435158,
-      "historicalWinRate": 0.21212121212121213,
-      "historicalSampleSize": 33,
-      "expectedValue": 5.682600576202001,
+      "modelProbability": 0.29272848747793834,
+      "bin": "20-30%",
+      "historicalROI": 23.272851657430984,
+      "historicalWinRate": 0.17857142857142858,
+      "historicalSampleSize": 28,
+      "expectedValue": 3.1727819365072243,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -1835,7 +1835,7 @@
     },
     {
       "id": "2025-12-08-nfl-401772932-moneyline-HOU",
-      "timestamp": "2025-12-07T15:09:59.778Z",
+      "timestamp": "2025-12-07T23:15:12.924Z",
       "sport": "nfl",
       "eventId": "401772932",
       "matchup": "HOU @ KC",
@@ -4162,7 +4162,7 @@
     },
     {
       "id": "2025-12-07-nfl-401772901-moneyline-ARI",
-      "timestamp": "2025-12-07T15:09:59.763Z",
+      "timestamp": "2025-12-07T23:15:12.917Z",
       "sport": "nfl",
       "eventId": "401772901",
       "matchup": "LAR @ ARI",
@@ -4171,12 +4171,12 @@
       "side": "ARI",
       "market": "moneyline",
       "odds": 360,
-      "modelProbability": 0.35863836017569545,
+      "modelProbability": 0.3642857142857143,
       "bin": "30-40%",
       "historicalROI": 20.663071959435158,
       "historicalWinRate": 0.21212121212121213,
       "historicalSampleSize": 33,
-      "expectedValue": 6.497364568081991,
+      "expectedValue": 6.75714285714286,
       "recommended": true,
       "actuallyBet": true,
       "status": "pending",
@@ -7009,7 +7009,7 @@
     },
     {
       "id": "2025-12-07-nba-401810214-moneyline-CHA",
-      "timestamp": "2025-12-07T15:09:59.768Z",
+      "timestamp": "2025-12-07T23:15:12.919Z",
       "sport": "nba",
       "eventId": "401810214",
       "matchup": "DEN @ CHA",
@@ -7036,7 +7036,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802806-moneyline-SJ",
-      "timestamp": "2025-12-07T15:09:59.782Z",
+      "timestamp": "2025-12-07T23:15:12.930Z",
       "sport": "nhl",
       "eventId": "401802806",
       "matchup": "SJ @ CAR",
@@ -7045,12 +7045,12 @@
       "side": "SJ",
       "market": "moneyline",
       "odds": 235,
-      "modelProbability": 0.39189221335833513,
+      "modelProbability": 0.3910482045747826,
       "bin": "30-40%",
       "historicalROI": 95.90322580645162,
       "historicalWinRate": 0,
       "historicalSampleSize": 5,
-      "expectedValue": 3.128389147504226,
+      "expectedValue": 3.100114853255217,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -7108,21 +7108,21 @@
     },
     {
       "id": "2025-12-07-ncaam-401819885-moneyline-MIZ",
-      "timestamp": "2025-12-07T15:09:59.780Z",
+      "timestamp": "2025-12-07T23:15:12.931Z",
       "sport": "ncaam",
       "eventId": "401819885",
       "matchup": "MIZ @ KU",
       "date": "2025-12-07T18:00Z",
-      "pick": "MIZ ML +210 [NCAAM] (model)",
+      "pick": "MIZ ML +220 [NCAAM] (model)",
       "side": "MIZ",
       "market": "moneyline",
-      "odds": 210,
-      "modelProbability": 0.4255650139205005,
-      "bin": "40-50%",
-      "historicalROI": 10.693982440483902,
-      "historicalWinRate": 0.40217391304347827,
-      "historicalSampleSize": 92,
-      "expectedValue": 3.192515431535515,
+      "odds": 220,
+      "modelProbability": 0.39734489169068055,
+      "bin": "30-40%",
+      "historicalROI": 58.95687612573393,
+      "historicalWinRate": 0.1728395061728395,
+      "historicalSampleSize": 81,
+      "expectedValue": 2.7150365341017775,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -7130,7 +7130,7 @@
     },
     {
       "id": "2025-12-07-nfl-401772898-moneyline-TEN",
-      "timestamp": "2025-12-07T15:09:59.783Z",
+      "timestamp": "2025-12-07T23:15:12.927Z",
       "sport": "nfl",
       "eventId": "401772898",
       "matchup": "TEN @ CLE",
@@ -7139,21 +7139,21 @@
       "side": "TEN",
       "market": "moneyline",
       "odds": 180,
-      "modelProbability": 0.45605497642252013,
+      "modelProbability": 0.49252477380439463,
       "bin": "40-50%",
       "historicalROI": 19.22144457379947,
       "historicalWinRate": 0.32142857142857145,
       "historicalSampleSize": 28,
-      "expectedValue": 2.7695393398305637,
+      "expectedValue": 3.7906936665230493,
       "recommended": true,
       "actuallyBet": false,
-      "status": "won",
+      "status": "pending",
       "placements": [],
       "result": {
-        "homeScore": 17,
-        "awayScore": 28,
+        "homeScore": 29,
+        "awayScore": 31,
         "actualProfit": 0,
-        "settledAt": "2025-12-07T21:39:42.101Z"
+        "settledAt": "2025-12-07T22:28:41.510Z"
       }
     },
     {
@@ -7197,8 +7197,14 @@
       "expectedValue": 2.0829973314571237,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
-      "placements": []
+      "status": "won",
+      "placements": [],
+      "result": {
+        "homeScore": 113,
+        "awayScore": 121,
+        "actualProfit": 0,
+        "settledAt": "2025-12-07T23:14:11.028Z"
+      }
     },
     {
       "id": "2025-12-08-nba-401810216-moneyline-GS",
@@ -7519,7 +7525,29 @@
         "actualProfit": 0,
         "settledAt": "2025-12-07T21:35:51.126Z"
       }
+    },
+    {
+      "id": "2025-12-07-ncaam-401819902-moneyline-LSU",
+      "timestamp": "2025-12-07T23:15:12.926Z",
+      "sport": "ncaam",
+      "eventId": "401819902",
+      "matchup": "LSU @ TTU",
+      "date": "2025-12-07T20:00Z",
+      "pick": "LSU ML +185 [NCAAM] (model)",
+      "side": "LSU",
+      "market": "moneyline",
+      "odds": 185,
+      "modelProbability": 0.4863518758085382,
+      "bin": "40-50%",
+      "historicalROI": 10.693982440483902,
+      "historicalWinRate": 0.40217391304347827,
+      "historicalSampleSize": 92,
+      "expectedValue": 3.8610284605433396,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
     }
   ],
-  "lastUpdated": "2025-12-07T21:39:42.101Z"
+  "lastUpdated": "2025-12-07T23:15:12.932Z"
 }
