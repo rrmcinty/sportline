@@ -812,7 +812,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777353-moneyline-IU",
-      "timestamp": "2025-12-06T06:18:08.880Z",
+      "timestamp": "2025-12-07T00:28:01.028Z",
       "sport": "cfb",
       "eventId": "401777353",
       "matchup": "IU @ OSU",
@@ -3644,7 +3644,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777328-moneyline-UVA",
-      "timestamp": "2025-12-06T04:36:30.447Z",
+      "timestamp": "2025-12-07T00:28:01.035Z",
       "sport": "cfb",
       "eventId": "401777328",
       "matchup": "DUKE @ UVA",
@@ -3666,7 +3666,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777328-moneyline-DUKE",
-      "timestamp": "2025-12-06T04:36:30.443Z",
+      "timestamp": "2025-12-07T00:28:01.030Z",
       "sport": "cfb",
       "eventId": "401777328",
       "matchup": "DUKE @ UVA",
@@ -3688,7 +3688,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777351-moneyline-UGA",
-      "timestamp": "2025-12-06T04:36:30.448Z",
+      "timestamp": "2025-12-07T00:28:01.036Z",
       "sport": "cfb",
       "eventId": "401777351",
       "matchup": "UGA @ ALA",
@@ -3710,7 +3710,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777351-moneyline-ALA",
-      "timestamp": "2025-12-06T06:18:08.892Z",
+      "timestamp": "2025-12-07T00:28:01.029Z",
       "sport": "cfb",
       "eventId": "401777351",
       "matchup": "UGA @ ALA",
@@ -3732,7 +3732,7 @@
     },
     {
       "id": "2025-12-07-cfb-401777353-moneyline-OSU",
-      "timestamp": "2025-12-06T04:36:30.449Z",
+      "timestamp": "2025-12-07T00:28:01.037Z",
       "sport": "cfb",
       "eventId": "401777353",
       "matchup": "IU @ OSU",
@@ -3754,7 +3754,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777329-moneyline-WMU",
-      "timestamp": "2025-12-06T04:36:30.445Z",
+      "timestamp": "2025-12-07T00:28:01.032Z",
       "sport": "cfb",
       "eventId": "401777329",
       "matchup": "M-OH @ WMU",
@@ -3776,7 +3776,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777329-moneyline-M",
-      "timestamp": "2025-12-06T04:36:30.446Z",
+      "timestamp": "2025-12-07T00:28:01.033Z",
       "sport": "cfb",
       "eventId": "401777329",
       "matchup": "M-OH @ WMU",
@@ -3798,7 +3798,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777327-moneyline-BYU",
-      "timestamp": "2025-12-06T04:36:30.444Z",
+      "timestamp": "2025-12-07T00:28:01.031Z",
       "sport": "cfb",
       "eventId": "401777327",
       "matchup": "BYU @ TTU",
@@ -3820,7 +3820,7 @@
     },
     {
       "id": "2025-12-06-cfb-401777327-moneyline-TTU",
-      "timestamp": "2025-12-06T04:36:30.446Z",
+      "timestamp": "2025-12-07T00:28:01.034Z",
       "sport": "cfb",
       "eventId": "401777327",
       "matchup": "BYU @ TTU",
@@ -4688,7 +4688,7 @@
       "expectedValue": 10.22826598987286,
       "recommended": true,
       "actuallyBet": true,
-      "status": "pending",
+      "status": "lost",
       "placements": [
         {
           "stake": 10,
@@ -4699,7 +4699,7 @@
         "homeScore": 146,
         "awayScore": 112,
         "actualProfit": -10,
-        "settledAt": "2025-12-06T04:37:25.267Z"
+        "settledAt": "2025-12-06T20:15:48.709Z"
       }
     },
     {
@@ -4721,13 +4721,13 @@
       "expectedValue": 6.1772141275109895,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 31,
         "awayScore": 14,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:37:25.268Z"
+        "settledAt": "2025-12-06T20:15:48.711Z"
       }
     },
     {
@@ -4749,7 +4749,7 @@
       "expectedValue": 5.497544566599208,
       "recommended": true,
       "actuallyBet": true,
-      "status": "pending",
+      "status": "lost",
       "placements": [
         {
           "stake": 10,
@@ -4760,7 +4760,7 @@
         "homeScore": 117,
         "awayScore": 98,
         "actualProfit": -10,
-        "settledAt": "2025-12-06T04:37:25.269Z"
+        "settledAt": "2025-12-06T20:15:48.712Z"
       }
     },
     {
@@ -4782,13 +4782,13 @@
       "expectedValue": 3.9053856231300195,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 133,
         "awayScore": 134,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:37:25.270Z"
+        "settledAt": "2025-12-06T20:15:48.713Z"
       }
     },
     {
@@ -4810,13 +4810,13 @@
       "expectedValue": 3.7906936665230493,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "won",
       "placements": [],
       "result": {
         "homeScore": 105,
         "awayScore": 120,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:37:25.271Z"
+        "settledAt": "2025-12-06T20:15:48.714Z"
       }
     },
     {
@@ -4838,13 +4838,13 @@
       "expectedValue": 2.7523856858846916,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "won",
       "placements": [],
       "result": {
         "homeScore": 107,
         "awayScore": 98,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:37:25.272Z"
+        "settledAt": "2025-12-06T20:15:48.714Z"
       }
     },
     {
@@ -4866,13 +4866,13 @@
       "expectedValue": 2.478950626837948,
       "recommended": true,
       "actuallyBet": false,
-      "status": "pending",
+      "status": "lost",
       "placements": [],
       "result": {
         "homeScore": 15,
         "awayScore": 19,
         "actualProfit": 0,
-        "settledAt": "2025-12-06T04:37:25.272Z"
+        "settledAt": "2025-12-06T20:15:48.715Z"
       }
     },
     {
@@ -5403,21 +5403,21 @@
     },
     {
       "id": "2025-12-06-ncaam-401819877-moneyline-ISU",
-      "timestamp": "2025-12-06T06:18:08.878Z",
+      "timestamp": "2025-12-06T22:31:49.976Z",
       "sport": "ncaam",
       "eventId": "401819877",
       "matchup": "ISU @ PUR",
       "date": "2025-12-06T17:00Z",
-      "pick": "ISU ML +195 [NCAAM] (model)",
+      "pick": "ISU ML +190 [NCAAM] (model)",
       "side": "ISU",
       "market": "moneyline",
-      "odds": 195,
-      "modelProbability": 0.4749687530045188,
+      "odds": 190,
+      "modelProbability": 0.4721086612199574,
       "bin": "40-50%",
       "historicalROI": 10.693982440483902,
       "historicalWinRate": 0.40217391304347827,
       "historicalSampleSize": 92,
-      "expectedValue": 4.011578213633305,
+      "expectedValue": 3.6911511753787654,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5425,7 +5425,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802798-moneyline-NSH",
-      "timestamp": "2025-12-06T06:18:08.882Z",
+      "timestamp": "2025-12-06T22:31:49.973Z",
       "sport": "nhl",
       "eventId": "401802798",
       "matchup": "NSH @ CAR",
@@ -5469,21 +5469,21 @@
     },
     {
       "id": "2025-12-07-ncaam-401826916-moneyline-MISS",
-      "timestamp": "2025-12-06T06:18:08.884Z",
+      "timestamp": "2025-12-06T22:31:49.966Z",
       "sport": "ncaam",
       "eventId": "401826916",
       "matchup": "MISS @ SJU",
       "date": "2025-12-07T01:00Z",
-      "pick": "MISS ML +600 [NCAAM] (model)",
+      "pick": "MISS ML +700 [NCAAM] (model)",
       "side": "MISS",
       "market": "moneyline",
-      "odds": 600,
-      "modelProbability": 0.1923171069377536,
-      "bin": "10-20%",
-      "historicalROI": 56.974414077460686,
-      "historicalWinRate": 0.047619047619047616,
-      "historicalSampleSize": 42,
-      "expectedValue": 3.4621974856427524,
+      "odds": 700,
+      "modelProbability": 0.26648125533049993,
+      "bin": "20-30%",
+      "historicalROI": 79.12877587877144,
+      "historicalWinRate": 0.06666666666666667,
+      "historicalSampleSize": 75,
+      "expectedValue": 11.318500426439996,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5491,7 +5491,7 @@
     },
     {
       "id": "2025-12-06-nhl-401802792-moneyline-NYR",
-      "timestamp": "2025-12-06T06:18:08.885Z",
+      "timestamp": "2025-12-06T22:31:49.979Z",
       "sport": "nhl",
       "eventId": "401802792",
       "matchup": "COL @ NYR",
@@ -5535,7 +5535,7 @@
     },
     {
       "id": "2025-12-07-nhl-401802800-moneyline-CHI",
-      "timestamp": "2025-12-06T06:18:08.887Z",
+      "timestamp": "2025-12-06T22:31:49.983Z",
       "sport": "nhl",
       "eventId": "401802800",
       "matchup": "CHI @ LA",
@@ -5601,21 +5601,21 @@
     },
     {
       "id": "2025-12-06-ncaam-401817235-moneyline-MSU",
-      "timestamp": "2025-12-06T04:39:49.525Z",
+      "timestamp": "2025-12-06T22:31:49.985Z",
       "sport": "ncaam",
       "eventId": "401817235",
       "matchup": "DUKE @ MSU",
       "date": "2025-12-06T17:00Z",
-      "pick": "MSU ML +110 [NCAAM] (model)",
+      "pick": "MSU ML -105 [NCAAM] (model)",
       "side": "MSU",
       "market": "moneyline",
-      "odds": 110,
-      "modelProbability": 0.49392660862356513,
-      "bin": "40-50%",
-      "historicalROI": 10.693982440483902,
-      "historicalWinRate": 0.40217391304347827,
-      "historicalSampleSize": 92,
-      "expectedValue": 0.37245878109486696,
+      "odds": -105,
+      "modelProbability": 0.6302887742212037,
+      "bin": "60-70%",
+      "historicalROI": 21.82767353061337,
+      "historicalWinRate": 0.7697841726618705,
+      "historicalSampleSize": 139,
+      "expectedValue": 2.3056379728901657,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5667,21 +5667,21 @@
     },
     {
       "id": "2025-12-06-ncaam-401817246-moneyline-IU",
-      "timestamp": "2025-12-06T04:39:49.527Z",
+      "timestamp": "2025-12-06T22:31:49.982Z",
       "sport": "ncaam",
       "eventId": "401817246",
-      "matchup": "LOU @ IU",
+      "matchup": "IU @ LOU",
       "date": "2025-12-06T19:15Z",
-      "pick": "IU ML +170 [NCAAM] (model)",
+      "pick": "IU ML +150 [NCAAM] (model)",
       "side": "IU",
       "market": "moneyline",
-      "odds": 170,
-      "modelProbability": 0.3659965679903482,
-      "bin": "30-40%",
-      "historicalROI": 58.95687612573393,
-      "historicalWinRate": 0.1728395061728395,
-      "historicalSampleSize": 81,
-      "expectedValue": -0.11809266426059928,
+      "odds": 150,
+      "modelProbability": 0.5045799658582979,
+      "bin": "50-60%",
+      "historicalROI": 1.5986565838276672,
+      "historicalWinRate": 0.6931067044381491,
+      "historicalSampleSize": 1059,
+      "expectedValue": 2.6144991464574474,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5733,21 +5733,21 @@
     },
     {
       "id": "2025-12-06-ncaam-401817246-moneyline-LOU",
-      "timestamp": "2025-12-06T04:39:49.530Z",
+      "timestamp": "2025-12-06T21:31:27.468Z",
       "sport": "ncaam",
       "eventId": "401817246",
-      "matchup": "LOU @ IU",
+      "matchup": "IU @ LOU",
       "date": "2025-12-06T19:15Z",
-      "pick": "LOU ML -205 [NCAAM] (model)",
+      "pick": "LOU ML -180 [NCAAM] (model)",
       "side": "LOU",
       "market": "moneyline",
-      "odds": -205,
-      "modelProbability": 0.6340034320096518,
-      "bin": "60-70%",
-      "historicalROI": 21.82767353061337,
-      "historicalWinRate": 0.7697841726618705,
-      "historicalSampleSize": 139,
-      "expectedValue": -0.5672660115637171,
+      "odds": -180,
+      "modelProbability": 0.8261672341134736,
+      "bin": "80-90%",
+      "historicalROI": 16.729349867873932,
+      "historicalWinRate": 0.9209039548022598,
+      "historicalSampleSize": 177,
+      "expectedValue": 2.8514903084318117,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5890,7 +5890,7 @@
     },
     {
       "id": "2025-12-06-nhl-401802793-moneyline-CBJ",
-      "timestamp": "2025-12-06T06:18:08.888Z",
+      "timestamp": "2025-12-06T22:31:49.986Z",
       "sport": "nhl",
       "eventId": "401802793",
       "matchup": "CBJ @ FLA",
@@ -5899,12 +5899,12 @@
       "side": "CBJ",
       "market": "moneyline",
       "odds": 154,
-      "modelProbability": 0.46026443226503055,
+      "modelProbability": 0.4617428533514395,
       "bin": "40-50%",
       "historicalROI": 1.5958329443551145,
       "historicalWinRate": 0.475,
       "historicalSampleSize": 40,
-      "expectedValue": 1.6907165795317756,
+      "expectedValue": 1.728268475126562,
       "recommended": true,
       "actuallyBet": false,
       "status": "pending",
@@ -5931,7 +5931,29 @@
       "actuallyBet": false,
       "status": "pending",
       "placements": []
+    },
+    {
+      "id": "2025-12-07-ncaam-401824813-moneyline-FSU",
+      "timestamp": "2025-12-06T22:31:49.980Z",
+      "sport": "ncaam",
+      "eventId": "401824813",
+      "matchup": "FSU @ HOU",
+      "date": "2025-12-07T01:00Z",
+      "pick": "FSU ML +850 [NCAAM] (model)",
+      "side": "FSU",
+      "market": "moneyline",
+      "odds": 850,
+      "modelProbability": 0.1332700874096635,
+      "bin": "10-20%",
+      "historicalROI": 56.974414077460686,
+      "historicalWinRate": 0.047619047619047616,
+      "historicalSampleSize": 42,
+      "expectedValue": 2.6606583039180336,
+      "recommended": true,
+      "actuallyBet": false,
+      "status": "pending",
+      "placements": []
     }
   ],
-  "lastUpdated": "2025-12-06T06:18:08.892Z"
+  "lastUpdated": "2025-12-07T00:28:01.038Z"
 }

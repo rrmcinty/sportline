@@ -101,6 +101,9 @@ export async function cmdSearchTeam(
       }
       console.log(chalk.cyan(`  📊 View bets: `) + chalk.white(`sportline bets --event ${comp.eventId} --sport ${sport} --date ${match.date} --stake 10`));
       console.log();
+        // Show detailed recommendation output for this event
+        const { cmdBets } = await import("./commands.js");
+        await cmdBets(sport, comp.eventId, match.date, 10);
     }
     
     console.log(chalk.dim(`\n💡 Or get all recommendations for these dates:`));
