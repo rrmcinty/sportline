@@ -1,0 +1,15 @@
+
+ncaam base features
+🔮 Generating predictions for NCAAM on 20251207...
+
+Model Training/Validation Stats:
+  Training samples: 3672
+  Validation samples: 1574
+  Validation accuracy: 68.81%
+  Brier score: 0.2020
+  Log loss: 0.5934
+  Train/validation split date: 2024-02-15T01:30Z
+
+with new features
+
+{"id":3278,"date":"2025-12-30T03:00Z","home_team_id":501,"away_team_id":2588,"home_score":0,"away_score":0}

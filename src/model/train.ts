@@ -18,7 +18,10 @@ function fitPlattScaling(preds: number[], labels: number[]): { a: number, b: num
 }
 
 // Reliability diagram: bin predictions and compute average predicted/actual for each bin
-function computeReliabilityDiagram(preds: number[], labels: number[], numBins = 10) {
+function computeReliabilityDiagram(preds: number[] | undefined, labels: number[] | undefined, numBins = 10) {
+  if (!Array.isArray(preds) || !Array.isArray(labels) || preds.length === 0 || labels.length === 0) {
+    return [];
+  }
   const bins = [];
   for (let i = 0; i < numBins; i++) {
     bins.push({
@@ -106,21 +109,6 @@ function sigmoid(z: number): number {
 
 function dot(a: number[], b: number[]): number {
   return a.reduce((sum, val, i) => sum + val * b[i], 0);
-}
-
-/**
- * Compute exponential-decay recency weights based on sample dates.
- * More recent dates receive higher weight. Half-life controls decay speed.
- */
-function computeRecencyWeights(dates: string[], halfLifeDays: number = 120): number[] {
-  if (!dates.length) return [];
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const times = dates.map(d => new Date(d).getTime());
-  const maxT = Math.max(...times);
-  const hlMs = halfLifeDays * msPerDay;
-  const ln2 = Math.log(2);
-  const weights = times.map(t => Math.exp(-ln2 * (maxT - t) / hlMs));
-  return weights;
 }
 
 /**
@@ -252,18 +240,25 @@ async function trainMoneylineModel(
           gf.homeOppWinRate10,
           gf.awayOppWinRate10,
           gf.homeOppAvgMargin10,
-          gf.awayOppAvgMargin10
+          gf.awayOppAvgMargin10,
+          // Basketball-specific features
+          gf.fg_pct,
+          gf.fg3_pct,
+          gf.turnovers,
+          gf.fgs_attempted,
+          gf.steals
         ];
+        // Filter out any NaN or undefined values in baseFeat
+        if (baseFeat.some(v => v === undefined || Number.isNaN(v))) continue;
         baseData.features.push(baseFeat);
         baseData.labels.push(outcome);
         baseData.dates.push(gf.date);
-
         // Market-aware features (with market implied prob)
         const marketFeat = [...baseFeat, gf.marketImpliedProb];
+        if (marketFeat.some(v => v === undefined || Number.isNaN(v))) continue;
         marketAwareData.features.push(marketFeat);
         marketAwareData.labels.push(outcome);
         marketAwareData.dates.push(gf.date);
-
         // Legacy trainingData for backward compat
         trainingData.features.push(marketFeat);
         trainingData.labels.push(outcome);

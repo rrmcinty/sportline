@@ -25,6 +25,10 @@ export interface Competition {
   venue?: string;
   homeScore?: number | null;
   awayScore?: number | null;
+  boxScore?: {
+    home: Record<string, number>;
+    away: Record<string, number>;
+  };
 }
 
 export interface BetLeg {

@@ -5,6 +5,12 @@
 import type Database from "better-sqlite3";
 
 export interface GameFeatures {
+  // Basketball-specific features
+  fg_pct?: number;
+  fg3_pct?: number;
+  turnovers?: number;
+  fgs_attempted?: number;
+  steals?: number;
   gameId: number;
   date: string;  // Game date for temporal splitting
   homeWinRate5: number;  // Last 5 games win rate
@@ -56,6 +62,36 @@ export interface GameFeatures {
  * Compute features for all games across multiple seasons
  */
 export function computeFeatures(db: Database.Database, sport: string, seasons: number[]): GameFeatures[] {
+      // Helper to get rolling stat for a team
+      function getRollingStat(teamId: number, stat: string, gameDate: string, window: number): number | undefined {
+        const rows = db.prepare(`
+          SELECT metric_value FROM team_stats
+          WHERE team_id = ? AND sport = ? AND metric_name = ? AND game_date < ?
+          ORDER BY game_date DESC LIMIT ?
+        `).all(teamId, sport, stat, gameDate, window) as Array<{ metric_value: number }>;
+        if (!rows.length) return undefined;
+        // Use recency weights if available
+        const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+        if (weights && rows.length === weights.length) {
+          let weightedSum = 0, totalWeight = 0;
+          for (let i = 0; i < rows.length; i++) {
+            weightedSum += rows[i].metric_value * weights[i];
+            totalWeight += weights[i];
+          }
+          return weightedSum / totalWeight;
+        }
+        // Fallback to uniform average
+        return rows.reduce((acc, r) => acc + r.metric_value, 0) / rows.length;
+      }
+    // --- Basketball-specific feature computation boilerplate ---
+    // Example: Compute rolling averages for basketball stats
+    // if (sport === 'nba' || sport === 'ncaam') {
+    //   gameFeatures.fg_pct = computeRollingMetric(teamHistory, 'fg_pct', 5);
+    //   gameFeatures.fg3_pct = computeRollingMetric(teamHistory, '3p_fg_pct', 5);
+    //   gameFeatures.turnovers = computeRollingMetric(teamHistory, 'turnovers', 5);
+    //   gameFeatures.fgs_attempted = computeRollingMetric(teamHistory, 'fg_attempted', 5);
+    //   gameFeatures.steals = computeRollingMetric(teamHistory, 'steals', 5);
+    // }
   const seasonPlaceholders = seasons.map(() => '?').join(',');
   const games = db.prepare(`
     SELECT g.id, g.date, g.home_team_id, g.away_team_id, g.home_score, g.away_score
@@ -143,6 +179,25 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
   const teamHistory = new Map<number, Array<{ date: string; margin: number; won: boolean; oppTeamId: number; pointsFor: number; pointsAgainst: number; combined: number }>>();
 
   for (const game of games) {
+    // Basketball-specific features (NBA/NCAAM)
+    let home_fg_pct, away_fg_pct, home_fg3_pct, away_fg3_pct, home_turnovers, away_turnovers, home_fgs_attempted, away_fgs_attempted, home_steals, away_steals;
+    if (sport === 'nba' || sport === 'ncaam') {
+      home_fg_pct = getRollingStat(game.home_team_id, 'fg_pct', game.date, 5);
+      away_fg_pct = getRollingStat(game.away_team_id, 'fg_pct', game.date, 5);
+      home_fg3_pct = getRollingStat(game.home_team_id, '3p_fg_pct', game.date, 5);
+      away_fg3_pct = getRollingStat(game.away_team_id, '3p_fg_pct', game.date, 5);
+      home_turnovers = getRollingStat(game.home_team_id, 'turnovers', game.date, 5);
+      away_turnovers = getRollingStat(game.away_team_id, 'turnovers', game.date, 5);
+      home_fgs_attempted = getRollingStat(game.home_team_id, 'fg_attempted', game.date, 5);
+      away_fgs_attempted = getRollingStat(game.away_team_id, 'fg_attempted', game.date, 5);
+      home_steals = getRollingStat(game.home_team_id, 'steals', game.date, 5);
+      away_steals = getRollingStat(game.away_team_id, 'steals', game.date, 5);
+      // Log feature values for first few games
+      // if (features.length < 10) {
+      //   console.log(`[${sport}] Game ${game.id} (${game.date}) home_fg_pct:`, home_fg_pct, 'away_fg_pct:', away_fg_pct, 'home_fg3_pct:', home_fg3_pct, 'away_fg3_pct:', away_fg3_pct, 'home_turnovers:', home_turnovers, 'away_turnovers:', away_turnovers, 'home_fgs_attempted:', home_fgs_attempted, 'away_fgs_attempted:', away_fgs_attempted, 'home_steals:', home_steals, 'away_steals:', away_steals);
+      // }
+      console.log(`${sport}: ${JSON.stringify(game)}`)
+    }
     const homeHistory = teamHistory.get(game.home_team_id) || [];
     const awayHistory = teamHistory.get(game.away_team_id) || [];
 
@@ -272,7 +327,14 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
         homeOffEff10,
         awayOffEff10,
         homeDefEff10,
-        awayDefEff10
+        awayDefEff10,
+        // Basketball-specific features
+        fg_pct: home_fg_pct,
+        fg3_pct: home_fg3_pct,
+        turnovers: home_turnovers,
+        fgs_attempted: home_fgs_attempted,
+        steals: home_steals
+        // You can add away team features as needed (e.g., prefix with 'away_')
       });
     }
 
@@ -312,6 +374,22 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
 /**
  * Exponential decay weights for recency bias (oldest to most recent)
  * For 5-game window: [0.08, 0.12, 0.20, 0.25, 0.35]
+      // ...existing code...
+      // --- Sport-specific feature computation boilerplate ---
+      // Example: Basketball 3-point percentage
+      // if (sport === 'nba' || sport === 'ncaam') {
+      //   gameFeatures.nba_3p_pct = compute3PointPct(...);
+      //   gameFeatures.nba_turnovers = computeTurnovers(...);
+      // }
+      // Example: Football passing yards
+      // if (sport === 'nfl' || sport === 'cfb') {
+      //   gameFeatures.nfl_pass_yards = computePassYards(...);
+      // }
+      // Example: Hockey save percentage
+      // if (sport === 'nhl') {
+      //   gameFeatures.nhl_save_pct = computeSavePct(...);
+      // }
+      // ...existing code...
  * For 10-game window: weights decay exponentially with more emphasis on recent games
  */
 const RECENCY_WEIGHTS_5 = [0.08, 0.12, 0.20, 0.25, 0.35];
