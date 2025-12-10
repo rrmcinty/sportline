@@ -39,8 +39,7 @@
     "update": "npm run build && node dist/index.js data daily && npm run train && node dist/index.js results && node dist/index.js stats && cp data/sportline.db ../sportline.db && node -e 'const s=(process.env.UNDERDOG_SPORTS||\"nfl,nba,cfb,ncaam,nhl\").split(\",\"); const {execSync}=require(\"node:child_process\"); for (const sport of s) { console.log(\"🐕 Updating underdog for\", sport); execSync(\"node dist/index.js underdog train --sport \" + sport + \" --seasons 2021,2022,2023,2024,2025 --tiers moderate\", {stdio: \"inherit\"}); }'",
     "settle": "node dist/index.js results",
     "stats": "node dist/index.js stats",
-        "format": "prettier --write \"src/**/*.ts\""
-
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [
     "ncaam",
@@ -55,7 +54,8 @@
     "better-sqlite3": "^11.7.0",
     "chalk": "^5.6.2",
     "commander": "^11.1.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
