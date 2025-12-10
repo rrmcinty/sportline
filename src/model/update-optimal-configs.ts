@@ -22,7 +22,9 @@ interface OptimalConfig {
  * Analyze all backtest results and recommend updated optimal configs
  */
 export async function analyzeOptimalConfigs(): Promise<void> {
-  console.log("\n🔍 Analyzing backtest results to find optimal configurations...\n");
+  console.log(
+    "\n🔍 Analyzing backtest results to find optimal configurations...\n",
+  );
 
   const updates: Array<{
     sport: Sport;
@@ -36,7 +38,7 @@ export async function analyzeOptimalConfigs(): Promise<void> {
   for (const sport of SPORTS) {
     for (const market of MARKETS) {
       const bestConfig = await findBestConfig(sport, market);
-      
+
       if (!bestConfig) {
         continue; // No backtest results for this combo
       }
@@ -45,34 +47,41 @@ export async function analyzeOptimalConfigs(): Promise<void> {
       const threshold = 1.0; // 1% ROI improvement threshold
       const shouldUpdate = bestConfig.roi >= 5; // Only recommend if ROI >= 5%
 
-      const reason = bestConfig.roi >= 5
-        ? `Strong performance: ${bestConfig.roi.toFixed(1)}% ROI`
-        : `Unprofitable: ${bestConfig.roi.toFixed(1)}% ROI (avoid)`;
+      const reason =
+        bestConfig.roi >= 5
+          ? `Strong performance: ${bestConfig.roi.toFixed(1)}% ROI`
+          : `Unprofitable: ${bestConfig.roi.toFixed(1)}% ROI (avoid)`;
 
       updates.push({
         sport,
         market,
         bestConfig,
         shouldUpdate,
-        reason
+        reason,
       });
     }
   }
 
   // Print recommendations
-  console.log("═══════════════════════════════════════════════════════════════════════");
+  console.log(
+    "═══════════════════════════════════════════════════════════════════════",
+  );
   console.log("OPTIMAL CONFIGURATION RECOMMENDATIONS");
-  console.log("═══════════════════════════════════════════════════════════════════════\n");
+  console.log(
+    "═══════════════════════════════════════════════════════════════════════\n",
+  );
 
-  const recommended = updates.filter(u => u.shouldUpdate);
-  const notRecommended = updates.filter(u => !u.shouldUpdate);
+  const recommended = updates.filter((u) => u.shouldUpdate);
+  const notRecommended = updates.filter((u) => !u.shouldUpdate);
 
   if (recommended.length > 0) {
     console.log("✅ RECOMMENDED CONFIGURATIONS (ROI >= 5%):\n");
     for (const update of recommended) {
       console.log(`${update.sport.toUpperCase()} ${update.market}:`);
       console.log(`  Seasons: ${update.bestConfig.seasons.join(", ")}`);
-      console.log(`  ROI: ${update.bestConfig.roi >= 0 ? "+" : ""}${update.bestConfig.roi.toFixed(1)}%`);
+      console.log(
+        `  ROI: ${update.bestConfig.roi >= 0 ? "+" : ""}${update.bestConfig.roi.toFixed(1)}%`,
+      );
       console.log(`  ECE: ${(update.bestConfig.ece * 100).toFixed(2)}%`);
       console.log(`  ${update.reason}\n`);
     }
@@ -83,15 +92,23 @@ export async function analyzeOptimalConfigs(): Promise<void> {
     for (const update of notRecommended) {
       console.log(`${update.sport.toUpperCase()} ${update.market}:`);
       console.log(`  Seasons: ${update.bestConfig.seasons.join(", ")}`);
-      console.log(`  ROI: ${update.bestConfig.roi >= 0 ? "+" : ""}${update.bestConfig.roi.toFixed(1)}%`);
+      console.log(
+        `  ROI: ${update.bestConfig.roi >= 0 ? "+" : ""}${update.bestConfig.roi.toFixed(1)}%`,
+      );
       console.log(`  ECE: ${(update.bestConfig.ece * 100).toFixed(2)}%`);
       console.log(`  ${update.reason}\n`);
     }
   }
 
-  console.log("═══════════════════════════════════════════════════════════════════════");
-  console.log("\n💡 To update optimal-config.ts with these values, review the results above");
-  console.log("   and manually edit src/model/optimal-config.ts if changes are warranted.\n");
+  console.log(
+    "═══════════════════════════════════════════════════════════════════════",
+  );
+  console.log(
+    "\n💡 To update optimal-config.ts with these values, review the results above",
+  );
+  console.log(
+    "   and manually edit src/model/optimal-config.ts if changes are warranted.\n",
+  );
 }
 
 /**
@@ -102,29 +119,34 @@ export async function generateOptimalConfigCode(): Promise<string> {
 
   for (const sport of SPORTS) {
     configs[sport] = {};
-    
+
     for (const market of MARKETS) {
       const bestConfig = await findBestConfig(sport, market);
-      
+
       if (bestConfig && bestConfig.roi >= 0) {
         configs[sport][market] = {
           expectedROI: parseFloat(bestConfig.roi.toFixed(1)),
           expectedECE: parseFloat(bestConfig.ece.toFixed(4)),
           seasons: bestConfig.seasons,
-          reason: bestConfig.roi >= 5
-            ? `Backtests show +${bestConfig.roi.toFixed(1)}% ROI with ${(bestConfig.ece * 100).toFixed(2)}% calibration error`
-            : `Low ROI (+${bestConfig.roi.toFixed(1)}%) - use with caution`
+          reason:
+            bestConfig.roi >= 5
+              ? `Backtests show +${bestConfig.roi.toFixed(1)}% ROI with ${(bestConfig.ece * 100).toFixed(2)}% calibration error`
+              : `Low ROI (+${bestConfig.roi.toFixed(1)}%) - use with caution`,
         };
       }
     }
   }
 
   // Generate TypeScript code
-  let code = '/**\n';
-  code += ' * Auto-generated optimal configurations based on backtest results\n';
+  let code = "/**\n";
+  code +=
+    " * Auto-generated optimal configurations based on backtest results\n";
   code += ` * Last updated: ${new Date().toISOString()}\n`;
-  code += ' */\n\n';
-  code += 'export const OPTIMAL_CONFIGS = ' + JSON.stringify(configs, null, 2) + ';\n';
+  code += " */\n\n";
+  code +=
+    "export const OPTIMAL_CONFIGS = " +
+    JSON.stringify(configs, null, 2) +
+    ";\n";
 
   return code;
 }

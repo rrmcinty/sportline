@@ -9,36 +9,36 @@ import type { GameFeatures } from "../../model/features.js";
  */
 export interface NFLSpreadGameFeatures extends GameFeatures {
   // Spread-specific features
-  homeATSRecord5: number;      // ATS win rate (last 5 games)
+  homeATSRecord5: number; // ATS win rate (last 5 games)
   awayATSRecord5: number;
-  homeATSRecord10: number;     // ATS win rate (last 10 games)
+  homeATSRecord10: number; // ATS win rate (last 10 games)
   awayATSRecord10: number;
-  homeATSMargin5: number;      // Avg margin vs spread (last 5)
+  homeATSMargin5: number; // Avg margin vs spread (last 5)
   awayATSMargin5: number;
-  homeATSMargin10: number;     // Avg margin vs spread (last 10)
+  homeATSMargin10: number; // Avg margin vs spread (last 10)
   awayATSMargin10: number;
-  spreadMovement: number;      // Opening vs closing spread movement
-  marketOverreaction: number;  // How much spread moved vs actual performance
+  spreadMovement: number; // Opening vs closing spread movement
+  marketOverreaction: number; // How much spread moved vs actual performance
   homeRestDays: number | null; // Days since last game (if available)
   awayRestDays: number | null;
-  favoriteTeam: "home" | "away" | null;  // Which team is favored by spread
-  spreadSize: number;          // Absolute value of spread
-  isTightSpread: number;       // 1 if spread <= 3, 0 otherwise (coin flip games)
+  favoriteTeam: "home" | "away" | null; // Which team is favored by spread
+  spreadSize: number; // Absolute value of spread
+  isTightSpread: number; // 1 if spread <= 3, 0 otherwise (coin flip games)
 }
 
 /**
  * Confidence bucket for spread predictions
  */
-export type SpreadConfidenceBucket = 
-  | "0-10%" 
-  | "10-20%" 
-  | "20-30%" 
-  | "30-40%" 
-  | "40-50%" 
-  | "50-60%" 
-  | "60-70%" 
-  | "70-80%" 
-  | "80-90%" 
+export type SpreadConfidenceBucket =
+  | "0-10%"
+  | "10-20%"
+  | "20-30%"
+  | "30-40%"
+  | "40-50%"
+  | "50-60%"
+  | "60-70%"
+  | "70-80%"
+  | "80-90%"
   | "90-100%";
 
 /**
@@ -69,13 +69,13 @@ export interface NFLSpreadPrediction {
   awayTeam: string;
   spreadLine: number;
   favoriteTeam: "home" | "away";
-  homeCoverProbability: number;   // Model's probability home covers
-  marketProbability: number;       // Market's implied probability
-  edge: number;                    // modelProb - marketProb
-  expectedValue: number;           // Expected value of $10 bet
+  homeCoverProbability: number; // Model's probability home covers
+  marketProbability: number; // Market's implied probability
+  edge: number; // modelProb - marketProb
+  expectedValue: number; // Expected value of $10 bet
   confidence: SpreadConfidenceBucket;
-  isProfitableBucket: boolean;     // True if confidence bucket is historically profitable
-  traits: string[];                // List of favorable traits (e.g., "Home favorite -3 or less", "Strong ATS trend")
+  isProfitableBucket: boolean; // True if confidence bucket is historically profitable
+  traits: string[]; // List of favorable traits (e.g., "Home favorite -3 or less", "Strong ATS trend")
 }
 
 /**
@@ -106,7 +106,7 @@ export interface NFLSpreadBacktestResults {
     roi: number;
   }>;
   bySpreadSize: Array<{
-    range: string;  // e.g., "0-3", "3.5-7", "7.5+"
+    range: string; // e.g., "0-3", "3.5-7", "7.5+"
     bets: number;
     wins: number;
     winRate: number;

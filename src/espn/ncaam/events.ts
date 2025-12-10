@@ -6,7 +6,8 @@ import fetch from "node-fetch";
 import { getCache, setCache } from "../../cache/index.js";
 import type { Competition } from "../../models/types.js";
 
-const BASE_URL = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
+const BASE_URL =
+  "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
 
 interface ESPNEventRef {
   $ref: string;
@@ -78,7 +79,9 @@ export async function fetchEvents(date: string): Promise<Competition[]> {
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`ESPN API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `ESPN API error: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data = (await response.json()) as ESPNEventsResponse;
@@ -191,8 +194,12 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
   const [homeTeam, awayTeam, homeScore, awayScore] = await Promise.all([
     fetchTeam(homeCompetitor.team.$ref),
     fetchTeam(awayCompetitor.team.$ref),
-    homeCompetitor.score?.$ref ? fetchScore(homeCompetitor.score.$ref) : Promise.resolve(null),
-    awayCompetitor.score?.$ref ? fetchScore(awayCompetitor.score.$ref) : Promise.resolve(null),
+    homeCompetitor.score?.$ref
+      ? fetchScore(homeCompetitor.score.$ref)
+      : Promise.resolve(null),
+    awayCompetitor.score?.$ref
+      ? fetchScore(awayCompetitor.score.$ref)
+      : Promise.resolve(null),
   ]);
 
   return {

@@ -19,30 +19,33 @@ import { fetchNHLOdds as fetchOddsNhl } from "../espn/nhl/odds.js";
 /**
  * Get season date range for a sport
  */
-function getSeasonDateRange(sport: Sport, season: number): { start: string; end: string } {
+function getSeasonDateRange(
+  sport: Sport,
+  season: number,
+): { start: string; end: string } {
   if (sport === "ncaam") {
     // NCAAM season: Nov 1 to Apr 15
     return {
       start: `${season}-11-01`,
-      end: `${season + 1}-04-15`
+      end: `${season + 1}-04-15`,
     };
   } else if (sport === "cfb") {
     // CFB season: Aug 20 to Jan 31
     return {
       start: `${season}-08-20`,
-      end: `${season + 1}-01-31`
+      end: `${season + 1}-01-31`,
     };
   } else if (sport === "nfl") {
     // NFL season: Sep 1 to Feb 15 (includes playoffs/Super Bowl)
     return {
       start: `${season}-09-01`,
-      end: `${season + 1}-02-15`
+      end: `${season + 1}-02-15`,
     };
   } else {
     // NBA season: Oct 1 to Jun 30 (includes playoffs)
     return {
       start: `${season}-10-01`,
-      end: `${season + 1}-06-30`
+      end: `${season + 1}-06-30`,
     };
   }
 }
@@ -61,14 +64,14 @@ function generateDateRange(start: string, end: string): string[] {
   const dates: string[] = [];
   const startDate = new Date(start);
   const endDate = new Date(end);
-  
+
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
     dates.push(`${yyyy}${mm}${dd}`);
   }
-  
+
   return dates;
 }
 
@@ -79,10 +82,14 @@ export async function cmdDataIngest(
   sport: Sport,
   season: number,
   fromDate?: string,
-  toDate?: string
+  toDate?: string,
 ): Promise<void> {
   try {
-    console.log(chalk.bold.cyan(`\n📥 Ingesting ${sport.toUpperCase()} data for season ${season}...\n`));
+    console.log(
+      chalk.bold.cyan(
+        `\n📥 Ingesting ${sport.toUpperCase()} data for season ${season}...\n`,
+      ),
+    );
 
     // Initialize database
     initDb();
@@ -92,13 +99,13 @@ export async function cmdDataIngest(
     const defaultRange = getSeasonDateRange(sport, season);
     const startDate = fromDate || defaultRange.start;
     const endDate = toDate || defaultRange.end;
-    
+
     console.log(chalk.gray(`Date range: ${startDate} to ${endDate}\n`));
 
     // Select appropriate fetchers based on sport
     let fetchEvents: (date: string) => Promise<Competition[]>;
     let fetchOdds: (eventId: string) => Promise<any[]>;
-    
+
     if (sport === "ncaam") {
       fetchEvents = fetchEventsNcaam;
       fetchOdds = fetchOddsNcaam;
@@ -149,16 +156,22 @@ export async function cmdDataIngest(
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const getGameByEventId = db.prepare(`SELECT id FROM games WHERE espn_event_id = ?`);
+    const getGameByEventId = db.prepare(
+      `SELECT id FROM games WHERE espn_event_id = ?`,
+    );
 
     // Fetch games day by day
     for (const dateStr of dates) {
       try {
         const competitions = await fetchEvents(dateStr);
-        
+
         if (competitions.length === 0) continue;
 
-        console.log(chalk.dim(`${dateStr}: ${competitions.length} ${sport.toUpperCase()} game(s)`));
+        console.log(
+          chalk.dim(
+            `${dateStr}: ${competitions.length} ${sport.toUpperCase()} game(s)`,
+          ),
+        );
 
         for (const comp of competitions) {
           // Upsert teams
@@ -166,13 +179,13 @@ export async function cmdDataIngest(
             sport,
             comp.homeTeam.id,
             comp.homeTeam.name,
-            comp.homeTeam.abbreviation || null
+            comp.homeTeam.abbreviation || null,
           ) as { id: number };
           const awayTeamResult = upsertTeam.get(
             sport,
             comp.awayTeam.id,
             comp.awayTeam.name,
-            comp.awayTeam.abbreviation || null
+            comp.awayTeam.abbreviation || null,
           ) as { id: number };
 
           // Insert game
@@ -186,7 +199,7 @@ export async function cmdDataIngest(
             comp.homeScore ?? null,
             comp.awayScore ?? null,
             comp.venue || null,
-            comp.status
+            comp.status,
           );
 
           totalGames++;
@@ -194,12 +207,17 @@ export async function cmdDataIngest(
           // Fetch and insert odds
           try {
             const oddsEntries = await fetchOdds(comp.eventId);
-            const gameRow = getGameByEventId.get(comp.eventId) as { id: number } | undefined;
-            
+            const gameRow = getGameByEventId.get(comp.eventId) as
+              | { id: number }
+              | undefined;
+
             if (gameRow && oddsEntries.length > 0) {
               for (const entry of oddsEntries) {
                 // Moneyline
-                if (entry.homeTeamOdds.moneyLine && entry.awayTeamOdds.moneyLine) {
+                if (
+                  entry.homeTeamOdds.moneyLine &&
+                  entry.awayTeamOdds.moneyLine
+                ) {
                   insertOdds.run(
                     gameRow.id,
                     entry.provider.name,
@@ -209,13 +227,17 @@ export async function cmdDataIngest(
                     entry.awayTeamOdds.moneyLine,
                     null,
                     null,
-                    new Date().toISOString()
+                    new Date().toISOString(),
                   );
                   totalOdds++;
                 }
 
                 // Spread
-                if (entry.spread !== undefined && entry.homeTeamOdds.spreadOdds && entry.awayTeamOdds.spreadOdds) {
+                if (
+                  entry.spread !== undefined &&
+                  entry.homeTeamOdds.spreadOdds &&
+                  entry.awayTeamOdds.spreadOdds
+                ) {
                   insertOdds.run(
                     gameRow.id,
                     entry.provider.name,
@@ -225,13 +247,17 @@ export async function cmdDataIngest(
                     entry.awayTeamOdds.spreadOdds,
                     null,
                     null,
-                    new Date().toISOString()
+                    new Date().toISOString(),
                   );
                   totalOdds++;
                 }
 
                 // Total
-                if (entry.overUnder !== undefined && entry.overOdds && entry.underOdds) {
+                if (
+                  entry.overUnder !== undefined &&
+                  entry.overOdds &&
+                  entry.underOdds
+                ) {
                   insertOdds.run(
                     gameRow.id,
                     entry.provider.name,
@@ -241,14 +267,16 @@ export async function cmdDataIngest(
                     null,
                     entry.overOdds,
                     entry.underOdds,
-                    new Date().toISOString()
+                    new Date().toISOString(),
                   );
                   totalOdds++;
                 }
               }
             }
           } catch (oddsErr) {
-            console.warn(chalk.yellow(`  ⚠️  Failed to fetch odds for ${comp.eventId}`));
+            console.warn(
+              chalk.yellow(`  ⚠️  Failed to fetch odds for ${comp.eventId}`),
+            );
           }
         }
       } catch (dayErr) {
@@ -256,7 +284,7 @@ export async function cmdDataIngest(
       }
 
       // Rate limit: small delay between days
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     console.log(chalk.green.bold(`\n✅ Ingest complete!`));
@@ -276,17 +304,20 @@ export async function cmdOddsRefresh(sports?: string[]): Promise<void> {
   initDb();
   const db = getDb();
 
-  const sportsToProcess = sports && sports.length > 0 
-    ? (sports as Sport[]) 
-    : ["ncaam", "cfb", "nfl", "nba", "nhl"];
+  const sportsToProcess =
+    sports && sports.length > 0
+      ? (sports as Sport[])
+      : ["ncaam", "cfb", "nfl", "nba", "nhl"];
 
   let totalOdds = 0;
 
-  console.log(chalk.bold.cyan(`\n📊 Refreshing opening odds for today's games...\n`));
+  console.log(
+    chalk.bold.cyan(`\n📊 Refreshing opening odds for today's games...\n`),
+  );
 
   for (const sport of sportsToProcess) {
     let fetchOdds: (eventId: string) => Promise<any[]>;
-    
+
     switch (sport) {
       case "ncaam":
         fetchOdds = fetchOddsNcaam;
@@ -308,24 +339,34 @@ export async function cmdOddsRefresh(sports?: string[]): Promise<void> {
     }
 
     // Get today's games that don't have odds yet (or need updated odds)
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
     const todayStart = new Date(`${today}T00:00:00Z`).getTime();
     const todayEnd = new Date(`${today}T23:59:59Z`).getTime();
 
-    const games = db.prepare(`
+    const games = db
+      .prepare(
+        `
       SELECT id, espn_event_id, date
       FROM games
       WHERE sport = ? 
         AND datetime(date) >= datetime(?)
         AND datetime(date) < datetime(?, '+1 day')
       ORDER BY date ASC
-    `).all(sport, today, today) as Array<{ id: number; espn_event_id: string; date: string }>;
+    `,
+      )
+      .all(sport, today, today) as Array<{
+      id: number;
+      espn_event_id: string;
+      date: string;
+    }>;
 
     if (games.length === 0) {
       continue;
     }
 
-    console.log(chalk.dim(`${sport.toUpperCase()}: Found ${games.length} games today`));
+    console.log(
+      chalk.dim(`${sport.toUpperCase()}: Found ${games.length} games today`),
+    );
 
     const insertOdds = db.prepare(`
       INSERT OR REPLACE INTO odds (game_id, provider, market, line, price_home, price_away, price_over, price_under, timestamp)
@@ -335,67 +376,80 @@ export async function cmdOddsRefresh(sports?: string[]): Promise<void> {
     for (const game of games) {
       try {
         const oddsEntries = await fetchOdds(game.espn_event_id);
-        
+
         if (oddsEntries.length > 0) {
           for (const entry of oddsEntries) {
             // Use current time as timestamp - this is the "opening odds" we fetched today
             const timestamp = new Date().toISOString();
 
             // Moneyline
-            if (entry.homeTeamOdds?.moneyLine && entry.awayTeamOdds?.moneyLine) {
+            if (
+              entry.homeTeamOdds?.moneyLine &&
+              entry.awayTeamOdds?.moneyLine
+            ) {
               insertOdds.run(
                 game.id,
-                entry.provider?.name || 'Unknown',
-                'moneyline',
+                entry.provider?.name || "Unknown",
+                "moneyline",
                 null,
                 entry.homeTeamOdds.moneyLine,
                 entry.awayTeamOdds.moneyLine,
                 null,
                 null,
-                timestamp
+                timestamp,
               );
               totalOdds++;
             }
 
             // Spread
-            if (entry.spread !== undefined && entry.homeTeamOdds?.spreadOdds && entry.awayTeamOdds?.spreadOdds) {
+            if (
+              entry.spread !== undefined &&
+              entry.homeTeamOdds?.spreadOdds &&
+              entry.awayTeamOdds?.spreadOdds
+            ) {
               insertOdds.run(
                 game.id,
-                entry.provider?.name || 'Unknown',
-                'spread',
+                entry.provider?.name || "Unknown",
+                "spread",
                 entry.spread,
                 entry.homeTeamOdds.spreadOdds,
                 entry.awayTeamOdds.spreadOdds,
                 null,
                 null,
-                timestamp
+                timestamp,
               );
               totalOdds++;
             }
 
             // Total
-            if (entry.overUnder !== undefined && entry.overOdds && entry.underOdds) {
+            if (
+              entry.overUnder !== undefined &&
+              entry.overOdds &&
+              entry.underOdds
+            ) {
               insertOdds.run(
                 game.id,
-                entry.provider?.name || 'Unknown',
-                'total',
+                entry.provider?.name || "Unknown",
+                "total",
                 entry.overUnder,
                 null,
                 null,
                 entry.overOdds,
                 entry.underOdds,
-                timestamp
+                timestamp,
               );
               totalOdds++;
             }
           }
         }
       } catch (err) {
-        console.warn(chalk.yellow(`  ⚠️  Failed to fetch odds for ${game.espn_event_id}`));
+        console.warn(
+          chalk.yellow(`  ⚠️  Failed to fetch odds for ${game.espn_event_id}`),
+        );
       }
 
       // Rate limit
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
   }
 

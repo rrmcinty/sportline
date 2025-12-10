@@ -6,23 +6,23 @@ import type Database from "better-sqlite3";
 
 export interface GameFeatures {
   gameId: number;
-  date: string;  // Game date for temporal splitting
-  homeWinRate5: number;  // Last 5 games win rate
+  date: string; // Game date for temporal splitting
+  homeWinRate5: number; // Last 5 games win rate
   awayWinRate5: number;
-  homeAvgMargin5: number;  // Last 5 games average margin
+  homeAvgMargin5: number; // Last 5 games average margin
   awayAvgMargin5: number;
-  homeAdvantage: number;  // 1 for home, 0 for neutral/away
-  homeOppWinRate5: number;  // Avg opponent win rate (SoS)
+  homeAdvantage: number; // 1 for home, 0 for neutral/away
+  homeOppWinRate5: number; // Avg opponent win rate (SoS)
   awayOppWinRate5: number;
-  homeOppAvgMargin5: number;  // Avg opponent margin (SoS quality)
+  homeOppAvgMargin5: number; // Avg opponent margin (SoS quality)
   awayOppAvgMargin5: number;
-  marketImpliedProb: number;  // Market consensus probability for home team win
-  spreadLine: number | null;  // Spread line (negative = home favored, e.g., -7.5)
-  spreadMarketImpliedProb: number | null;  // Market consensus for home team covering spread
-  totalLine: number | null;  // Total points line
+  marketImpliedProb: number; // Market consensus probability for home team win
+  spreadLine: number | null; // Spread line (negative = home favored, e.g., -7.5)
+  spreadMarketImpliedProb: number | null; // Market consensus for home team covering spread
+  totalLine: number | null; // Total points line
   totalMarketImpliedProb: number | null; // Market consensus probability for over
-  homePointsAvg5: number;  // Rolling avg points scored (home team)
-  awayPointsAvg5: number;  // Rolling avg points scored (away team)
+  homePointsAvg5: number; // Rolling avg points scored (home team)
+  awayPointsAvg5: number; // Rolling avg points scored (away team)
   homeOppPointsAvg5: number; // Rolling avg points allowed by home opponents
   awayOppPointsAvg5: number; // Rolling avg points allowed by away opponents
   homePace5: number; // Rolling avg combined points (proxy for pace/tempo)
@@ -55,14 +55,22 @@ export interface GameFeatures {
 /**
  * Compute features for all games across multiple seasons
  */
-export function computeFeatures(db: Database.Database, sport: string, seasons: number[]): GameFeatures[] {
-  const seasonPlaceholders = seasons.map(() => '?').join(',');
-  const games = db.prepare(`
+export function computeFeatures(
+  db: Database.Database,
+  sport: string,
+  seasons: number[],
+): GameFeatures[] {
+  const seasonPlaceholders = seasons.map(() => "?").join(",");
+  const games = db
+    .prepare(
+      `
     SELECT g.id, g.date, g.home_team_id, g.away_team_id, g.home_score, g.away_score
     FROM games g
     WHERE g.sport = ? AND g.season IN (${seasonPlaceholders})
     ORDER BY g.date ASC
-  `).all(sport, ...seasons) as Array<{
+  `,
+    )
+    .all(sport, ...seasons) as Array<{
     id: number;
     date: string;
     home_team_id: number;
@@ -72,15 +80,28 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
   }>;
 
   // Fetch market odds for all games (moneyline, spread, total)
-  const marketOdds = new Map<number, { homePrice: number; awayPrice: number }>();
-  const spreadOdds = new Map<number, { line: number; homePrice: number; awayPrice: number }>();
-  const totalOdds = new Map<number, { line: number; overPrice: number; underPrice: number }>();
-  
-  const moneylineData = db.prepare(`
+  const marketOdds = new Map<
+    number,
+    { homePrice: number; awayPrice: number }
+  >();
+  const spreadOdds = new Map<
+    number,
+    { line: number; homePrice: number; awayPrice: number }
+  >();
+  const totalOdds = new Map<
+    number,
+    { line: number; overPrice: number; underPrice: number }
+  >();
+
+  const moneylineData = db
+    .prepare(
+      `
     SELECT game_id, price_home, price_away
     FROM odds
     WHERE market = 'moneyline'
-  `).all() as Array<{
+  `,
+    )
+    .all() as Array<{
     game_id: number;
     price_home: number | null;
     price_away: number | null;
@@ -90,16 +111,20 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     if (odd.price_home && odd.price_away) {
       marketOdds.set(odd.game_id, {
         homePrice: odd.price_home,
-        awayPrice: odd.price_away
+        awayPrice: odd.price_away,
       });
     }
   }
 
-  const spreadData = db.prepare(`
+  const spreadData = db
+    .prepare(
+      `
     SELECT game_id, line, price_home, price_away
     FROM odds
     WHERE market = 'spread'
-  `).all() as Array<{
+  `,
+    )
+    .all() as Array<{
     game_id: number;
     line: number | null;
     price_home: number | null;
@@ -111,16 +136,20 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
       spreadOdds.set(odd.game_id, {
         line: odd.line,
         homePrice: odd.price_home,
-        awayPrice: odd.price_away
+        awayPrice: odd.price_away,
       });
     }
   }
 
-  const totalData = db.prepare(`
+  const totalData = db
+    .prepare(
+      `
     SELECT game_id, line, price_over, price_under
     FROM odds
     WHERE market = 'total'
-  `).all() as Array<{
+  `,
+    )
+    .all() as Array<{
     game_id: number;
     line: number | null;
     price_over: number | null;
@@ -132,7 +161,7 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
       totalOdds.set(odd.game_id, {
         line: odd.line,
         overPrice: odd.price_over,
-        underPrice: odd.price_under
+        underPrice: odd.price_under,
       });
     }
   }
@@ -140,7 +169,18 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
   const features: GameFeatures[] = [];
 
   // Build team performance history incrementally
-  const teamHistory = new Map<number, Array<{ date: string; margin: number; won: boolean; oppTeamId: number; pointsFor: number; pointsAgainst: number; combined: number }>>();
+  const teamHistory = new Map<
+    number,
+    Array<{
+      date: string;
+      margin: number;
+      won: boolean;
+      oppTeamId: number;
+      pointsFor: number;
+      pointsAgainst: number;
+      combined: number;
+    }>
+  >();
 
   for (const game of games) {
     const homeHistory = teamHistory.get(game.home_team_id) || [];
@@ -153,8 +193,16 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     const awayAvgMargin5 = computeAvgMargin(awayHistory, 5);
     const homePointsAvg5 = computeAvgPointsFor(homeHistory, 5);
     const awayPointsAvg5 = computeAvgPointsFor(awayHistory, 5);
-    const homeOppPointsAvg5 = computeOpponentAvgPoints(homeHistory, teamHistory, 5);
-    const awayOppPointsAvg5 = computeOpponentAvgPoints(awayHistory, teamHistory, 5);
+    const homeOppPointsAvg5 = computeOpponentAvgPoints(
+      homeHistory,
+      teamHistory,
+      5,
+    );
+    const awayOppPointsAvg5 = computeOpponentAvgPoints(
+      awayHistory,
+      teamHistory,
+      5,
+    );
     const homePace5 = computeAvgCombined(homeHistory, 5);
     const awayPace5 = computeAvgCombined(awayHistory, 5);
     const homeOffEff5 = homePointsAvg5; // Same as points scored avg for now
@@ -163,10 +211,26 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     const awayDefEff5 = computeAvgPointsAgainst(awayHistory, 5);
 
     // Compute SoS: average opponent stats (5-game)
-    const homeOppWinRate5 = computeOpponentAvgWinRate(homeHistory, teamHistory, 5);
-    const awayOppWinRate5 = computeOpponentAvgWinRate(awayHistory, teamHistory, 5);
-    const homeOppAvgMargin5 = computeOpponentAvgMargin(homeHistory, teamHistory, 5);
-    const awayOppAvgMargin5 = computeOpponentAvgMargin(awayHistory, teamHistory, 5);
+    const homeOppWinRate5 = computeOpponentAvgWinRate(
+      homeHistory,
+      teamHistory,
+      5,
+    );
+    const awayOppWinRate5 = computeOpponentAvgWinRate(
+      awayHistory,
+      teamHistory,
+      5,
+    );
+    const homeOppAvgMargin5 = computeOpponentAvgMargin(
+      homeHistory,
+      teamHistory,
+      5,
+    );
+    const awayOppAvgMargin5 = computeOpponentAvgMargin(
+      awayHistory,
+      teamHistory,
+      5,
+    );
 
     // Compute rolling features (10-game window)
     const homeWinRate10 = computeWinRate(homeHistory, 10);
@@ -175,8 +239,16 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     const awayAvgMargin10 = computeAvgMargin(awayHistory, 10);
     const homePointsAvg10 = computeAvgPointsFor(homeHistory, 10);
     const awayPointsAvg10 = computeAvgPointsFor(awayHistory, 10);
-    const homeOppPointsAvg10 = computeOpponentAvgPoints(homeHistory, teamHistory, 10);
-    const awayOppPointsAvg10 = computeOpponentAvgPoints(awayHistory, teamHistory, 10);
+    const homeOppPointsAvg10 = computeOpponentAvgPoints(
+      homeHistory,
+      teamHistory,
+      10,
+    );
+    const awayOppPointsAvg10 = computeOpponentAvgPoints(
+      awayHistory,
+      teamHistory,
+      10,
+    );
     const homePace10 = computeAvgCombined(homeHistory, 10);
     const awayPace10 = computeAvgCombined(awayHistory, 10);
     const homeOffEff10 = homePointsAvg10;
@@ -185,13 +257,29 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
     const awayDefEff10 = computeAvgPointsAgainst(awayHistory, 10);
 
     // Compute SoS: average opponent stats (10-game)
-    const homeOppWinRate10 = computeOpponentAvgWinRate(homeHistory, teamHistory, 10);
-    const awayOppWinRate10 = computeOpponentAvgWinRate(awayHistory, teamHistory, 10);
-    const homeOppAvgMargin10 = computeOpponentAvgMargin(homeHistory, teamHistory, 10);
-    const awayOppAvgMargin10 = computeOpponentAvgMargin(awayHistory, teamHistory, 10);
+    const homeOppWinRate10 = computeOpponentAvgWinRate(
+      homeHistory,
+      teamHistory,
+      10,
+    );
+    const awayOppWinRate10 = computeOpponentAvgWinRate(
+      awayHistory,
+      teamHistory,
+      10,
+    );
+    const homeOppAvgMargin10 = computeOpponentAvgMargin(
+      homeHistory,
+      teamHistory,
+      10,
+    );
+    const awayOppAvgMargin10 = computeOpponentAvgMargin(
+      awayHistory,
+      teamHistory,
+      10,
+    );
 
     // Compute market implied probability (vig-free) for moneyline
-    let marketImpliedProb = 0.5;  // Default to 50/50 if no odds
+    let marketImpliedProb = 0.5; // Default to 50/50 if no odds
     const odds = marketOdds.get(game.id);
     if (odds) {
       const homeImplied = americanToImplied(odds.homePrice);
@@ -272,7 +360,7 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
         homeOffEff10,
         awayOffEff10,
         homeDefEff10,
-        awayDefEff10
+        awayDefEff10,
       });
     }
 
@@ -288,7 +376,7 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
         oppTeamId: game.away_team_id,
         pointsFor: game.home_score,
         pointsAgainst: game.away_score,
-        combined: game.home_score + game.away_score
+        combined: game.home_score + game.away_score,
       });
 
       awayHistory.push({
@@ -298,7 +386,7 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
         oppTeamId: game.home_team_id,
         pointsFor: game.away_score,
         pointsAgainst: game.home_score,
-        combined: game.home_score + game.away_score
+        combined: game.home_score + game.away_score,
       });
 
       teamHistory.set(game.home_team_id, homeHistory);
@@ -314,18 +402,28 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
  * For 5-game window: [0.08, 0.12, 0.20, 0.25, 0.35]
  * For 10-game window: weights decay exponentially with more emphasis on recent games
  */
-const RECENCY_WEIGHTS_5 = [0.08, 0.12, 0.20, 0.25, 0.35];
-const RECENCY_WEIGHTS_10 = [0.03, 0.04, 0.05, 0.06, 0.07, 0.09, 0.11, 0.14, 0.18, 0.23];
+const RECENCY_WEIGHTS_5 = [0.08, 0.12, 0.2, 0.25, 0.35];
+const RECENCY_WEIGHTS_10 = [
+  0.03, 0.04, 0.05, 0.06, 0.07, 0.09, 0.11, 0.14, 0.18, 0.23,
+];
 
 /**
  * Compute win rate over last N games with exponential recency weighting
  */
-function computeWinRate(history: Array<{ won: boolean }>, window: number): number {
-  if (history.length === 0) return 0.5;  // Neutral prior
+function computeWinRate(
+  history: Array<{ won: boolean }>,
+  window: number,
+): number {
+  if (history.length === 0) return 0.5; // Neutral prior
   const recent = history.slice(-window);
-  
+
   // Use recency weights if window matches
-  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  const weights =
+    window === 5
+      ? RECENCY_WEIGHTS_5
+      : window === 10
+        ? RECENCY_WEIGHTS_10
+        : null;
   if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
@@ -337,7 +435,7 @@ function computeWinRate(history: Array<{ won: boolean }>, window: number): numbe
     return weightedSum / totalWeight;
   } else {
     // Fallback to uniform average
-    const wins = recent.filter(g => g.won).length;
+    const wins = recent.filter((g) => g.won).length;
     return wins / recent.length;
   }
 }
@@ -345,12 +443,20 @@ function computeWinRate(history: Array<{ won: boolean }>, window: number): numbe
 /**
  * Compute average margin over last N games with exponential recency weighting
  */
-function computeAvgMargin(history: Array<{ margin: number }>, window: number): number {
+function computeAvgMargin(
+  history: Array<{ margin: number }>,
+  window: number,
+): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  
+
   // Use recency weights if window matches
-  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  const weights =
+    window === 5
+      ? RECENCY_WEIGHTS_5
+      : window === 10
+        ? RECENCY_WEIGHTS_10
+        : null;
   if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
@@ -367,12 +473,20 @@ function computeAvgMargin(history: Array<{ margin: number }>, window: number): n
   }
 }
 
-function computeAvgPointsFor(history: Array<{ pointsFor: number }>, window: number): number {
+function computeAvgPointsFor(
+  history: Array<{ pointsFor: number }>,
+  window: number,
+): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  
+
   // Use recency weights if window matches
-  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  const weights =
+    window === 5
+      ? RECENCY_WEIGHTS_5
+      : window === 10
+        ? RECENCY_WEIGHTS_10
+        : null;
   if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
@@ -388,12 +502,20 @@ function computeAvgPointsFor(history: Array<{ pointsFor: number }>, window: numb
   }
 }
 
-function computeAvgPointsAgainst(history: Array<{ pointsAgainst: number }>, window: number): number {
+function computeAvgPointsAgainst(
+  history: Array<{ pointsAgainst: number }>,
+  window: number,
+): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  
+
   // Use recency weights if window matches
-  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  const weights =
+    window === 5
+      ? RECENCY_WEIGHTS_5
+      : window === 10
+        ? RECENCY_WEIGHTS_10
+        : null;
   if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
@@ -409,12 +531,20 @@ function computeAvgPointsAgainst(history: Array<{ pointsAgainst: number }>, wind
   }
 }
 
-function computeAvgCombined(history: Array<{ combined: number }>, window: number): number {
+function computeAvgCombined(
+  history: Array<{ combined: number }>,
+  window: number,
+): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
-  
+
   // Use recency weights if window matches
-  const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
+  const weights =
+    window === 5
+      ? RECENCY_WEIGHTS_5
+      : window === 10
+        ? RECENCY_WEIGHTS_10
+        : null;
   if (weights && recent.length === weights.length) {
     let weightedSum = 0;
     let totalWeight = 0;
@@ -433,7 +563,7 @@ function computeAvgCombined(history: Array<{ combined: number }>, window: number
 function computeOpponentAvgPoints(
   history: Array<{ oppTeamId: number }>,
   teamHistory: Map<number, Array<{ pointsAgainst: number }>>,
-  window: number
+  window: number,
 ): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);
@@ -443,7 +573,9 @@ function computeOpponentAvgPoints(
     const oppHist = teamHistory.get(h.oppTeamId) || [];
     if (oppHist.length) {
       const oppRecent = oppHist.slice(-window);
-      const avgAllowed = oppRecent.reduce((acc, g) => acc + g.pointsAgainst, 0) / oppRecent.length;
+      const avgAllowed =
+        oppRecent.reduce((acc, g) => acc + g.pointsAgainst, 0) /
+        oppRecent.length;
       total += avgAllowed;
       count++;
     }
@@ -468,7 +600,7 @@ function americanToImplied(price: number): number {
 function computeOpponentAvgWinRate(
   history: Array<{ oppTeamId: number }>,
   teamHistory: Map<number, Array<{ won: boolean }>>,
-  window: number
+  window: number,
 ): number {
   if (history.length === 0) return 0.5;
   const recent = history.slice(-window);
@@ -491,7 +623,7 @@ function computeOpponentAvgWinRate(
 function computeOpponentAvgMargin(
   history: Array<{ oppTeamId: number }>,
   teamHistory: Map<number, Array<{ margin: number }>>,
-  window: number
+  window: number,
 ): number {
   if (history.length === 0) return 0;
   const recent = history.slice(-window);

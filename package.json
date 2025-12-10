@@ -23,7 +23,7 @@
     "all": "npm i && npm run build && chmod +x dist/index.js && npm link",
     "ingest": "node dist/index.js data daily",
     "db:ingest:full": "npm run ingest:cfb:full && npm run ingest:ncaam:full && npm run ingest:nba:full && npm run ingest:nfl:full && npm run ingest:nhl:full",
-    "ingest:cfb:full": "for y in 2020 2021 2022; do sportline data ingest --sport cfb --season $y; done",    
+    "ingest:cfb:full": "for y in 2020 2021 2022; do sportline data ingest --sport cfb --season $y; done",
     "ingest:ncaam:full": "for y in 2020 2021 2022 2023; do sportline data ingest --sport ncaam --season $y; done",
     "ingest:nba:full": "for y in 2024 2025; do sportline data ingest --sport nba --season $y; done",
     "ingest:nfl:full": "for y in 2022 2023 2024 2025; do sportline data ingest --sport nfl --season $y; done",
@@ -38,7 +38,8 @@
     "backtest": "node dist/index.js model backtest --sport ncaam --season 2024,2025 --market moneyline && node dist/index.js model backtest --sport cfb --season 2024,2025 --market moneyline && node dist/index.js model backtest --sport nfl --season 2024,2025 --market moneyline && node dist/index.js model backtest --sport nfl --season 2024,2025 --market total && node dist/index.js model backtest --sport nba --season 2024,2025 --market moneyline && node dist/index.js model backtest --sport nba --season 2024,2025 --market spread && node dist/index.js model backtest --sport nba --season 2024,2025 --market total && node dist/index.js model backtest --sport nhl --season 2024,2025 --market moneyline",
     "update": "npm run build && node dist/index.js data daily && npm run train && node dist/index.js results && node dist/index.js stats && cp data/sportline.db ../sportline.db && node -e 'const s=(process.env.UNDERDOG_SPORTS||\"nfl,nba,cfb,ncaam,nhl\").split(\",\"); const {execSync}=require(\"node:child_process\"); for (const sport of s) { console.log(\"🐕 Updating underdog for\", sport); execSync(\"node dist/index.js underdog train --sport \" + sport + \" --seasons 2021,2022,2023,2024,2025 --tiers moderate\", {stdio: \"inherit\"}); }'",
     "settle": "node dist/index.js results",
-    "stats": "node dist/index.js stats"
+    "stats": "node dist/index.js stats",
+    "format": "prettier --write \"src/**/*.ts\" \"package.json\""
   },
   "keywords": [
     "ncaam",
@@ -58,6 +59,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.10.4",
+    "prettier": "^3.7.4",
     "typescript": "^5.3.3"
   }
 }
