@@ -8,7 +8,7 @@
     "sportline": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc && cp src/db/schema.sql dist/db/",
+    "build": "tsc && cp src/db/schema.sql dist/db/ && npm run format",
     "db:list:tables": "sqlite3 data/sportline.db \".tables\"",
     "db:schema": "sqlite3 data/sportline.db \".schema\"",
     "db:query:seasons:ncaam": "sqlite3 data/sportline.db \"SELECT DISTINCT season FROM games WHERE sport='ncaam' ORDER BY season DESC;\"",
