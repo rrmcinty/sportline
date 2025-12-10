@@ -25,13 +25,13 @@ export interface TrackedBet {
   historicalWinRate: number;
   historicalSampleSize: number;
   expectedValue: number;
-  
+
   // Tracking status
   recommended: boolean; // Was this shown in recommend output?
   actuallyBet: boolean; // Deprecated: use placements
   stake?: number; // Deprecated: use placements
   placements?: Array<{ stake: number; placedAt: string }>; // Multiple bet placements
-  
+
   // Results (filled in later)
   status: "pending" | "won" | "lost" | "push" | "cancelled";
   result?: {
@@ -79,19 +79,21 @@ export async function saveTrackedBets(data: BetTrackingData): Promise<void> {
 /**
  * Log a recommended bet (auto-called from recommend command)
  */
-export async function logRecommendedBet(bet: Omit<TrackedBet, "recommended" | "actuallyBet" | "status">): Promise<void> {
+export async function logRecommendedBet(
+  bet: Omit<TrackedBet, "recommended" | "actuallyBet" | "status">,
+): Promise<void> {
   const data = await loadTrackedBets();
-  
+
   // Check if this bet already exists
-  const existingIndex = data.bets.findIndex(b => b.id === bet.id);
-  
+  const existingIndex = data.bets.findIndex((b) => b.id === bet.id);
+
   const trackedBet: TrackedBet = {
     ...bet,
     recommended: true,
     actuallyBet: false,
-    status: "pending"
+    status: "pending",
   };
-  
+
   if (existingIndex >= 0) {
     // Update existing bet
     data.bets[existingIndex] = {
@@ -100,34 +102,39 @@ export async function logRecommendedBet(bet: Omit<TrackedBet, "recommended" | "a
       // Preserve actuallyBet and stake if already set
       actuallyBet: data.bets[existingIndex].actuallyBet,
       stake: data.bets[existingIndex].stake,
-      placements: data.bets[existingIndex].placements || []
+      placements: data.bets[existingIndex].placements || [],
     };
   } else {
     // Add new bet
     trackedBet.placements = [];
     data.bets.push(trackedBet);
   }
-  
+
   await saveTrackedBets(data);
 }
 
 /**
  * Mark specific bets as actually bet with stake amounts
  */
-export async function markBetsAsPlaced(betIds: string[], stakes: number | number[]): Promise<void> {
+export async function markBetsAsPlaced(
+  betIds: string[],
+  stakes: number | number[],
+): Promise<void> {
   const data = await loadTrackedBets();
-  
+
   for (let i = 0; i < betIds.length; i++) {
     const betId = betIds[i];
-    const bet = data.bets.find(b => b.id === betId);
+    const bet = data.bets.find((b) => b.id === betId);
     if (bet) {
       bet.actuallyBet = true;
-      const stake = Array.isArray(stakes) ? (stakes[i] ?? stakes[0] ?? 0) : stakes;
+      const stake = Array.isArray(stakes)
+        ? (stakes[i] ?? stakes[0] ?? 0)
+        : stakes;
       bet.placements = bet.placements || [];
       bet.placements.push({ stake, placedAt: new Date().toISOString() });
     }
   }
-  
+
   await saveTrackedBets(data);
 }
 
@@ -137,13 +144,13 @@ export async function markBetsAsPlaced(betIds: string[], stakes: number | number
 export async function updateBetResults(
   betId: string,
   homeScore: number,
-  awayScore: number
+  awayScore: number,
 ): Promise<void> {
   const data = await loadTrackedBets();
-  const bet = data.bets.find(b => b.id === betId);
-  
+  const bet = data.bets.find((b) => b.id === betId);
+
   if (!bet || bet.status !== "pending") return;
-  
+
   // Determine bet outcome
   let status: "won" | "lost" | "push" = "lost";
   let won = false;
@@ -174,7 +181,10 @@ export async function updateBetResults(
 
   // Calculate profit
   let actualProfit = 0;
-  const totalStake = (bet.placements || []).reduce((sum, p) => sum + p.stake, 0) || bet.stake || 0;
+  const totalStake =
+    (bet.placements || []).reduce((sum, p) => sum + p.stake, 0) ||
+    bet.stake ||
+    0;
   if (bet.actuallyBet && totalStake > 0) {
     if (status === "won") {
       // Calculate payout from American odds
@@ -195,7 +205,7 @@ export async function updateBetResults(
     homeScore,
     awayScore,
     actualProfit,
-    settledAt: new Date().toISOString()
+    settledAt: new Date().toISOString(),
   };
 
   await saveTrackedBets(data);
@@ -206,32 +216,48 @@ export async function updateBetResults(
  */
 export async function getBetStats(): Promise<{
   allRecommended: { count: number; pending: number; won: number; lost: number };
-  actuallyBet: { count: number; pending: number; won: number; lost: number; totalStaked: number; totalProfit: number; roi: number };
+  actuallyBet: {
+    count: number;
+    pending: number;
+    won: number;
+    lost: number;
+    totalStaked: number;
+    totalProfit: number;
+    roi: number;
+  };
 }> {
   const data = await loadTrackedBets();
-  
-  const allRec = data.bets.filter(b => b.recommended);
-  const actualBets = data.bets.filter(b => b.actuallyBet);
-  
+
+  const allRec = data.bets.filter((b) => b.recommended);
+  const actualBets = data.bets.filter((b) => b.actuallyBet);
+
   const allRecStats = {
     count: allRec.length,
-    pending: allRec.filter(b => b.status === "pending").length,
-    won: allRec.filter(b => b.status === "won").length,
-    lost: allRec.filter(b => b.status === "lost").length
+    pending: allRec.filter((b) => b.status === "pending").length,
+    won: allRec.filter((b) => b.status === "won").length,
+    lost: allRec.filter((b) => b.status === "lost").length,
   };
-  
-  const totalStaked = actualBets.reduce((sum, b) => sum + ((b.placements || []).reduce((s, p) => s + p.stake, 0) || b.stake || 0), 0);
-  const totalProfit = actualBets.reduce((sum, b) => sum + (b.result?.actualProfit || 0), 0);
-  
+
+  const totalStaked = actualBets.reduce(
+    (sum, b) =>
+      sum +
+      ((b.placements || []).reduce((s, p) => s + p.stake, 0) || b.stake || 0),
+    0,
+  );
+  const totalProfit = actualBets.reduce(
+    (sum, b) => sum + (b.result?.actualProfit || 0),
+    0,
+  );
+
   const actualBetStats = {
     count: actualBets.length,
-    pending: actualBets.filter(b => b.status === "pending").length,
-    won: actualBets.filter(b => b.status === "won").length,
-    lost: actualBets.filter(b => b.status === "lost").length,
+    pending: actualBets.filter((b) => b.status === "pending").length,
+    won: actualBets.filter((b) => b.status === "won").length,
+    lost: actualBets.filter((b) => b.status === "lost").length,
     totalStaked,
     totalProfit,
-    roi: totalStaked > 0 ? (totalProfit / totalStaked) * 100 : 0
+    roi: totalStaked > 0 ? (totalProfit / totalStaked) * 100 : 0,
   };
-  
+
   return { allRecommended: allRecStats, actuallyBet: actualBetStats };
 }

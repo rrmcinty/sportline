@@ -28,22 +28,28 @@ interface DiagnosticResult {
 export async function cmdTotalsDiagnostics(
   sport: Sport,
   seasons: number[],
-  limit: number = 20
+  limit: number = 20,
 ): Promise<void> {
-  console.log(chalk.bold.cyan(`\n🔍 Totals Model Diagnostics: ${sport.toUpperCase()}\n`));
+  console.log(
+    chalk.bold.cyan(`\n🔍 Totals Model Diagnostics: ${sport.toUpperCase()}\n`),
+  );
   console.log(chalk.dim(`Seasons: ${seasons.join(", ")}`));
   console.log(chalk.dim(`Sample size: ${limit} games\n`));
 
   const db = getDb();
 
   // Load the most recent totals model for this sport
-  const latestRun = db.prepare(`
+  const latestRun = db
+    .prepare(
+      `
     SELECT run_id, artifacts_path 
     FROM model_runs 
     WHERE sport = ? AND config_json LIKE '%total%' 
     ORDER BY finished_at DESC 
     LIMIT 1
-  `).get(sport) as { run_id: string; artifacts_path: string } | undefined;
+  `,
+    )
+    .get(sport) as { run_id: string; artifacts_path: string } | undefined;
 
   if (!latestRun) {
     console.log(chalk.red(`No totals models found for ${sport}`));
@@ -64,12 +70,18 @@ export async function cmdTotalsDiagnostics(
   };
 
   if (model.market !== "total" || model.predictionType !== "regression") {
-    console.log(chalk.red(`Model is not a totals regression model (market: ${model.market}, type: ${model.predictionType})`));
+    console.log(
+      chalk.red(
+        `Model is not a totals regression model (market: ${model.market}, type: ${model.predictionType})`,
+      ),
+    );
     return;
   }
 
   // Get completed games with odds
-  const games = db.prepare(`
+  const games = db
+    .prepare(
+      `
     SELECT 
       g.id,
       g.espn_event_id,
@@ -95,7 +107,9 @@ export async function cmdTotalsDiagnostics(
       AND o.line IS NOT NULL
     ORDER BY g.date DESC
     LIMIT ?
-  `).all(sport, ...seasons, limit) as any[];
+  `,
+    )
+    .all(sport, ...seasons, limit) as any[];
 
   if (games.length === 0) {
     console.log(chalk.yellow(`No completed games found with totals odds`));
@@ -107,13 +121,27 @@ export async function cmdTotalsDiagnostics(
   // Compute features for all games
   console.log(chalk.dim("Computing features..."));
   const allFeatures = computeFeatures(db, sport, seasons);
-  const featureMap = new Map(allFeatures.map(f => [f.gameId, f]));
+  const featureMap = new Map(allFeatures.map((f) => [f.gameId, f]));
 
   // Normal CDF approximation
   function normalCdf(z: number): number {
     const t = 1 / (1 + 0.5 * Math.abs(z));
-    const tau = t * Math.exp(-z*z - 1.26551223 + 1.00002368*t + 0.37409196*t*t + 0.09678418*t*t*t - 0.18628806*t*t*t*t + 0.27886807*t*t*t*t*t - 1.13520398*t*t*t*t*t*t + 1.48851587*t*t*t*t*t*t*t - 0.82215223*t*t*t*t*t*t*t*t + 0.17087277*t*t*t*t*t*t*t*t*t);
-    const erf = z >= 0 ? tau - 1 : 1 - tau;  // FIX: was inverted!
+    const tau =
+      t *
+      Math.exp(
+        -z * z -
+          1.26551223 +
+          1.00002368 * t +
+          0.37409196 * t * t +
+          0.09678418 * t * t * t -
+          0.18628806 * t * t * t * t +
+          0.27886807 * t * t * t * t * t -
+          1.13520398 * t * t * t * t * t * t +
+          1.48851587 * t * t * t * t * t * t * t -
+          0.82215223 * t * t * t * t * t * t * t * t +
+          0.17087277 * t * t * t * t * t * t * t * t * t,
+      );
+    const erf = z >= 0 ? tau - 1 : 1 - tau; // FIX: was inverted!
     return 0.5 * (1 + erf);
   }
 
@@ -160,18 +188,19 @@ export async function cmdTotalsDiagnostics(
       homeOffEff10: f.homeOffEff10,
       awayOffEff10: f.awayOffEff10,
       homeDefEff10: f.homeDefEff10,
-      awayDefEff10: f.awayDefEff10
+      awayDefEff10: f.awayDefEff10,
     };
 
     const featureNames = Object.keys(vecMap);
-    const xRaw = featureNames.map(name => vecMap[name]);
+    const xRaw = featureNames.map((name) => vecMap[name]);
 
     // Standardize
     const xScaled = xRaw.map((v, i) => (v - model.means![i]) / model.stds![i]);
 
     // Predict score
     const bias = model.bias ?? 0;
-    const predictedScore = xScaled.reduce((acc, v, i) => acc + v * model.weights[i], 0) + bias;
+    const predictedScore =
+      xScaled.reduce((acc, v, i) => acc + v * model.weights[i], 0) + bias;
 
     // Calculate z-score and probability
     const line = game.total_line;
@@ -179,8 +208,14 @@ export async function cmdTotalsDiagnostics(
     const pOver = 1 - normalCdf(z);
 
     // Calculate market probability (vig-free)
-    const overDecimal = game.price_over < 0 ? (100 / Math.abs(game.price_over)) + 1 : (game.price_over / 100) + 1;
-    const underDecimal = game.price_under < 0 ? (100 / Math.abs(game.price_under)) + 1 : (game.price_under / 100) + 1;
+    const overDecimal =
+      game.price_over < 0
+        ? 100 / Math.abs(game.price_over) + 1
+        : game.price_over / 100 + 1;
+    const underDecimal =
+      game.price_under < 0
+        ? 100 / Math.abs(game.price_under) + 1
+        : game.price_under / 100 + 1;
     const overImplied = 1 / overDecimal;
     const underImplied = 1 / underDecimal;
     const marketProb = overImplied / (overImplied + underImplied);
@@ -201,7 +236,7 @@ export async function cmdTotalsDiagnostics(
       marketProb,
       wentOver,
       zScore: z,
-      residual
+      residual,
     });
   }
 
@@ -215,7 +250,8 @@ export async function cmdTotalsDiagnostics(
     const marketPct = (r.marketProb * 100).toFixed(1);
     const divergence = ((r.modelProb - r.marketProb) * 100).toFixed(1);
     const outcome = r.wentOver ? chalk.green("OVER") : chalk.red("UNDER");
-    const correct = (r.modelProb > 0.5 && r.wentOver) || (r.modelProb <= 0.5 && !r.wentOver);
+    const correct =
+      (r.modelProb > 0.5 && r.wentOver) || (r.modelProb <= 0.5 && !r.wentOver);
     const correctness = correct ? chalk.green("✓") : chalk.red("✗");
 
     console.log(chalk.bold(`\n${r.homeTeam} @ ${r.awayTeam}`));
@@ -223,9 +259,13 @@ export async function cmdTotalsDiagnostics(
     console.log(`Line: ${r.line.toFixed(1)}`);
     console.log(`Predicted Score: ${r.predictedScore.toFixed(1)}`);
     console.log(`Actual Score: ${r.actualScore} ${outcome} ${correctness}`);
-    console.log(`Residual: ${r.residual >= 0 ? '+' : ''}${r.residual.toFixed(1)} points`);
+    console.log(
+      `Residual: ${r.residual >= 0 ? "+" : ""}${r.residual.toFixed(1)} points`,
+    );
     console.log(`Z-Score: ${r.zScore.toFixed(2)}`);
-    console.log(`Model P(Over): ${modelPct}% | Market: ${marketPct}% | Divergence: ${divergence}%`);
+    console.log(
+      `Model P(Over): ${modelPct}% | Market: ${marketPct}% | Divergence: ${divergence}%`,
+    );
   }
 
   // Summary statistics
@@ -233,33 +273,48 @@ export async function cmdTotalsDiagnostics(
   console.log(chalk.bold("SUMMARY STATISTICS"));
   console.log(chalk.bold("═".repeat(120)));
 
-  const avgPredicted = results.reduce((sum, r) => sum + r.predictedScore, 0) / results.length;
-  const avgActual = results.reduce((sum, r) => sum + r.actualScore, 0) / results.length;
+  const avgPredicted =
+    results.reduce((sum, r) => sum + r.predictedScore, 0) / results.length;
+  const avgActual =
+    results.reduce((sum, r) => sum + r.actualScore, 0) / results.length;
   const avgLine = results.reduce((sum, r) => sum + r.line, 0) / results.length;
-  const avgResidual = results.reduce((sum, r) => sum + r.residual, 0) / results.length;
-  const avgZScore = results.reduce((sum, r) => sum + r.zScore, 0) / results.length;
-  const avgModelProb = results.reduce((sum, r) => sum + r.modelProb, 0) / results.length;
-  const avgMarketProb = results.reduce((sum, r) => sum + r.marketProb, 0) / results.length;
+  const avgResidual =
+    results.reduce((sum, r) => sum + r.residual, 0) / results.length;
+  const avgZScore =
+    results.reduce((sum, r) => sum + r.zScore, 0) / results.length;
+  const avgModelProb =
+    results.reduce((sum, r) => sum + r.modelProb, 0) / results.length;
+  const avgMarketProb =
+    results.reduce((sum, r) => sum + r.marketProb, 0) / results.length;
 
-  const overRate = results.filter(r => r.wentOver).length / results.length;
-  const modelFavorsOverRate = results.filter(r => r.modelProb > 0.5).length / results.length;
-  const marketFavorsOverRate = results.filter(r => r.marketProb > 0.5).length / results.length;
+  const overRate = results.filter((r) => r.wentOver).length / results.length;
+  const modelFavorsOverRate =
+    results.filter((r) => r.modelProb > 0.5).length / results.length;
+  const marketFavorsOverRate =
+    results.filter((r) => r.marketProb > 0.5).length / results.length;
 
-  const modelCorrect = results.filter(r => 
-    (r.modelProb > 0.5 && r.wentOver) || (r.modelProb <= 0.5 && !r.wentOver)
+  const modelCorrect = results.filter(
+    (r) =>
+      (r.modelProb > 0.5 && r.wentOver) || (r.modelProb <= 0.5 && !r.wentOver),
   ).length;
 
   console.log(`Average Predicted Score: ${avgPredicted.toFixed(2)}`);
   console.log(`Average Actual Score: ${avgActual.toFixed(2)}`);
   console.log(`Average Line: ${avgLine.toFixed(2)}`);
-  console.log(`Average Residual: ${avgResidual >= 0 ? '+' : ''}${avgResidual.toFixed(2)} points`);
+  console.log(
+    `Average Residual: ${avgResidual >= 0 ? "+" : ""}${avgResidual.toFixed(2)} points`,
+  );
   console.log(`Average Z-Score: ${avgZScore.toFixed(2)}`);
   console.log(`\nAverage Model P(Over): ${(avgModelProb * 100).toFixed(1)}%`);
   console.log(`Average Market P(Over): ${(avgMarketProb * 100).toFixed(1)}%`);
   console.log(`\nActual Over Rate: ${(overRate * 100).toFixed(1)}%`);
   console.log(`Model Favors Over: ${(modelFavorsOverRate * 100).toFixed(1)}%`);
-  console.log(`Market Favors Over: ${(marketFavorsOverRate * 100).toFixed(1)}%`);
-  console.log(`\nModel Accuracy: ${modelCorrect}/${results.length} (${((modelCorrect / results.length) * 100).toFixed(1)}%)`);
+  console.log(
+    `Market Favors Over: ${(marketFavorsOverRate * 100).toFixed(1)}%`,
+  );
+  console.log(
+    `\nModel Accuracy: ${modelCorrect}/${results.length} (${((modelCorrect / results.length) * 100).toFixed(1)}%)`,
+  );
 
   // Systematic bias detection
   console.log(chalk.bold("\n" + "═".repeat(120)));
@@ -271,14 +326,34 @@ export async function cmdTotalsDiagnostics(
 
   if (systematicUnderpredict) {
     console.log(chalk.red(`⚠️  SYSTEMATIC UNDERPREDICTION detected!`));
-    console.log(chalk.red(`    Model predicts ${avgResidual.toFixed(1)} points lower than actual on average`));
-    console.log(chalk.yellow(`    This causes model to favor UNDER when it should favor OVER`));
+    console.log(
+      chalk.red(
+        `    Model predicts ${avgResidual.toFixed(1)} points lower than actual on average`,
+      ),
+    );
+    console.log(
+      chalk.yellow(
+        `    This causes model to favor UNDER when it should favor OVER`,
+      ),
+    );
   } else if (systematicOverpredict) {
     console.log(chalk.red(`⚠️  SYSTEMATIC OVERPREDICTION detected!`));
-    console.log(chalk.red(`    Model predicts ${Math.abs(avgResidual).toFixed(1)} points higher than actual on average`));
-    console.log(chalk.yellow(`    This causes model to favor OVER when it should favor UNDER`));
+    console.log(
+      chalk.red(
+        `    Model predicts ${Math.abs(avgResidual).toFixed(1)} points higher than actual on average`,
+      ),
+    );
+    console.log(
+      chalk.yellow(
+        `    This causes model to favor OVER when it should favor UNDER`,
+      ),
+    );
   } else {
-    console.log(chalk.green(`✓ No systematic bias detected (avg residual: ${avgResidual.toFixed(2)} points)`));
+    console.log(
+      chalk.green(
+        `✓ No systematic bias detected (avg residual: ${avgResidual.toFixed(2)} points)`,
+      ),
+    );
   }
 
   // Z-score interpretation
@@ -286,15 +361,31 @@ export async function cmdTotalsDiagnostics(
   const avgZNegative = avgZScore < -0.5;
 
   if (avgZPositive) {
-    console.log(chalk.yellow(`\n⚠️  Average Z-score is positive (${avgZScore.toFixed(2)})`));
-    console.log(chalk.yellow(`    This means lines are typically ABOVE predicted scores`));
+    console.log(
+      chalk.yellow(
+        `\n⚠️  Average Z-score is positive (${avgZScore.toFixed(2)})`,
+      ),
+    );
+    console.log(
+      chalk.yellow(`    This means lines are typically ABOVE predicted scores`),
+    );
     console.log(chalk.yellow(`    Model will systematically favor UNDER`));
   } else if (avgZNegative) {
-    console.log(chalk.yellow(`\n⚠️  Average Z-score is negative (${avgZScore.toFixed(2)})`));
-    console.log(chalk.yellow(`    This means lines are typically BELOW predicted scores`));
+    console.log(
+      chalk.yellow(
+        `\n⚠️  Average Z-score is negative (${avgZScore.toFixed(2)})`,
+      ),
+    );
+    console.log(
+      chalk.yellow(`    This means lines are typically BELOW predicted scores`),
+    );
     console.log(chalk.yellow(`    Model will systematically favor OVER`));
   } else {
-    console.log(chalk.green(`\n✓ Z-scores are well-centered (avg: ${avgZScore.toFixed(2)})`));
+    console.log(
+      chalk.green(
+        `\n✓ Z-scores are well-centered (avg: ${avgZScore.toFixed(2)})`,
+      ),
+    );
   }
 
   console.log(chalk.bold("\n" + "═".repeat(120) + "\n"));

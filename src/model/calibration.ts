@@ -3,8 +3,8 @@
  */
 
 export interface CalibrationCurve {
-  x: number[];  // Raw predicted probabilities (sorted)
-  y: number[];  // Calibrated probabilities (actual frequencies)
+  x: number[]; // Raw predicted probabilities (sorted)
+  y: number[]; // Calibrated probabilities (actual frequencies)
 }
 
 /**
@@ -13,24 +13,28 @@ export interface CalibrationCurve {
  * @param labels Actual outcomes (0 or 1)
  * @returns Calibration curve mapping
  */
-export function fitIsotonicCalibration(predictions: number[], labels: number[]): CalibrationCurve {
+export function fitIsotonicCalibration(
+  predictions: number[],
+  labels: number[],
+): CalibrationCurve {
   if (predictions.length !== labels.length) {
     throw new Error("Predictions and labels must have same length");
   }
 
   // Pair predictions with labels and sort by prediction
-  const pairs = predictions.map((p, i) => ({ pred: p, label: labels[i] }))
+  const pairs = predictions
+    .map((p, i) => ({ pred: p, label: labels[i] }))
     .sort((a, b) => a.pred - b.pred);
 
   // Pool adjacent violators algorithm (PAVA) for isotonic regression
   const weights = new Array(pairs.length).fill(1);
-  const values = pairs.map(p => p.label);
-  
+  const values = pairs.map((p) => p.label);
+
   isotonic(values, weights);
 
   // Extract unique x values and corresponding calibrated y values
   const curve: CalibrationCurve = { x: [], y: [] };
-  
+
   for (let i = 0; i < pairs.length; i++) {
     // Add boundaries and avoid duplicates
     if (i === 0 || pairs[i].pred !== pairs[i - 1].pred) {
@@ -58,7 +62,10 @@ export function fitIsotonicCalibration(predictions: number[], labels: number[]):
  * @param curve Calibration curve
  * @returns Calibrated probability
  */
-export function applyCalibration(rawProb: number, curve: CalibrationCurve): number {
+export function applyCalibration(
+  rawProb: number,
+  curve: CalibrationCurve,
+): number {
   if (!curve || curve.x.length === 0) return rawProb;
 
   // Clamp to [0, 1]
@@ -95,14 +102,15 @@ function isotonic(values: number[], weights: number[]): void {
     if (values[i] > values[i + 1]) {
       // Merge blocks i and i+1
       const totalWeight = weights[i] + weights[i + 1];
-      const newValue = (values[i] * weights[i] + values[i + 1] * weights[i + 1]) / totalWeight;
-      
+      const newValue =
+        (values[i] * weights[i] + values[i + 1] * weights[i + 1]) / totalWeight;
+
       values[i] = newValue;
       weights[i] = totalWeight;
-      
+
       values.splice(i + 1, 1);
       weights.splice(i + 1, 1);
-      
+
       // Backtrack to check previous block
       if (i > 0) i--;
     } else {

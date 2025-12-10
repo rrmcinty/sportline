@@ -7,10 +7,16 @@ import { getCache, setCache } from "../../cache/index.js";
 import type { Competition } from "../../models/types.js";
 
 // ESPN base URL for NBA
-const BASE_URL = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba";
+const BASE_URL =
+  "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba";
 
-interface ESPNEventRef { $ref: string; }
-interface ESPNEventsResponse { count: number; items: ESPNEventRef[]; }
+interface ESPNEventRef {
+  $ref: string;
+}
+interface ESPNEventsResponse {
+  count: number;
+  items: ESPNEventRef[];
+}
 
 interface ESPNEvent {
   id: string;
@@ -52,7 +58,11 @@ interface ESPNStatus {
   };
 }
 
-interface ESPNTeam { id: string; displayName: string; abbreviation?: string; }
+interface ESPNTeam {
+  id: string;
+  displayName: string;
+  abbreviation?: string;
+}
 
 /**
  * Fetch NBA events for a specific date (YYYYMMDD)
@@ -69,7 +79,9 @@ export async function fetchEvents(date: string): Promise<Competition[]> {
   console.log(`Fetching NBA events for ${date}...`);
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`ESPN API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `ESPN API error: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data = (await response.json()) as ESPNEventsResponse;
@@ -98,7 +110,8 @@ async function fetchEventDetail(url: string): Promise<ESPNEvent> {
   const cached = getCache<ESPNEvent>(url);
   if (cached) return cached;
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to fetch NBA event: ${response.status}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch NBA event: ${response.status}`);
   const data = (await response.json()) as ESPNEvent;
   setCache(url, data, 5 * 60 * 1000);
   return data;
@@ -108,7 +121,8 @@ async function fetchTeam(url: string): Promise<ESPNTeam> {
   const cached = getCache<ESPNTeam>(url);
   if (cached) return cached;
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to fetch NBA team: ${response.status}`);
+  if (!response.ok)
+    throw new Error(`Failed to fetch NBA team: ${response.status}`);
   const data = (await response.json()) as ESPNTeam;
   setCache(url, data, 60 * 60 * 1000);
   return data;
@@ -117,7 +131,7 @@ async function fetchTeam(url: string): Promise<ESPNTeam> {
 async function fetchScore(url: string): Promise<number | null> {
   const cached = getCache<ESPNScore>(url);
   if (cached) return cached.value;
-  
+
   try {
     const response = await fetch(url);
     if (!response.ok) return null;
@@ -136,7 +150,7 @@ async function fetchStatus(url: string): Promise<string> {
     if (cached.type.state === "in") return "in-progress";
     return "scheduled";
   }
-  
+
   try {
     const response = await fetch(url);
     if (!response.ok) return "scheduled";
@@ -153,15 +167,19 @@ async function fetchStatus(url: string): Promise<string> {
 async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
   if (!event.competitions?.length) return null;
   const comp = event.competitions[0];
-  const homeCompetitor = comp.competitors.find(c => c.homeAway === "home");
-  const awayCompetitor = comp.competitors.find(c => c.homeAway === "away");
+  const homeCompetitor = comp.competitors.find((c) => c.homeAway === "home");
+  const awayCompetitor = comp.competitors.find((c) => c.homeAway === "away");
   if (!homeCompetitor || !awayCompetitor) return null;
 
   const [homeTeam, awayTeam, homeScore, awayScore, status] = await Promise.all([
     fetchTeam(homeCompetitor.team.$ref),
     fetchTeam(awayCompetitor.team.$ref),
-    homeCompetitor.score?.$ref ? fetchScore(homeCompetitor.score.$ref) : Promise.resolve(null),
-    awayCompetitor.score?.$ref ? fetchScore(awayCompetitor.score.$ref) : Promise.resolve(null),
+    homeCompetitor.score?.$ref
+      ? fetchScore(homeCompetitor.score.$ref)
+      : Promise.resolve(null),
+    awayCompetitor.score?.$ref
+      ? fetchScore(awayCompetitor.score.$ref)
+      : Promise.resolve(null),
     fetchStatus(comp.status.$ref),
   ]);
 
@@ -170,8 +188,16 @@ async function parseEvent(event: ESPNEvent): Promise<Competition | null> {
     eventId: event.id,
     sport: "nba",
     date: event.date,
-    homeTeam: { id: homeTeam.id, name: homeTeam.displayName, abbreviation: homeTeam.abbreviation },
-    awayTeam: { id: awayTeam.id, name: awayTeam.displayName, abbreviation: awayTeam.abbreviation },
+    homeTeam: {
+      id: homeTeam.id,
+      name: homeTeam.displayName,
+      abbreviation: homeTeam.abbreviation,
+    },
+    awayTeam: {
+      id: awayTeam.id,
+      name: awayTeam.displayName,
+      abbreviation: awayTeam.abbreviation,
+    },
     status,
     venue: comp.venue?.fullName,
     homeScore,

@@ -5,33 +5,52 @@
 import fetch from "node-fetch";
 import { getCache, setCache } from "../../cache/index.js";
 import type { BetLeg, OddsEntry, TeamSide } from "../../models/types.js";
-import { americanToDecimal, impliedProbability, formatAmericanOdds, removeVig as removeVigUtil } from "../../models/probability.js";
+import {
+  americanToDecimal,
+  impliedProbability,
+  formatAmericanOdds,
+  removeVig as removeVigUtil,
+} from "../../models/probability.js";
 
-const BASE_URL = "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football";
+const BASE_URL =
+  "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football";
 
-interface ESPNOddsResponse { count: number; items: ESPNOddsItem[]; }
+interface ESPNOddsResponse {
+  count: number;
+  items: ESPNOddsItem[];
+}
 interface ESPNOddsItem {
   provider: { id: string; name: string; priority: number };
   details?: string;
   spread?: number;
   overUnder?: number;
-  homeTeamOdds?: { 
-    favorite?: boolean; 
-    underdog?: boolean; 
-    moneyLine?: number; 
+  homeTeamOdds?: {
+    favorite?: boolean;
+    underdog?: boolean;
+    moneyLine?: number;
     spreadOdds?: number;
-    open?: { moneyLine?: { american?: string }; spread?: { american?: string } };
+    open?: {
+      moneyLine?: { american?: string };
+      spread?: { american?: string };
+    };
   };
-  awayTeamOdds?: { 
-    favorite?: boolean; 
-    underdog?: boolean; 
-    moneyLine?: number; 
+  awayTeamOdds?: {
+    favorite?: boolean;
+    underdog?: boolean;
+    moneyLine?: number;
     spreadOdds?: number;
-    open?: { moneyLine?: { american?: string }; spread?: { american?: string } };
+    open?: {
+      moneyLine?: { american?: string };
+      spread?: { american?: string };
+    };
   };
   overOdds?: number;
   underOdds?: number;
-  open?: { over?: { american?: string }; under?: { american?: string }; total?: { american?: string } };
+  open?: {
+    over?: { american?: string };
+    under?: { american?: string };
+    total?: { american?: string };
+  };
 }
 
 /**
@@ -52,18 +71,31 @@ export async function fetchOdds(eventId: string): Promise<OddsEntry[]> {
 
   console.log(`Fetching CFB odds for event ${eventId}...`);
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`ESPN API error: ${response.status} ${response.statusText}`);
+  if (!response.ok)
+    throw new Error(
+      `ESPN API error: ${response.status} ${response.statusText}`,
+    );
   const data = (await response.json()) as ESPNOddsResponse;
 
-  const oddsEntries: OddsEntry[] = data.items.map(item => {
+  const oddsEntries: OddsEntry[] = data.items.map((item) => {
     // Prefer opening odds, fall back to current/close
-    const homeOpenML = parseAmericanOdds(item.homeTeamOdds?.open?.moneyLine?.american) || item.homeTeamOdds?.moneyLine;
-    const awayOpenML = parseAmericanOdds(item.awayTeamOdds?.open?.moneyLine?.american) || item.awayTeamOdds?.moneyLine;
-    const homeOpenSpread = parseAmericanOdds(item.homeTeamOdds?.open?.spread?.american) || item.homeTeamOdds?.spreadOdds;
-    const awayOpenSpread = parseAmericanOdds(item.awayTeamOdds?.open?.spread?.american) || item.awayTeamOdds?.spreadOdds;
+    const homeOpenML =
+      parseAmericanOdds(item.homeTeamOdds?.open?.moneyLine?.american) ||
+      item.homeTeamOdds?.moneyLine;
+    const awayOpenML =
+      parseAmericanOdds(item.awayTeamOdds?.open?.moneyLine?.american) ||
+      item.awayTeamOdds?.moneyLine;
+    const homeOpenSpread =
+      parseAmericanOdds(item.homeTeamOdds?.open?.spread?.american) ||
+      item.homeTeamOdds?.spreadOdds;
+    const awayOpenSpread =
+      parseAmericanOdds(item.awayTeamOdds?.open?.spread?.american) ||
+      item.awayTeamOdds?.spreadOdds;
     const openOverTotal = parseAmericanOdds(item.open?.total?.american);
-    const openOverOdds = parseAmericanOdds(item.open?.over?.american) || item.overOdds;
-    const openUnderOdds = parseAmericanOdds(item.open?.under?.american) || item.underOdds;
+    const openOverOdds =
+      parseAmericanOdds(item.open?.over?.american) || item.overOdds;
+    const openUnderOdds =
+      parseAmericanOdds(item.open?.under?.american) || item.underOdds;
 
     // Also capture current odds (if different from opening)
     const homeCurrentML = item.homeTeamOdds?.moneyLine;
@@ -75,25 +107,35 @@ export async function fetchOdds(eventId: string): Promise<OddsEntry[]> {
     const currentUnderOdds = item.underOdds;
 
     return {
-      provider: { id: item.provider.id, name: item.provider.name, priority: item.provider.priority },
+      provider: {
+        id: item.provider.id,
+        name: item.provider.name,
+        priority: item.provider.priority,
+      },
       spread: item.spread,
       overUnder: openOverTotal || item.overUnder,
-      homeTeamOdds: { 
-        moneyLine: homeOpenML, 
-        currentMoneyLine: homeCurrentML !== homeOpenML ? homeCurrentML : undefined,
+      homeTeamOdds: {
+        moneyLine: homeOpenML,
+        currentMoneyLine:
+          homeCurrentML !== homeOpenML ? homeCurrentML : undefined,
         spreadOdds: homeOpenSpread,
-        currentSpreadOdds: homeCurrentSpread !== homeOpenSpread ? homeCurrentSpread : undefined
+        currentSpreadOdds:
+          homeCurrentSpread !== homeOpenSpread ? homeCurrentSpread : undefined,
       },
-      awayTeamOdds: { 
-        moneyLine: awayOpenML, 
-        currentMoneyLine: awayCurrentML !== awayOpenML ? awayCurrentML : undefined,
+      awayTeamOdds: {
+        moneyLine: awayOpenML,
+        currentMoneyLine:
+          awayCurrentML !== awayOpenML ? awayCurrentML : undefined,
         spreadOdds: awayOpenSpread,
-        currentSpreadOdds: awayCurrentSpread !== awayOpenSpread ? awayCurrentSpread : undefined
+        currentSpreadOdds:
+          awayCurrentSpread !== awayOpenSpread ? awayCurrentSpread : undefined,
       },
       overOdds: openOverOdds,
-      currentOverOdds: currentOverOdds !== openOverOdds ? currentOverOdds : undefined,
+      currentOverOdds:
+        currentOverOdds !== openOverOdds ? currentOverOdds : undefined,
       underOdds: openUnderOdds,
-      currentUnderOdds: currentUnderOdds !== openUnderOdds ? currentUnderOdds : undefined
+      currentUnderOdds:
+        currentUnderOdds !== openUnderOdds ? currentUnderOdds : undefined,
     };
   });
 
@@ -107,20 +149,27 @@ export function normalizeOdds(
   homeTeamName: string,
   awayTeamName: string,
   preferredProvider: string = "ESPN BET",
-  removeVig: boolean = true
+  removeVig: boolean = true,
 ): BetLeg[] {
-  const entry = oddsEntries.find(e => e.provider.name === preferredProvider) || oddsEntries.sort((a,b) => b.provider.priority - a.provider.priority)[0];
+  const entry =
+    oddsEntries.find((e) => e.provider.name === preferredProvider) ||
+    oddsEntries.sort((a, b) => b.provider.priority - a.provider.priority)[0];
   if (!entry) return [];
 
   const legs: BetLeg[] = [];
 
   // Moneylines
-  if (entry.homeTeamOdds.moneyLine !== undefined && entry.awayTeamOdds.moneyLine !== undefined) {
+  if (
+    entry.homeTeamOdds.moneyLine !== undefined &&
+    entry.awayTeamOdds.moneyLine !== undefined
+  ) {
     const homeOdds = entry.homeTeamOdds.moneyLine;
     const awayOdds = entry.awayTeamOdds.moneyLine;
     const homeProb = impliedProbability(homeOdds);
     const awayProb = impliedProbability(awayOdds);
-    const [homeFair, awayFair] = removeVig ? removeVigUtil(homeProb, awayProb) : [homeProb, awayProb];
+    const [homeFair, awayFair] = removeVig
+      ? removeVigUtil(homeProb, awayProb)
+      : [homeProb, awayProb];
 
     // Determine favorite/underdog
     let homeLabel = "underdog";
@@ -131,28 +180,112 @@ export function normalizeOdds(
       awayLabel = "favorite";
     }
 
-    legs.push(createBetLeg(eventId, "moneyline", "home", undefined, homeOdds, entry.homeTeamOdds.currentMoneyLine, entry.provider.name, `${homeTeamName} ML ${formatAmericanOdds(homeOdds)}`, homeFair));
-    legs.push(createBetLeg(eventId, "moneyline", "away", undefined, awayOdds, entry.awayTeamOdds.currentMoneyLine, entry.provider.name, `${awayTeamName} ML ${formatAmericanOdds(awayOdds)}`, awayFair));
+    legs.push(
+      createBetLeg(
+        eventId,
+        "moneyline",
+        "home",
+        undefined,
+        homeOdds,
+        entry.homeTeamOdds.currentMoneyLine,
+        entry.provider.name,
+        `${homeTeamName} ML ${formatAmericanOdds(homeOdds)}`,
+        homeFair,
+      ),
+    );
+    legs.push(
+      createBetLeg(
+        eventId,
+        "moneyline",
+        "away",
+        undefined,
+        awayOdds,
+        entry.awayTeamOdds.currentMoneyLine,
+        entry.provider.name,
+        `${awayTeamName} ML ${formatAmericanOdds(awayOdds)}`,
+        awayFair,
+      ),
+    );
   }
 
   // Spreads
-  if (entry.spread !== undefined && entry.homeTeamOdds.spreadOdds !== undefined && entry.awayTeamOdds.spreadOdds !== undefined) {
+  if (
+    entry.spread !== undefined &&
+    entry.homeTeamOdds.spreadOdds !== undefined &&
+    entry.awayTeamOdds.spreadOdds !== undefined
+  ) {
     const homeProb = impliedProbability(entry.homeTeamOdds.spreadOdds);
     const awayProb = impliedProbability(entry.awayTeamOdds.spreadOdds);
-    const [homeFair, awayFair] = removeVig ? removeVigUtil(homeProb, awayProb) : [homeProb, awayProb];
+    const [homeFair, awayFair] = removeVig
+      ? removeVigUtil(homeProb, awayProb)
+      : [homeProb, awayProb];
 
-    legs.push(createBetLeg(eventId, "spread", "home", -entry.spread, entry.homeTeamOdds.spreadOdds, entry.homeTeamOdds.currentSpreadOdds, entry.provider.name, `${homeTeamName} ${-entry.spread > 0 ? "+" : ""}${-entry.spread} (${formatAmericanOdds(entry.homeTeamOdds.spreadOdds)})`, homeFair));
-    legs.push(createBetLeg(eventId, "spread", "away", entry.spread, entry.awayTeamOdds.spreadOdds, entry.awayTeamOdds.currentSpreadOdds, entry.provider.name, `${awayTeamName} ${entry.spread > 0 ? "+" : ""}${entry.spread} (${formatAmericanOdds(entry.awayTeamOdds.spreadOdds)})`, awayFair));
+    legs.push(
+      createBetLeg(
+        eventId,
+        "spread",
+        "home",
+        -entry.spread,
+        entry.homeTeamOdds.spreadOdds,
+        entry.homeTeamOdds.currentSpreadOdds,
+        entry.provider.name,
+        `${homeTeamName} ${-entry.spread > 0 ? "+" : ""}${-entry.spread} (${formatAmericanOdds(entry.homeTeamOdds.spreadOdds)})`,
+        homeFair,
+      ),
+    );
+    legs.push(
+      createBetLeg(
+        eventId,
+        "spread",
+        "away",
+        entry.spread,
+        entry.awayTeamOdds.spreadOdds,
+        entry.awayTeamOdds.currentSpreadOdds,
+        entry.provider.name,
+        `${awayTeamName} ${entry.spread > 0 ? "+" : ""}${entry.spread} (${formatAmericanOdds(entry.awayTeamOdds.spreadOdds)})`,
+        awayFair,
+      ),
+    );
   }
 
   // Totals
-  if (entry.overUnder !== undefined && entry.overOdds !== undefined && entry.underOdds !== undefined) {
+  if (
+    entry.overUnder !== undefined &&
+    entry.overOdds !== undefined &&
+    entry.underOdds !== undefined
+  ) {
     const overProb = impliedProbability(entry.overOdds);
     const underProb = impliedProbability(entry.underOdds);
-    const [overFair, underFair] = removeVig ? removeVigUtil(overProb, underProb) : [overProb, underProb];
+    const [overFair, underFair] = removeVig
+      ? removeVigUtil(overProb, underProb)
+      : [overProb, underProb];
 
-    legs.push(createBetLeg(eventId, "total", undefined, entry.overUnder, entry.overOdds, entry.currentOverOdds, entry.provider.name, `Over ${entry.overUnder} (${formatAmericanOdds(entry.overOdds)})`, overFair));
-    legs.push(createBetLeg(eventId, "total", undefined, entry.overUnder, entry.underOdds, entry.currentUnderOdds, entry.provider.name, `Under ${entry.overUnder} (${formatAmericanOdds(entry.underOdds)})`, underFair));
+    legs.push(
+      createBetLeg(
+        eventId,
+        "total",
+        undefined,
+        entry.overUnder,
+        entry.overOdds,
+        entry.currentOverOdds,
+        entry.provider.name,
+        `Over ${entry.overUnder} (${formatAmericanOdds(entry.overOdds)})`,
+        overFair,
+      ),
+    );
+    legs.push(
+      createBetLeg(
+        eventId,
+        "total",
+        undefined,
+        entry.overUnder,
+        entry.underOdds,
+        entry.currentUnderOdds,
+        entry.provider.name,
+        `Under ${entry.overUnder} (${formatAmericanOdds(entry.underOdds)})`,
+        underFair,
+      ),
+    );
   }
 
   return legs;
@@ -167,7 +300,7 @@ function createBetLeg(
   currentOdds: number | undefined,
   provider: string,
   description: string,
-  fairProbability?: number
+  fairProbability?: number,
 ): BetLeg {
   return {
     eventId,
@@ -177,8 +310,11 @@ function createBetLeg(
     odds,
     currentOdds: currentOdds && currentOdds !== odds ? currentOdds : undefined,
     decimalOdds: americanToDecimal(odds),
-    impliedProbability: fairProbability !== undefined ? fairProbability : impliedProbability(odds),
+    impliedProbability:
+      fairProbability !== undefined
+        ? fairProbability
+        : impliedProbability(odds),
     provider,
-    description
+    description,
   };
 }
