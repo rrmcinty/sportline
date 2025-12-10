@@ -176,126 +176,80 @@ export async function cmdDataIngest(
           ) as { id: number };
             // --- NEW: Ingest box score stats for basketball ---
             if ((sport === "ncaam" || sport === "nba") && comp.boxScore) {
+              const requiredStats = [
+                "fieldGoalsMade-fieldGoalsAttempted_made",
+                "fieldGoalsMade-fieldGoalsAttempted_attempted",
+                "threePointFieldGoalsMade-threePointFieldGoalsAttempted_made",
+                "threePointFieldGoalsMade-threePointFieldGoalsAttempted_attempted",
+                "freeThrowsMade-freeThrowsAttempted_made",
+                "freeThrowsMade-freeThrowsAttempted_attempted",
+                "totalRebounds",
+                "offensiveRebounds",
+                "defensiveRebounds",
+                "assists",
+                "steals",
+                "blocks",
+                "turnovers"
+              ];
+
+              const homeStats = comp.boxScore.home as Record<string, string | number>;
+              const awayStats = comp.boxScore.away as Record<string, string | number>;
+
+              // Check if all required stats are present for both teams
+              const hasAllHome = requiredStats.every(stat => Object.keys(homeStats).some(m => m.startsWith(stat.split('_')[0])));
+              const hasAllAway = requiredStats.every(stat => Object.keys(awayStats).some(m => m.startsWith(stat.split('_')[0])));
+
+              if (!hasAllHome || !hasAllAway) {
+                console.warn(chalk.yellow(`Skipping event ${comp.eventId} due to missing required stats. Home complete: ${hasAllHome}, Away complete: ${hasAllAway}`));
+                continue;
+              }
+
               console.log(`Inserting box score stats for event ${comp.eventId}`);
               const insertStat = db.prepare(`
                 INSERT INTO team_stats (team_id, sport, season, game_date, metric_name, metric_value)
                 VALUES (?, ?, ?, ?, ?, ?)
               `);
-              
-              // Home team stats
-              const homeStats = comp.boxScore.home as Record<string, string | number>;
+
+              // Insert all home stats
               for (const [metric, value] of Object.entries(homeStats)) {
                 if (typeof value === "string") {
                   if (value.includes("-")) {
                     const [made, attempted] = value.split("-").map(v => parseFloat(v));
                     if (!isNaN(made)) {
-                      console.log(`[team_stats] Adding HOME stat: team_id=${homeTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}_made, value=${made}`);
-                      const result = insertStat.run(
-                        homeTeamResult.id,
-                        sport,
-                        season,
-                        comp.date,
-                        `${metric}_made`,
-                        made
-                      );
-                      console.log(`[team_stats] Inserted HOME: metric=${metric}_made, value=${made}, changes=${result.changes}`);
+                      insertStat.run(homeTeamResult.id, sport, season, comp.date, `${metric}_made`, made);
                     }
                     if (!isNaN(attempted)) {
-                      console.log(`[team_stats] Adding HOME stat: team_id=${homeTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}_attempted, value=${attempted}`);
-                      const result = insertStat.run(
-                        homeTeamResult.id,
-                        sport,
-                        season,
-                        comp.date,
-                        `${metric}_attempted`,
-                        attempted
-                      );
-                      console.log(`[team_stats] Inserted HOME: metric=${metric}_attempted, value=${attempted}, changes=${result.changes}`);
+                      insertStat.run(homeTeamResult.id, sport, season, comp.date, `${metric}_attempted`, attempted);
                     }
                   } else {
                     const num = parseFloat(value);
                     if (!isNaN(num)) {
-                      console.log(`[team_stats] Adding HOME stat: team_id=${homeTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}, value=${num}`);
-                      const result = insertStat.run(
-                        homeTeamResult.id,
-                        sport,
-                        season,
-                        comp.date,
-                        metric,
-                        num
-                      );
-                      console.log(`[team_stats] Inserted HOME: metric=${metric}, value=${num}, changes=${result.changes}`);
+                      insertStat.run(homeTeamResult.id, sport, season, comp.date, metric, num);
                     }
                   }
                 } else if (typeof value === "number" && !isNaN(value)) {
-                  console.log(`[team_stats] Adding HOME stat: team_id=${homeTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}, value=${value}`);
-                  const result = insertStat.run(
-                    homeTeamResult.id,
-                    sport,
-                    season,
-                    comp.date,
-                    metric,
-                    value
-                  );
-                  console.log(`[team_stats] Inserted HOME: metric=${metric}, value=${value}, changes=${result.changes}`);
+                  insertStat.run(homeTeamResult.id, sport, season, comp.date, metric, value);
                 }
               }
-              // Away team stats
-              const awayStats = comp.boxScore.away as Record<string, string | number>;
+              // Insert all away stats
               for (const [metric, value] of Object.entries(awayStats)) {
                 if (typeof value === "string") {
                   if (value.includes("-")) {
                     const [made, attempted] = value.split("-").map(v => parseFloat(v));
                     if (!isNaN(made)) {
-                      console.log(`[team_stats] Adding AWAY stat: team_id=${awayTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}_made, value=${made}`);
-                      const result = insertStat.run(
-                        awayTeamResult.id,
-                        sport,
-                        season,
-                        comp.date,
-                        `${metric}_made`,
-                        made
-                      );
-                      console.log(`[team_stats] Inserted AWAY: metric=${metric}_made, value=${made}, changes=${result.changes}`);
+                      insertStat.run(awayTeamResult.id, sport, season, comp.date, `${metric}_made`, made);
                     }
                     if (!isNaN(attempted)) {
-                      console.log(`[team_stats] Adding AWAY stat: team_id=${awayTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}_attempted, value=${attempted}`);
-                      const result = insertStat.run(
-                        awayTeamResult.id,
-                        sport,
-                        season,
-                        comp.date,
-                        `${metric}_attempted`,
-                        attempted
-                      );
-                      console.log(`[team_stats] Inserted AWAY: metric=${metric}_attempted, value=${attempted}, changes=${result.changes}`);
+                      insertStat.run(awayTeamResult.id, sport, season, comp.date, `${metric}_attempted`, attempted);
                     }
                   } else {
                     const num = parseFloat(value);
                     if (!isNaN(num)) {
-                      console.log(`[team_stats] Adding AWAY stat: team_id=${awayTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}, value=${num}`);
-                      const result = insertStat.run(
-                        awayTeamResult.id,
-                        sport,
-                        season,
-                        comp.date,
-                        metric,
-                        num
-                      );
-                      console.log(`[team_stats] Inserted AWAY: metric=${metric}, value=${num}, changes=${result.changes}`);
+                      insertStat.run(awayTeamResult.id, sport, season, comp.date, metric, num);
                     }
                   }
                 } else if (typeof value === "number" && !isNaN(value)) {
-                  console.log(`[team_stats] Adding AWAY stat: team_id=${awayTeamResult.id}, sport=${sport}, season=${season}, date=${comp.date}, metric=${metric}, value=${value}`);
-                  const result = insertStat.run(
-                    awayTeamResult.id,
-                    sport,
-                    season,
-                    comp.date,
-                    metric,
-                    value
-                  );
-                  console.log(`[team_stats] Inserted AWAY: metric=${metric}, value=${value}, changes=${result.changes}`);
+                  insertStat.run(awayTeamResult.id, sport, season, comp.date, metric, value);
                 }
               }
             }

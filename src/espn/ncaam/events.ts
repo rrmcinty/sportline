@@ -98,7 +98,7 @@ export async function fetchEvents(date: string): Promise<Competition[]> {
       // Fetch box score stats from summary endpoint
       const summary = await fetchSummary(event.id);
       const teamStats = extractTeamStats(summary);
-      console.log(`[boxscore] Event ${event.id}:`, JSON.stringify(teamStats, null, 2));
+      // console.log(`[boxscore] Event ${event.id}:`, JSON.stringify(teamStats, null, 2));
       const competition = await parseEvent(event, teamStats);
       if (competition) {
         competitions.push(competition);
@@ -141,7 +141,7 @@ async function fetchSummary(eventId: string): Promise<any> {
     return cached;
   }
   const response = await fetch(url);
-  console.log(`site api response: ${JSON.stringify(response)}`);
+  // console.log(`site api response: ${JSON.stringify(response)}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch summary: ${response.status}`);
   }

@@ -179,6 +179,7 @@ async function trainMoneylineModel(
 ): Promise<void> {
   console.log(chalk.bold.blue(`\n📊 Training MONEYLINE ENSEMBLE (base + market-aware)...\n`));
 
+
   // Load outcomes (home team wins)
   const seasonPlaceholders = seasons.map(() => '?').join(',');
   const gamesWithOutcomes = db.prepare(`
@@ -191,10 +192,15 @@ async function trainMoneylineModel(
       away_score: number;
     }>;
 
-    if (gamesWithOutcomes.length === 0) {
-      console.log(chalk.yellow("⚠️  No completed games found. Run data ingest with completed games first."));
-      return;
-    }
+  console.log(chalk.blue(`[DEBUG] Loaded ${gamesWithOutcomes.length} completed games with outcomes for seasons: ${seasons.join(", ")}`));
+  if (gamesWithOutcomes.length > 0) {
+    console.log(chalk.blue(`[DEBUG] Sample gameWithOutcome: `), gamesWithOutcomes[0]);
+  }
+
+  if (gamesWithOutcomes.length === 0) {
+    console.log(chalk.yellow("⚠️  No completed games found. Run data ingest with completed games first."));
+    return;
+  }
 
     // Build training data with dates for temporal splitting
     const trainingData: { features: number[][]; labels: number[]; dates: string[] } = {
@@ -219,52 +225,74 @@ async function trainMoneylineModel(
       dates: []
     };
 
+
+    console.log(chalk.blue(`[DEBUG] Received ${gameFeatures.length} gameFeatures`));
+    if (gameFeatures.length > 0) {
+      console.log(chalk.blue(`[DEBUG] Sample gameFeature: `), gameFeatures[0]);
+    }
+
+    let skippedNoOutcome = 0;
+    let skippedNaN = 0;
+      // Debug: print fg_pct for first 10 games
+      let fgPctDebugCount = 0;
     for (const gf of gameFeatures) {
       const outcome = gameOutcomes.get(gf.gameId);
-      if (outcome !== undefined) {
-        // Base features (no market) - both 5-game and 10-game windows
-        const baseFeat = [
-          gf.homeWinRate5,
-          gf.awayWinRate5,
-          gf.homeAvgMargin5,
-          gf.awayAvgMargin5,
-          gf.homeAdvantage,
-          gf.homeOppWinRate5,
-          gf.awayOppWinRate5,
-          gf.homeOppAvgMargin5,
-          gf.awayOppAvgMargin5,
-          gf.homeWinRate10,
-          gf.awayWinRate10,
-          gf.homeAvgMargin10,
-          gf.awayAvgMargin10,
-          gf.homeOppWinRate10,
-          gf.awayOppWinRate10,
-          gf.homeOppAvgMargin10,
-          gf.awayOppAvgMargin10,
-          // Basketball-specific features
-          gf.fg_pct,
-          gf.fg3_pct,
-          gf.turnovers,
-          gf.fgs_attempted,
-          gf.steals
-        ];
-        // Filter out any NaN or undefined values in baseFeat
-        if (baseFeat.some(v => v === undefined || Number.isNaN(v))) continue;
-        baseData.features.push(baseFeat);
-        baseData.labels.push(outcome);
-        baseData.dates.push(gf.date);
-        // Market-aware features (with market implied prob)
-        const marketFeat = [...baseFeat, gf.marketImpliedProb];
-        if (marketFeat.some(v => v === undefined || Number.isNaN(v))) continue;
-        marketAwareData.features.push(marketFeat);
-        marketAwareData.labels.push(outcome);
-        marketAwareData.dates.push(gf.date);
-        // Legacy trainingData for backward compat
-        trainingData.features.push(marketFeat);
-        trainingData.labels.push(outcome);
-        trainingData.dates.push(gf.date);
+      if (outcome === undefined) {
+        skippedNoOutcome++;
+        continue;
       }
+        if (fgPctDebugCount < 10 && typeof gf.fg_pct === 'number') {
+          console.log(`[DEBUG] gameId=${gf.gameId}, date=${gf.date}, fg_pct=${gf.fg_pct}`);
+          fgPctDebugCount++;
+        }
+      // Base features (no market) - both 5-game and 10-game windows
+      const baseFeat = [
+        gf.homeWinRate5,
+        gf.awayWinRate5,
+        gf.homeAvgMargin5,
+        gf.awayAvgMargin5,
+        gf.homeAdvantage,
+        gf.homeOppWinRate5,
+        gf.awayOppWinRate5,
+        gf.homeOppAvgMargin5,
+        gf.awayOppAvgMargin5,
+        gf.homeWinRate10,
+        gf.awayWinRate10,
+        gf.homeAvgMargin10,
+        gf.awayAvgMargin10,
+        gf.homeOppWinRate10,
+        gf.awayOppWinRate10,
+        gf.homeOppAvgMargin10,
+        gf.awayOppAvgMargin10,
+          // Basketball-specific features (commented out for experimentation)
+          gf.fg_pct,
+          // gf.fg3_pct,
+          // gf.turnovers,
+          // gf.fgs_attempted,
+          // gf.steals
+      ];
+      // Filter out any NaN or undefined values in baseFeat
+      if (baseFeat.some(v => v === undefined || Number.isNaN(v))) {
+        skippedNaN++;
+        continue;
+      }
+      baseData.features.push(baseFeat);
+      baseData.labels.push(outcome);
+      baseData.dates.push(gf.date);
+      // Market-aware features (with market implied prob)
+      const marketFeat = [...baseFeat, gf.marketImpliedProb];
+      if (marketFeat.some(v => v === undefined || Number.isNaN(v))) {
+        continue;
+      }
+      marketAwareData.features.push(marketFeat);
+      marketAwareData.labels.push(outcome);
+      marketAwareData.dates.push(gf.date);
+      // Legacy trainingData for backward compat
+      trainingData.features.push(marketFeat);
+      trainingData.labels.push(outcome);
+      trainingData.dates.push(gf.date);
     }
+    console.log(chalk.blue(`[DEBUG] Skipped ${skippedNoOutcome} games due to missing outcome, ${skippedNaN} due to NaN/undefined features`));
 
     console.log(chalk.dim(`Training on ${trainingData.features.length} completed games\n`));
 

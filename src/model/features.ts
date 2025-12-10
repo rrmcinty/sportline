@@ -69,7 +69,10 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
           WHERE team_id = ? AND sport = ? AND metric_name = ? AND game_date < ?
           ORDER BY game_date DESC LIMIT ?
         `).all(teamId, sport, stat, gameDate, window) as Array<{ metric_value: number }>;
-        if (!rows.length) return undefined;
+        if (!rows.length) {
+          console.log(`[DEBUG] No rows for team_id=${teamId}, sport=${sport}, metric_name=${stat}, game_date<${gameDate}`);
+          return undefined;
+        }
         // Use recency weights if available
         const weights = window === 5 ? RECENCY_WEIGHTS_5 : window === 10 ? RECENCY_WEIGHTS_10 : null;
         if (weights && rows.length === weights.length) {
@@ -181,22 +184,24 @@ export function computeFeatures(db: Database.Database, sport: string, seasons: n
   for (const game of games) {
     // Basketball-specific features (NBA/NCAAM)
     let home_fg_pct, away_fg_pct, home_fg3_pct, away_fg3_pct, home_turnovers, away_turnovers, home_fgs_attempted, away_fgs_attempted, home_steals, away_steals;
+  
     if (sport === 'nba' || sport === 'ncaam') {
-      home_fg_pct = getRollingStat(game.home_team_id, 'fg_pct', game.date, 5);
-      away_fg_pct = getRollingStat(game.away_team_id, 'fg_pct', game.date, 5);
-      home_fg3_pct = getRollingStat(game.home_team_id, '3p_fg_pct', game.date, 5);
-      away_fg3_pct = getRollingStat(game.away_team_id, '3p_fg_pct', game.date, 5);
+      // Use metric names that exist in the database
+      home_fg_pct = getRollingStat(game.home_team_id, 'fieldGoalPct', game.date, 5);
+      away_fg_pct = getRollingStat(game.away_team_id, 'fieldGoalPct', game.date, 5);
+      home_fg3_pct = getRollingStat(game.home_team_id, 'threePointFieldGoalPct', game.date, 5);
+      away_fg3_pct = getRollingStat(game.away_team_id, 'threePointFieldGoalPct', game.date, 5);
       home_turnovers = getRollingStat(game.home_team_id, 'turnovers', game.date, 5);
       away_turnovers = getRollingStat(game.away_team_id, 'turnovers', game.date, 5);
-      home_fgs_attempted = getRollingStat(game.home_team_id, 'fg_attempted', game.date, 5);
-      away_fgs_attempted = getRollingStat(game.away_team_id, 'fg_attempted', game.date, 5);
+      home_fgs_attempted = getRollingStat(game.home_team_id, 'fieldGoalsMade-fieldGoalsAttempted_attempted', game.date, 5);
+      away_fgs_attempted = getRollingStat(game.away_team_id, 'fieldGoalsMade-fieldGoalsAttempted_attempted', game.date, 5);
       home_steals = getRollingStat(game.home_team_id, 'steals', game.date, 5);
       away_steals = getRollingStat(game.away_team_id, 'steals', game.date, 5);
       // Log feature values for first few games
       // if (features.length < 10) {
       //   console.log(`[${sport}] Game ${game.id} (${game.date}) home_fg_pct:`, home_fg_pct, 'away_fg_pct:', away_fg_pct, 'home_fg3_pct:', home_fg3_pct, 'away_fg3_pct:', away_fg3_pct, 'home_turnovers:', home_turnovers, 'away_turnovers:', away_turnovers, 'home_fgs_attempted:', home_fgs_attempted, 'away_fgs_attempted:', away_fgs_attempted, 'home_steals:', home_steals, 'away_steals:', away_steals);
       // }
-      console.log(`${sport}: ${JSON.stringify(game)}`)
+      // console.log(`${sport}: ${JSON.stringify(game)}`)
     }
     const homeHistory = teamHistory.get(game.home_team_id) || [];
     const awayHistory = teamHistory.get(game.away_team_id) || [];
