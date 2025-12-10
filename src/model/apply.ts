@@ -26,11 +26,11 @@ function blendWithMarket(modelProb: number, marketProb: number): number {
   const blended = marketProb + delta;
   // Prevent extreme confidence; keep within [5%, 95%], but also avoid >75% on clear underdogs
   const capped = clamp(blended, 0.05, 0.95);
-  if (marketProb < 0.45 && capped > marketProb + 0.20) {
-    return marketProb + 0.20;
+  if (marketProb < 0.45 && capped > marketProb + 0.2) {
+    return marketProb + 0.2;
   }
-  if (marketProb > 0.55 && capped < marketProb - 0.20) {
-    return marketProb - 0.20;
+  if (marketProb > 0.55 && capped < marketProb - 0.2) {
+    return marketProb - 0.2;
   }
   return capped;
 }
@@ -48,76 +48,155 @@ function getFetchEvents(sport: Sport) {
  * Returns undefined if no model available or no games.
  * Supports ensemble models (base + market-aware blending).
  */
-export async function getHomeWinModelProbabilities(sport: Sport, date: string): Promise<Map<string, number> | undefined> {
+export async function getHomeWinModelProbabilities(
+  sport: Sport,
+  date: string,
+): Promise<Map<string, number> | undefined> {
   const db = getDb();
 
-  const latestRun = db.prepare(`SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%moneyline%' ORDER BY finished_at DESC LIMIT 1`).get(sport) as { run_id: string; artifacts_path: string } | undefined;
+  const latestRun = db
+    .prepare(
+      `SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%moneyline%' ORDER BY finished_at DESC LIMIT 1`,
+    )
+    .get(sport) as { run_id: string; artifacts_path: string } | undefined;
   if (!latestRun) return undefined;
 
   // Check if ensemble model
   const ensemblePath = join(latestRun.artifacts_path, "ensemble.json");
   let isEnsemble = false;
-  let baseModel: { type: string; weights: number[]; featureNames: string[]; seasons?: number[] } | undefined;
-  let marketModel: { type: string; weights: number[]; featureNames: string[]; seasons?: number[] } | undefined;
-  let ensembleConfig: { baseWeight: number; marketWeight: number; seasons?: number[] } | undefined;
+  let baseModel:
+    | {
+        type: string;
+        weights: number[];
+        featureNames: string[];
+        seasons?: number[];
+      }
+    | undefined;
+  let marketModel:
+    | {
+        type: string;
+        weights: number[];
+        featureNames: string[];
+        seasons?: number[];
+      }
+    | undefined;
+  let ensembleConfig:
+    | { baseWeight: number; marketWeight: number; seasons?: number[] }
+    | undefined;
   let seasons: number[] = [2024, 2025];
 
   try {
     ensembleConfig = JSON.parse(readFileSync(ensemblePath, "utf-8"));
-    baseModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "base_model.json"), "utf-8")) as any;
-    marketModel = JSON.parse(readFileSync(join(latestRun.artifacts_path, "market_model.json"), "utf-8")) as any;
-    seasons = ensembleConfig?.seasons || baseModel?.seasons || marketModel?.seasons || [2024, 2025];
+    baseModel = JSON.parse(
+      readFileSync(join(latestRun.artifacts_path, "base_model.json"), "utf-8"),
+    ) as any;
+    marketModel = JSON.parse(
+      readFileSync(
+        join(latestRun.artifacts_path, "market_model.json"),
+        "utf-8",
+      ),
+    ) as any;
+    seasons = ensembleConfig?.seasons ||
+      baseModel?.seasons ||
+      marketModel?.seasons || [2024, 2025];
     isEnsemble = true;
   } catch {
     // Fall back to single model
     const modelPath = join(latestRun.artifacts_path, "model.json");
     try {
       const model = JSON.parse(readFileSync(modelPath, "utf-8"));
-      baseModel = { type: 'single', weights: model.weights, featureNames: model.featureNames } as any;
-      seasons = model.seasons || (model.season ? [model.season] : undefined) || [2024, 2025];
+      baseModel = {
+        type: "single",
+        weights: model.weights,
+        featureNames: model.featureNames,
+      } as any;
+      seasons = model.seasons ||
+        (model.season ? [model.season] : undefined) || [2024, 2025];
     } catch {
       return undefined; // no artifacts
     }
   }
 
   // Use database only - no API fetches during backtest/predictions
-  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+  const isoPrefix = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
   const nextDay = new Date(isoPrefix);
   nextDay.setDate(nextDay.getDate() + 1);
   const nextDayPrefix = nextDay.toISOString().slice(0, 10);
 
   // Compute features for season
-  const allFeatures = computeFeatures(db, sport, Array.isArray(seasons) && seasons.length ? seasons : [2025]);
+  const allFeatures = computeFeatures(
+    db,
+    sport,
+    Array.isArray(seasons) && seasons.length ? seasons : [2025],
+  );
   const featureMap = new Map<number, { base: number[]; market: number[] }>();
-  
+
   for (const f of allFeatures) {
-    const baseFeatures = [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.homeWinRate10, f.awayWinRate10, f.homeAvgMargin10, f.awayAvgMargin10, f.homeOppWinRate10, f.awayOppWinRate10, f.homeOppAvgMargin10, f.awayOppAvgMargin10];
+    const baseFeatures = [
+      f.homeWinRate5,
+      f.awayWinRate5,
+      f.homeAvgMargin5,
+      f.awayAvgMargin5,
+      f.homeAdvantage,
+      f.homeOppWinRate5,
+      f.awayOppWinRate5,
+      f.homeOppAvgMargin5,
+      f.awayOppAvgMargin5,
+      f.homeWinRate10,
+      f.awayWinRate10,
+      f.homeAvgMargin10,
+      f.awayAvgMargin10,
+      f.homeOppWinRate10,
+      f.awayOppWinRate10,
+      f.homeOppAvgMargin10,
+      f.awayOppAvgMargin10,
+    ];
     const marketFeatures = [...baseFeatures, f.marketImpliedProb];
     featureMap.set(f.gameId, { base: baseFeatures, market: marketFeatures });
   }
 
   // Query games matching date prefix (already calculated above)
-  
-  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefix) as Array<{ id: number; espn_event_id: string }>;
+
+  const rows = db
+    .prepare(
+      `SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`,
+    )
+    .all(sport, isoPrefix, nextDayPrefix) as Array<{
+    id: number;
+    espn_event_id: string;
+  }>;
   if (rows.length === 0) return undefined;
 
   const probs = new Map<string, number>();
-  
+
   if (isEnsemble && baseModel && marketModel && ensembleConfig) {
     // Ensemble prediction: blend base (no market) + market-aware
     // Try to load calibration from baseModel (if present)
     const calibration = (baseModel as any).calibration || null;
     for (const r of rows) {
-      const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
-      const baseZ = features.base.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
+      const features = featureMap.get(r.id) || {
+        base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0],
+        market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5],
+      };
+      const baseZ = features.base.reduce(
+        (acc: number, v: number, i: number) =>
+          acc + v * (baseModel as any).weights[i],
+        0,
+      );
       let baseProb = sigmoid(baseZ);
       if (calibration) {
         baseProb = applyCalibration(baseProb, calibration);
       }
-      const marketZ = features.market.reduce((acc: number, v: number, i: number) => acc + v * (marketModel as any).weights[i], 0);
+      const marketZ = features.market.reduce(
+        (acc: number, v: number, i: number) =>
+          acc + v * (marketModel as any).weights[i],
+        0,
+      );
       let marketProb = sigmoid(marketZ);
       // Optionally calibrate marketProb if desired (not typical)
-      const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
+      const ensembleProb =
+        ensembleConfig.baseWeight * baseProb +
+        ensembleConfig.marketWeight * marketProb;
       const marketImplied = features.market[features.market.length - 1]; // Last feature is market implied prob
       // Tight blend: keep within ±15 pts of market to avoid 90% underdogs
       const finalProb = blendWithMarket(ensembleProb, marketImplied);
@@ -127,15 +206,26 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
     // Single model fallback
     const calibration = (baseModel as any).calibration || null;
     for (const r of rows) {
-      const features = featureMap.get(r.id) || { base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0], market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5] };
-      const x = (baseModel as any).featureNames.length === 9 ? features.base : features.market;
-      const z = x.reduce((acc: number, v: number, i: number) => acc + v * (baseModel as any).weights[i], 0);
+      const features = featureMap.get(r.id) || {
+        base: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0],
+        market: [0.5, 0.5, 0, 0, 1, 0.5, 0.5, 0, 0, 0.5],
+      };
+      const x =
+        (baseModel as any).featureNames.length === 9
+          ? features.base
+          : features.market;
+      const z = x.reduce(
+        (acc: number, v: number, i: number) =>
+          acc + v * (baseModel as any).weights[i],
+        0,
+      );
       let rawProb = sigmoid(z);
       if (calibration) {
         rawProb = applyCalibration(rawProb, calibration);
       }
       const clippedProb = Math.max(0.05, Math.min(0.95, rawProb));
-      if (x.length === 10) { // Has market feature
+      if (x.length === 10) {
+        // Has market feature
         const marketImplied = x[x.length - 1];
         const finalProb = blendWithMarket(clippedProb, marketImplied);
         probs.set(r.espn_event_id, finalProb);
@@ -151,55 +241,105 @@ export async function getHomeWinModelProbabilities(sport: Sport, date: string): 
  * Load latest spread model and produce home cover probabilities per eventId+line for given date.
  * Returns undefined if no model available or no games.
  */
-export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string): Promise<Map<string, number> | undefined> {
+export async function getHomeSpreadCoverProbabilities(
+  sport: Sport,
+  date: string,
+): Promise<Map<string, number> | undefined> {
   const db = getDb();
 
-  const latestRun = db.prepare(`SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%spread%' ORDER BY finished_at DESC LIMIT 1`).get(sport) as { run_id: string; artifacts_path: string } | undefined;
+  const latestRun = db
+    .prepare(
+      `SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%spread%' ORDER BY finished_at DESC LIMIT 1`,
+    )
+    .get(sport) as { run_id: string; artifacts_path: string } | undefined;
   if (!latestRun) return undefined;
 
   const modelPath = join(latestRun.artifacts_path, "model.json");
-  let model: { market: string; weights: number[]; means?: number[]; stds?: number[]; featureNames: string[]; seasons?: number[]; calibration?: CalibrationCurve | null };
+  let model: {
+    market: string;
+    weights: number[];
+    means?: number[];
+    stds?: number[];
+    featureNames: string[];
+    seasons?: number[];
+    calibration?: CalibrationCurve | null;
+  };
   try {
     model = JSON.parse(readFileSync(modelPath, "utf-8"));
   } catch {
     return undefined;
   }
 
-  if (model.market !== 'spread') return undefined;
+  if (model.market !== "spread") return undefined;
 
   // Use database only - no API fetches during backtest/predictions
-  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+  const isoPrefix = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
   const nextDay = new Date(isoPrefix);
   nextDay.setDate(nextDay.getDate() + 1);
   const nextDayPrefix = nextDay.toISOString().slice(0, 10);
 
   // Compute features for season
-  const allFeatures = computeFeatures(db, sport, Array.isArray(model.seasons) && model.seasons.length ? model.seasons : [2024, 2025]);
+  const allFeatures = computeFeatures(
+    db,
+    sport,
+    Array.isArray(model.seasons) && model.seasons.length
+      ? model.seasons
+      : [2024, 2025],
+  );
   const featureMap = new Map<number, number[]>();
   for (const f of allFeatures) {
     // Only include if spread data is available
     if (f.spreadLine !== null && f.spreadMarketImpliedProb !== null) {
-      featureMap.set(f.gameId, [f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5, f.homeAdvantage, f.homeOppWinRate5, f.awayOppWinRate5, f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.homeWinRate10, f.awayWinRate10, f.homeAvgMargin10, f.awayAvgMargin10, f.homeOppWinRate10, f.awayOppWinRate10, f.homeOppAvgMargin10, f.awayOppAvgMargin10, f.spreadLine, f.spreadMarketImpliedProb]);
+      featureMap.set(f.gameId, [
+        f.homeWinRate5,
+        f.awayWinRate5,
+        f.homeAvgMargin5,
+        f.awayAvgMargin5,
+        f.homeAdvantage,
+        f.homeOppWinRate5,
+        f.awayOppWinRate5,
+        f.homeOppAvgMargin5,
+        f.awayOppAvgMargin5,
+        f.homeWinRate10,
+        f.awayWinRate10,
+        f.homeAvgMargin10,
+        f.awayAvgMargin10,
+        f.homeOppWinRate10,
+        f.awayOppWinRate10,
+        f.homeOppAvgMargin10,
+        f.awayOppAvgMargin10,
+        f.spreadLine,
+        f.spreadMarketImpliedProb,
+      ]);
     }
   }
 
   // Query games matching date prefix (already calculated above)
-  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefix) as Array<{ id: number; espn_event_id: string }>;
+  const rows = db
+    .prepare(
+      `SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`,
+    )
+    .all(sport, isoPrefix, nextDayPrefix) as Array<{
+    id: number;
+    espn_event_id: string;
+  }>;
   if (rows.length === 0) return undefined;
 
   const probs = new Map<string, number>();
   for (const r of rows) {
     const x = featureMap.get(r.id);
     if (!x) continue; // Skip games without spread data
-    
+
     const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
     const rawProb = sigmoid(z);
-    const calibratedProb = model.calibration ? applyCalibration(rawProb, model.calibration) : rawProb;
-    
+    const calibratedProb = model.calibration
+      ? applyCalibration(rawProb, model.calibration)
+      : rawProb;
+
     // Clip extreme predictions to prevent overconfidence on outliers
     // Model trained mostly on 30-50% range, so extreme predictions (>95% or <5%) are likely extrapolations
     const clippedProb = Math.max(0.05, Math.min(0.95, calibratedProb));
-    
+
     probs.set(r.espn_event_id, clippedProb);
   }
   return probs;
@@ -208,27 +348,38 @@ export async function getHomeSpreadCoverProbabilities(sport: Sport, date: string
 /**
  * Load latest total model and produce probability game goes OVER for given date (eventId -> P(over))
  */
-export async function getTotalOverModelProbabilities(sport: Sport, date: string): Promise<Map<string, number> | undefined> {
+export async function getTotalOverModelProbabilities(
+  sport: Sport,
+  date: string,
+): Promise<Map<string, number> | undefined> {
   const db = getDb();
-  const latestRun = db.prepare(`SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%total%' ORDER BY finished_at DESC LIMIT 1`).get(sport) as { run_id: string; artifacts_path: string } | undefined;
+  const latestRun = db
+    .prepare(
+      `SELECT run_id, artifacts_path FROM model_runs WHERE sport = ? AND config_json LIKE '%total%' ORDER BY finished_at DESC LIMIT 1`,
+    )
+    .get(sport) as { run_id: string; artifacts_path: string } | undefined;
   if (!latestRun) return undefined;
 
   // Check for ensemble classification model (new approach)
-  const ensemblePath = join(latestRun.artifacts_path, 'ensemble.json');
-  const baseModelPath = join(latestRun.artifacts_path, 'base_model.json');
-  const marketModelPath = join(latestRun.artifacts_path, 'market_model.json');
-  
+  const ensemblePath = join(latestRun.artifacts_path, "ensemble.json");
+  const baseModelPath = join(latestRun.artifacts_path, "base_model.json");
+  const marketModelPath = join(latestRun.artifacts_path, "market_model.json");
+
   let useEnsemble = false;
   let baseModel: any;
   let marketModel: any;
   let ensembleConfig: any;
-  
+
   try {
-    if (existsSync(ensemblePath) && existsSync(baseModelPath) && existsSync(marketModelPath)) {
+    if (
+      existsSync(ensemblePath) &&
+      existsSync(baseModelPath) &&
+      existsSync(marketModelPath)
+    ) {
       // New ensemble classification approach
-      ensembleConfig = JSON.parse(readFileSync(ensemblePath, 'utf-8'));
-      baseModel = JSON.parse(readFileSync(baseModelPath, 'utf-8'));
-      marketModel = JSON.parse(readFileSync(marketModelPath, 'utf-8'));
+      ensembleConfig = JSON.parse(readFileSync(ensemblePath, "utf-8"));
+      baseModel = JSON.parse(readFileSync(baseModelPath, "utf-8"));
+      marketModel = JSON.parse(readFileSync(marketModelPath, "utf-8"));
       useEnsemble = true;
     }
   } catch (error) {
@@ -237,16 +388,29 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
   }
 
   // Use database only - no API fetches during backtest/predictions
-  const isoPrefix = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+  const isoPrefix = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
   const nextDayT = new Date(isoPrefix);
   nextDayT.setDate(nextDayT.getDate() + 1);
   const nextDayPrefixT = nextDayT.toISOString().slice(0, 10);
 
-  const seasons = useEnsemble ? (baseModel.seasons || [2024, 2025]) : [2024, 2025];
-  const allFeatures = computeFeatures(db, sport, Array.isArray(seasons) && seasons.length ? seasons : [2024, 2025]);
+  const seasons = useEnsemble
+    ? baseModel.seasons || [2024, 2025]
+    : [2024, 2025];
+  const allFeatures = computeFeatures(
+    db,
+    sport,
+    Array.isArray(seasons) && seasons.length ? seasons : [2024, 2025],
+  );
 
   // Query games matching date prefix
-  const rows = db.prepare(`SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`).all(sport, isoPrefix, nextDayPrefixT) as Array<{ id: number; espn_event_id: string }>;
+  const rows = db
+    .prepare(
+      `SELECT id, espn_event_id FROM games WHERE sport = ? AND (date LIKE ? || '%' OR date LIKE ? || '%')`,
+    )
+    .all(sport, isoPrefix, nextDayPrefixT) as Array<{
+    id: number;
+    espn_event_id: string;
+  }>;
   if (!rows.length) return undefined;
 
   const probs = new Map<string, number>();
@@ -256,28 +420,60 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
     // Try to load calibration from baseModel (if present)
     const calibration = baseModel.calibration || null;
     for (const r of rows) {
-      const f = allFeatures.find(ff => ff.gameId === r.id);
+      const f = allFeatures.find((ff) => ff.gameId === r.id);
       if (!f || f.totalLine === null) continue;
 
       // Build base features (37 features: 36 base stats + line)
       const baseFeat = [
-        f.homePointsAvg5, f.awayPointsAvg5, f.homeOppPointsAvg5, f.awayOppPointsAvg5,
-        f.homeWinRate5, f.awayWinRate5, f.homeAvgMargin5, f.awayAvgMargin5,
-        f.homeOppAvgMargin5, f.awayOppAvgMargin5, f.homeOppWinRate5, f.awayOppWinRate5,
-        f.homePace5, f.awayPace5, f.homeOffEff5, f.awayOffEff5, f.homeDefEff5, f.awayDefEff5,
-        f.homePointsAvg10, f.awayPointsAvg10, f.homeOppPointsAvg10, f.awayOppPointsAvg10,
-        f.homeWinRate10, f.awayWinRate10, f.homeAvgMargin10, f.awayAvgMargin10,
-        f.homeOppAvgMargin10, f.awayOppAvgMargin10, f.homeOppWinRate10, f.awayOppWinRate10,
-        f.homePace10, f.awayPace10, f.homeOffEff10, f.awayOffEff10,
-        f.homeDefEff10, f.awayDefEff10,
-        f.totalLine  // 37th feature
+        f.homePointsAvg5,
+        f.awayPointsAvg5,
+        f.homeOppPointsAvg5,
+        f.awayOppPointsAvg5,
+        f.homeWinRate5,
+        f.awayWinRate5,
+        f.homeAvgMargin5,
+        f.awayAvgMargin5,
+        f.homeOppAvgMargin5,
+        f.awayOppAvgMargin5,
+        f.homeOppWinRate5,
+        f.awayOppWinRate5,
+        f.homePace5,
+        f.awayPace5,
+        f.homeOffEff5,
+        f.awayOffEff5,
+        f.homeDefEff5,
+        f.awayDefEff5,
+        f.homePointsAvg10,
+        f.awayPointsAvg10,
+        f.homeOppPointsAvg10,
+        f.awayOppPointsAvg10,
+        f.homeWinRate10,
+        f.awayWinRate10,
+        f.homeAvgMargin10,
+        f.awayAvgMargin10,
+        f.homeOppAvgMargin10,
+        f.awayOppAvgMargin10,
+        f.homeOppWinRate10,
+        f.awayOppWinRate10,
+        f.homePace10,
+        f.awayPace10,
+        f.homeOffEff10,
+        f.awayOffEff10,
+        f.homeDefEff10,
+        f.awayDefEff10,
+        f.totalLine, // 37th feature
       ];
 
       // Standardize base features
-      const baseScaled = baseFeat.map((v, i) => (v - baseModel.means[i]) / baseModel.stds[i]);
-      
+      const baseScaled = baseFeat.map(
+        (v, i) => (v - baseModel.means[i]) / baseModel.stds[i],
+      );
+
       // Predict with base model
-      const baseZ = baseScaled.reduce((acc, v, i) => acc + v * baseModel.weights[i], 0);
+      const baseZ = baseScaled.reduce(
+        (acc, v, i) => acc + v * baseModel.weights[i],
+        0,
+      );
       let baseProb = sigmoid(baseZ);
       if (calibration) {
         baseProb = applyCalibration(baseProb, calibration);
@@ -285,29 +481,46 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
 
       // Build market-aware features (38 features: 37 base + totalMarketImpliedProb)
       const marketFeat = [...baseFeat, f.totalMarketImpliedProb ?? 0.5];
-      
+
       // Standardize market features
-      const marketScaled = marketFeat.map((v, i) => (v - marketModel.means[i]) / marketModel.stds[i]);
-      
+      const marketScaled = marketFeat.map(
+        (v, i) => (v - marketModel.means[i]) / marketModel.stds[i],
+      );
+
       // Predict with market model
-      const marketZ = marketScaled.reduce((acc, v, i) => acc + v * marketModel.weights[i], 0);
+      const marketZ = marketScaled.reduce(
+        (acc, v, i) => acc + v * marketModel.weights[i],
+        0,
+      );
       const marketProb = sigmoid(marketZ);
 
       // Ensemble: 70% base + 30% market-aware
-      const ensembleProb = ensembleConfig.baseWeight * baseProb + ensembleConfig.marketWeight * marketProb;
-      
+      const ensembleProb =
+        ensembleConfig.baseWeight * baseProb +
+        ensembleConfig.marketWeight * marketProb;
+
       probs.set(r.espn_event_id, ensembleProb);
     }
   } else {
     // ========== LEGACY REGRESSION FALLBACK ==========
-    const modelPath = join(latestRun.artifacts_path, 'model.json');
-    let model: { market: string; predictionType?: string; weights: number[]; featureNames: string[]; seasons?: number[]; means?: number[]; stds?: number[]; sigma?: number; calibration?: CalibrationCurve | null };
+    const modelPath = join(latestRun.artifacts_path, "model.json");
+    let model: {
+      market: string;
+      predictionType?: string;
+      weights: number[];
+      featureNames: string[];
+      seasons?: number[];
+      means?: number[];
+      stds?: number[];
+      sigma?: number;
+      calibration?: CalibrationCurve | null;
+    };
     try {
-      model = JSON.parse(readFileSync(modelPath, 'utf-8'));
+      model = JSON.parse(readFileSync(modelPath, "utf-8"));
     } catch {
       return undefined;
     }
-    if (model.market !== 'total') return undefined;
+    if (model.market !== "total") return undefined;
 
     const featureMap = new Map<number, number[]>();
     for (const f of allFeatures) {
@@ -349,27 +562,49 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
           awayOffEff10: f.awayOffEff10,
           homeDefEff10: f.homeDefEff10,
           awayDefEff10: f.awayDefEff10,
-          totalMarketImpliedProb: f.totalMarketImpliedProb ?? 0.5
+          totalMarketImpliedProb: f.totalMarketImpliedProb ?? 0.5,
         };
-        const featureVector = model.featureNames.map(n => vecMap[n] ?? 0);
+        const featureVector = model.featureNames.map((n) => vecMap[n] ?? 0);
         featureMap.set(f.gameId, featureVector);
       }
     }
 
-    if ((model as any).predictionType === 'regression' && model.means && model.stds && model.sigma) {
+    if (
+      (model as any).predictionType === "regression" &&
+      model.means &&
+      model.stds &&
+      model.sigma
+    ) {
       const bias = (model as any).bias || 0;
       function normalCdf(z: number): number {
         const t = 1 / (1 + 0.5 * Math.abs(z));
-        const tau = t * Math.exp(-z*z - 1.26551223 + 1.00002368*t + 0.37409196*t*t + 0.09678418*t*t*t - 0.18628806*t*t*t*t + 0.27886807*t*t*t*t*t - 1.13520398*t*t*t*t*t*t + 1.48851587*t*t*t*t*t*t*t - 0.82215223*t*t*t*t*t*t*t*t + 0.17087277*t*t*t*t*t*t*t*t*t);
+        const tau =
+          t *
+          Math.exp(
+            -z * z -
+              1.26551223 +
+              1.00002368 * t +
+              0.37409196 * t * t +
+              0.09678418 * t * t * t -
+              0.18628806 * t * t * t * t +
+              0.27886807 * t * t * t * t * t -
+              1.13520398 * t * t * t * t * t * t +
+              1.48851587 * t * t * t * t * t * t * t -
+              0.82215223 * t * t * t * t * t * t * t * t +
+              0.17087277 * t * t * t * t * t * t * t * t * t,
+          );
         const erf = z >= 0 ? tau - 1 : 1 - tau;
         return 0.5 * (1 + erf);
       }
       for (const r of rows) {
         const xRaw = featureMap.get(r.id);
         if (!xRaw) continue;
-        const xScaled = xRaw.map((v,i) => (v - model.means![i]) / model.stds![i]);
-        const predictedScore = xScaled.reduce((acc,v,i)=>acc + v * model.weights[i],0) + bias;
-        const f = allFeatures.find(ff => ff.gameId === r.id);
+        const xScaled = xRaw.map(
+          (v, i) => (v - model.means![i]) / model.stds![i],
+        );
+        const predictedScore =
+          xScaled.reduce((acc, v, i) => acc + v * model.weights[i], 0) + bias;
+        const f = allFeatures.find((ff) => ff.gameId === r.id);
         const line = f?.totalLine ?? null;
         if (line === null) continue;
         const z = (line - predictedScore) / model.sigma;
@@ -380,7 +615,7 @@ export async function getTotalOverModelProbabilities(sport: Sport, date: string)
       for (const r of rows) {
         const x = featureMap.get(r.id);
         if (!x) continue;
-        const z = x.reduce((acc,v,i)=>acc+v*model.weights[i],0);
+        const z = x.reduce((acc, v, i) => acc + v * model.weights[i], 0);
         const rawProb = sigmoid(z);
         probs.set(r.espn_event_id, rawProb);
       }

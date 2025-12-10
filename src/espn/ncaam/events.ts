@@ -11,7 +11,8 @@ interface TeamStats {
   stats: Record<string, number>;
 }
 
-const BASE_URL = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
+const BASE_URL =
+  "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
 
 interface ESPNEventRef {
   $ref: string;
@@ -82,7 +83,9 @@ export async function fetchEvents(date: string): Promise<Competition[]> {
   console.log(`Fetching NCAAM events for ${date}...`);
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`ESPN API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `ESPN API error: ${response.status} ${response.statusText}`,
+    );
   }
   const data = (await response.json()) as ESPNEventsResponse;
   if (data.count === 0) {
@@ -218,7 +221,10 @@ async function fetchScore(url: string): Promise<number | null> {
 /**
  * Parse ESPN event into Competition
  */
-async function parseEvent(event: ESPNEvent, teamStats?: TeamStats[]): Promise<Competition | null> {
+async function parseEvent(
+  event: ESPNEvent,
+  teamStats?: TeamStats[],
+): Promise<Competition | null> {
   if (!event.competitions || event.competitions.length === 0) {
     return null;
   }
@@ -232,11 +238,17 @@ async function parseEvent(event: ESPNEvent, teamStats?: TeamStats[]): Promise<Co
   const [homeTeam, awayTeam, homeScore, awayScore] = await Promise.all([
     fetchTeam(homeCompetitor.team.$ref),
     fetchTeam(awayCompetitor.team.$ref),
-    homeCompetitor.score?.$ref ? fetchScore(homeCompetitor.score.$ref) : Promise.resolve(null),
-    awayCompetitor.score?.$ref ? fetchScore(awayCompetitor.score.$ref) : Promise.resolve(null),
+    homeCompetitor.score?.$ref
+      ? fetchScore(homeCompetitor.score.$ref)
+      : Promise.resolve(null),
+    awayCompetitor.score?.$ref
+      ? fetchScore(awayCompetitor.score.$ref)
+      : Promise.resolve(null),
   ]);
   // Attach box score stats if available
-  let boxScore: { home: Record<string, number>; away: Record<string, number> } | undefined;
+  let boxScore:
+    | { home: Record<string, number>; away: Record<string, number> }
+    | undefined;
   if (teamStats && teamStats.length === 2) {
     if (teamStats[0].teamId === homeTeam.id) {
       boxScore = {

@@ -42,7 +42,11 @@ const BACKTEST_DIR = path.join(process.cwd(), "data", "backtest-results");
 /**
  * Get filename for a specific backtest configuration
  */
-function getBacktestFilename(sport: Sport, market: string, seasons: number[]): string {
+function getBacktestFilename(
+  sport: Sport,
+  market: string,
+  seasons: number[],
+): string {
   const seasonsStr = seasons.sort((a, b) => a - b).join("-");
   return path.join(BACKTEST_DIR, `${sport}_${market}_${seasonsStr}.json`);
 }
@@ -50,10 +54,16 @@ function getBacktestFilename(sport: Sport, market: string, seasons: number[]): s
 /**
  * Save backtest results to disk
  */
-export async function saveBacktestResults(results: BacktestResults): Promise<void> {
+export async function saveBacktestResults(
+  results: BacktestResults,
+): Promise<void> {
   try {
     await fs.mkdir(BACKTEST_DIR, { recursive: true });
-    const filename = getBacktestFilename(results.sport, results.market, results.seasons);
+    const filename = getBacktestFilename(
+      results.sport,
+      results.market,
+      results.seasons,
+    );
     await fs.writeFile(filename, JSON.stringify(results, null, 2), "utf-8");
     console.log(`💾 Saved backtest results to ${path.basename(filename)}`);
   } catch (err) {
@@ -67,7 +77,7 @@ export async function saveBacktestResults(results: BacktestResults): Promise<voi
 export async function loadBacktestResults(
   sport: Sport,
   market: string,
-  seasons: number[]
+  seasons: number[],
 ): Promise<BacktestResults | null> {
   try {
     const filename = getBacktestFilename(sport, market, seasons);
@@ -82,11 +92,15 @@ export async function loadBacktestResults(
 /**
  * Get all backtest results for a sport
  */
-export async function getAllBacktestResults(sport: Sport): Promise<BacktestResults[]> {
+export async function getAllBacktestResults(
+  sport: Sport,
+): Promise<BacktestResults[]> {
   try {
     const files = await fs.readdir(BACKTEST_DIR);
-    const sportFiles = files.filter(f => f.startsWith(`${sport}_`) && f.endsWith(".json"));
-    
+    const sportFiles = files.filter(
+      (f) => f.startsWith(`${sport}_`) && f.endsWith(".json"),
+    );
+
     const results: BacktestResults[] = [];
     for (const file of sportFiles) {
       try {
@@ -96,7 +110,7 @@ export async function getAllBacktestResults(sport: Sport): Promise<BacktestResul
         // Skip invalid files
       }
     }
-    
+
     return results;
   } catch (err) {
     return [];
@@ -108,14 +122,14 @@ export async function getAllBacktestResults(sport: Sport): Promise<BacktestResul
  */
 export async function findBestConfig(
   sport: Sport,
-  market: string
+  market: string,
 ): Promise<{ seasons: number[]; roi: number; ece: number } | null> {
   try {
     const allResults = await getAllBacktestResults(sport);
-    const marketResults = allResults.filter(r => r.market === market);
-    
+    const marketResults = allResults.filter((r) => r.market === market);
+
     if (marketResults.length === 0) return null;
-    
+
     // Sort by ROI (primary) and ECE (secondary - lower is better)
     const sorted = marketResults.sort((a, b) => {
       if (Math.abs(a.overallROI - b.overallROI) > 0.5) {
@@ -123,12 +137,12 @@ export async function findBestConfig(
       }
       return a.overallECE - b.overallECE;
     });
-    
+
     const best = sorted[0];
     return {
       seasons: best.seasons,
       roi: best.overallROI,
-      ece: best.overallECE
+      ece: best.overallECE,
     };
   } catch (err) {
     return null;
@@ -142,7 +156,7 @@ export async function findBestConfig(
 export async function getLatestBacktestForConfig(
   sport: Sport,
   market: string,
-  seasons: number[]
+  seasons: number[],
 ): Promise<BacktestResults | null> {
   return loadBacktestResults(sport, market, seasons);
 }

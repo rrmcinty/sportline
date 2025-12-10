@@ -3,7 +3,11 @@
  */
 
 import type { BetLeg, ParlaySpec, ParlayResult } from "../models/types.js";
-import { calculateParlayPayout, calculateParlayProbability, calculateEV } from "../models/probability.js";
+import {
+  calculateParlayPayout,
+  calculateParlayProbability,
+  calculateEV,
+} from "../models/probability.js";
 
 /**
  * Evaluate a parlay bet
@@ -18,12 +22,14 @@ export function evaluateParlay(spec: ParlaySpec): ParlayResult {
   }
 
   // Calculate combined probability (assumes independence)
-  const probability = calculateParlayProbability(legs.map((leg) => leg.impliedProbability));
+  const probability = calculateParlayProbability(
+    legs.map((leg) => leg.impliedProbability),
+  );
 
   // Calculate payout
   const payout = calculateParlayPayout(
     legs.map((leg) => leg.decimalOdds),
-    stake
+    stake,
   );
 
   const profit = payout - stake;
@@ -71,7 +77,7 @@ export function generateParlays(
   legs: BetLeg[],
   minLegs: number = 2,
   maxLegs: number = 4,
-  stake: number = 10
+  stake: number = 10,
 ): ParlaySpec[] {
   const parlays: ParlaySpec[] = [];
 
@@ -99,7 +105,7 @@ function hasConflict(legs: BetLeg[]): boolean {
   for (const leg of legs) {
     // Create unique key for this market in this event
     const marketKey = `${leg.eventId}-${leg.market}`;
-    
+
     // For totals, we need to distinguish over vs under
     // For spreads and moneylines, team already distinguishes
     let legIdentifier: string;
@@ -133,7 +139,10 @@ function getCombinations<T>(arr: T[], k: number): T[][] {
   if (arr.length === 0) return [];
 
   const [first, ...rest] = arr;
-  const withFirst = getCombinations(rest, k - 1).map((combo) => [first, ...combo]);
+  const withFirst = getCombinations(rest, k - 1).map((combo) => [
+    first,
+    ...combo,
+  ]);
   const withoutFirst = getCombinations(rest, k);
 
   return [...withFirst, ...withoutFirst];

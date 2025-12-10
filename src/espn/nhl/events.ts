@@ -11,7 +11,7 @@ async function fetchStatus(url: string): Promise<string> {
   try {
     const response = await fetch(url);
     if (!response.ok) return "scheduled";
-const data = await response.json() as { type?: { name?: string } };    // ESPN status type: { type: { name: "final" | "inprogress" | "scheduled" } }
+    const data = (await response.json()) as { type?: { name?: string } }; // ESPN status type: { type: { name: "final" | "inprogress" | "scheduled" } }
     return data.type?.name || "scheduled";
   } catch {
     return "scheduled";
@@ -19,33 +19,36 @@ const data = await response.json() as { type?: { name?: string } };    // ESPN s
 }
 
 // ESPN base URL for NHL
-const BASE_URL = "https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl";
+const BASE_URL =
+  "https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl";
 
 async function fetchScore(url: string): Promise<number | null> {
   try {
     const response = await fetch(url);
     if (!response.ok) return null;
-    const data = await response.json() as { value: number };
+    const data = (await response.json()) as { value: number };
     return data.value;
   } catch (error) {
     return null;
   }
 }
 
-async function fetchTeamDetails(url: string): Promise<{ id: string; displayName: string; abbreviation?: string }> {
+async function fetchTeamDetails(
+  url: string,
+): Promise<{ id: string; displayName: string; abbreviation?: string }> {
   const response = await fetch(url);
-  const data = await response.json() as any;
+  const data = (await response.json()) as any;
   return {
     id: data.id,
     displayName: data.displayName || data.location || data.name,
-    abbreviation: data.abbreviation
+    abbreviation: data.abbreviation,
   };
 }
 
 export async function fetchNHLEvents(date: string): Promise<Competition[]> {
   // ESPN API expects YYYYMMDD
-  const url = `${BASE_URL}/events?dates=${date.replace(/-/g, '')}`;
-  
+  const url = `${BASE_URL}/events?dates=${date.replace(/-/g, "")}`;
+
   const cached = getCache<Competition[]>(url);
   if (cached) {
     console.log(`✓ Cache hit for NHL events on ${date}`);
@@ -54,8 +57,8 @@ export async function fetchNHLEvents(date: string): Promise<Competition[]> {
 
   console.log(`Fetching NHL events for ${date}...`);
   const resp = await fetch(url);
-  const data = await resp.json() as { count?: number; items?: any[] };
-  
+  const data = (await resp.json()) as { count?: number; items?: any[] };
+
   if (!data.items || data.count === 0) {
     console.log(`No NHL games found for ${date}`);
     return [];
@@ -66,23 +69,42 @@ export async function fetchNHLEvents(date: string): Promise<Competition[]> {
   for (const item of data.items) {
     try {
       const eventResp = await fetch(item.$ref);
-      const eventData = await eventResp.json() as any;
+      const eventData = (await eventResp.json()) as any;
       const compData = eventData.competitions && eventData.competitions[0];
       if (!compData) continue;
-      
+
       const competitors = compData.competitors;
       const home = competitors.find((c: any) => c.homeAway === "home");
       const away = competitors.find((c: any) => c.homeAway === "away");
       if (!home || !away) continue;
 
       // Fetch team details and scores via $ref links (like NBA does)
-      const [homeTeamData, awayTeamData, homeScore, awayScore, status] = await Promise.all([
-        home.team?.$ref ? fetchTeamDetails(home.team.$ref) : Promise.resolve({ id: home.id, displayName: "Home", abbreviation: undefined as string | undefined }),
-        away.team?.$ref ? fetchTeamDetails(away.team.$ref) : Promise.resolve({ id: away.id, displayName: "Away", abbreviation: undefined as string | undefined }),
-        home.score?.$ref ? fetchScore(home.score.$ref) : Promise.resolve(null),
-        away.score?.$ref ? fetchScore(away.score.$ref) : Promise.resolve(null),
-        compData.status?.$ref ? fetchStatus(compData.status.$ref) : Promise.resolve(compData.status?.type?.name || "scheduled")
-      ]);
+      const [homeTeamData, awayTeamData, homeScore, awayScore, status] =
+        await Promise.all([
+          home.team?.$ref
+            ? fetchTeamDetails(home.team.$ref)
+            : Promise.resolve({
+                id: home.id,
+                displayName: "Home",
+                abbreviation: undefined as string | undefined,
+              }),
+          away.team?.$ref
+            ? fetchTeamDetails(away.team.$ref)
+            : Promise.resolve({
+                id: away.id,
+                displayName: "Away",
+                abbreviation: undefined as string | undefined,
+              }),
+          home.score?.$ref
+            ? fetchScore(home.score.$ref)
+            : Promise.resolve(null),
+          away.score?.$ref
+            ? fetchScore(away.score.$ref)
+            : Promise.resolve(null),
+          compData.status?.$ref
+            ? fetchStatus(compData.status.$ref)
+            : Promise.resolve(compData.status?.type?.name || "scheduled"),
+        ]);
 
       const homeTeam: Team = {
         id: homeTeamData.id,

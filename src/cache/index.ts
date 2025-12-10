@@ -64,7 +64,11 @@ export function getCache<T>(url: string): T | null {
  * @param data Data to cache
  * @param ttl Time to live in milliseconds (default: 5 minutes)
  */
-export function setCache<T>(url: string, data: T, ttl: number = 5 * 60 * 1000): void {
+export function setCache<T>(
+  url: string,
+  data: T,
+  ttl: number = 5 * 60 * 1000,
+): void {
   ensureCacheDir();
   const key = getCacheKey(url);
   const cachePath = join(CACHE_DIR, `${key}.json`);
