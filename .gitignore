@@ -1,5 +1,6 @@
 node_modules/
 dist/
+*.js
 *.log
 .DS_Store
 .cache/
@@ -7,6 +8,9 @@ dist/
 *.db
 *.db-shm
 *.db-wal
+*.d.ts
+*.d.ts.map
+*.js.map
 data/sportline.db
 data/backtest-results
 models/

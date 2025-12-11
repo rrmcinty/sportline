@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "description": "NCAAM betting CLI with parlay EV ranking",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "index.js",
   "bin": {
     "sportline": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc && cp src/db/schema.sql dist/db/",
+    "build": "tsc",
     "db:list:tables": "sqlite3 data/sportline.db \".tables\"",
     "db:schema": "sqlite3 data/sportline.db \".schema\"",
+    "db:schemas": "sqlite3 data/sportline.db \".schema games\" && sqlite3 data/sportline.db \".schema teams\" && sqlite3 data/sportline.db \".schema model_results\" && sqlite3 data/sportline.db \".schema model_stats\" && sqlite3 data/sportline.db \".schema underdog_models\" && sqlite3 data/sportline.db \".schema underdog_stats\"",
     "db:query:seasons:ncaam": "sqlite3 data/sportline.db \"SELECT DISTINCT season FROM games WHERE sport='ncaam' ORDER BY season DESC;\"",
     "db:query:seasons:cfb": "sqlite3 data/sportline.db \"SELECT DISTINCT season FROM games WHERE sport='cfb' ORDER BY season DESC;\"",
     "db:query:seasons:nfl": "sqlite3 data/sportline.db \"SELECT DISTINCT season FROM games WHERE sport='nfl' ORDER BY season DESC;\"",

@@ -34,12 +34,12 @@ function auditModelRun(sport: string, runId: string, market: string) {
 
   // Feature check
   const features = model?.featureNames || [];
-  const has5Game = features.some(f => /5$/.test(f));
-  const has10Game = features.some(f => /10$/.test(f));
-  const hasSoS = features.some(f => /OppWinRate|OppAvgMargin/.test(f));
-  const hasPace = features.some(f => /pace/i.test(f));
-  const hasEff = features.some(f => /offEff|defEff/i.test(f));
-  const hasUnderdog = features.some(f => /upset|dog|confStrength/i.test(f));
+  const has5Game = features.some((f: string) => /5$/.test(f));
+  const has10Game = features.some((f: string) => /10$/.test(f));
+  const hasSoS = features.some((f: string) => /OppWinRate|OppAvgMargin/.test(f));
+  const hasPace = features.some((f: string) => /pace/i.test(f));
+  const hasEff = features.some((f: string) => /offEff|defEff/i.test(f));
+  const hasUnderdog = features.some((f: string) => /upset|dog|confStrength/i.test(f));
   const normalized = !!model?.means && !!model?.stds;
 
   // Calibration check
