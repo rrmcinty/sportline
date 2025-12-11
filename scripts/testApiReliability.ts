@@ -1,14 +1,14 @@
 import chalk from "chalk";
-const { fetchEvents: fetchEventsNcaam } = require("../src/espn/ncaam/events");
-const { fetchEvents: fetchEventsNba } = require("../src/espn/nba/events");
-const { fetchEvents: fetchEventsCfb } = require("../src/espn/cfb/events");
-const { fetchEvents: fetchEventsNfl } = require("../src/espn/nfl/events");
-const { fetchNHLEvents: fetchEventsNhl } = require("../src/espn/nhl/events");
-const { fetchOdds: fetchOddsNcaam } = require("../src/espn/ncaam/odds");
-const { fetchOdds: fetchOddsNba } = require("../src/espn/nba/odds");
-const { fetchOdds: fetchOddsCfb } = require("../src/espn/cfb/odds");
-const { fetchOdds: fetchOddsNfl } = require("../src/espn/nfl/odds");
-const { fetchNHLOdds: fetchOddsNhl } = require("../src/espn/nhl/odds");
+import { fetchEvents as fetchEventsNcaam } from "../src/espn/ncaam/events.js";
+import { fetchEvents as fetchEventsNba } from "../src/espn/nba/events.js";
+import { fetchEvents as fetchEventsCfb } from "../src/espn/cfb/events.js";
+import { fetchEvents as fetchEventsNfl } from "../src/espn/nfl/events.js";
+import { fetchNHLEvents as fetchEventsNhl } from "../src/espn/nhl/events.js";
+import { fetchOdds as fetchOddsNcaam } from "../src/espn/ncaam/odds.js";
+import { fetchOdds as fetchOddsNba } from "../src/espn/nba/odds.js";
+import { fetchOdds as fetchOddsCfb } from "../src/espn/cfb/odds.js";
+import { fetchOdds as fetchOddsNfl } from "../src/espn/nfl/odds.js";
+import { fetchNHLOdds as fetchOddsNhl } from "../src/espn/nhl/odds.js";
 
 /**
  * Test ESPN NCAAM API reliability for the past 7 days
@@ -140,6 +140,11 @@ async function testApiReliability(sport: string, season: number) {
 
 
     for (const comp of competitions) {
+      // Require scores
+      if (typeof comp.homeScore === "undefined" || typeof comp.awayScore === "undefined") {
+        console.warn(`Skipping event ${comp.eventId} due to missing score`);
+        continue;
+      }
       let hasAllStats = false;
       let missingStatsList: string[] = [];
       if (comp.boxScore) {
@@ -230,6 +235,8 @@ async function testApiReliability(sport: string, season: number) {
           name: comp.awayTeam?.name,
           abbreviation: comp.awayTeam?.abbreviation,
         },
+        homeScore: comp.homeScore,
+        awayScore: comp.awayScore,
         hasBoxScore: !!comp.boxScore,
         hasAllStats,
         missingStats: missingStatsList,

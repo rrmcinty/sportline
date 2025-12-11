@@ -113,13 +113,46 @@ function insertTeamStats(game: Game) {
     const teamId = getTeamId(String(team.id ?? team.espn_id), sport);
     let statCount = 0;
     for (const [metric_name, metric_value] of Object.entries(stats)) {
+      // Handle made-attempted combined stats
+      if (typeof metric_value === "string" && metric_value.match(/^\d+-\d+$/)) {
+        const [made, attempted] = metric_value.split("-").map(Number);
+        if (!Number.isNaN(made)) {
+          db.prepare(`INSERT INTO team_stats (team_id, sport, season, game_date, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+            teamId,
+            sport,
+            season,
+            game.date,
+            metric_name.replace("-fieldGoalsAttempted", "Made"),
+            made
+          );
+          statCount++;
+        }
+        if (!Number.isNaN(attempted)) {
+          db.prepare(`INSERT INTO team_stats (team_id, sport, season, game_date, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+            teamId,
+            sport,
+            season,
+            game.date,
+            metric_name.replace("Made-", "").replace("-fieldGoalsMade", "Attempted"),
+            attempted
+          );
+          statCount++;
+        }
+        continue;
+      }
+      // Only insert if metric_value is not null/undefined and is a valid number
+      const numValue = Number(metric_value);
+      if (metric_value === null || metric_value === undefined || Number.isNaN(numValue) || metric_value === "") {
+        console.warn(`[team_stats] Skipped stat '${metric_name}' for team ${teamId} in game ${game.eventId}: invalid value '${metric_value}'`);
+        continue;
+      }
       db.prepare(`INSERT INTO team_stats (team_id, sport, season, game_date, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
         teamId,
         sport,
         season,
         game.date,
         metric_name,
-        Number(metric_value)
+        numValue
       );
       statCount++;
     }
