@@ -30,7 +30,7 @@
     "ingest:nba:full": "for y in 2024 2025; do sportline data ingest --sport nba --season $y; done",
     "ingest:nfl:full": "for y in 2022 2023 2024 2025; do sportline data ingest --sport nfl --season $y; done",
     "ingest:nhl:full": "for y in 2023 2024 2025; do sportline data ingest --sport nhl --season $y; done",
-    "train:moneyline:ncaam": "node src/index.js model train --sport ncaam --season 2019,2020,2021,2022,2023,2024,2025 --markets moneyline",
+    "train:moneyline:ncaam": "node src/index.js model train --sport ncaam --season 2024,2025 --markets moneyline",
     "train:moneyline:cfb": "node src/index.js model train --sport cfb --season 2024,2025 --markets moneyline",
     "train:moneyline:nfl": "node src/index.js model train --sport nfl --season 2022,2023,2024,2025 --markets moneyline",
     "train:moneyline:nba": "node src/index.js model train --sport nba --season 2023,2024,2025 --markets moneyline",

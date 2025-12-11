@@ -118,8 +118,8 @@ export function computeFeatures(db, sport, seasons) {
             away_fg3_pct = getRollingStat(game.away_team_id, "threePointFieldGoalPct", game.date, 5);
             home_turnovers = getRollingStat(game.home_team_id, "turnovers", game.date, 5);
             away_turnovers = getRollingStat(game.away_team_id, "turnovers", game.date, 5);
-            home_fgs_attempted = getRollingStat(game.home_team_id, "fieldGoalsMade-fieldGoalsAttempted_attempted", game.date, 5);
-            away_fgs_attempted = getRollingStat(game.away_team_id, "fieldGoalsMade-fieldGoalsAttempted_attempted", game.date, 5);
+            home_fgs_attempted = getRollingStat(game.home_team_id, "fieldGoalsAttempted", game.date, 5);
+            away_fgs_attempted = getRollingStat(game.away_team_id, "fieldGoalsAttempted", game.date, 5);
             home_steals = getRollingStat(game.home_team_id, "steals", game.date, 5);
             away_steals = getRollingStat(game.away_team_id, "steals", game.date, 5);
             // Log feature values for first few games

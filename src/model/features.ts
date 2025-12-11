@@ -293,13 +293,13 @@ export function computeFeatures(
       );
       home_fgs_attempted = getRollingStat(
         game.home_team_id,
-        "fieldGoalsMade-fieldGoalsAttempted_attempted",
+        "fieldGoalsAttempted",
         game.date,
         5,
       );
       away_fgs_attempted = getRollingStat(
         game.away_team_id,
-        "fieldGoalsMade-fieldGoalsAttempted_attempted",
+        "fieldGoalsAttempted",
         game.date,
         5,
       );
