@@ -1,3 +1,29 @@
+-- --- SEASON STATS (must be first for index creation) ---
+CREATE TABLE IF NOT EXISTS season_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  team_id TEXT NOT NULL,           -- ESPN team id
+  sport TEXT NOT NULL,
+  season INTEGER NOT NULL,
+  category TEXT NOT NULL,          -- e.g., 'general', 'offensive', 'defensive'
+  metric_name TEXT NOT NULL,       -- e.g., 'avgRebounds'
+  metric_abbr TEXT,                -- e.g., 'REB'
+  metric_value REAL NOT NULL,
+  FOREIGN KEY(team_id) REFERENCES teams(id)
+);
+CREATE INDEX IF NOT EXISTS idx_season_stats_team_season ON season_stats(team_id, season);
+
+CREATE TABLE IF NOT EXISTS game_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  team_id TEXT NOT NULL, -- ESPN team id
+  sport TEXT NOT NULL,
+  season INTEGER NOT NULL,
+  game_date TEXT NOT NULL,
+  metric_name TEXT NOT NULL,
+  metric_value REAL NOT NULL,
+  FOREIGN KEY(team_id) REFERENCES teams(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_game_stats_team_season ON game_stats(team_id, season);
 -- sportline SQLite schema for modeling pipeline
 
 CREATE TABLE IF NOT EXISTS teams (

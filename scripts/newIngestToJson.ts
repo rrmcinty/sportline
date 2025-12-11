@@ -38,9 +38,14 @@ const TEAM_STATS_API = (teamId: string, season: number) =>
 async function fetchTeamStats(teamId: string, season: number) {
 	const url = TEAM_STATS_API(teamId, season);
 	const res = await fetch(url);
+	if (res.status === 404) {
+		// Log missing teamId to a file for later review
+		const logPath = path.join("data", "ncaam", String(season), "missing_team_stats.log");
+		fs.appendFileSync(logPath, `${teamId}\n`);
+		return null;
+	}
 	if (!res.ok) throw new Error(`Failed to fetch stats for team ${teamId}: ${res.status}`);
 	const data = await res.json();
-	// Return the whole stats object for now; can trim fields later
 	return data;
 }
 
@@ -78,7 +83,7 @@ async function processAllTeams(season: number) {
 	}
 	const teamsFile = path.join(outDir, "teams.json");
 	const gamesFile = path.join(outDir, "games.json");
-	const teamStatsFile = path.join(outDir, "team_stats.json");
+	const seasonStatsFile = path.join(outDir, "season_stats.json");
 	const oddsFile = path.join(outDir, "odds.json");
 	const gameStatsFile = path.join(outDir, "game_stats.json");
 
@@ -114,7 +119,7 @@ async function processAllTeams(season: number) {
 
 	// Start JSON arrays for downstream files
 	fs.writeFileSync(gamesFile, "[\n");
-	fs.writeFileSync(teamStatsFile, "[\n");
+	fs.writeFileSync(seasonStatsFile, "[\n");
 	fs.writeFileSync(oddsFile, "[\n");
 	fs.writeFileSync(gameStatsFile, "[\n");
 
@@ -155,9 +160,9 @@ async function processAllTeams(season: number) {
 		if (!seenTeamStats.has(team.teamId)) {
 			const statData = { teamId: team.teamId, stats };
 			if (!firstStat) {
-				fs.appendFileSync(teamStatsFile, ",\n");
+				fs.appendFileSync(seasonStatsFile, ",\n");
 			}
-			fs.appendFileSync(teamStatsFile, JSON.stringify(statData, null, 2));
+			fs.appendFileSync(seasonStatsFile, JSON.stringify(statData, null, 2));
 			firstStat = false;
 			seenTeamStats.add(team.teamId);
 		}
@@ -249,7 +254,7 @@ async function processAllTeams(season: number) {
 
 	// End JSON arrays
 	fs.appendFileSync(gamesFile, "\n]\n");
-	fs.appendFileSync(teamStatsFile, "\n]\n");
+	fs.appendFileSync(seasonStatsFile, "\n]\n");
 	fs.appendFileSync(oddsFile, "\n]\n");
 	fs.appendFileSync(gameStatsFile, "\n]\n");
 	console.log(`Finished processing ${teamsToProcess.length} teams, ${totalGames} games, ${totalOdds} odds, and ${totalGameStats} game stats. Output written to ${outDir}`);
