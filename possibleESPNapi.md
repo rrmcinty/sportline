@@ -12,3 +12,7 @@ curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-bask
 
 for teams (team ids, name, etc)
 curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams"
+
+
+all teams
+curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=400&offset=0"

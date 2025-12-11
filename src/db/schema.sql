@@ -1,34 +1,32 @@
 -- sportline SQLite schema for modeling pipeline
 
 CREATE TABLE IF NOT EXISTS teams (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id TEXT PRIMARY KEY, -- ESPN team id
   sport TEXT NOT NULL,
-  espn_id TEXT NOT NULL,
   name TEXT NOT NULL,
   abbreviation TEXT,
-  UNIQUE(sport, espn_id)
+  display_name TEXT,
+  short_display_name TEXT
 );
 
 CREATE TABLE IF NOT EXISTS games (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  espn_event_id TEXT NOT NULL,
+  id TEXT PRIMARY KEY, -- ESPN event id
   sport TEXT NOT NULL,
   date TEXT NOT NULL,
   season INTEGER NOT NULL,
-  home_team_id INTEGER NOT NULL,
-  away_team_id INTEGER NOT NULL,
+  home_team_id TEXT NOT NULL, -- ESPN team id
+  away_team_id TEXT NOT NULL, -- ESPN team id
   home_score INTEGER,
   away_score INTEGER,
   venue TEXT,
   status TEXT DEFAULT 'scheduled',
   FOREIGN KEY(home_team_id) REFERENCES teams(id),
-  FOREIGN KEY(away_team_id) REFERENCES teams(id),
-  UNIQUE(espn_event_id)
+  FOREIGN KEY(away_team_id) REFERENCES teams(id)
 );
 
 CREATE TABLE IF NOT EXISTS odds (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  game_id INTEGER NOT NULL,
+  game_id TEXT NOT NULL, -- ESPN event id
   provider TEXT NOT NULL,
   market TEXT NOT NULL,
   line REAL,
@@ -42,7 +40,7 @@ CREATE TABLE IF NOT EXISTS odds (
 
 CREATE TABLE IF NOT EXISTS team_stats (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  team_id INTEGER NOT NULL,
+  team_id TEXT NOT NULL, -- ESPN team id
   sport TEXT NOT NULL,
   season INTEGER NOT NULL,
   game_date TEXT NOT NULL,
@@ -53,7 +51,7 @@ CREATE TABLE IF NOT EXISTS team_stats (
 
 CREATE TABLE IF NOT EXISTS features (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  game_id INTEGER NOT NULL,
+  game_id TEXT NOT NULL, -- ESPN event id
   market TEXT NOT NULL,
   feature_name TEXT NOT NULL,
   value REAL NOT NULL,
