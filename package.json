@@ -26,7 +26,7 @@
     "ingest": "node src/index.js data daily",
     "db:ingest:full": "npm run ingest:cfb:full && npm run ingest:ncaam:full && npm run ingest:nba:full && npm run ingest:nfl:full && npm run ingest:nhl:full",
     "ingest:cfb:full": "for y in 2020 2021 2022; do sportline data ingest --sport cfb --season $y; done",
-    "ingest:ncaam:full": "for y in 2020 2021 2022 2023; do sportline data ingest --sport ncaam --season $y; done",
+    "ingest:ncaam:full": "for y in 2020 2021 2022 2023 2024 2025; do sportline data ingest --sport ncaam --season $y; done",
     "ingest:nba:full": "for y in 2024 2025; do sportline data ingest --sport nba --season $y; done",
     "ingest:nfl:full": "for y in 2022 2023 2024 2025; do sportline data ingest --sport nfl --season $y; done",
     "ingest:nhl:full": "for y in 2023 2024 2025; do sportline data ingest --sport nhl --season $y; done",

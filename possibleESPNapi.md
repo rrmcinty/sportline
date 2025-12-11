@@ -3,8 +3,12 @@ curl "http://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-baske
 https://github.com/zuplo/espn-openapi/blob/main/espn_openapi_soccer_league_path.yaml
 
 schedule:
-curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/152/schedule?season=2025" | head -100
 
+for schedule and scores
+curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/152/schedule?season=2025"
+
+for team stats
 curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/152/statistics"
 
-curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams" | head -100
+for teams (team ids, name, etc)
+curl "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams"
