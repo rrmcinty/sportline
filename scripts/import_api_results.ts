@@ -116,13 +116,26 @@ function insertTeamStats(game: Game) {
       // Handle made-attempted combined stats
       if (typeof metric_value === "string" && metric_value.match(/^\d+-\d+$/)) {
         const [made, attempted] = metric_value.split("-").map(Number);
+        // Map combined stat names to separate metric names
+        let madeName = metric_name;
+        let attemptedName = metric_name;
+        if (metric_name === "fieldGoalsMade-fieldGoalsAttempted") {
+          madeName = "fieldGoalsMade";
+          attemptedName = "fieldGoalsAttempted";
+        } else if (metric_name === "threePointFieldGoalsMade-threePointFieldGoalsAttempted") {
+          madeName = "threePointFieldGoalsMade";
+          attemptedName = "threePointFieldGoalsAttempted";
+        } else if (metric_name === "freeThrowsMade-freeThrowsAttempted") {
+          madeName = "freeThrowsMade";
+          attemptedName = "freeThrowsAttempted";
+        }
         if (!Number.isNaN(made)) {
           db.prepare(`INSERT INTO team_stats (team_id, sport, season, game_date, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
             teamId,
             sport,
             season,
             game.date,
-            metric_name.replace("-fieldGoalsAttempted", "Made"),
+            madeName,
             made
           );
           statCount++;
@@ -133,7 +146,7 @@ function insertTeamStats(game: Game) {
             sport,
             season,
             game.date,
-            metric_name.replace("Made-", "").replace("-fieldGoalsMade", "Attempted"),
+            attemptedName,
             attempted
           );
           statCount++;
