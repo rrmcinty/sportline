@@ -148,12 +148,20 @@ function importSeasonStats() {
       continue;
     }
     for (const cat of s.stats.categories) {
+      const category = cat.name ?? cat.abbreviation ?? "unknown";
       for (const stat of cat.stats) {
-        db.prepare(`INSERT INTO season_stats (team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?);`).run(
+        const metricName = stat.name ?? stat.abbreviation;
+        if (!metricName) {
+          fs.appendFileSync(missingStatsLog, `teamId: ${s.teamId}, category: ${category} missing metric_name and abbreviation, skipping stat: ${JSON.stringify(stat)}\n`);
+          continue;
+        }
+        db.prepare(`INSERT INTO season_stats (team_id, sport, season, category, metric_name, metric_abbr, metric_value) VALUES (?, ?, ?, ?, ?, ?, ?);`).run(
           s.teamId,
           sport,
           season,
-          stat.abbreviation ?? stat.name,
+          category,
+          metricName,
+          stat.abbreviation ?? null,
           stat.value
         );
         count++;
