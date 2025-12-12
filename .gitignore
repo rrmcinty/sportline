@@ -11,6 +11,7 @@ dist/
 *.d.ts
 *.d.ts.map
 *.js.map
+*.log.json
 data/sportline.db
 data/backtest-results
 models/
