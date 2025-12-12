@@ -1,0 +1,51 @@
+{
+    "sport": "ncaam",
+    "market": "moneyline",
+    "seasons": [
+        2024,
+        2025
+    ],
+    "features": {
+        "fieldGoalsMade": true,
+        "fieldGoalsAttempted": false,
+        "fieldGoalPct": false,
+        "threePointFieldGoalsMade": false,
+        "threePointFieldGoalsAttempted": false,
+        "threePointFieldGoalPct": false,
+        "freeThrowsMade": false,
+        "freeThrowsAttempted": false,
+        "freeThrowPct": false,
+        "totalRebounds": false,
+        "offensiveRebounds": false,
+        "defensiveRebounds": false,
+        "assists": false,
+        "steals": false,
+        "blocks": false,
+        "turnovers": false,
+        "teamTurnovers": false,
+        "totalTurnovers": false,
+        "technicalFouls": false,
+        "totalTechnicalFouls": false,
+        "flagrantFouls": false,
+        "turnoverPoints": false,
+        "fastBreakPoints": false,
+        "pointsInPaint": false,
+        "fouls": false,
+        "largestLead": false,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "awayWinRate10": true,
+        "homeAdvantage": true
+    },
+    "rolling_windows": [
+        5,
+        10
+    ],
+    "allowed_providers": [
+        "ESPN Bet - Live Odds",
+        "ESPN BET"
+    ]
+}

@@ -2,13 +2,14 @@
     "sport": "ncaam",
     "market": "moneyline",
     "seasons": [
+        2023,
         2024,
         2025
     ],
     "features": {
-        "fieldGoalsMade": true,
+        "fieldGoalsMade": false,
         "fieldGoalsAttempted": false,
-        "fieldGoalPct": false,
+        "fieldGoalPct": true,
         "threePointFieldGoalsMade": false,
         "threePointFieldGoalsAttempted": false,
         "threePointFieldGoalPct": false,
@@ -37,8 +38,9 @@
         "homeAvgMargin5": true,
         "awayAvgMargin5": true,
         "homeWinRate10": true,
-        "awayWinRate10": true,
-        "homeAdvantage": true
+        "awayWinRate10": false,
+        "homeAdvantage": true,
+        "marketImpliedProb": true
     },
     "rolling_windows": [
         5,

@@ -470,7 +470,46 @@ function logLoss(yTrue: number[], yProb: number[]): number {
 	}
 	return -loss / yTrue.length;
 }
+
 const logloss = logLoss(y_test, y_pred_prob);
 
 console.log(`[trainNcaamMoneyline] Test accuracy: ${(accuracy * 100).toFixed(2)}%`);
 console.log(`[trainNcaamMoneyline] Test log loss: ${logloss.toFixed(4)}`);
+
+// --- Append summary log for this run as a JSON array ---
+const summaryLogPath = path.join(__dirname, 'trainNcaamMoneyline.runs.log.json');
+const summary = {
+	timestamp: new Date().toISOString(),
+	config: {
+		sport,
+		market,
+		seasons,
+		features: Object.fromEntries(Object.entries(featuresConfig).filter(([k, v]) => v)),
+		rolling_windows: rollingWindows,
+		allowed_providers: allowedProviders
+	},
+	dataset: {
+		totalGames,
+		usedGames: dataset.length,
+		skippedNoRollingStats: skipNoRollingStats,
+		skippedNoOdds: skipNoOdds
+	},
+	results: {
+		accuracy: Number((accuracy * 100).toFixed(2)),
+		logLoss: Number(logloss.toFixed(4)),
+		classCounts
+	}
+};
+let runLogArr = [];
+if (fs.existsSync(summaryLogPath)) {
+	try {
+		const fileData = fs.readFileSync(summaryLogPath, 'utf8');
+		runLogArr = JSON.parse(fileData);
+		if (!Array.isArray(runLogArr)) runLogArr = [];
+	} catch (e) {
+		runLogArr = [];
+	}
+}
+runLogArr.push(summary);
+fs.writeFileSync(summaryLogPath, JSON.stringify(runLogArr, null, 2));
+console.log(`[trainNcaamMoneyline] Appended summary to ${summaryLogPath}`);

@@ -15,3 +15,5 @@ dist/
 data/sportline.db
 data/backtest-results
 models/
+
+!scripts/trainNcaamMoneyline.runs.log.json
