@@ -94,15 +94,29 @@ function importOdds() {
       fs.appendFileSync(missingOddsGamesLog, `Odds for game ${o.eventId} (market: ${market}) missing game in games table.\n`);
       continue;
     }
+    // Map JSON fields to DB columns based on market
+    let line = null, price_home = null, price_away = null, price_over = null, price_under = null;
+    if (market === "moneyline") {
+      price_home = o.homeTeamOdds ?? null;
+      price_away = o.awayTeamOdds ?? null;
+    } else if (market === "spread") {
+      line = o.value ?? o.spread ?? o.line ?? null;
+      price_home = o.homeTeamOdds ?? null;
+      price_away = o.awayTeamOdds ?? null;
+    } else if (market === "total") {
+      line = o.value ?? o.line ?? null;
+      price_over = o.overOdds ?? null;
+      price_under = o.underOdds ?? null;
+    }
     db.prepare(`INSERT OR REPLACE INTO odds (game_id, provider, market, line, price_home, price_away, price_over, price_under, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).run(
       o.eventId,
       o.provider,
       market,
-      o.spread ?? o.line ?? null,
-      o.homeTeamMoneyLine ?? o.price_home ?? null,
-      o.awayTeamMoneyLine ?? o.price_away ?? null,
-      o.overOdds ?? o.price_over ?? null,
-      o.underOdds ?? o.price_under ?? null,
+      line,
+      price_home,
+      price_away,
+      price_over,
+      price_under,
       new Date().toISOString()
     );
     count++;

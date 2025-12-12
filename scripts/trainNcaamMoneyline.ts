@@ -29,12 +29,14 @@ function computeAvgMargin(teamId: string, gameId: string, window: number): numbe
 	return marginSum / gamesForTeam.length;
 }
 function getMarketImpliedProb(oddsArr: { home: number|null, away: number|null }[]): number|null {
-	if (!oddsArr.length) return null;
-	const odds = oddsArr[0];
-	if (odds.home == null || odds.away == null) return null;
-	const probHome = 1 / (odds.home > 0 ? (odds.home / 100 + 1) : (100 / Math.abs(odds.home) + 1));
-	const probAway = 1 / (odds.away > 0 ? (odds.away / 100 + 1) : (100 / Math.abs(odds.away) + 1));
-	return probHome / (probHome + probAway);
+	for (const odds of oddsArr) {
+		if (odds.home != null && odds.away != null) {
+			const probHome = 1 / (odds.home > 0 ? (odds.home / 100 + 1) : (100 / Math.abs(odds.home) + 1));
+			const probAway = 1 / (odds.away > 0 ? (odds.away / 100 + 1) : (100 / Math.abs(odds.away) + 1));
+			return probHome / (probHome + probAway);
+		}
+	}
+	return null;
 }
 // NCAAM Moneyline Model Training Script (Scaffold)
 // Reads config, extracts features, computes rolling windows, joins with odds, trains model

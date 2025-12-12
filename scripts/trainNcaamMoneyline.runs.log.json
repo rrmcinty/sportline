@@ -51,5 +51,842 @@
         }
       }
     }
+  },
+  {
+    "timestamp": "2025-12-12T16:09:33.269Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 67.39,
+      "logLoss": 11.264,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:17:51.993Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true,
+        "marketImpliedProb": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16401,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 65.83,
+      "logLoss": 11.8009,
+      "classCounts": {
+        "full": {
+          "0": 5933,
+          "1": 10468
+        },
+        "train": {
+          "0": 4630,
+          "1": 8490
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:19:36.804Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 67.39,
+      "logLoss": 11.264,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:20:43.727Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "marketImpliedProb": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16401,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 39.71,
+      "logLoss": 20.8222,
+      "classCounts": {
+        "full": {
+          "0": 5933,
+          "1": 10468
+        },
+        "train": {
+          "0": 4630,
+          "1": 8490
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:21:22.220Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalsMade": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 66.99,
+      "logLoss": 11.4008,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:23:00.501Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalsMade": true,
+        "fieldGoalsAttempted": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 60.29,
+      "logLoss": 13.7169,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:24:17.259Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "threePointFieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 44.04,
+      "logLoss": 19.3274,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:25:37.123Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "threePointFieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 60.29,
+      "logLoss": 13.7169,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:26:16.643Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 67.39,
+      "logLoss": 11.264,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:27:41.234Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "threePointFieldGoalsAttempted": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 64.55,
+      "logLoss": 12.2429,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:29:34.109Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 22247,
+      "usedGames": 21687,
+      "skippedNoRollingStats": 428,
+      "skippedNoOdds": 132
+    },
+    "results": {
+      "accuracy": 39.63,
+      "logLoss": 20.8522,
+      "classCounts": {
+        "full": {
+          "0": 7910,
+          "1": 13776
+        },
+        "train": {
+          "0": 6253,
+          "1": 11095
+        },
+        "test": {
+          "0": 1657,
+          "1": 2681
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:31:52.942Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 11084,
+      "usedGames": 10941,
+      "skippedNoRollingStats": 16,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 39.15,
+      "logLoss": 21.0167,
+      "classCounts": {
+        "full": {
+          "0": 3974,
+          "1": 6967
+        },
+        "train": {
+          "0": 3142,
+          "1": 5610
+        },
+        "test": {
+          "0": 832,
+          "1": 1357
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:32:51.623Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 5559,
+      "usedGames": 5438,
+      "skippedNoRollingStats": 9,
+      "skippedNoOdds": 112
+    },
+    "results": {
+      "accuracy": 37.41,
+      "logLoss": 21.6185,
+      "classCounts": {
+        "full": {
+          "0": 1984,
+          "1": 3454
+        },
+        "train": {
+          "0": 1585,
+          "1": 2765
+        },
+        "test": {
+          "0": 399,
+          "1": 689
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2025-12-12T16:34:37.812Z",
+    "config": {
+      "sport": "ncaam",
+      "market": "moneyline",
+      "seasons": [
+        2023,
+        2024,
+        2025
+      ],
+      "features": {
+        "fieldGoalPct": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "homeAdvantage": true
+      },
+      "rolling_windows": [
+        5,
+        10
+      ],
+      "allowed_providers": [
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+      ]
+    },
+    "dataset": {
+      "totalGames": 16584,
+      "usedGames": 16405,
+      "skippedNoRollingStats": 52,
+      "skippedNoOdds": 127
+    },
+    "results": {
+      "accuracy": 67.39,
+      "logLoss": 11.264,
+      "classCounts": {
+        "full": {
+          "0": 5934,
+          "1": 10471
+        },
+        "train": {
+          "0": 4631,
+          "1": 8493
+        },
+        "test": {
+          "0": 1303,
+          "1": 1978
+        }
+      }
+    }
   }
 ]

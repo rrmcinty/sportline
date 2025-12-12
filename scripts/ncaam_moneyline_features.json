@@ -40,14 +40,21 @@
         "homeWinRate10": true,
         "awayWinRate10": false,
         "homeAdvantage": true,
-        "marketImpliedProb": true
+        "marketImpliedProb": false
     },
     "rolling_windows": [
         5,
         10
     ],
     "allowed_providers": [
-        "ESPN Bet - Live Odds",
-        "ESPN BET"
+        "DraftKings",
+        "Caesars Sportsbook",
+        "BetfairSportsbook",
+        "MGM",
+        "PointsBet",
+        "Unibet",
+        "SugarHouse",
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
     ]
 }
