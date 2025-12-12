@@ -10,6 +10,7 @@ const dataDir = path.join("data", sport, String(season));
 
 const teamsPath = path.join(dataDir, "teams.json");
 const gamesPath = path.join(dataDir, "games.json");
+const gameStatsPath = path.join(dataDir, "game_stats.json");
 const oddsPath = path.join(dataDir, "odds.json");
 const seasonStatsPath = path.join(dataDir, "season_stats.json");
 
@@ -107,29 +108,37 @@ function importOdds() {
 
 // --- GAME STATS (per-game, not used for season_stats) ---
 function importGameStats() {
-  const stats = JSON.parse(fs.readFileSync(seasonStatsPath, "utf8"));
+  const stats = JSON.parse(fs.readFileSync(gameStatsPath, "utf8"));
   let count = 0;
-  const missingGameDateLog = path.join(dataDir, "missing_game_stats_game_date.log");
-  fs.writeFileSync(missingGameDateLog, ""); // clear log at start
+  const missingStatsLog = path.join(dataDir, "missing_game_stats.log");
+  fs.writeFileSync(missingStatsLog, ""); // clear log at start
   for (const s of stats) {
-    if (!s.stats || !s.stats.categories) continue;
-    // If game_date is missing, log and skip
-    if (!s.game_date) {
-      fs.appendFileSync(missingGameDateLog, `teamId: ${s.teamId} missing game_date, skipping all stats for this entry.\n`);
+    if (!s.stats || !Array.isArray(s.stats) || s.stats.length === 0) {
+      fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing or empty stats, skipping.\n`);
       continue;
     }
-    for (const cat of s.stats.categories) {
-      for (const stat of cat.stats) {
-        db.prepare(`INSERT INTO game_stats (team_id, sport, season, game_date, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
-          s.teamId,
-          sport,
-          season,
-          s.game_date,
-          stat.abbreviation ?? stat.name,
-          stat.value
-        );
-        count++;
+    // Check if game and team exist
+    const gameExists = db.prepare("SELECT 1 FROM games WHERE id = ?").get(s.game_id);
+    const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ?").get(s.team_id);
+    if (!gameExists || !teamExists) {
+      fs.appendFileSync(missingStatsLog, `Missing reference: game_id: ${s.game_id} exists: ${!!gameExists}, team_id: ${s.team_id} exists: ${!!teamExists}\n`);
+      continue;
+    }
+    for (const stat of s.stats) {
+      const metricName = stat.name ?? stat.abbreviation;
+      if (!metricName) {
+        fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing metric_name and abbreviation, skipping stat: ${JSON.stringify(stat)}\n`);
+        continue;
       }
+      db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+        s.game_id,
+        s.team_id,
+        sport,
+        season,
+        metricName,
+        stat.value
+      );
+      count++;
     }
   }
   console.log(`[game_stats] Imported ${count} game stats.`);

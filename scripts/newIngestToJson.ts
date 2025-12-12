@@ -204,33 +204,70 @@ async function processAllTeams(season: number) {
 			]);
 			if (!oddsSeen.has(game.id) && Array.isArray(oddsArr)) {
 				for (const odds of oddsArr) {
-					const slimOdds = {
-						eventId: game.id,
-						provider: odds.provider?.name || odds.provider,
-						spread: odds.spread,
-						overUnder: odds.overUnder,
-						homeTeamMoneyLine: odds.homeTeamOdds?.moneyLine ?? null,
-						homeTeamSpreadOdds: odds.homeTeamOdds?.spreadOdds ?? null,
-						awayTeamMoneyLine: odds.awayTeamOdds?.moneyLine ?? null,
-						awayTeamSpreadOdds: odds.awayTeamOdds?.spreadOdds ?? null,
-						overOdds: odds.overOdds,
-						underOdds: odds.underOdds
-					};
-					const oddsJson = JSON.stringify(slimOdds, null, 2);
-					if (!firstOdds) {
-						fs.appendFileSync(oddsFile, ",\n");
+					// Write one object per market with a 'market' field
+					// Spread market
+					if (odds.spread !== undefined && odds.spread !== null) {
+						const spreadOdds = {
+							eventId: game.id,
+							provider: odds.provider?.name || odds.provider,
+							market: "spread",
+							value: odds.spread,
+							homeTeamOdds: odds.homeTeamOdds?.spreadOdds ?? null,
+							awayTeamOdds: odds.awayTeamOdds?.spreadOdds ?? null
+						};
+						const spreadJson = JSON.stringify(spreadOdds, null, 2);
+						if (!firstOdds) {
+							fs.appendFileSync(oddsFile, ",\n");
+						}
+						fs.appendFileSync(oddsFile, spreadJson);
+						firstOdds = false;
+						totalOdds++;
 					}
-					fs.appendFileSync(oddsFile, oddsJson);
-					firstOdds = false;
-					totalOdds++;
+					// Total market
+					if (odds.overUnder !== undefined && odds.overUnder !== null) {
+						const totalOddsObj = {
+							eventId: game.id,
+							provider: odds.provider?.name || odds.provider,
+							market: "total",
+							value: odds.overUnder,
+							overOdds: odds.overOdds ?? null,
+							underOdds: odds.underOdds ?? null
+						};
+						const totalJson = JSON.stringify(totalOddsObj, null, 2);
+						if (!firstOdds) {
+							fs.appendFileSync(oddsFile, ",\n");
+						}
+						fs.appendFileSync(oddsFile, totalJson);
+						firstOdds = false;
+						totalOdds++;
+					}
+					// Moneyline market
+					if ((odds.homeTeamOdds?.moneyLine !== undefined && odds.homeTeamOdds?.moneyLine !== null) ||
+						(odds.awayTeamOdds?.moneyLine !== undefined && odds.awayTeamOdds?.moneyLine !== null)) {
+						const moneylineOdds = {
+							eventId: game.id,
+							provider: odds.provider?.name || odds.provider,
+							market: "moneyline",
+							homeTeamOdds: odds.homeTeamOdds?.moneyLine ?? null,
+							awayTeamOdds: odds.awayTeamOdds?.moneyLine ?? null
+						};
+						const moneylineJson = JSON.stringify(moneylineOdds, null, 2);
+						if (!firstOdds) {
+							fs.appendFileSync(oddsFile, ",\n");
+						}
+						fs.appendFileSync(oddsFile, moneylineJson);
+						firstOdds = false;
+						totalOdds++;
+					}
 				}
 				oddsSeen.add(game.id);
 			}
 			if (Array.isArray(gameStatsArr)) {
 				for (const stat of gameStatsArr) {
+					// Write game_id (eventId) and team_id, matching new schema. No game_date.
 					const statData = {
-						eventId: game.id,
-						teamId: stat.team?.id,
+						game_id: game.id, // Use game_id as per schema
+						team_id: stat.team?.id,
 						abbreviation: stat.team?.abbreviation,
 						stats: (stat.statistics || []).map((s: any) => ({
 							name: s.name,
