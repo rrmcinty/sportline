@@ -115,7 +115,11 @@ for (const row of gameStatsRows) {
 	teamGameStats[row.team_id][row.game_id][row.metric_name] = Number(row.metric_value);
 }
 
-// --- Step 3: Compute rolling averages for each stat (5, 10 games) ---
+
+// Allow config to specify recency weighting and decay
+const useExponentialRecency: boolean = config.recency_weighting?.enabled ?? true;
+const recencyDecay: number = config.recency_weighting?.decay ?? 0.7;
+
 function computeRollingAverages(
 	statsByGame: Record<string, Record<string, number>>,
 	gameOrder: string[],
@@ -130,8 +134,16 @@ function computeRollingAverages(
 			for (const w of windows) {
 				const prevGames = gameOrder.slice(Math.max(0, i - w), i);
 				const vals = prevGames.map(g => statsByGame[g]?.[stat]).filter(v => v !== undefined);
-				// Use 0 if no previous games (so always returns number)
-				const avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+				let avg = 0;
+				if (vals.length) {
+					if (useExponentialRecency) {
+						// Use exponential recency weighting (most recent first)
+						const weights = getExponentialWeights(vals.length, recencyDecay);
+						avg = weightedAverage(vals.slice().reverse(), weights); // reverse: most recent first
+					} else {
+						avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+					}
+				}
 				result[gid][`${stat}_avg_${w}`] = avg;
 			}
 		}
@@ -515,3 +527,34 @@ if (fs.existsSync(summaryLogPath)) {
 runLogArr.push(summary);
 fs.writeFileSync(summaryLogPath, JSON.stringify(runLogArr, null, 2));
 console.log(`[trainNcaamMoneyline] Appended summary to ${summaryLogPath}`);
+
+
+// recencyWeights.ts
+// Utility for generating and applying exponential recency weights for rolling stats
+
+/**
+ * Generate exponential recency weights for a given window size.
+ * @param {number} window - Number of games in the rolling window
+ * @param {number} decay - Decay rate (0 < decay < 1, e.g. 0.7)
+ * @returns {number[]} Array of weights (most recent first)
+ */
+function getExponentialWeights(window: number, decay: number = 0.7): number[] {
+  const weights = [];
+  for (let i = 0; i < window; i++) {
+    weights.push(Math.pow(decay, i));
+  }
+  // Reverse so most recent game gets highest weight
+  return weights.reverse();
+}
+
+/**
+ * Compute a weighted average using provided values and weights.
+ * @param {number[]} values - Array of values (most recent first)
+ * @param {number[]} weights - Array of weights (same length as values)
+ * @returns {number} Weighted average
+ */
+function weightedAverage(values: number[], weights: number[]): number {
+  if (values.length === 0) return 0;
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  return values.reduce((sum, v, i) => sum + v * weights[i], 0) / totalWeight;
+}
