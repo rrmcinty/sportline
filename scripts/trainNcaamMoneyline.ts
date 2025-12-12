@@ -1,3 +1,41 @@
+// --- Fixed feature helpers ---
+function computeWinRate(teamId: string, gameId: string, window: number): number {
+	const gamesForTeam = games
+		.filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId)
+		.sort((a, b) => a.date.localeCompare(b.date))
+		.slice(-window);
+	if (!gamesForTeam.length) return 0;
+	let wins = 0;
+	for (const g of gamesForTeam) {
+		const isHome = g.home_team_id === teamId;
+		if (g.home_score == null || g.away_score == null) continue;
+		if (isHome && g.home_score > g.away_score) wins++;
+		if (!isHome && g.away_score > g.home_score) wins++;
+	}
+	return wins / gamesForTeam.length;
+}
+function computeAvgMargin(teamId: string, gameId: string, window: number): number {
+	const gamesForTeam = games
+		.filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId)
+		.sort((a, b) => a.date.localeCompare(b.date))
+		.slice(-window);
+	if (!gamesForTeam.length) return 0;
+	let marginSum = 0;
+	for (const g of gamesForTeam) {
+		const isHome = g.home_team_id === teamId;
+		if (g.home_score == null || g.away_score == null) continue;
+		marginSum += isHome ? (g.home_score - g.away_score) : (g.away_score - g.home_score);
+	}
+	return marginSum / gamesForTeam.length;
+}
+function getMarketImpliedProb(oddsArr: { home: number|null, away: number|null }[]): number|null {
+	if (!oddsArr.length) return null;
+	const odds = oddsArr[0];
+	if (odds.home == null || odds.away == null) return null;
+	const probHome = 1 / (odds.home > 0 ? (odds.home / 100 + 1) : (100 / Math.abs(odds.home) + 1));
+	const probAway = 1 / (odds.away > 0 ? (odds.away / 100 + 1) : (100 / Math.abs(odds.away) + 1));
+	return probHome / (probHome + probAway);
+}
 // NCAAM Moneyline Model Training Script (Scaffold)
 // Reads config, extracts features, computes rolling windows, joins with odds, trains model
 
@@ -19,7 +57,7 @@ const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const sport = config.sport;
 const market = config.market;
 const seasons: number[] = config.seasons;
-const features: Record<string, boolean> = config.features;
+const featuresConfig: Record<string, boolean> = config.features;
 const rollingWindows: number[] = config.rolling_windows;
 const allowedProviders: string[] = config.allowed_providers;
 
@@ -53,7 +91,7 @@ fs.writeFileSync(
 console.log(`[trainNcaamMoneyline] Wrote first 10 games to ${gamesLogPath}`);
 
 // --- Step 2: Extract and pivot game_stats for all games/teams ---
-const enabledFeatures = Object.entries(features).filter(([k, v]) => v).map(([k]) => k);
+const enabledFeatures = Object.entries(featuresConfig).filter(([k, v]) => v).map(([k]) => k);
 const gameStatsRows = db.prepare(`
 	SELECT game_id, team_id, metric_name, metric_value
 	FROM game_stats
@@ -150,10 +188,10 @@ const tempRows: Array<{ features: Record<string, number|null> }> = [];
 let skipNoRollingStats = 0;
 let skipNoOdds = 0;
 let totalGames = 0;
-const skippedNoOddsHomeWins = [];
-const skippedNoOddsAwayWins = [];
-const skippedRollingStatsGames = [];
-const skippedOddsGames = [];
+const skippedNoOddsHomeWins: any[] = [];
+const skippedNoOddsAwayWins: any[] = [];
+const skippedRollingStatsGames: any[] = [];
+const skippedOddsGames: any[] = [];
 
 for (const game of games) {
 	totalGames++;
@@ -167,33 +205,30 @@ for (const game of games) {
 		home_score: number|null;
 		away_score: number|null;
 	};
-	const homeTeamId = gameObj.home_team_id;
-	const awayTeamId = gameObj.away_team_id;
-	const gameId = gameObj.id;
-	if (!teamRollingStats[homeTeamId]?.[gameId] || !teamRollingStats[awayTeamId]?.[gameId]) {
+	if (!teamRollingStats[gameObj.home_team_id]?.[gameObj.id] || !teamRollingStats[gameObj.away_team_id]?.[gameObj.id]) {
 		skipNoRollingStats++;
 		skippedRollingStatsGames.push({
-			game_id: gameId,
+			game_id: gameObj.id,
 			date: gameObj.date,
-			home_team: homeTeamId,
-			away_team: awayTeamId,
+			home_team: gameObj.home_team_id,
+			away_team: gameObj.away_team_id,
 			home_score: gameObj.home_score,
 			away_score: gameObj.away_score
 		});
 		continue;
 	}
-	const oddsArr = getMoneylineOdds(gameId);
+	const oddsArr = getMoneylineOdds(gameObj.id);
 	if (!oddsArr.length) {
 		skipNoOdds++;
 		// Log up to 10 skipped home wins and 10 away wins with their available odds providers
 		const oddsRowsFull = db.prepare(`
 			SELECT * FROM odds WHERE game_id = ? AND market = 'moneyline'
-		`).all(gameId);
+		`).all(gameObj.id);
 		skippedOddsGames.push({
-			game_id: gameId,
+			game_id: gameObj.id,
 			date: gameObj.date,
-			home_team: homeTeamId,
-			away_team: awayTeamId,
+			home_team: gameObj.home_team_id,
+			away_team: gameObj.away_team_id,
 			home_score: gameObj.home_score,
 			away_score: gameObj.away_score,
 			oddsRows: oddsRowsFull
@@ -202,10 +237,10 @@ for (const game of games) {
 			const oddsProviders = oddsRowsFull.map((row: any) => row.provider);
 			if (gameObj.home_score > gameObj.away_score && skippedNoOddsHomeWins.length < 10) {
 				skippedNoOddsHomeWins.push({
-					game_id: gameId,
+					game_id: gameObj.id,
 					date: gameObj.date,
-					home_team: homeTeamId,
-					away_team: awayTeamId,
+					home_team: gameObj.home_team_id,
+					away_team: gameObj.away_team_id,
 					home_score: gameObj.home_score,
 					away_score: gameObj.away_score,
 					oddsProviders,
@@ -214,10 +249,10 @@ for (const game of games) {
 			}
 			if (gameObj.away_score > gameObj.home_score && skippedNoOddsAwayWins.length < 10) {
 				skippedNoOddsAwayWins.push({
-					game_id: gameId,
+					game_id: gameObj.id,
 					date: gameObj.date,
-					home_team: homeTeamId,
-					away_team: awayTeamId,
+					home_team: gameObj.home_team_id,
+					away_team: gameObj.away_team_id,
 					home_score: gameObj.home_score,
 					away_score: gameObj.away_score,
 					oddsProviders,
@@ -227,13 +262,14 @@ for (const game of games) {
 		}
 		continue;
 	}
+	// ...existing feature collection logic...
 	const features: Record<string, number|null> = {};
 	for (const stat of enabledFeatures) {
 		for (const w of rollingWindows) {
 			const homeKey = `home_${stat}_avg_${w}`;
 			const awayKey = `away_${stat}_avg_${w}`;
-			const homeVal = teamRollingStats[homeTeamId][gameId][`${stat}_avg_${w}`];
-			const awayVal = teamRollingStats[awayTeamId][gameId][`${stat}_avg_${w}`];
+			const homeVal = teamRollingStats[gameObj.home_team_id][gameObj.id][`${stat}_avg_${w}`];
+			const awayVal = teamRollingStats[gameObj.away_team_id][gameObj.id][`${stat}_avg_${w}`];
 			features[homeKey] = homeVal ?? null;
 			features[awayKey] = awayVal ?? null;
 			if (homeVal !== null && homeVal !== undefined) {
@@ -300,7 +336,30 @@ for (const game of games) {
 	for (const key of Object.keys(tempFeatures)) {
 		features[key] = tempFeatures[key] !== null && tempFeatures[key] !== undefined ? tempFeatures[key]! : featureMeans[key];
 	}
-	// Target: 1 if home wins, 0 if away wins, null if missing
+	// --- Add fixed features if enabled in config ---
+	// Compute all fixed features
+	const marketImpliedProbVal = getMarketImpliedProb(oddsArr);
+	if (featuresConfig["marketImpliedProb"] && marketImpliedProbVal === null) {
+		// Skip this game if marketImpliedProb is required but missing
+		continue;
+	}
+	const fixedFeatureValues: Record<string, number> = {
+		homeWinRate5: computeWinRate(homeId, gid, 5),
+		awayWinRate5: computeWinRate(awayId, gid, 5),
+		homeAvgMargin5: computeAvgMargin(homeId, gid, 5),
+		awayAvgMargin5: computeAvgMargin(awayId, gid, 5),
+		homeWinRate10: computeWinRate(homeId, gid, 10),
+		awayWinRate10: computeWinRate(awayId, gid, 10),
+		homeAdvantage: 0, // set below
+		marketImpliedProb: marketImpliedProbVal ?? 0
+	};
+	fixedFeatureValues.homeAdvantage = fixedFeatureValues.homeWinRate5 - fixedFeatureValues.awayWinRate5;
+	// Only add if enabled in config
+	for (const key of Object.keys(fixedFeatureValues)) {
+		if (featuresConfig[key]) {
+			features[key] = fixedFeatureValues[key];
+		}
+	}
 	let target: number|null = null;
 	if (g.home_score !== null && g.away_score !== null) {
 		const homeWin = g.home_score > g.away_score;
@@ -320,7 +379,12 @@ for (const game of games) {
 }
 
 
+
 console.log(`[trainNcaamMoneyline] Prepared dataset with ${dataset.length} games.`);
+if (dataset.length === 0) {
+	console.error('[trainNcaamMoneyline] ERROR: No games available in dataset after filtering/skipping. Check your config and data.');
+	process.exit(1);
+}
 
 // --- Step 5: Model training and evaluation ---
 // We'll use ml-logistic-regression (npm install ml-logistic-regression ml-matrix)
