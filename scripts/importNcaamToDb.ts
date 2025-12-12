@@ -118,35 +118,70 @@ function importGameStats() {
   let count = 0;
   const missingStatsLog = path.join(dataDir, "missing_game_stats.log");
   fs.writeFileSync(missingStatsLog, ""); // clear log at start
-  for (const s of stats) {
-    if (!s.stats || !Array.isArray(s.stats) || s.stats.length === 0) {
-      fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing or empty stats, skipping.\n`);
-      continue;
-    }
-    // Check if game and team exist
-    const gameExists = db.prepare("SELECT 1 FROM games WHERE id = ?").get(s.game_id);
-    const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ?").get(s.team_id);
-    if (!gameExists || !teamExists) {
-      fs.appendFileSync(missingStatsLog, `Missing reference: game_id: ${s.game_id} exists: ${!!gameExists}, team_id: ${s.team_id} exists: ${!!teamExists}\n`);
-      continue;
-    }
-    for (const stat of s.stats) {
-      const metricName = stat.name ?? stat.abbreviation;
-      if (!metricName) {
-        fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing metric_name and abbreviation, skipping stat: ${JSON.stringify(stat)}\n`);
+    for (const s of stats) {
+      if (!s.stats || !Array.isArray(s.stats) || s.stats.length === 0) {
+        fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing or empty stats, skipping.\n`);
         continue;
       }
-      db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
-        s.game_id,
-        s.team_id,
-        sport,
-        season,
-        metricName,
-        stat.value
-      );
-      count++;
+      // Check if game and team exist
+      const gameExists = db.prepare("SELECT 1 FROM games WHERE id = ?").get(s.game_id);
+      const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ?").get(s.team_id);
+      if (!gameExists || !teamExists) {
+        fs.appendFileSync(missingStatsLog, `Missing reference: game_id: ${s.game_id} exists: ${!!gameExists}, team_id: ${s.team_id} exists: ${!!teamExists}\n`);
+        continue;
+      }
+      for (const stat of s.stats) {
+        const metricName: string = stat.name ?? stat.abbreviation;
+        if (!metricName) {
+          fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing metric_name and abbreviation, skipping stat: ${JSON.stringify(stat)}\n`);
+          continue;
+        }
+
+        // Handle combined stats: split into made/attempted
+        const combinedMetrics: Record<string, [string, string]> = {
+          "fieldGoalsMade-fieldGoalsAttempted": ["fieldGoalsMade", "fieldGoalsAttempted"],
+          "threePointFieldGoalsMade-threePointFieldGoalsAttempted": ["threePointFieldGoalsMade", "threePointFieldGoalsAttempted"],
+          "freeThrowsMade-freeThrowsAttempted": ["freeThrowsMade", "freeThrowsAttempted"]
+        };
+        if (metricName in combinedMetrics && typeof stat.value === "string" && stat.value.includes("-")) {
+          const [made, attempted] = stat.value.split("-").map(Number);
+          const [madeName, attemptedName] = combinedMetrics[metricName];
+          if (!isNaN(made)) {
+            db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+              s.game_id,
+              s.team_id,
+              sport,
+              season,
+              madeName,
+              made
+            );
+            count++;
+          }
+          if (!isNaN(attempted)) {
+            db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+              s.game_id,
+              s.team_id,
+              sport,
+              season,
+              attemptedName,
+              attempted
+            );
+            count++;
+          }
+          continue; // skip inserting the combined metric
+        }
+
+        db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+          s.game_id,
+          s.team_id,
+          sport,
+          season,
+          metricName,
+          stat.value
+        );
+        count++;
+      }
     }
-  }
   console.log(`[game_stats] Imported ${count} game stats.`);
 }
 
