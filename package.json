@@ -58,6 +58,7 @@
     "commander": "^11.1.0",
     "ml-logistic-regression": "^2.0.0",
     "ml-matrix": "^6.12.1",
+    "ml-random-forest": "^2.1.0",
     "node-fetch": "^3.3.2",
     "ts-node": "^10.9.2"
   },
