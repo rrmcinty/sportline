@@ -101,6 +101,9 @@ export interface FeatureConfig {
     enabled: boolean;
     decay: number;
   };
+  regularization?: {
+    lambda: number;  // L2 regularization strength (higher = smaller weights)
+  };
   min_edge: number;
   min_ev: number;
 }
@@ -158,6 +161,7 @@ export interface TrainedModel {
   rollingWindows: number[];
   featureKeys: string[];
   featureMeans: Record<string, number>;
+  featureStds: Record<string, number>;
   modelParams: LogisticRegressionParams | RandomForestParams;
   thresholds: {
     min_edge: number;

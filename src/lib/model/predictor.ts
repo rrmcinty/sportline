@@ -12,7 +12,8 @@ import type { TrainedModel, Prediction } from '../db/types.js';
 export function predictLogisticRegression(
   features: Record<string, number>,
   featureKeys: string[],
-  theta: number[][]
+  theta: number[][],
+  debug: boolean = false
 ): number {
   // Build feature vector in correct order
   const X = featureKeys.map((k) => features[k] ?? 0);
@@ -20,13 +21,46 @@ export function predictLogisticRegression(
   // Manual logistic regression prediction: sigmoid(X * theta)
   // Handle both theta as 2D array [[val], [val], ...] or [[val, val, ...]]
   let z = 0;
+  const contributions: Array<{key: string, value: number, theta: number, contrib: number}> = [];
+  
   for (let i = 0; i < X.length && i < theta.length; i++) {
     const thetaValue = Array.isArray(theta[i]) ? theta[i][0] : theta[i];
     const thetaNum = typeof thetaValue === 'number' ? thetaValue : 0;
-    z += X[i] * thetaNum;
+    const contrib = X[i] * thetaNum;
+    z += contrib;
+    
+    if (debug && Math.abs(contrib) > 1) {
+      contributions.push({
+        key: featureKeys[i],
+        value: X[i],
+        theta: thetaNum,
+        contrib
+      });
+    }
   }
   
-  const probability = 1 / (1 + Math.exp(-z));
+  if (debug) {
+    console.log(`  Logit (z): ${z.toFixed(2)}`);
+    if (contributions.length > 0) {
+      console.log(`  Top contributors (|contrib| > 1):`);
+      contributions
+        .sort((a, b) => Math.abs(b.contrib) - Math.abs(a.contrib))
+        .slice(0, 5)
+        .forEach(c => {
+          console.log(`    ${c.key}: ${c.value.toFixed(2)} × ${c.theta.toFixed(2)} = ${c.contrib.toFixed(2)}`);
+        });
+    }
+  }
+  
+  // With L2 regularization, logit values should be reasonable
+  // Keep a wider safety clip at ±7 which gives [0.09%, 99.91%]
+  const z_clipped = Math.max(-7, Math.min(7, z));
+  
+  if (debug && z_clipped !== z) {
+    console.log(`  Logit clipped: ${z.toFixed(2)} → ${z_clipped.toFixed(2)}`);
+  }
+  
+  const probability = 1 / (1 + Math.exp(-z_clipped));
 
   return probability;
 }
@@ -36,15 +70,24 @@ export function predictLogisticRegression(
  */
 export function predict(
   features: Record<string, number>,
-  model: TrainedModel
+  model: TrainedModel,
+  debug: boolean = false
 ): Prediction {
-  const featureVector = model.featureKeys.map((k) => features[k] ?? 0);
+  // Standardize features using saved parameters
+  const scaledFeatures: Record<string, number> = {};
+  
+  for (const key of model.featureKeys) {
+    const mean = model.featureMeans[key] ?? 0;
+    const std = model.featureStds[key] ?? 1;
+    const rawValue = features[key] ?? 0;
+    scaledFeatures[key] = (rawValue - mean) / std;
+  }
 
   let probHome: number;
 
   if (model.modelType === 'logistic_regression') {
     const theta = (model.modelParams as any).theta;
-    probHome = predictLogisticRegression(features, model.featureKeys, theta);
+    probHome = predictLogisticRegression(scaledFeatures, model.featureKeys, theta, debug);
   } else {
     // For ensemble models, we would need to serialize/deserialize the trees
     // For now, throw an error as RF models need special handling

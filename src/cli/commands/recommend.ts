@@ -91,6 +91,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   const allGames = db.getHistoricalGames(options.sport, model.seasons);
 
   const recommendations: Recommendation[] = [];
+  let gamesWithoutFeatures = 0;
 
   for (const game of todaysGames) {
     try {
@@ -104,12 +105,21 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       );
 
       if (!features) {
-        console.warn(`⚠️  Insufficient data for game ${game.id}`);
+        gamesWithoutFeatures++;
         continue;
       }
 
-      // Get prediction
-      const prediction = predict(features, model);
+      // Get prediction - pass debug flag for second game
+      const shouldDebug = recommendations.length === 1; // Debug second game
+      const prediction = shouldDebug
+        ? predict(features, model, true)
+        : predict(features, model);
+      
+      // Debug: Log predictions that are extreme
+      if (recommendations.length < 3) {
+        const probPct = (prediction.prob_home * 100).toFixed(1);
+        console.log(`[DEBUG] Game ${game.id}: ${probPct}% home win`);
+      }
 
       // Get odds
       const odds = game.odds.length > 0 ? game.odds[0] : null;
@@ -177,6 +187,10 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   }
 
   db.close();
+
+  if (gamesWithoutFeatures > 0) {
+    console.log(`⚠️  ${gamesWithoutFeatures} games skipped due to insufficient historical data`);
+  }
 
   // Step 4: Display recommendations
   console.log('\n[4/4] Ranking recommendations...\n');

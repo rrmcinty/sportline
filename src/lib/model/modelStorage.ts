@@ -13,7 +13,7 @@ import type { TrainingResult } from './trainer.js';
 export function saveModel(
   model: TrainingResult,
   config: FeatureConfig,
-  featureMeans: Record<string, number>,
+  featureMeansDict: Record<string, number>,
   thresholds: { min_edge: number; min_ev: number },
   backtestMetrics: {
     accuracy: number;
@@ -30,10 +30,17 @@ export function saveModel(
   if (model.modelType === 'logistic_regression') {
     const logreg = model.model as any;
     
-    // ml-logistic-regression stores weights in classifiers[0].weights (Matrix object)
     let thetaArray: number[][];
     
-    if (logreg.classifiers && logreg.classifiers[0] && logreg.classifiers[0].weights) {
+    // Check if it's our custom L2RegularizedLogisticRegression (has theta array directly)
+    if (logreg.theta && Array.isArray(logreg.theta)) {
+      // Our custom L2 regularized model stores theta as 1D array
+      thetaArray = logreg.theta.map((w: number) => [w]);
+      console.log(`[ModelStorage] Saving L2 regularized model with ${thetaArray.length} weights`);
+      console.log(`[ModelStorage] Theta range: [${Math.min(...logreg.theta).toFixed(4)}, ${Math.max(...logreg.theta).toFixed(4)}]`);
+    }
+    // ml-logistic-regression stores weights in classifiers[0].weights (Matrix object)
+    else if (logreg.classifiers && logreg.classifiers[0] && logreg.classifiers[0].weights) {
       const weights = logreg.classifiers[0].weights;
       // Convert Matrix to 2D array - weights is 1xN, we need Nx1 for our predictor
       if (typeof weights.to2DArray === 'function') {
@@ -45,14 +52,16 @@ export function saveModel(
       }
     } else {
       // Fallback
+      console.warn('[ModelStorage] Could not extract theta from model, using zeros');
       thetaArray = [[0]];
     }
     
     modelParams = {
       type: 'logistic_regression',
       theta: thetaArray,
-      learningRate: logreg.learningRate || 5e-3,
-      numSteps: logreg.numSteps || 1000,
+      learningRate: logreg.learningRate || 0.1,
+      numSteps: logreg.numSteps || 2000,
+      lambda: config.regularization?.lambda ?? 0.1,
     };
   } else {
     // For ensemble models, we can't easily serialize the trees
@@ -66,6 +75,15 @@ export function saveModel(
     };
   }
 
+  // Convert feature means and stds arrays to dictionaries
+  const featureMeansObj: Record<string, number> = {};
+  const featureStdsObj: Record<string, number> = {};
+  
+  for (let i = 0; i < model.featureKeys.length; i++) {
+    featureMeansObj[model.featureKeys[i]] = model.featureMeans[i];
+    featureStdsObj[model.featureKeys[i]] = model.featureStds[i];
+  }
+
   const trainedModel: TrainedModel = {
     sport: config.sport,
     market: config.market,
@@ -75,7 +93,8 @@ export function saveModel(
     features: config.features,
     rollingWindows: config.rolling_windows,
     featureKeys: model.featureKeys,
-    featureMeans,
+    featureMeans: featureMeansObj,
+    featureStds: featureStdsObj,
     modelParams,
     thresholds,
     backtestMetrics,

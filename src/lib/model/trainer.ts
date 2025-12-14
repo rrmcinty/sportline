@@ -1,6 +1,6 @@
 /**
  * Model training utilities
- * Supports logistic regression and random forest ensemble models
+ * Supports logistic regression (with L2 regularization) and random forest ensemble models
  */
 
 import LogisticRegression from 'ml-logistic-regression';
@@ -8,10 +8,121 @@ import { Matrix } from 'ml-matrix';
 import { RandomForestClassifier as RFClassifier } from 'ml-random-forest';
 import type { GameFeatures, FeatureConfig } from '../db/types.js';
 
+/**
+ * Custom L2-regularized logistic regression model
+ * Implements gradient descent with L2 penalty to prevent large weights
+ */
+export class L2RegularizedLogisticRegression {
+  public theta: number[];
+  private learningRate: number;
+  private numSteps: number;
+  private lambda: number; // L2 regularization strength
+
+  constructor(options: {
+    numSteps?: number;
+    learningRate?: number;
+    lambda?: number;
+  } = {}) {
+    this.numSteps = options.numSteps ?? 1000;
+    this.learningRate = options.learningRate ?? 0.01;
+    this.lambda = options.lambda ?? 0.1; // Default regularization
+    this.theta = [];
+  }
+
+  /**
+   * Sigmoid function with numerical stability
+   */
+  private sigmoid(z: number): number {
+    if (z > 20) return 1 - 1e-9;
+    if (z < -20) return 1e-9;
+    return 1 / (1 + Math.exp(-z));
+  }
+
+  /**
+   * Predict probabilities for input matrix
+   */
+  predict(X: number[][]): number[] {
+    return X.map(row => {
+      const z = row.reduce((sum, x, i) => sum + x * this.theta[i], 0);
+      return this.sigmoid(z);
+    });
+  }
+
+  /**
+   * Train the model using gradient descent with L2 regularization
+   */
+  train(X: number[][], y: number[]): void {
+    const n = X.length;
+    const nFeatures = X[0].length;
+    
+    // Initialize weights to small random values
+    this.theta = Array(nFeatures).fill(0).map(() => (Math.random() - 0.5) * 0.01);
+    
+    let prevLoss = Infinity;
+    const lossHistory: number[] = [];
+    
+    for (let step = 0; step < this.numSteps; step++) {
+      // Forward pass: compute predictions
+      const predictions = this.predict(X);
+      
+      // Compute loss: cross-entropy + L2 penalty
+      let loss = 0;
+      for (let i = 0; i < n; i++) {
+        const p = Math.max(Math.min(predictions[i], 1 - 1e-15), 1e-15);
+        loss -= y[i] * Math.log(p) + (1 - y[i]) * Math.log(1 - p);
+      }
+      loss /= n;
+      
+      // Add L2 penalty (don't regularize bias if we had one)
+      const l2Penalty = this.lambda * this.theta.reduce((sum, t) => sum + t * t, 0);
+      loss += l2Penalty;
+      
+      lossHistory.push(loss);
+      
+      // Early stopping if loss plateaus
+      if (step > 100 && Math.abs(prevLoss - loss) < 1e-7) {
+        console.log(`[L2LogReg] Early stopping at step ${step}, loss: ${loss.toFixed(6)}`);
+        break;
+      }
+      prevLoss = loss;
+      
+      // Compute gradients
+      const gradients = new Array(nFeatures).fill(0);
+      
+      for (let i = 0; i < n; i++) {
+        const error = predictions[i] - y[i];
+        for (let j = 0; j < nFeatures; j++) {
+          gradients[j] += error * X[i][j];
+        }
+      }
+      
+      // Average gradients and add L2 penalty gradient
+      for (let j = 0; j < nFeatures; j++) {
+        gradients[j] = gradients[j] / n + 2 * this.lambda * this.theta[j];
+      }
+      
+      // Update weights
+      for (let j = 0; j < nFeatures; j++) {
+        this.theta[j] -= this.learningRate * gradients[j];
+      }
+      
+      // Log progress periodically
+      if (step % 200 === 0 || step === this.numSteps - 1) {
+        const maxTheta = Math.max(...this.theta.map(Math.abs));
+        console.log(`[L2LogReg] Step ${step}: loss=${loss.toFixed(6)}, maxTheta=${maxTheta.toFixed(4)}`);
+      }
+    }
+    
+    console.log(`[L2LogReg] Training complete. Final theta range: [${Math.min(...this.theta).toFixed(4)}, ${Math.max(...this.theta).toFixed(4)}]`);
+  }
+}
+
 export interface TrainingResult {
-  model: LogisticRegression | RFClassifier;
+  model: LogisticRegression | RFClassifier | L2RegularizedLogisticRegression;
   modelType: 'logistic_regression' | 'ensemble';
   featureKeys: string[];
+  featureMeans: number[];
+  featureStds: number[];
   predictions: {
     train: number[];
     test: number[];
@@ -31,6 +142,58 @@ export interface TrainingResult {
     X_test: number[][];
     y_test: number[];
   };
+}
+
+/**
+ * Calculate mean for each column (feature)
+ */
+function calculateColumnMeans(X: number[][]): number[] {
+  const numFeatures = X[0].length;
+  const means: number[] = new Array(numFeatures).fill(0);
+  
+  for (const row of X) {
+    for (let j = 0; j < numFeatures; j++) {
+      means[j] += row[j];
+    }
+  }
+  
+  for (let j = 0; j < numFeatures; j++) {
+    means[j] /= X.length;
+  }
+  
+  return means;
+}
+
+/**
+ * Calculate standard deviation for each column (feature)
+ */
+function calculateColumnStds(X: number[][], means: number[]): number[] {
+  const numFeatures = X[0].length;
+  const stds: number[] = new Array(numFeatures).fill(0);
+  
+  for (const row of X) {
+    for (let j = 0; j < numFeatures; j++) {
+      const diff = row[j] - means[j];
+      stds[j] += diff * diff;
+    }
+  }
+  
+  for (let j = 0; j < numFeatures; j++) {
+    stds[j] = Math.sqrt(stds[j] / X.length);
+    // Prevent division by zero
+    if (stds[j] === 0) stds[j] = 1;
+  }
+  
+  return stds;
+}
+
+/**
+ * Standardize features: (x - mean) / std
+ */
+function standardizeFeatures(X: number[][], means: number[], stds: number[]): number[][] {
+  return X.map(row => 
+    row.map((val, j) => (val - means[j]) / stds[j])
+  );
 }
 
 /**
@@ -57,26 +220,34 @@ export function calculateAccuracy(yTrue: number[], yPred: number[]): number {
 }
 
 /**
- * Train a logistic regression model
+ * Train a logistic regression model with L2 regularization
  */
 export function trainLogisticRegression(
   X_train: number[][],
   y_train: number[],
   X_test: number[][],
-  y_test: number[]
+  y_test: number[],
+  lambda: number = 0.1 // L2 regularization strength
 ): {
-  model: LogisticRegression;
+  model: L2RegularizedLogisticRegression;
   y_pred_train: number[];
   y_pred_test: number[];
   y_prob_train: number[];
   y_prob_test: number[];
 } {
-  const logreg = new LogisticRegression({ numSteps: 1000, learningRate: 5e-3 });
-  const y_train_matrix = Matrix.columnVector(y_train);
-  logreg.train(new Matrix(X_train), y_train_matrix);
+  console.log(`[Trainer] Using L2 regularization with lambda=${lambda}`);
+  
+  // Use our custom L2-regularized logistic regression
+  const logreg = new L2RegularizedLogisticRegression({
+    numSteps: 2000,     // More steps for convergence
+    learningRate: 0.1,  // Higher learning rate with regularization
+    lambda: lambda      // Regularization strength
+  });
+  
+  logreg.train(X_train, y_train);
 
-  const y_prob_train = logreg.predict(new Matrix(X_train));
-  const y_prob_test = logreg.predict(new Matrix(X_test));
+  const y_prob_train = logreg.predict(X_train);
+  const y_prob_test = logreg.predict(X_test);
   const y_pred_train = y_prob_train.map((p: number) => (p >= 0.5 ? 1 : 0));
   const y_pred_test = y_prob_test.map((p: number) => (p >= 0.5 ? 1 : 0));
 
@@ -194,9 +365,19 @@ export function trainModel(
   );
   console.log(`[Trainer] Features: ${featureKeys.length}`);
 
+  // Calculate feature statistics from training data
+  console.log('[Trainer] Calculating feature statistics for standardization...');
+  const featureMeans = calculateColumnMeans(X_train);
+  const featureStds = calculateColumnStds(X_train, featureMeans);
+  
+  // Standardize features
+  console.log('[Trainer] Standardizing features...');
+  const X_train_scaled = standardizeFeatures(X_train, featureMeans, featureStds);
+  const X_test_scaled = standardizeFeatures(X_test, featureMeans, featureStds);
+
   // Train model based on config
   const modelType = config.model || 'logistic_regression';
-  let model: LogisticRegression | RFClassifier;
+  let model: LogisticRegression | RFClassifier | L2RegularizedLogisticRegression;
   let y_pred_train: number[];
   let y_pred_test: number[];
   let y_prob_train: number[];
@@ -205,9 +386,9 @@ export function trainModel(
   if (modelType === 'ensemble') {
     console.log('[Trainer] Training Random Forest ensemble...');
     const result = trainRandomForest(
-      X_train,
+      X_train_scaled,
       y_train,
-      X_test,
+      X_test_scaled,
       y_test,
       featureKeys.length
     );
@@ -217,8 +398,10 @@ export function trainModel(
     y_prob_train = result.y_prob_train;
     y_prob_test = result.y_prob_test;
   } else {
-    console.log('[Trainer] Training Logistic Regression...');
-    const result = trainLogisticRegression(X_train, y_train, X_test, y_test);
+    console.log('[Trainer] Training Logistic Regression with L2 regularization...');
+    // Get regularization strength from config (default 0.1)
+    const lambda = config.regularization?.lambda ?? 0.1;
+    const result = trainLogisticRegression(X_train_scaled, y_train, X_test_scaled, y_test, lambda);
     model = result.model;
     y_pred_train = result.y_pred_train;
     y_pred_test = result.y_pred_test;
@@ -239,6 +422,8 @@ export function trainModel(
     model,
     modelType: modelType as 'logistic_regression' | 'ensemble',
     featureKeys,
+    featureMeans,
+    featureStds,
     predictions: {
       train: y_pred_train,
       test: y_pred_test,

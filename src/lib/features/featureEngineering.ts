@@ -427,30 +427,30 @@ export function extractFeaturesForGame(
     recencyDecay
   );
 
-  // Get most recent rolling stats
-  const homeLatestGameId = homeGameIds[homeGameIds.length - 1];
-  const awayLatestGameId = awayGameIds[awayGameIds.length - 1];
-
-  if (!homeLatestGameId || !awayLatestGameId) {
-    return null; // Not enough data
-  }
+  // Get most recent rolling stats (or use all if not enough games)
+  const homeLatestGameId = homeGameIds.length > 0 ? homeGameIds[homeGameIds.length - 1] : null;
+  const awayLatestGameId = awayGameIds.length > 0 ? awayGameIds[awayGameIds.length - 1] : null;
 
   const features: Record<string, number> = {};
 
-  // Add rolling stat features
+  // Add rolling stat features with fallback to feature means
   for (const stat of enabledRollingFeatures) {
     for (const w of config.rolling_windows) {
       const homeKey = `home_${stat}_avg_${w}`;
       const awayKey = `away_${stat}_avg_${w}`;
 
-      features[homeKey] =
-        homeRolling[homeLatestGameId]?.[`${stat}_avg_${w}`] ??
-        featureMeans[homeKey] ??
-        0;
-      features[awayKey] =
-        awayRolling[awayLatestGameId]?.[`${stat}_avg_${w}`] ??
-        featureMeans[awayKey] ??
-        0;
+      // Use rolling stats if available, otherwise use training means
+      if (homeLatestGameId && homeRolling[homeLatestGameId]) {
+        features[homeKey] = homeRolling[homeLatestGameId][`${stat}_avg_${w}`] ?? featureMeans[homeKey] ?? 0;
+      } else {
+        features[homeKey] = featureMeans[homeKey] ?? 0;
+      }
+
+      if (awayLatestGameId && awayRolling[awayLatestGameId]) {
+        features[awayKey] = awayRolling[awayLatestGameId][`${stat}_avg_${w}`] ?? featureMeans[awayKey] ?? 0;
+      } else {
+        features[awayKey] = featureMeans[awayKey] ?? 0;
+      }
     }
   }
 
