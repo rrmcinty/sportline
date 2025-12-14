@@ -12,6 +12,7 @@ import { extractFeaturesForGame } from '../../lib/features/featureEngineering.js
 import { loadFeatureConfig } from '../../lib/features/featureConfig.js';
 import {
   calculateBettingMetrics,
+  calculateKellyBetSize,
   formatOdds,
   formatPercentage,
   formatCurrency,
@@ -26,6 +27,8 @@ interface RecommendOptions {
   date?: string;
   market: string;
   minBets: string;
+  bankroll?: string;
+  dailyBudget?: string;
 }
 
 export async function recommend(options: RecommendOptions): Promise<void> {
@@ -69,8 +72,9 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   const dbPath = path.join(process.cwd(), 'data', 'sportline.db');
   const db = new DatabaseQueries(dbPath);
 
-  const targetDate =
-    options.date || new Date().toISOString().split('T')[0];
+  // Get today's date in local timezone (not UTC)
+  const today = new Date();
+  const targetDate = options.date || `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const todaysGames = db.getTodaysGames(options.sport, targetDate);
 
   console.log(`✓ Found ${todaysGames.length} scheduled games for ${targetDate}`);
@@ -248,6 +252,11 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   let totalEV = 0;
   const unitSize = 100;
+  const bankroll = parseFloat(options.bankroll || '1000');
+  const dailyBudget = options.dailyBudget ? parseFloat(options.dailyBudget) : null;
+
+  // Store Kelly bet sizes for display
+  const kellyBets: Array<{matchup: string, betSize: number, betPct: number, scaledBet?: number, scaledPct?: number}> = [];
 
   for (let i = 0; i < recommendedBets.length; i++) {
     const rec = recommendedBets[i];
@@ -288,12 +297,22 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     const evValue = rec.recommended_side === 'home' ? rec.ev_home! : rec.ev_away!;
     const evColor = evValue > 0.5 ? chalk.green.bold : evValue > 0.2 ? chalk.green : chalk.yellow;
     const ev = evColor(formatPercentage(evValue, 1).padStart(5));
-    
+
     const edgeValue = rec.recommended_side === 'home' ? rec.edge_home! : rec.edge_away!;
     const edgeColor = edgeValue > 0.15 ? chalk.green : chalk.gray;
     const edge = edgeColor(formatPercentage(edgeValue, 1).padStart(5));
-    
+
     const provider = chalk.gray(rec.provider.substring(0, 10));
+
+    // Calculate Kelly bet size
+    const kellyBetSize = calculateKellyBetSize(probValue, oddsValue, bankroll, 0.25);
+
+    // Store for Kelly display section
+    kellyBets.push({
+      matchup: `${rec.away_team.substring(0, 15)} @ ${rec.home_team.substring(0, 15)}`,
+      betSize: kellyBetSize,
+      betPct: (kellyBetSize / bankroll) * 100
+    });
 
     console.log(
       `${rank} | ${timeStr} | ${matchup} | ${pick} | ${prob} | ${odds} | ${ev} | ${edge} | ${provider}`
@@ -318,8 +337,57 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     chalk.bold('Expected profit: ') + profitColor(formatCurrency(expectedProfit)) + '\n'
   );
 
+  // Display Kelly bet sizing
+  if (kellyBets.length > 0) {
+    if (dailyBudget) {
+      // Scale Kelly bets to fit daily budget
+      const totalKelly = kellyBets.reduce((sum, kelly) => sum + kelly.betSize, 0);
+      const scaleFactor = dailyBudget / totalKelly;
+
+      kellyBets.forEach(kelly => {
+        kelly.scaledBet = kelly.betSize * scaleFactor;
+        kelly.scaledPct = (kelly.scaledBet / dailyBudget) * 100;
+      });
+
+      console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Daily Budget: ${formatCurrency(dailyBudget)})\n`));
+      console.log(chalk.gray('Scaled to fit your daily budget while preserving optimal Kelly ratios\n'));
+
+      console.log(chalk.bold('Rank | Matchup                     | Kelly Bet       | Scaled Bet'));
+      console.log(chalk.gray('-----+----------------------------+-----------------+-----------------'));
+
+      for (let i = 0; i < kellyBets.length; i++) {
+        const kelly = kellyBets[i];
+        const rank = chalk.yellow((i + 1).toString().padStart(4));
+        const matchup = kelly.matchup.padEnd(28);
+        const kellyDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
+        const scaledDisplay = `${formatCurrency(kelly.scaledBet!)} (${kelly.scaledPct!.toFixed(1)}%)`;
+
+        console.log(`${rank} | ${matchup} | ${chalk.blue(kellyDisplay)} | ${chalk.green(scaledDisplay)}`);
+      }
+
+      const totalScaled = kellyBets.reduce((sum, kelly) => sum + (kelly.scaledBet || 0), 0);
+      console.log(chalk.gray(`\nTotal: ${formatCurrency(totalScaled)} (exactly matches your budget)`));
+    } else {
+      // Regular bankroll display
+      console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Bankroll: ${formatCurrency(bankroll)})\n`));
+
+      console.log(chalk.bold('Rank | Matchup                     | Recommended Bet'));
+      console.log(chalk.gray('-----+----------------------------+-----------------'));
+
+      for (let i = 0; i < kellyBets.length; i++) {
+        const kelly = kellyBets[i];
+        const rank = chalk.yellow((i + 1).toString().padStart(4));
+        const matchup = kelly.matchup.padEnd(28);
+        const betDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
+
+        console.log(`${rank} | ${matchup} | ${chalk.green(betDisplay)}`);
+      }
+    }
+    console.log('');
+  }
+
   console.log(chalk.blue.bold('💡 Tips:'));
   console.log(chalk.gray('   - These are recommendations, not guarantees'));
-  console.log(chalk.gray('   - Consider bet sizing using Kelly Criterion'));
+  console.log(chalk.gray('   - Kelly sizing optimizes long-term growth'));
   console.log(chalk.gray('   - Always gamble responsibly\n'));
 }
