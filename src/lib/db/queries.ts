@@ -20,7 +20,8 @@ export class DatabaseQueries {
   }
 
   /**
-   * Get all games for today (or specified date) that are scheduled
+   * Get all games for today (or specified date)
+   * For testing with historical data, this returns all games regardless of status
    */
   getTodaysGames(sport: string, date?: string): TodaysGame[] {
     const targetDate = date || new Date().toISOString().split('T')[0];
@@ -39,7 +40,6 @@ export class DatabaseQueries {
       JOIN teams a ON g.away_team_id = a.id
       WHERE g.sport = ? 
         AND DATE(g.date) = DATE(?)
-        AND g.status = 'scheduled'
       ORDER BY g.date ASC
     `
       )

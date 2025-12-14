@@ -29,22 +29,30 @@ export function saveModel(
 
   if (model.modelType === 'logistic_regression') {
     const logreg = model.model as any;
-    // The theta might already be a 2D array or need conversion
-    let thetaArray;
-    if (logreg.theta && typeof logreg.theta.to2DArray === 'function') {
-      thetaArray = logreg.theta.to2DArray();
-    } else if (Array.isArray(logreg.theta)) {
-      thetaArray = logreg.theta;
+    
+    // ml-logistic-regression stores weights in classifiers[0].weights (Matrix object)
+    let thetaArray: number[][];
+    
+    if (logreg.classifiers && logreg.classifiers[0] && logreg.classifiers[0].weights) {
+      const weights = logreg.classifiers[0].weights;
+      // Convert Matrix to 2D array - weights is 1xN, we need Nx1 for our predictor
+      if (typeof weights.to2DArray === 'function') {
+        const weightsArray = weights.to2DArray()[0]; // Get first row
+        thetaArray = weightsArray.map((w: number) => [w]); // Convert to column vector
+      } else {
+        // Fallback
+        thetaArray = [[0]];
+      }
     } else {
-      // Fallback: extract from object
-      thetaArray = [[0]]; // Placeholder
+      // Fallback
+      thetaArray = [[0]];
     }
     
     modelParams = {
       type: 'logistic_regression',
       theta: thetaArray,
-      learningRate: logreg.options?.learningRate || 5e-3,
-      numSteps: logreg.options?.numSteps || 1000,
+      learningRate: logreg.learningRate || 5e-3,
+      numSteps: logreg.numSteps || 1000,
     };
   } else {
     // For ensemble models, we can't easily serialize the trees

@@ -18,7 +18,14 @@ export function predictLogisticRegression(
   const X = featureKeys.map((k) => features[k] ?? 0);
 
   // Manual logistic regression prediction: sigmoid(X * theta)
-  const z = X.reduce((sum, x, i) => sum + x * theta[i][0], 0);
+  // Handle both theta as 2D array [[val], [val], ...] or [[val, val, ...]]
+  let z = 0;
+  for (let i = 0; i < X.length && i < theta.length; i++) {
+    const thetaValue = Array.isArray(theta[i]) ? theta[i][0] : theta[i];
+    const thetaNum = typeof thetaValue === 'number' ? thetaValue : 0;
+    z += X[i] * thetaNum;
+  }
+  
   const probability = 1 / (1 + Math.exp(-z));
 
   return probability;
