@@ -1,7 +1,11 @@
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Parse season from command line argument, default to 2025
 const sport = "ncaam";
@@ -11,8 +15,9 @@ if (isNaN(season)) {
   console.error("Invalid season argument. Usage: node importNcaamToDb.js [season]");
   process.exit(1);
 }
-const dbPath = path.join(__dirname, "../../..", "data", "sportline.db");
-const dataDir = path.join(__dirname, "../../..", "data", sport, String(season));
+// Use process.cwd() for more reliable path resolution
+const dbPath = path.join(process.cwd(), "data", "sportline.db");
+const dataDir = path.join(process.cwd(), "data", sport, String(season));
 
 const teamsPath = path.join(dataDir, "teams.json");
 const gamesPath = path.join(dataDir, "games.json");

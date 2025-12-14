@@ -48,13 +48,6 @@
         10
     ],
     "allowed_providers": [
-        "DraftKings",
-        "Caesars Sportsbook",
-        "BetfairSportsbook",
-        "MGM",
-        "PointsBet",
-        "Unibet",
-        "SugarHouse",
         "ESPN BET",
         "ESPN Bet - Live Odds"
     ],

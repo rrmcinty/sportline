@@ -4,6 +4,7 @@
 
 import path from 'path';
 import { fileURLToPath } from 'url';
+import chalk from 'chalk';
 import { DatabaseQueries } from '../../lib/db/queries.js';
 import { loadModel, findLatestModel } from '../../lib/model/modelStorage.js';
 import { predict } from '../../lib/model/predictor.js';
@@ -27,7 +28,7 @@ interface RecommendOptions {
 }
 
 export async function recommend(options: RecommendOptions): Promise<void> {
-  console.log('\n🎯 Sportline Betting Recommendations\n');
+  console.log(chalk.cyan.bold('\n🎯 Sportline Betting Recommendations\n'));
 
   // Step 1: Find and load latest model
   console.log('[1/4] Loading trained model...');
@@ -218,10 +219,14 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     day: 'numeric',
   });
 
-  console.log(`📊 ${options.sport.toUpperCase()} Betting Recommendations - ${dateStr}\n`);
-  console.log(`Model: ${model.modelType} (trained ${new Date(model.trainedAt).toLocaleDateString()})`);
-  console.log(`Expected ROI: ${formatPercentage(model.backtestMetrics.roi)}`);
-  console.log(`Thresholds: min_edge=${formatPercentage(model.thresholds.min_edge, 1)}, min_ev=${formatPercentage(model.thresholds.min_ev, 1)}\n`);
+  console.log(chalk.cyan.bold(`📊 ${options.sport.toUpperCase()} Betting Recommendations - ${dateStr}\n`));
+  console.log(chalk.gray(`Model: ${model.modelType} (trained ${new Date(model.trainedAt).toLocaleDateString()})`));
+  
+  const roi = model.backtestMetrics.roi;
+  const roiColor = roi >= 0 ? chalk.green : chalk.red;
+  console.log(chalk.gray('Expected ROI: ') + roiColor(formatPercentage(roi)));
+  
+  console.log(chalk.gray(`Thresholds: min_edge=${formatPercentage(model.thresholds.min_edge, 1)}, min_ev=${formatPercentage(model.thresholds.min_ev, 1)}\n`));
 
   if (recommendedBets.length === 0) {
     console.log('❌ No bets meet the threshold criteria for today.\n');
@@ -232,10 +237,10 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   // Display table
   console.log(
-    'Rank | Time  | Matchup                              | Pick | Prob  | Odds  | EV    | Edge  | Provider'
+    chalk.bold('Rank | Time  | Matchup                                                | Pick                      | Prob  | Odds  | EV    | Edge  | Provider')
   );
   console.log(
-    '-----+-------+--------------------------------------+------+-------+-------+-------+-------+-----------'
+    chalk.gray('-----+-------+--------------------------------------------------------+---------------------------+-------+-------+-------+-------+-----------')
   );
 
   let totalEV = 0;
@@ -243,7 +248,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   for (let i = 0; i < recommendedBets.length; i++) {
     const rec = recommendedBets[i];
-    const rank = (i + 1).toString().padStart(4);
+    const rank = chalk.yellow((i + 1).toString().padStart(4));
 
     // Extract time from date
     const gameTime = new Date(rec.date);
@@ -253,58 +258,65 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       hour12: false,
     });
 
-    // Format matchup
-    const homeTeam = rec.home_team.length > 15 
-      ? rec.home_team.substring(0, 13) + '..' 
-      : rec.home_team.padEnd(15);
-    const awayTeam = rec.away_team.length > 15 
-      ? rec.away_team.substring(0, 13) + '..'
-      : rec.away_team.padEnd(15);
-    const matchup = rec.recommended_side === 'home'
-      ? `${homeTeam} vs ${awayTeam}`
-      : `${awayTeam} @ ${homeTeam}`;
+    // Format matchup - simple, no colors
+    const maxTeamLength = 25;
+    const homeTeam = rec.home_team.length > maxTeamLength 
+      ? rec.home_team.substring(0, maxTeamLength - 2) + '..' 
+      : rec.home_team.padEnd(maxTeamLength);
+    const awayTeam = rec.away_team.length > maxTeamLength 
+      ? rec.away_team.substring(0, maxTeamLength - 2) + '..'
+      : rec.away_team.padEnd(maxTeamLength);
+    
+    const matchup = `${awayTeam} @ ${homeTeam}`;
 
-    const side = rec.recommended_side?.toUpperCase().padEnd(4) || '-';
-    const prob =
-      rec.recommended_side === 'home'
-        ? formatPercentage(rec.model_prob_home, 1).padStart(5)
-        : formatPercentage(rec.model_prob_away, 1).padStart(5);
-    const odds =
-      rec.recommended_side === 'home'
-        ? formatOdds(rec.odds_home!).padStart(5)
-        : formatOdds(rec.odds_away!).padStart(5);
-    const ev =
-      rec.recommended_side === 'home'
-        ? formatPercentage(rec.ev_home!, 1).padStart(5)
-        : formatPercentage(rec.ev_away!, 1).padStart(5);
-    const edge =
-      rec.recommended_side === 'home'
-        ? formatPercentage(rec.edge_home!, 1).padStart(5)
-        : formatPercentage(rec.edge_away!, 1).padStart(5);
-    const provider = rec.provider.substring(0, 10);
+    // Pick column shows actual team name
+    const pickTeam = rec.recommended_side === 'home' ? rec.home_team : rec.away_team;
+    const pickDisplay = pickTeam.length > 25 
+      ? pickTeam.substring(0, 23) + '..'
+      : pickTeam.padEnd(25);
+    const pick = chalk.green.bold(pickDisplay);
+    
+    const probValue = rec.recommended_side === 'home' ? rec.model_prob_home : rec.model_prob_away;
+    const prob = formatPercentage(probValue, 1).padStart(5);
+    
+    const oddsValue = rec.recommended_side === 'home' ? rec.odds_home! : rec.odds_away!;
+    const odds = chalk.cyan(formatOdds(oddsValue).padStart(5));
+    
+    const evValue = rec.recommended_side === 'home' ? rec.ev_home! : rec.ev_away!;
+    const evColor = evValue > 0.5 ? chalk.green.bold : evValue > 0.2 ? chalk.green : chalk.yellow;
+    const ev = evColor(formatPercentage(evValue, 1).padStart(5));
+    
+    const edgeValue = rec.recommended_side === 'home' ? rec.edge_home! : rec.edge_away!;
+    const edgeColor = edgeValue > 0.15 ? chalk.green : chalk.gray;
+    const edge = edgeColor(formatPercentage(edgeValue, 1).padStart(5));
+    
+    const provider = chalk.gray(rec.provider.substring(0, 10));
 
     console.log(
-      `${rank} | ${timeStr} | ${matchup} | ${side} | ${prob} | ${odds} | ${ev} | ${edge} | ${provider}`
+      `${rank} | ${timeStr} | ${matchup} | ${pick} | ${prob} | ${odds} | ${ev} | ${edge} | ${provider}`
     );
 
-    const evValue =
-      rec.recommended_side === 'home' ? rec.ev_home! : rec.ev_away!;
     totalEV += evValue;
   }
 
   console.log(
-    '-----+-------+--------------------------------------+------+-------+-------+-------+-------+-----------'
+    chalk.gray('-----+-------+--------------------------------------------------------+---------------------------+-------+-------+-------+-------+-----------')
   );
 
   const totalStake = recommendedBets.length * unitSize;
   const expectedProfit = totalEV * unitSize;
+  const profitColor = expectedProfit >= 0 ? chalk.green.bold : chalk.red.bold;
 
   console.log(
-    `\nTotal bets: ${recommendedBets.length} | Total stake: ${formatCurrency(totalStake)} | Expected profit: ${formatCurrency(expectedProfit)}\n`
+    chalk.bold(`\nTotal bets: ${recommendedBets.length}`) + 
+    chalk.gray(' | ') +
+    chalk.bold(`Total stake: ${formatCurrency(totalStake)}`) +
+    chalk.gray(' | ') +
+    chalk.bold('Expected profit: ') + profitColor(formatCurrency(expectedProfit)) + '\n'
   );
 
-  console.log('💡 Tips:');
-  console.log('   - These are recommendations, not guarantees');
-  console.log('   - Consider bet sizing using Kelly Criterion');
-  console.log('   - Always gamble responsibly\n');
+  console.log(chalk.blue.bold('💡 Tips:'));
+  console.log(chalk.gray('   - These are recommendations, not guarantees'));
+  console.log(chalk.gray('   - Consider bet sizing using Kelly Criterion'));
+  console.log(chalk.gray('   - Always gamble responsibly\n'));
 }

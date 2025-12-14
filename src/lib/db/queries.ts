@@ -25,20 +25,20 @@ export class DatabaseQueries {
    */
   getTodaysGames(sport: string, date?: string): TodaysGame[] {
     const targetDate = date || new Date().toISOString().split('T')[0];
-    
+
     const games = this.db
       .prepare(
         `
-      SELECT 
+      SELECT
         g.*,
-        h.name as home_team_name,
+        COALESCE(h.display_name, h.name) as home_team_name,
         h.abbreviation as home_team_abbr,
-        a.name as away_team_name,
+        COALESCE(a.display_name, a.name) as away_team_name,
         a.abbreviation as away_team_abbr
       FROM games g
       JOIN teams h ON g.home_team_id = h.id
       JOIN teams a ON g.away_team_id = a.id
-      WHERE g.sport = ? 
+      WHERE g.sport = ?
         AND DATE(g.date) = DATE(?)
       ORDER BY g.date ASC
     `
