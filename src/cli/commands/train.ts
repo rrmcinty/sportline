@@ -37,7 +37,7 @@ export async function train(options: TrainOptions): Promise<void> {
   // Note: Config file is in src/, not dist/, so we need to navigate correctly
   const defaultConfigPath = path.join(
     process.cwd(),
-    'src/train/basketball/ncaam/featuresConfig.json'
+    `src/train/basketball/${options.sport}/featuresConfig.json`
   );
   const configPath = options.config || defaultConfigPath;
 

@@ -59,7 +59,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   console.log('\n[2/4] Loading configuration...');
   const configPath = path.join(
     process.cwd(),
-    'src/train/basketball/ncaam/featuresConfig.json'
+    `src/train/basketball/${options.sport}/featuresConfig.json`
   );
   const config = loadFeatureConfig(configPath);
   console.log('✓ Loaded config with thresholds:');

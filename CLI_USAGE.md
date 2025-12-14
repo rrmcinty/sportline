@@ -6,6 +6,9 @@
 ```bash
 npm install
 npm run build
+
+# Optional: Update game data daily
+npm run update
 ```
 
 ### 2. Train a Model
@@ -51,28 +54,38 @@ Expected output:
 
 ### 3. Get Betting Recommendations
 ```bash
+# Get today's recommendations (defaults to local date)
 node dist/cli/index.js recommend --sport ncaam
-```
 
-Or for a specific date:
-```bash
+# Get recommendations for specific date
 node dist/cli/index.js recommend --sport ncaam --date 2024-03-15
+
+# Include Kelly Criterion bet sizing
+node dist/cli/index.js recommend --sport ncaam --bankroll 1000
+
+# Scale bets to fit daily budget
+node dist/cli/index.js recommend --sport ncaam --daily-budget 50
 ```
 
 Expected output (when games are available):
 ```
-🎯 NCAAM Betting Recommendations - Saturday Dec 13, 2025
+🎯 NCAAM Betting Recommendations - Saturday Dec 14, 2025
 
-Model: Logistic Regression (trained 2025-12-12, ROI: 8.2%)
-Thresholds: min_edge=4.5%, min_ev=1.5%
+Model: Logistic Regression (trained 2025-12-14, ROI: -30.85%)
+Thresholds: min_edge=8.0%, min_ev=1.0%, max_ev=15.0%
 
-Rank | Time  | Matchup                        | Pick | Odds  | EV    | Edge  | Provider
------+-------+--------------------------------+------+-------+-------+-------+-----------
-1    | 12:00 | Duke @ North Carolina          | AWAY | +140  | 8.2%  | 6.1%  | DraftKings
-2    | 15:30 | Kentucky vs Kansas             | HOME | -110  | 5.3%  | 4.8%  | FanDuel
-3    | 19:00 | Gonzaga @ UCLA                 | HOME | +105  | 4.7%  | 4.5%  | BetMGM
+Rank | Time  | Matchup                        | Pick                | Prob | Odds  | EV    | Edge  | Provider
+-----+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------
+1    | 12:00 | Butler Bulldogs @ Xavier       | Butler Bulldogs     | 62.5%| -150  | 12.5% | 10.5% | ESPN BET
+2    | 15:30 | Kentucky @ Kansas              | Kansas Jayhawks     | 58.2%| +140  | 8.2%  | 8.2%  | DraftKings
 
-Total bets: 3 | Total stake: $300 | Expected profit: $18.40
+Kelly Criterion Bet Sizing (Bankroll: $1,000):
+- Butler Bulldogs: $125.00 (12.5% of bankroll)
+- Kansas Jayhawks: $82.00 (8.2% of bankroll)
+
+Daily Budget Scaling ($50 daily limit):
+- Butler Bulldogs: $25.00 (50% of daily budget)
+- Kansas Jayhawks: $25.00 (50% of daily budget)
 ```
 
 ### 4. Run Backtesting Analysis
@@ -96,7 +109,7 @@ node dist/cli/index.js train [options]
 Options:
 - `--sport <sport>`: Sport to train on (default: "ncaam")
 - `--force`: Force retrain even if recent model exists
-- `--config <path>`: Path to custom feature config file
+- `--config <path>`: Path to custom feature config file (defaults to sport-specific config)
 
 ### Recommend Command
 ```bash
@@ -105,9 +118,13 @@ node dist/cli/index.js recommend [options]
 
 Options:
 - `--sport <sport>`: Sport to recommend (default: "ncaam")
-- `--date <date>`: Date in YYYY-MM-DD format (default: today)
+- `--date <date>`: Date in YYYY-MM-DD format (default: today in local timezone)
 - `--market <market>`: Market type (default: "moneyline")
+- `--bankroll <amount>`: Total bankroll for Kelly Criterion bet sizing
+- `--daily-budget <amount>`: Fixed daily spending limit (scales Kelly bets proportionally)
 - `--min-bets <number>`: Minimum recommendations to show (default: "3")
+
+**Note:** Uses sport-specific config file automatically (e.g., `src/train/basketball/nba/featuresConfig.json` for NBA)
 
 ### Backtest Command
 ```bash
@@ -116,7 +133,7 @@ node dist/cli/index.js backtest [options]
 
 Options:
 - `--sport <sport>`: Sport to backtest (default: "ncaam")
-- `--config <path>`: Path to custom feature config file
+- `--config <path>`: Path to custom feature config file (defaults to sport-specific config)
 
 ## Configuration
 
@@ -217,6 +234,61 @@ This is normal for a baseline model. Improve by:
 - Backtest command takes 2-3 minutes (full analysis)
 - Re-train weekly or when significant data changes occur
 
+## Data Ingestion Scripts
+
+### JSON Data Ingestion (Raw Data Collection)
+
+The system includes specialized scripts for collecting raw JSON data from ESPN APIs:
+
+```bash
+# Generic basketball ingestor (supports NCAAM and NBA)
+node src/ingest/ingestBasketballToJson.ts <league> [season]
+
+# Examples:
+npm run ingest:ncaam:json 2025    # College basketball
+npm run ingest:nba:json 2024      # NBA basketball
+
+# Or run directly:
+node src/ingest/ingestBasketballToJson.ts ncaam 2025
+node src/ingest/ingestBasketballToJson.ts nba 2024
+```
+
+**What these scripts collect:**
+- Teams data (rosters, basic info)
+- Game schedules and results
+- Team season statistics
+- Game odds (moneyline, spread, totals)
+- Box score statistics
+
+**Database Schema Notes:**
+- Teams table uses composite primary key `(id, sport)` to allow same team IDs across sports
+- All foreign keys properly reference the composite key
+- Supports multiple sports (NCAAM, NBA, etc.) in the same database
+
+### Database Ingestion (Processed Data)
+
+Import JSON data collected by the ingestor into the SQLite database:
+
+```bash
+# Generic basketball import (supports NCAAM and NBA)
+node src/db/importBasketballToDb.ts <sport> [season]
+
+# Examples:
+npm run import:ncaam:db 2025    # Import NCAAM 2025 data
+npm run import:nba:db 2024      # Import NBA 2024 data
+
+# Full ingestion for all sports
+npm run db:ingest:full
+
+# Individual sport ingestion
+npm run ingest:nba:full    # NBA seasons 2024-2025 (data collection)
+npm run ingest:ncaam:full  # NCAAM seasons 2020-2025
+
+# Database imports
+npm run import:nba:full    # Import ALL NBA seasons (2023-2026) to database
+npm run import:ncaam:db    # Import NCAAM data to database
+```
+
 ## Next Steps
 
 1. **Improve the Model**
@@ -235,6 +307,6 @@ This is normal for a baseline model. Improve by:
    - Track bankroll and bet sizing
 
 4. **Expand**
-   - Add other sports (NBA, NFL, etc.)
+   - ✅ **NBA Support**: Use `ingest:nba:json` and configure NBA features
    - Implement spread and total markets
    - Build web dashboard

@@ -31,7 +31,7 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   // Step 1: Load configuration
   const defaultConfigPath = path.join(
     process.cwd(),
-    'src/train/basketball/ncaam/featuresConfig.json'
+    `src/train/basketball/${options.sport}/featuresConfig.json`
   );
   const configPath = options.config || defaultConfigPath;
 

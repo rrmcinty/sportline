@@ -1,0 +1,77 @@
+{
+    "sport": "nba",
+    "model": "logistic_regression",
+    "market": "moneyline",
+    "seasons": [
+        2019,
+        2020,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+    ],
+    "features": {
+        "fieldGoalsMade": true,
+        "fieldGoalsAttempted": true,
+        "fieldGoalPct": true,
+        "threePointFieldGoalsMade": true,
+        "threePointFieldGoalsAttempted": true,
+        "threePointFieldGoalPct": true,
+        "freeThrowsMade": true,
+        "freeThrowsAttempted": true,
+        "freeThrowPct": true,
+        "totalRebounds": true,
+        "offensiveRebounds": true,
+        "defensiveRebounds": true,
+        "assists": true,
+        "steals": true,
+        "blocks": true,
+        "turnovers": true,
+        "teamTurnovers": true,
+        "totalTurnovers": true,
+        "technicalFouls": true,
+        "totalTechnicalFouls": true,
+        "flagrantFouls": true,
+        "turnoverPoints": true,
+        "fastBreakPoints": true,
+        "pointsInPaint": true,
+        "fouls": true,
+        "largestLead": true,
+        "homeWinRate5": true,
+        "awayWinRate5": true,
+        "homeAvgMargin5": true,
+        "awayAvgMargin5": true,
+        "homeWinRate10": true,
+        "awayWinRate10": true,
+        "homeAvgMargin10": true,
+        "awayAvgMargin10": true,
+        "homeRecentForm": true,
+        "awayRecentForm": true,
+        "homeAdvantage": true,
+        "marketImpliedProb": false
+    },
+    "rolling_windows": [
+        5,
+        10
+    ],
+    "allowed_providers": [
+        "ESPN BET",
+        "ESPN Bet - Live Odds"
+    ],
+    "recency_weighting": {
+        "enabled": true,
+        "decay": 0.5
+    },
+    "regularization": {
+        "lambda": 0.2,
+        "temperature": 0.8
+    },
+    "calibration": {
+        "method": "temperature",
+        "temperature": 0.8
+    },
+    "min_edge": 0.08,
+    "min_ev": 0.01,
+    "max_ev": 0.15
+}

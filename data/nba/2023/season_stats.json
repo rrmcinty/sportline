@@ -1,0 +1,7652 @@
+[
+{
+  "teamId": "1",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 44.378048
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.0227048
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 18.792683
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3639
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3639
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 81.78399658203125
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 35.209999084472656
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 44.609756
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 92.36585
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.756098
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 30.54878
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 18.45122
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 22.560976
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 118.42683
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 11.219512
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 24.987804
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.353659
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 54.76425290107727
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2821494
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.54119354
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 48.297000885009766
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2776
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 5069
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9711
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 920
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2049
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1013
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3658
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7574
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1513
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1850
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 882
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2505
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 35.20958125591278
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 33.853657
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 61.817074
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 33.158535
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.890244
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.0731707
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2719
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 580
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 401
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "30",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 44.536587
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.8394291
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.256098
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3652
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3652
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 74.89600372314453
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 33.00899887084961
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 41.280487
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 90.402435
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.743902
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 32.548782
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.646341
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.560976
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 110.95122
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 10.987804
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.146341
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.670732
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 52.782464027404785
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2273034
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5160529
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 45.66299819946289
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2504
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4744
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9098
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 901
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2062
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1121
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3385
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7413
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1447
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1932
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 881
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2669
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 33.00861716270447
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 30.536585
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 57.853657
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 33.548782
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.1829267
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.731707
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2751
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 634
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 425
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "4",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 42.353657
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.925144
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 18.914635
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3473
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3473
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 80.87200164794922
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.07899856567383
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.536587
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 86.78049
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.414634
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 28.865854
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.634146
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 21.804878
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 113.12195
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 8.463414
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 24.463415
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.707317
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.46430945396423
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3035413
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.55016863
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 49.01599884033203
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2634
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4749
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9276
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 694
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2006
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1042
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3488
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7116
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1446
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1788
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 854
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2367
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.07942461967468
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 32.121952
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 57.914635
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 33.890244
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.52439
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.8536587
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2779
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 644
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 371
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "2",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 45.32927
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.0958772
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 18.804878
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3717
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3717
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 81.1760025024414
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 37.65800094604492
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.19512
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 88.756096
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 16.036585
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 42.585365
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.512196
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 21.573172
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 117.939026
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.707317
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 26.658537
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.719512
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 56.65610432624817
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3287991
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.56574607
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.54100036621094
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2145
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 3786
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9671
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 796
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2186
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1043
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3460
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7278
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1436
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1769
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1315
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 3492
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 37.65750229358673
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 26.158537
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 46.17073
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 35.621952
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.243902
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.3536587
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2921
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 521
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 430
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "17",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 40.512196
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.9801325
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 21.09756
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3322
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3322
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 80.01100158691406
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 37.81999969482422
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 41.451218
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 85.097565
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.780488
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 33.792683
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.670732
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 22.085365
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 113.35366
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 8.219512
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.524391
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.890244
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.883049964904785
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3320435
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5621955
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 48.709999084472656
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2351
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4207
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9295
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 674
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2093
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1057
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3399
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 6978
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1449
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1811
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1048
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2771
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 37.82028257846832
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 28.670732
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 51.30488
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.292683
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 6.1707315
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.134146
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2648
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 585
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 506
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "5",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 41.085365
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.004902
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 19.024391
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3369
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3369
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 78.03700256347656
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.694000244140625
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 41.560974
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 85.17073
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 11.585366
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 31.573172
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.54878
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 22.487804
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 112.256096
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.695122
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 24.939024
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.439024
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.92718720436096
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3180126
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5559851
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 48.797000885009766
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2458
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4395
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9205
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 795
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2045
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1020
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3408
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 6984
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1439
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1844
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 950
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2589
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.69370412826538
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 29.975609
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 53.59756
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 31.390244
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.6829267
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.1463413
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2574
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 586
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 384
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "7",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.012196
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.0881834
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 18.59756
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3527
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3527
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 75.13600158691406
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 37.86600112915039
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 43.585365
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 86.439026
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 11.817073
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 31.207317
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 16.804878
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 22.365854
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 115.79269
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 10.097561
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 28.878048
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.829268
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 57.518213987350464
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.339588
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5725875
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 50.42300033569336
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2605
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4529
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9495
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 828
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2368
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1134
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3574
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7088
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1378
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1834
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 969
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2559
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 37.86635398864746
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 31.768293
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 55.23171
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.914635
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.487805
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.5365853
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2699
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 618
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 368
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "8",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 42.439026
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.5845249
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 22.109756
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3480
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3480
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 77.06600189208984
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 35.125999450683594
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 39.560974
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 87.07317
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 11.390244
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 32.42683
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.792683
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 25.682926
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 110.30488
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 11.170732
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 22.975609
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 14.5
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 51.55099034309387
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2668067
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5197479
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 45.433998107910156
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2310
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4481
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9045
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 916
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1884
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1189
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3244
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7140
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1623
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2106
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 934
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2659
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 35.125985741615295
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 28.170732
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 54.646343
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 31.268293
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 3.7560976
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2564
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 574
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 308
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "6",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 38.80488
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.9644723
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.695122
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3182
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3182
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 75.5469970703125
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 37.06100082397461
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 40.036587
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 84.256096
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 15.195122
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 41
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 18.95122
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 25.085365
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 114.21951
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 7.621951
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 22.926828
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 11.670732
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 57.428812980651855
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3556231
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5653495
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.518001556396484
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2037
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 3547
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9366
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 625
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1880
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 957
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3283
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 6909
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1554
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2057
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1246
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 3362
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 37.06127405166626
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 24.841463
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 43.256096
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 31.182926
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 3.707317
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.268293
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2557
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 514
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 304
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "9",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 44.59756
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.9005439
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 21.414635
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3657
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3657
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 79.39600372314453
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 38.50299835205078
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 43.146343
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 90.15854
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 16.621952
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 43.17073
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 16.024391
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 20.182926
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 118.939026
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 10.536586
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 29.829268
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 15.695122
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 56.44952058792114
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3192209
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5707426
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.85599899291992
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2175
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 3853
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9753
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 864
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2446
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1287
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3538
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7393
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1314
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1655
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1363
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 3540
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 38.50282430648804
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 26.524391
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 46.987804
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 34.060974
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 3.9512196
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.1707315
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2793
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 588
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 324
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "10",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 46.280487
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.4483031
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.475609
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3795
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3795
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 75.40899658203125
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 32.683998107910156
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 40.59756
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 88.85366
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.439024
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 31.939024
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.109756
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 25.341463
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 110.743904
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 13.414634
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 22.378048
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 15.45122
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 52.98907160758972
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2463629
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.51564646
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 45.689998626708984
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2473
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4667
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9081
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 1100
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1835
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1267
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3329
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7286
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1567
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2078
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 856
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2619
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 32.68423080444336
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 30.158537
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 56.914635
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.865852
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.5609756
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.3170733
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2695
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 600
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 374
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "11",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 41.548782
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.9127053
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 21.231707
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3407
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3407
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 78.96099853515625
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.70000076293945
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 89.57317
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 13.560976
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 36.951218
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 18.719513
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.707317
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 116.28049
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 10.146341
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 26.987804
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 14.109756
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 54.04403209686279
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.298162
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.54458815
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 46.888999938964844
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2332
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4315
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9535
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 832
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2213
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1157
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3444
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7345
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1535
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1944
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1112
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 3030
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.6996705532074
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 28.439024
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 52.621952
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 31.40244
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.8292685
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.695122
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2575
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 631
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 478
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "12",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.23171
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.7648649
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 19.487804
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3545
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3545
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 78.13500213623047
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 38.07600021362305
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 41.09756
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 86.097565
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.695122
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 33.341465
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 18.695122
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.926828
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 113.585365
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.792683
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 23.890244
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.536586
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 53.83726358413696
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3192635
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.55106235
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.73400115966797
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2329
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4326
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9314
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 803
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1959
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1110
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3370
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7060
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1533
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1962
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1041
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2734
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 38.07607889175415
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 28.40244
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 52.756096
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 33.439026
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.4390244
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.0731707
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2742
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 580
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 364
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "13",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 45.707317
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.8768116
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 17.878048
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3748
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3748
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 77.49800109863281
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 34.59700012207031
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.878048
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 89
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.792683
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 31.195122
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 20.621952
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 26.609756
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 117.17073
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.97561
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.268293
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.463414
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.506330728530884
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3165251
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5424089
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 48.178001403808594
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2631
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4740
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9608
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 818
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2072
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1104
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3516
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7298
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1691
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2182
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 885
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2558
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 34.5973402261734
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 32.085365
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 57.80488
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 35.73171
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.609756
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.414634
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2930
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 526
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 378
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "29",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 46.621952
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.0141509
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.036585
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3823
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3823
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 73.28600311279297
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 35.090999603271484
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 43.719513
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 92.085365
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.012196
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 34.23171
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.463415
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.829268
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 116.914635
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 12.04878
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 26.036585
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.926829
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 54.806071519851685
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2696332
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5399947
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.47700119018555
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2600
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4744
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9587
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 988
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2135
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1060
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3585
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7551
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1432
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1954
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 985
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2807
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 35.090842843055725
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 31.707317
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 57.853657
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 34.57317
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.768293
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 8.292683
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2835
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 680
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 473
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "14",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 40.59756
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.8672397
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 18.487804
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3329
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3329
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 83.12999725341797
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 34.36199951171875
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 39.207317
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 85.256096
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 11.95122
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 34.780487
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.109756
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 22.987804
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 109.47561
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.707317
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 23.841463
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.768292
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 53.99854779243469
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2840796
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5299671
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 45.987998962402344
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2235
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4139
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 8977
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 796
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1955
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1047
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3215
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 6991
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1567
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1885
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 980
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2852
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 34.36185121536255
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 27.256098
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 50.47561
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 30.890244
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 2.9634147
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.987805
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2533
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 655
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 243
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "18",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 46.59756
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.902834
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.317074
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3821
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3821
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 76.13800048828125
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 35.391998291015625
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 89.36585
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.646341
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 35.73171
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.378048
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 25.45122
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 116.02439
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 12.573171
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 22.926828
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.04878
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 54.72941994667053
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2983079
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5407342
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 46.99800109863281
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2407
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4398
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9514
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 1031
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1880
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 988
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3444
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7328
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1589
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2087
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1037
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2930
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 35.39249002933502
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 29.353659
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 53.634148
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 34.02439
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.1463413
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.4268293
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2790
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 527
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 340
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "16",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 41.890244
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.769802
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 21.560976
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3435
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3435
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 75.54100036621094
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.50699996948242
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.865852
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 87.402435
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.158537
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 33.30488
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.890244
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.682926
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 115.78049
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.134147
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 26.158537
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 14.780488
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 56.762850284576416
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3246826
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5599972
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 49.04399871826172
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2518
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4436
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9494
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 749
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2145
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1212
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3515
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7167
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1467
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1942
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 997
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2731
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.50677502155304
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 30.707317
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 54.09756
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.756096
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.414634
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 8.012196
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2686
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 657
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 444
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "15",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 48.634148
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.8601583
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 18.04878
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3988
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3988
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 74.2509994506836
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.8120002746582
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.73171
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 90.37805
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 14.841463
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 40.317074
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 16.634146
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 22.40244
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 116.939026
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 11.146341
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.792683
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.865853
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.7125449180603
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2938875
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.55491835
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.28099822998047
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2287
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4105
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9589
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 914
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2115
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1137
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3504
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7411
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1364
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1837
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1217
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 3306
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.81185841560364
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 27.890244
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 50.060974
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 37.487804
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.914634
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.3536587
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 3074
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 521
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 403
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "3",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.69512
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.8468233
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.463415
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3583
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3583
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 79.25
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.42599868774414
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.036587
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 87.560974
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.963414
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 30.09756
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.329268
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 24.390244
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 114.36585
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 10.560976
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.878048
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 14.012196
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 54.07470464706421
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3061281
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.542688
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 48.007999420166016
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2548
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4712
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9378
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 866
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2122
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1149
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3447
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7180
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1585
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2000
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 899
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2468
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.426255106925964
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 31.073172
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 57.463413
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 33.134148
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.109756
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 8.304878
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2717
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 681
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 337
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "25",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.646343
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.9589041
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 21
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3579
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3579
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 80.86399841308594
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 35.57400131225586
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 43.085365
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 92.560974
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.134147
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 34.109756
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.170732
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.707317
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 117.47561
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 11.378049
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 24.414635
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.463414
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 52.952224016189575
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2691699
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5310277
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 46.54800033569336
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2538
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4793
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9633
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 933
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2002
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1022
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3533
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7590
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1572
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1944
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 995
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2797
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 35.57382822036743
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 30.95122
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 58.451218
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.26829
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.1585364
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 8.243902
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2646
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 676
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 341
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "21",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 44.243904
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.1184833
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 21.207317
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3628
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3628
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 79.28099822998047
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 37.435001373291016
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.109756
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 90.097565
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.207317
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 32.609756
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.219513
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 21.719513
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 113.64634
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 11.841463
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 27.256098
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.865853
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 52.0152747631073
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2613698
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.53512454
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 46.737998962402344
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2452
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4714
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9319
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 971
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2235
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1055
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3453
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7388
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1412
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1781
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1001
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2674
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 37.43455410003662
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 29.90244
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 57.487804
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.40244
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.268293
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.134146
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2657
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 585
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 432
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "20",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 40.92683
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.9610267
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.426828
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3356
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3356
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 83.52799987792969
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 38.69200134277344
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 40.817074
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 83.78049
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.621951
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 32.621952
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 20.963415
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 25.09756
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 115.21951
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 8.719512
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.158537
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 12.829268
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.113232135772705
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3752548
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5625182
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 48.71900177001953
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2312
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4195
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9448
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 715
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2063
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1052
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3347
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 6870
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1719
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2058
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1035
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2675
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 38.69158923625946
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 28.195122
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 51.158535
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.207317
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.743902
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.743902
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2641
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 635
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 389
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "19",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.243904
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.6179966
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.146341
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3546
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3546
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 78.38999938964844
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 34.61399841308594
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 40.52439
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 86.268295
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.768292
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 31.109756
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.59756
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 25
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 111.414635
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 10.158537
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 23.243902
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 14.365853
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 53.946495056152344
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.29149
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.53216004
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 46.974998474121094
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2440
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4523
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9136
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 833
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1906
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1178
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3323
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7074
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1607
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2050
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 883
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2551
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 34.61387753486633
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 29.756098
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 55.158535
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 33.085365
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.6585364
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7.3536587
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2713
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 603
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 382
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "22",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 40.548782
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.76875
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.036585
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3325
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3325
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 79.61399841308594
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.50199890136719
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 40.451218
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 85.37805
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 12.878049
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 35.280487
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.621952
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 24.646341
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 113.402435
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.439024
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 24.158537
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.658537
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.038946866989136
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3282388
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.54920727
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.37900161743164
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2261
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4108
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9299
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 774
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1981
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1120
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3317
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7001
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1609
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2021
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1056
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2893
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.50190234184265
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 27.573172
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 50.09756
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 31.109756
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 4.585366
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.743902
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2551
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 553
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 376
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "23",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 42.451218
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.0789962
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 19.707317
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3481
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3481
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 79.0270004272461
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 36.862998962402344
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 43.57317
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 88.19512
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 13.756098
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 37.317074
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 19.804878
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 25.060976
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 120.70731
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.536586
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 27.280487
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.121951
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 58.60498547554016
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3686393
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5720409
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 49.404998779296875
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2445
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4172
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9898
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 782
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2237
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1076
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3573
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7232
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1624
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 2055
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1128
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 3060
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 36.86274588108063
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 29.817074
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 50.878048
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 32.914635
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 3.3536584
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 7
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2699
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 574
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 275
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "28",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.02439
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 2.1315217
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.012196
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3528
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3528
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 78.35600280761719
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 33.51100158691406
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 41.878048
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 91.32927
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 10.731708
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 32.02439
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 18.365854
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.439024
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 112.85366
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 12.719512
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 23.914635
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 11.219512
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 52.519023418426514
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.235679
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.517292
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 45.854000091552734
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2554
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4863
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9254
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 1043
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 1961
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 920
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3434
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7489
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1506
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1922
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 880
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2626
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 33.51104259490967
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 31.146341
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 59.30488
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 30.304878
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.1707315
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 9.414634
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2485
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 772
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 424
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "27",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.609756
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.905764
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 18.768293
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3576
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3576
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 78.45500183105469
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 35.5629997253418
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.146343
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 86.902435
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 11.280488
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 31.719513
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 17.585365
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 22.414635
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 113.15854
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 9.426829
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.40244
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 13.329268
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 55.93370199203491
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3021331
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5498877
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 48.49800109863281
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2531
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4525
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9279
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 773
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2083
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1093
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3456
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7126
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1442
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1838
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 925
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2601
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 35.56324541568756
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 30.865854
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 55.182926
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 34.182926
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.1707315
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.8414636
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2803
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 561
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 424
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "26",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 45.878048
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.7422259
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 20.475609
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3762
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3762
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 78.56800079345703
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 35.301998138427734
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 42.5
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 89.81707
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 13.341463
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 37.792683
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 18.731707
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 23.841463
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 117.07317
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 11.804878
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 25.963415
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 14.902439
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 56.047821044921875
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.3034623
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.5474542
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 47.31800079345703
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2391
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4266
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9600
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 968
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2129
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1222
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3485
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7365
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1536
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1955
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 1094
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 3099
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 35.30170917510986
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 29.158537
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 52.02439
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 34.07317
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 5.231707
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.097561
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2794
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 500
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 429
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "24",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "avgRebounds",
+            "abbreviation": "REB",
+            "value": 43.707317
+          },
+          {
+            "name": "assistTurnoverRatio",
+            "abbreviation": "AST/TO",
+            "value": 1.8476821
+          },
+          {
+            "name": "avgFouls",
+            "abbreviation": "PF",
+            "value": 19.878048
+          },
+          {
+            "name": "gamesPlayed",
+            "abbreviation": "GP",
+            "value": 82
+          },
+          {
+            "name": "gamesStarted",
+            "abbreviation": "GS",
+            "value": 0
+          },
+          {
+            "name": "minutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "avgMinutes",
+            "abbreviation": "MIN",
+            "value": 0
+          },
+          {
+            "name": "totalRebounds",
+            "abbreviation": "REB",
+            "value": 3584
+          },
+          {
+            "name": "rebounds",
+            "abbreviation": "REB",
+            "value": 3584
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "freeThrowPct",
+            "abbreviation": "FT%",
+            "value": 74.2959976196289
+          },
+          {
+            "name": "threePointPct",
+            "abbreviation": "3P%",
+            "value": 34.507999420166016
+          },
+          {
+            "name": "avgFieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 43.085365
+          },
+          {
+            "name": "avgFieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 92.597565
+          },
+          {
+            "name": "avgThreePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 11.109756
+          },
+          {
+            "name": "avgThreePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 32.19512
+          },
+          {
+            "name": "avgFreeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 15.756098
+          },
+          {
+            "name": "avgFreeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 21.207317
+          },
+          {
+            "name": "avgPoints",
+            "abbreviation": "PTS",
+            "value": 113.03658
+          },
+          {
+            "name": "avgOffensiveRebounds",
+            "abbreviation": "OR",
+            "value": 11.768292
+          },
+          {
+            "name": "avgAssists",
+            "abbreviation": "AST",
+            "value": 27.219513
+          },
+          {
+            "name": "avgTurnovers",
+            "abbreviation": "TO",
+            "value": 14.731708
+          },
+          {
+            "name": "twoPointFieldGoalPct",
+            "abbreviation": "2P%",
+            "value": 52.93761491775513
+          },
+          {
+            "name": "scoringEfficiency",
+            "abbreviation": "SC-EFF",
+            "value": 1.2207296
+          },
+          {
+            "name": "shootingEfficiency",
+            "abbreviation": "SH-EFF",
+            "value": 0.52528644
+          },
+          {
+            "name": "fieldGoalPct",
+            "abbreviation": "FG%",
+            "value": 46.529998779296875
+          },
+          {
+            "name": "twoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 2622
+          },
+          {
+            "name": "twoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 4953
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 9269
+          },
+          {
+            "name": "offensiveRebounds",
+            "abbreviation": "OR",
+            "value": 965
+          },
+          {
+            "name": "assists",
+            "abbreviation": "AST",
+            "value": 2232
+          },
+          {
+            "name": "turnovers",
+            "abbreviation": "TO",
+            "value": 1208
+          },
+          {
+            "name": "fieldGoalsMade",
+            "abbreviation": "FGM",
+            "value": 3533
+          },
+          {
+            "name": "fieldGoalsAttempted",
+            "abbreviation": "FGA",
+            "value": 7593
+          },
+          {
+            "name": "freeThrowsMade",
+            "abbreviation": "FTM",
+            "value": 1292
+          },
+          {
+            "name": "freeThrowsAttempted",
+            "abbreviation": "FTA",
+            "value": 1739
+          },
+          {
+            "name": "threePointFieldGoalsMade",
+            "abbreviation": "3PM",
+            "value": 911
+          },
+          {
+            "name": "threePointFieldGoalsAttempted",
+            "abbreviation": "3PA",
+            "value": 2640
+          },
+          {
+            "name": "threePointFieldGoalPct",
+            "abbreviation": "3P%",
+            "value": 34.50757563114166
+          },
+          {
+            "name": "avgTwoPointFieldGoalsMade",
+            "abbreviation": "2PM",
+            "value": 31.975609
+          },
+          {
+            "name": "avgTwoPointFieldGoalsAttempted",
+            "abbreviation": "2PA",
+            "value": 60.40244
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgDefensiveRebounds",
+            "abbreviation": "DR",
+            "value": 31.939024
+          },
+          {
+            "name": "avgBlocks",
+            "abbreviation": "BLK",
+            "value": 3.9268293
+          },
+          {
+            "name": "avgSteals",
+            "abbreviation": "STL",
+            "value": 6.97561
+          },
+          {
+            "name": "defensiveRebounds",
+            "abbreviation": "DR",
+            "value": 2619
+          },
+          {
+            "name": "steals",
+            "abbreviation": "STL",
+            "value": 572
+          },
+          {
+            "name": "blocks",
+            "abbreviation": "BLK",
+            "value": 322
+          }
+        ]
+      }
+    ]
+  }
+}
+]

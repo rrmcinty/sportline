@@ -1,6 +1,6 @@
 # Current Project Status
 
-**Last Updated:** December 14, 2025
+**Last Updated:** December 14, 2025 (Latest: Kelly Criterion + Daily Budget + Timezone Fixes)
 
 ## ✅ What's Working
 
@@ -17,10 +17,13 @@
 
 ### Commands Working
 ```bash
-# All commands functional:
-node dist/cli/index.js train --sport ncaam          # ✅ Works
-node dist/cli/index.js recommend --sport ncaam --date YYYY-MM-DD  # ✅ Works
-node dist/cli/index.js backtest --sport ncaam       # ✅ Works
+# All commands functional with latest features:
+node dist/cli/index.js train --sport ncaam                              # ✅ Works (L2 Regularized)
+node dist/cli/index.js recommend --sport ncaam                         # ✅ Works (Defaults to today)
+node dist/cli/index.js recommend --sport ncaam --bankroll 1000         # ✅ Works (Kelly Criterion)
+node dist/cli/index.js recommend --sport ncaam --daily-budget 50       # ✅ Works (Daily Budget)
+node dist/cli/index.js backtest --sport ncaam                          # ✅ Works (Full Analysis)
+npm run update                                                        # ✅ Works (Daily Data Updates)
 ```
 
 ### Training Pipeline

@@ -1,0 +1,212 @@
+[
+  {
+    "teamId": "1",
+    "teamName": "Hawks",
+    "abbreviation": "ATL",
+    "displayName": "Atlanta Hawks",
+    "shortDisplayName": "Hawks"
+  },
+  {
+    "teamId": "2",
+    "teamName": "Celtics",
+    "abbreviation": "BOS",
+    "displayName": "Boston Celtics",
+    "shortDisplayName": "Celtics"
+  },
+  {
+    "teamId": "17",
+    "teamName": "Nets",
+    "abbreviation": "BKN",
+    "displayName": "Brooklyn Nets",
+    "shortDisplayName": "Nets"
+  },
+  {
+    "teamId": "30",
+    "teamName": "Hornets",
+    "abbreviation": "CHA",
+    "displayName": "Charlotte Hornets",
+    "shortDisplayName": "Hornets"
+  },
+  {
+    "teamId": "4",
+    "teamName": "Bulls",
+    "abbreviation": "CHI",
+    "displayName": "Chicago Bulls",
+    "shortDisplayName": "Bulls"
+  },
+  {
+    "teamId": "5",
+    "teamName": "Cavaliers",
+    "abbreviation": "CLE",
+    "displayName": "Cleveland Cavaliers",
+    "shortDisplayName": "Cavaliers"
+  },
+  {
+    "teamId": "6",
+    "teamName": "Mavericks",
+    "abbreviation": "DAL",
+    "displayName": "Dallas Mavericks",
+    "shortDisplayName": "Mavericks"
+  },
+  {
+    "teamId": "7",
+    "teamName": "Nuggets",
+    "abbreviation": "DEN",
+    "displayName": "Denver Nuggets",
+    "shortDisplayName": "Nuggets"
+  },
+  {
+    "teamId": "8",
+    "teamName": "Pistons",
+    "abbreviation": "DET",
+    "displayName": "Detroit Pistons",
+    "shortDisplayName": "Pistons"
+  },
+  {
+    "teamId": "9",
+    "teamName": "Warriors",
+    "abbreviation": "GS",
+    "displayName": "Golden State Warriors",
+    "shortDisplayName": "Warriors"
+  },
+  {
+    "teamId": "10",
+    "teamName": "Rockets",
+    "abbreviation": "HOU",
+    "displayName": "Houston Rockets",
+    "shortDisplayName": "Rockets"
+  },
+  {
+    "teamId": "11",
+    "teamName": "Pacers",
+    "abbreviation": "IND",
+    "displayName": "Indiana Pacers",
+    "shortDisplayName": "Pacers"
+  },
+  {
+    "teamId": "12",
+    "teamName": "Clippers",
+    "abbreviation": "LAC",
+    "displayName": "LA Clippers",
+    "shortDisplayName": "Clippers"
+  },
+  {
+    "teamId": "13",
+    "teamName": "Lakers",
+    "abbreviation": "LAL",
+    "displayName": "Los Angeles Lakers",
+    "shortDisplayName": "Lakers"
+  },
+  {
+    "teamId": "29",
+    "teamName": "Grizzlies",
+    "abbreviation": "MEM",
+    "displayName": "Memphis Grizzlies",
+    "shortDisplayName": "Grizzlies"
+  },
+  {
+    "teamId": "14",
+    "teamName": "Heat",
+    "abbreviation": "MIA",
+    "displayName": "Miami Heat",
+    "shortDisplayName": "Heat"
+  },
+  {
+    "teamId": "15",
+    "teamName": "Bucks",
+    "abbreviation": "MIL",
+    "displayName": "Milwaukee Bucks",
+    "shortDisplayName": "Bucks"
+  },
+  {
+    "teamId": "16",
+    "teamName": "Timberwolves",
+    "abbreviation": "MIN",
+    "displayName": "Minnesota Timberwolves",
+    "shortDisplayName": "Timberwolves"
+  },
+  {
+    "teamId": "3",
+    "teamName": "Pelicans",
+    "abbreviation": "NO",
+    "displayName": "New Orleans Pelicans",
+    "shortDisplayName": "Pelicans"
+  },
+  {
+    "teamId": "18",
+    "teamName": "Knicks",
+    "abbreviation": "NY",
+    "displayName": "New York Knicks",
+    "shortDisplayName": "Knicks"
+  },
+  {
+    "teamId": "25",
+    "teamName": "Thunder",
+    "abbreviation": "OKC",
+    "displayName": "Oklahoma City Thunder",
+    "shortDisplayName": "Thunder"
+  },
+  {
+    "teamId": "19",
+    "teamName": "Magic",
+    "abbreviation": "ORL",
+    "displayName": "Orlando Magic",
+    "shortDisplayName": "Magic"
+  },
+  {
+    "teamId": "20",
+    "teamName": "76ers",
+    "abbreviation": "PHI",
+    "displayName": "Philadelphia 76ers",
+    "shortDisplayName": "76ers"
+  },
+  {
+    "teamId": "21",
+    "teamName": "Suns",
+    "abbreviation": "PHX",
+    "displayName": "Phoenix Suns",
+    "shortDisplayName": "Suns"
+  },
+  {
+    "teamId": "22",
+    "teamName": "Trail Blazers",
+    "abbreviation": "POR",
+    "displayName": "Portland Trail Blazers",
+    "shortDisplayName": "Trail Blazers"
+  },
+  {
+    "teamId": "23",
+    "teamName": "Kings",
+    "abbreviation": "SAC",
+    "displayName": "Sacramento Kings",
+    "shortDisplayName": "Kings"
+  },
+  {
+    "teamId": "24",
+    "teamName": "Spurs",
+    "abbreviation": "SA",
+    "displayName": "San Antonio Spurs",
+    "shortDisplayName": "Spurs"
+  },
+  {
+    "teamId": "28",
+    "teamName": "Raptors",
+    "abbreviation": "TOR",
+    "displayName": "Toronto Raptors",
+    "shortDisplayName": "Raptors"
+  },
+  {
+    "teamId": "26",
+    "teamName": "Jazz",
+    "abbreviation": "UTAH",
+    "displayName": "Utah Jazz",
+    "shortDisplayName": "Jazz"
+  },
+  {
+    "teamId": "27",
+    "teamName": "Wizards",
+    "abbreviation": "WSH",
+    "displayName": "Washington Wizards",
+    "shortDisplayName": "Wizards"
+  }
+]

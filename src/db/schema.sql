@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS season_stats (
   metric_name TEXT NOT NULL,
   metric_abbr TEXT,
   metric_value TEXT,
-  FOREIGN KEY(team_id) REFERENCES teams(id)
+  FOREIGN KEY(team_id, sport) REFERENCES teams(id, sport)
 );
 
 CREATE INDEX IF NOT EXISTS idx_season_stats_team_season ON season_stats(team_id, season);
@@ -20,19 +20,20 @@ CREATE TABLE IF NOT EXISTS game_stats (
   metric_name TEXT NOT NULL,
   metric_value TEXT,
   FOREIGN KEY(game_id) REFERENCES games(id),
-  FOREIGN KEY(team_id) REFERENCES teams(id)
+  FOREIGN KEY(team_id, sport) REFERENCES teams(id, sport)
 );
 
 CREATE INDEX IF NOT EXISTS idx_game_stats_game_team ON game_stats(game_id, team_id);
 -- sportline SQLite schema for modeling pipeline
 
 CREATE TABLE IF NOT EXISTS teams (
-  id TEXT PRIMARY KEY, -- ESPN team id
+  id TEXT NOT NULL, -- ESPN team id
   sport TEXT NOT NULL,
   name TEXT NOT NULL,
   abbreviation TEXT,
   display_name TEXT,
-  short_display_name TEXT
+  short_display_name TEXT,
+  PRIMARY KEY (id, sport)
 );
 
 CREATE TABLE IF NOT EXISTS games (
@@ -46,8 +47,8 @@ CREATE TABLE IF NOT EXISTS games (
   away_score INTEGER,
   venue TEXT,
   status TEXT DEFAULT 'scheduled',
-  FOREIGN KEY(home_team_id) REFERENCES teams(id),
-  FOREIGN KEY(away_team_id) REFERENCES teams(id)
+  FOREIGN KEY(home_team_id, sport) REFERENCES teams(id, sport),
+  FOREIGN KEY(away_team_id, sport) REFERENCES teams(id, sport)
 );
 
 CREATE TABLE IF NOT EXISTS odds (
@@ -72,7 +73,7 @@ CREATE TABLE IF NOT EXISTS team_stats (
   game_date TEXT NOT NULL,
   metric_name TEXT NOT NULL,
   metric_value REAL NOT NULL,
-  FOREIGN KEY(team_id) REFERENCES teams(id)
+  FOREIGN KEY(team_id, sport) REFERENCES teams(id, sport)
 );
 
 CREATE TABLE IF NOT EXISTS features (
