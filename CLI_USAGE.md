@@ -116,15 +116,28 @@ Options:
 node dist/cli/index.js recommend [options]
 ```
 
+**Examples:**
+```bash
+# Get recommendations for ALL sports (NCAAM + NBA)
+node dist/cli/index.js recommend
+
+# Get recommendations for specific sport only
+node dist/cli/index.js recommend --sport ncaam
+node dist/cli/index.js recommend --sport nba
+
+# Get recommendations for specific date
+node dist/cli/index.js recommend --date 2024-12-01
+```
+
 Options:
-- `--sport <sport>`: Sport to recommend (default: "ncaam")
+- `--sport <sport>`: Sport to recommend (ncaam, nba, nfl, etc.) - if not specified, shows ALL sports
 - `--date <date>`: Date in YYYY-MM-DD format (default: today in local timezone)
 - `--market <market>`: Market type (default: "moneyline")
-- `--bankroll <amount>`: Total bankroll for Kelly Criterion bet sizing
+- `--bankroll <amount>`: Total bankroll for Kelly Criterion bet sizing (default: 1000)
 - `--daily-budget <amount>`: Fixed daily spending limit (scales Kelly bets proportionally)
-- `--min-bets <number>`: Minimum recommendations to show (default: "3")
+- `--min-bets <number>`: Minimum recommendations to show (default: 3)
 
-**Note:** Uses sport-specific config file automatically (e.g., `src/train/basketball/nba/featuresConfig.json` for NBA)
+**Note:** Automatically uses sport-specific config files and organizes recommendations by sport.
 
 ### Backtest Command
 ```bash
@@ -285,8 +298,9 @@ npm run ingest:nba:full    # NBA seasons 2024-2025 (data collection)
 npm run ingest:ncaam:full  # NCAAM seasons 2020-2025
 
 # Database imports
-npm run import:nba:full    # Import ALL NBA seasons (2023-2026) to database
-npm run import:ncaam:db    # Import NCAAM data to database
+npm run import:nba:full    # Import ALL NBA seasons (2023-2026) to database ✅
+npm run import:ncaam:db    # Import NCAAM data to database ✅
+npm run import:nba:db      # Import single NBA season to database ✅
 ```
 
 ## Next Steps
