@@ -13,7 +13,8 @@ export function predictLogisticRegression(
   features: Record<string, number>,
   featureKeys: string[],
   theta: number[][],
-  debug: boolean = false
+  debug: boolean = false,
+  temperature: number = 1.0
 ): number {
   // Build feature vector in correct order
   const X = featureKeys.map((k) => features[k] ?? 0);
@@ -52,14 +53,21 @@ export function predictLogisticRegression(
     }
   }
   
-  // With L2 regularization, logit values should be reasonable
-  // Keep a wider safety clip at ±7 which gives [0.09%, 99.91%]
-  const z_clipped = Math.max(-7, Math.min(7, z));
-  
-  if (debug && z_clipped !== z) {
-    console.log(`  Logit clipped: ${z.toFixed(2)} → ${z_clipped.toFixed(2)}`);
+  // Apply temperature scaling to calibrate confidence
+  const z_temp = z / temperature;
+
+  if (debug && temperature !== 1.0) {
+    console.log(`  Temperature scaling: ${z.toFixed(2)} → ${z_temp.toFixed(2)} (T=${temperature})`);
   }
-  
+
+  // With temperature scaling and regularization, logits should be reasonable
+  // Tighter clipping at ±5 which gives [0.7%, 99.3%]
+  const z_clipped = Math.max(-5, Math.min(5, z_temp));
+
+  if (debug && z_clipped !== z_temp) {
+    console.log(`  Logit clipped: ${z_temp.toFixed(2)} → ${z_clipped.toFixed(2)}`);
+  }
+
   const probability = 1 / (1 + Math.exp(-z_clipped));
 
   return probability;
@@ -71,11 +79,12 @@ export function predictLogisticRegression(
 export function predict(
   features: Record<string, number>,
   model: TrainedModel,
-  debug: boolean = false
+  debug: boolean = false,
+  temperature?: number
 ): Prediction {
   // Standardize features using saved parameters
   const scaledFeatures: Record<string, number> = {};
-  
+
   for (const key of model.featureKeys) {
     const mean = model.featureMeans[key] ?? 0;
     const std = model.featureStds[key] ?? 1;
@@ -83,11 +92,14 @@ export function predict(
     scaledFeatures[key] = (rawValue - mean) / std;
   }
 
+  // Get temperature from model config or parameter
+  const temp = temperature ?? (model as any).calibration?.temperature ?? 1.0;
+
   let probHome: number;
 
   if (model.modelType === 'logistic_regression') {
     const theta = (model.modelParams as any).theta;
-    probHome = predictLogisticRegression(scaledFeatures, model.featureKeys, theta, debug);
+    probHome = predictLogisticRegression(scaledFeatures, model.featureKeys, theta, debug, temp);
   } else {
     // For ensemble models, we would need to serialize/deserialize the trees
     // For now, throw an error as RF models need special handling

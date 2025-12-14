@@ -9,6 +9,7 @@ import { DatabaseQueries } from '../../lib/db/queries.js';
 import { loadModel, findLatestModel } from '../../lib/model/modelStorage.js';
 import { predict } from '../../lib/model/predictor.js';
 import { extractFeaturesForGame } from '../../lib/features/featureEngineering.js';
+import { loadFeatureConfig } from '../../lib/features/featureConfig.js';
 import {
   calculateBettingMetrics,
   formatOdds,
@@ -51,8 +52,20 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   const model = loadModel(modelPath);
 
-  // Step 2: Query today's games
-  console.log('\n[2/4] Querying games from database...');
+  // Step 2: Load configuration (same as train command)
+  console.log('\n[2/4] Loading configuration...');
+  const configPath = path.join(
+    process.cwd(),
+    'src/train/basketball/ncaam/featuresConfig.json'
+  );
+  const config = loadFeatureConfig(configPath);
+  console.log('✓ Loaded config with thresholds:');
+  console.log(`  - min_edge: ${formatPercentage(config.min_edge || 0, 1)}`);
+  console.log(`  - min_ev: ${formatPercentage(config.min_ev || 0, 1)}`);
+  console.log(`  - max_ev: ${formatPercentage(config.max_ev || 1.0, 1)}`);
+
+  // Step 3: Query today's games
+  console.log('\n[3/4] Querying games from database...');
   const dbPath = path.join(process.cwd(), 'data', 'sportline.db');
   const db = new DatabaseQueries(dbPath);
 
@@ -71,22 +84,8 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     return;
   }
 
-  // Step 3: Generate predictions and recommendations
-  console.log('\n[3/4] Generating predictions...');
-
-  // Reconstruct config from model
-  const config: FeatureConfig = {
-    sport: model.sport,
-    model: model.modelType,
-    market: model.market,
-    seasons: model.seasons,
-    features: model.features,
-    rolling_windows: model.rollingWindows,
-    allowed_providers: [], // Will use odds from DB
-    recency_weighting: model.recencyWeighting,
-    min_edge: model.thresholds.min_edge,
-    min_ev: model.thresholds.min_ev,
-  };
+  // Step 4: Generate predictions and recommendations
+  console.log('\n[4/4] Generating predictions...');
 
   // Get all historical games for feature extraction
   const allGames = db.getHistoricalGames(options.sport, model.seasons);
@@ -112,9 +111,10 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
       // Get prediction - pass debug flag for second game
       const shouldDebug = recommendations.length === 1; // Debug second game
+      const temperature = config.calibration?.temperature ?? config.regularization?.temperature ?? 1.0;
       const prediction = shouldDebug
-        ? predict(features, model, true)
-        : predict(features, model);
+        ? predict(features, model, true, temperature)
+        : predict(features, model, false, temperature);
       
       // Debug: Log predictions that are extreme
       if (recommendations.length < 3) {
@@ -143,6 +143,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       if (
         metrics.ev_home !== null &&
         metrics.ev_home > model.thresholds.min_ev &&
+        metrics.ev_home <= (config.max_ev || 1.0) && // Add max EV filter
         metrics.edge_home !== null &&
         metrics.edge_home > model.thresholds.min_edge
       ) {
@@ -159,6 +160,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
         !recommendedSide &&
         metrics.ev_away !== null &&
         metrics.ev_away > model.thresholds.min_ev &&
+        metrics.ev_away <= (config.max_ev || 1.0) && // Add max EV filter
         metrics.edge_away !== null &&
         metrics.edge_away > model.thresholds.min_edge
       ) {
@@ -193,8 +195,8 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     console.log(`⚠️  ${gamesWithoutFeatures} games skipped due to insufficient historical data`);
   }
 
-  // Step 4: Display recommendations
-  console.log('\n[4/4] Ranking recommendations...\n');
+  // Step 5: Display recommendations
+  console.log('\n[5/5] Ranking recommendations...\n');
 
   // Filter to only recommended bets
   const recommendedBets = recommendations.filter(
@@ -210,8 +212,9 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     return bEV - aEV;
   });
 
-  // Display header
-  const dateObj = new Date(targetDate);
+  // Display header - ensure consistent date interpretation
+  // Force UTC interpretation to avoid timezone shifts
+  const dateObj = new Date(targetDate + 'T12:00:00Z');
   const dateStr = dateObj.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -226,7 +229,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   const roiColor = roi >= 0 ? chalk.green : chalk.red;
   console.log(chalk.gray('Expected ROI: ') + roiColor(formatPercentage(roi)));
   
-  console.log(chalk.gray(`Thresholds: min_edge=${formatPercentage(model.thresholds.min_edge, 1)}, min_ev=${formatPercentage(model.thresholds.min_ev, 1)}\n`));
+  console.log(chalk.gray(`Thresholds: min_edge=${formatPercentage(model.thresholds.min_edge, 1)}, min_ev=${formatPercentage(model.thresholds.min_ev, 1)}, max_ev=${formatPercentage(config.max_ev || 1.0, 1)}\n`));
 
   if (recommendedBets.length === 0) {
     console.log('❌ No bets meet the threshold criteria for today.\n');

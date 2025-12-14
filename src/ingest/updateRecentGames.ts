@@ -54,8 +54,8 @@ async function updateRecentGames(
     SELECT id, date, status, home_team_id, away_team_id, home_score, away_score
     FROM games
     WHERE sport = 'ncaam'
-      AND DATE(date) >= DATE(?)
-      AND DATE(date) <= DATE(?)
+      AND DATE(DATETIME(date, '-5 hours')) >= DATE(?)
+      AND DATE(DATETIME(date, '-5 hours')) <= DATE(?)
       AND (status IN ('scheduled', 'in') OR (status = 'post' AND home_score IS NULL))
     ORDER BY date ASC
   `

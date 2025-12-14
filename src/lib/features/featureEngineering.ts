@@ -134,6 +134,35 @@ export function computeAvgMargin(
 }
 
 /**
+ * Compute recent form (win rate in last 3 games)
+ */
+export function computeRecentForm(
+  teamId: string,
+  gameId: string,
+  games: Game[]
+): number {
+  const gamesForTeam = games
+    .filter(
+      (g) =>
+        (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId
+    )
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-3); // Last 3 games
+
+  if (!gamesForTeam.length) return 0;
+
+  let wins = 0;
+  for (const g of gamesForTeam) {
+    const isHome = g.home_team_id === teamId;
+    if (g.home_score == null || g.away_score == null) continue;
+    if (isHome && g.home_score > g.away_score) wins++;
+    if (!isHome && g.away_score > g.home_score) wins++;
+  }
+
+  return wins / gamesForTeam.length;
+}
+
+/**
  * Compute all fixed features for a game
  */
 export function computeFixedFeatures(
@@ -152,6 +181,10 @@ export function computeFixedFeatures(
     awayAvgMargin5: computeAvgMargin(awayId, gameId, 5, games),
     homeWinRate10: computeWinRate(homeId, gameId, 10, games),
     awayWinRate10: computeWinRate(awayId, gameId, 10, games),
+    homeAvgMargin10: computeAvgMargin(homeId, gameId, 10, games),
+    awayAvgMargin10: computeAvgMargin(awayId, gameId, 10, games),
+    homeRecentForm: computeRecentForm(homeId, gameId, games),
+    awayRecentForm: computeRecentForm(awayId, gameId, games),
     homeAdvantage: 0, // Will be set below
     marketImpliedProb: marketImpliedProbVal ?? 0,
   };
@@ -314,15 +347,10 @@ export function extractFeaturesForDataset(
     fixedFeatureValues.homeAdvantage =
       fixedFeatureValues.homeWinRate5 - fixedFeatureValues.awayWinRate5;
 
-    // Check if marketImpliedProb is required but missing
-    if (
-      isFeatureEnabled(config, 'marketImpliedProb') &&
-      fixedFeatureValues.marketImpliedProb === 0
-    ) {
-      continue; // Skip this game
-    }
+    // Note: marketImpliedProb will be imputed later if missing
+    // No longer skipping games with missing odds to ensure consistent training/prediction
 
-    // Only add enabled fixed features
+    // Only add enabled fixed features (imputation will happen later)
     for (const [key, value] of Object.entries(fixedFeatureValues)) {
       if (isFeatureEnabled(config, key)) {
         features[key] = value;
@@ -348,6 +376,24 @@ export function extractFeaturesForDataset(
 
     rowIdx++;
   }
+
+  // Apply imputation to handle missing values consistently
+  console.log('[FeatureEngineering] Applying imputation for missing values...');
+  let imputedCount = 0;
+
+  for (const gameFeatures of dataset) {
+    for (const [key, value] of Object.entries(gameFeatures.features)) {
+      if (value === null || value === undefined ||
+          (key === 'marketImpliedProb' && value === 0)) {
+        // Use training set mean for imputation
+        const imputedValue = featureMeans[key] ?? (key === 'marketImpliedProb' ? 0.5 : 0);
+        gameFeatures.features[key] = imputedValue;
+        imputedCount++;
+      }
+    }
+  }
+
+  console.log(`[FeatureEngineering] Imputed ${imputedCount} missing values across ${dataset.length} games`);
 
   return {
     dataset,
@@ -469,7 +515,13 @@ export function extractFeaturesForGame(
 
   for (const [key, value] of Object.entries(fixedFeatureValues)) {
     if (isFeatureEnabled(config, key)) {
-      features[key] = value;
+      // Apply same imputation logic as training
+      if (value === null || value === undefined ||
+          (key === 'marketImpliedProb' && value === 0)) {
+        features[key] = featureMeans[key] ?? (key === 'marketImpliedProb' ? 0.5 : 0);
+      } else {
+        features[key] = value;
+      }
     }
   }
 

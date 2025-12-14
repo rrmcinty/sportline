@@ -39,7 +39,7 @@ export class DatabaseQueries {
       JOIN teams h ON g.home_team_id = h.id
       JOIN teams a ON g.away_team_id = a.id
       WHERE g.sport = ?
-        AND DATE(g.date) = DATE(?)
+        AND DATE(DATETIME(g.date, '-5 hours')) = DATE(?)
       ORDER BY g.date ASC
     `
       )
