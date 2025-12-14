@@ -1,0 +1,102 @@
+CREATE TABLE IF NOT EXISTS season_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  team_id TEXT NOT NULL,
+  sport TEXT NOT NULL,
+  season INTEGER NOT NULL,
+  category TEXT NOT NULL,
+  metric_name TEXT NOT NULL,
+  metric_abbr TEXT,
+  metric_value TEXT,
+  FOREIGN KEY(team_id) REFERENCES teams(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_season_stats_team_season ON season_stats(team_id, season);
+CREATE TABLE IF NOT EXISTS game_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  game_id TEXT NOT NULL, -- ESPN event id
+  team_id TEXT NOT NULL, -- ESPN team id
+  sport TEXT NOT NULL,
+  season INTEGER NOT NULL,
+  metric_name TEXT NOT NULL,
+  metric_value TEXT,
+  FOREIGN KEY(game_id) REFERENCES games(id),
+  FOREIGN KEY(team_id) REFERENCES teams(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_game_stats_game_team ON game_stats(game_id, team_id);
+-- sportline SQLite schema for modeling pipeline
+
+CREATE TABLE IF NOT EXISTS teams (
+  id TEXT PRIMARY KEY, -- ESPN team id
+  sport TEXT NOT NULL,
+  name TEXT NOT NULL,
+  abbreviation TEXT,
+  display_name TEXT,
+  short_display_name TEXT
+);
+
+CREATE TABLE IF NOT EXISTS games (
+  id TEXT PRIMARY KEY, -- ESPN event id
+  sport TEXT NOT NULL,
+  date TEXT NOT NULL,
+  season INTEGER NOT NULL,
+  home_team_id TEXT NOT NULL, -- ESPN team id
+  away_team_id TEXT NOT NULL, -- ESPN team id
+  home_score INTEGER,
+  away_score INTEGER,
+  venue TEXT,
+  status TEXT DEFAULT 'scheduled',
+  FOREIGN KEY(home_team_id) REFERENCES teams(id),
+  FOREIGN KEY(away_team_id) REFERENCES teams(id)
+);
+
+CREATE TABLE IF NOT EXISTS odds (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  game_id TEXT NOT NULL, -- ESPN event id
+  provider TEXT NOT NULL,
+  market TEXT NOT NULL,
+  line REAL,
+  price_home INTEGER,
+  price_away INTEGER,
+  price_over INTEGER,
+  price_under INTEGER,
+  timestamp TEXT NOT NULL,
+  FOREIGN KEY(game_id) REFERENCES games(id)
+);
+
+CREATE TABLE IF NOT EXISTS team_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  team_id TEXT NOT NULL, -- ESPN team id
+  sport TEXT NOT NULL,
+  season INTEGER NOT NULL,
+  game_date TEXT NOT NULL,
+  metric_name TEXT NOT NULL,
+  metric_value REAL NOT NULL,
+  FOREIGN KEY(team_id) REFERENCES teams(id)
+);
+
+CREATE TABLE IF NOT EXISTS features (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  game_id TEXT NOT NULL, -- ESPN event id
+  market TEXT NOT NULL,
+  feature_name TEXT NOT NULL,
+  value REAL NOT NULL,
+  FOREIGN KEY(game_id) REFERENCES games(id)
+);
+
+CREATE TABLE IF NOT EXISTS model_runs (
+  run_id TEXT PRIMARY KEY,
+  sport TEXT NOT NULL,
+  season INTEGER NOT NULL,
+  config_json TEXT NOT NULL,
+  started_at TEXT NOT NULL,
+  finished_at TEXT,
+  metrics_json TEXT,
+  artifacts_path TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_games_date ON games(date);
+CREATE INDEX IF NOT EXISTS idx_games_season ON games(season);
+CREATE INDEX IF NOT EXISTS idx_odds_game ON odds(game_id);
+CREATE INDEX IF NOT EXISTS idx_team_stats_team_season ON team_stats(team_id, season);
+CREATE INDEX IF NOT EXISTS idx_features_game ON features(game_id);
