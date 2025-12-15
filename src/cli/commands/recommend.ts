@@ -29,6 +29,7 @@ interface RecommendOptions {
   minBets: string;
   bankroll?: string;
   dailyBudget?: string;
+  all?: boolean; // New flag to show all games
 }
 
 // Helper function to get recommendations for a specific sport
@@ -161,8 +162,8 @@ async function getRecommendationsForSport(
 
       recommendation.recommended_side = recommendedSide;
 
-      // Only include recommendations that meet thresholds
-      if (recommendedSide) {
+      // Only include recommendations that meet thresholds, or if --all flag is set
+      if (recommendedSide || options.all) {
         recommendations.push(recommendation);
       }
     } catch (error) {
