@@ -11,22 +11,26 @@ const dbPath = path.join(process.cwd(), "data", "sportline.db");
 const db = new Database(dbPath);
 
 // ESPN API endpoints
-const ODDS_API = (eventId: string) =>
-  `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/events/${eventId}/competitions/${eventId}/odds`;
+const ODDS_API = (eventId: string, sport: string) => {
+  const league = sport === 'ncaam' ? 'mens-college-basketball' : 'nba';
+  return `https://sports.core.api.espn.com/v2/sports/basketball/leagues/${league}/events/${eventId}/competitions/${eventId}/odds`;
+};
 
-const GAME_SUMMARY_API = (eventId: string) =>
-  `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/summary?event=${eventId}`;
+const GAME_SUMMARY_API = (eventId: string, sport: string) => {
+  const league = sport === 'ncaam' ? 'mens-college-basketball' : 'nba';
+  return `https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/summary?event=${eventId}`;
+};
 
-async function fetchGameOdds(eventId: string) {
-  const url = ODDS_API(eventId);
+async function fetchGameOdds(eventId: string, sport: string) {
+  const url = ODDS_API(eventId, sport);
   const res = await fetch(url);
   if (!res.ok) return null;
   const data = (await res.json()) as any;
   return Array.isArray(data.items) ? data.items : [];
 }
 
-async function fetchGameSummary(eventId: string) {
-  const url = GAME_SUMMARY_API(eventId);
+async function fetchGameSummary(eventId: string, sport: string) {
+  const url = GAME_SUMMARY_API(eventId, sport);
   const res = await fetch(url);
   if (!res.ok) return null;
   return (await res.json()) as any;
@@ -51,12 +55,12 @@ async function updateRecentGames(
   const gamesToUpdate = db
     .prepare(
       `
-    SELECT id, date, status, home_team_id, away_team_id, home_score, away_score
+    SELECT id, date, status, home_team_id, away_team_id, home_score, away_score, sport
     FROM games
-    WHERE sport = 'ncaam'
+    WHERE sport IN ('ncaam', 'nba')
       AND DATE(DATETIME(date, '-5 hours')) >= DATE(?)
       AND DATE(DATETIME(date, '-5 hours')) <= DATE(?)
-      AND (status IN ('scheduled', 'in') OR (status = 'post' AND home_score IS NULL))
+      AND (status IN ('pre', 'scheduled', 'in') OR (status = 'post' AND home_score IS NULL))
     ORDER BY date ASC
   `
     )
@@ -91,8 +95,8 @@ async function updateRecentGames(
     try {
       // Fetch game summary (has both odds and current status/score)
       const [summary, oddsData] = await Promise.all([
-        fetchGameSummary(game.id),
-        fetchGameOdds(game.id),
+        fetchGameSummary(game.id, game.sport),
+        fetchGameOdds(game.id, game.sport),
       ]);
 
       // Update game status and scores if available
@@ -144,10 +148,11 @@ async function updateRecentGames(
               if (!existing) {
                 db.prepare(
                   `INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value)
-                   VALUES (?, ?, 'ncaam', ?, ?, ?)`
+                   VALUES (?, ?, ?, ?, ?, ?)`
                 ).run(
                   game.id,
                   teamId,
+                  game.sport,
                   new Date(game.date).getFullYear(),
                   stat.name,
                   stat.displayValue || stat.value
@@ -179,7 +184,7 @@ async function updateRecentGames(
             // Insert new odds
             db.prepare(
               `INSERT INTO odds (game_id, provider, market, price_home, price_away, timestamp)
-               VALUES (?, ?, 'moneyline', ?, ?, ?)`
+               VALUES (?, ?, ?, ?, ?, ?)`
             ).run(
               game.id,
               provider,
@@ -199,7 +204,7 @@ async function updateRecentGames(
 
             db.prepare(
               `INSERT INTO odds (game_id, provider, market, line, price_home, price_away, timestamp)
-               VALUES (?, ?, 'spread', ?, ?, ?, ?)`
+               VALUES (?, ?, ?, ?, ?, ?, ?)`
             ).run(
               game.id,
               provider,
@@ -219,7 +224,7 @@ async function updateRecentGames(
 
             db.prepare(
               `INSERT INTO odds (game_id, provider, market, line, price_over, price_under, timestamp)
-               VALUES (?, ?, 'total', ?, ?, ?, ?)`
+               VALUES (?, ?, ?, ?, ?, ?, ?)`
             ).run(
               game.id,
               provider,

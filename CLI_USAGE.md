@@ -7,8 +7,11 @@
 npm install
 npm run build
 
+# Or do everything in one command:
+npm run all
+
 # Optional: Update game data daily
-npm run update
+npm run update:odds
 ```
 
 ### 2. Train a Model
@@ -88,7 +91,26 @@ Daily Budget Scaling ($50 daily limit):
 - Kansas Jayhawks: $25.00 (50% of daily budget)
 ```
 
-### 4. Run Backtesting Analysis
+### 4. Update Game Data and Odds
+```bash
+# Update odds and game data for upcoming games
+node dist/cli/index.js update
+
+# Update with custom time window
+node dist/cli/index.js update --days-back 1 --days-forward 7
+```
+
+This command:
+- Fetches fresh odds from ESPN APIs for upcoming games
+- Updates game statuses and scores for completed games
+- Stores box score statistics for finished games
+- Works for both NCAAM and NBA sports
+
+**Options:**
+- `--days-back <number>`: Days to look back for completed games (default: 1)
+- `--days-forward <number>`: Days to look forward for upcoming games (default: 7)
+
+### 5. Run Backtesting Analysis
 ```bash
 node dist/cli/index.js backtest --sport ncaam
 ```
@@ -110,6 +132,17 @@ Options:
 - `--sport <sport>`: Sport to train on (default: "ncaam")
 - `--force`: Force retrain even if recent model exists
 - `--config <path>`: Path to custom feature config file (defaults to sport-specific config)
+
+### Update Command
+```bash
+node dist/cli/index.js update [options]
+```
+
+Update odds and game data for upcoming games. Run this daily to keep data fresh.
+
+**Options:**
+- `--days-back <number>`: Days to look back for completed games (default: 1)
+- `--days-forward <number>`: Days to look forward for upcoming games (default: 7)
 
 ### Recommend Command
 ```bash

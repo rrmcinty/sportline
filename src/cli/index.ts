@@ -9,6 +9,7 @@ import { Command } from 'commander';
 import { train } from './commands/train.js';
 import { recommend } from './commands/recommend.js';
 import { backtest } from './commands/backtest.js';
+import { update } from './commands/update.js';
 
 const program = new Command();
 
@@ -61,6 +62,20 @@ program
       await backtest(options);
     } catch (error) {
       console.error('Error during backtesting:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('update')
+  .description('Update odds and game data for upcoming games')
+  .option('--days-back <number>', 'Days to look back for completed games', '1')
+  .option('--days-forward <number>', 'Days to look forward for upcoming games', '7')
+  .action(async (options) => {
+    try {
+      await update(options);
+    } catch (error) {
+      console.error('Error during update:', error);
       process.exit(1);
     }
   });

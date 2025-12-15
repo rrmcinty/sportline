@@ -257,7 +257,7 @@ function displayUnifiedRecommendations(
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations Across All Sports\n'));
 
-  console.log(chalk.bold('Rank | Sport | Time  | Matchup                        | Pick                | Prob | Odds  | EV    | Edge  | Provider'));
+  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.white.bold('Time')}  | ${chalk.gray.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Provider')}`);
   console.log(chalk.gray('-----+-------+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------'));
 
   for (let i = 0; i < allRecommendations.length; i++) {
@@ -335,7 +335,7 @@ function displayUnifiedRecommendations(
 
       console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Daily Budget: ${formatCurrency(dailyBudget)})\n`));
 
-      console.log(chalk.bold('Rank | Sport | Matchup                     | Raw Kelly Bet | Scaled Bet'));
+      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Matchup')}                     | ${chalk.blue.bold('Raw Kelly Bet')} | ${chalk.green.bold('Scaled Bet')}`);
       console.log(chalk.gray('-----+-------+--------------------------------+---------------+-----------------'));
 
       for (let i = 0; i < kellyBets.length; i++) {
@@ -355,7 +355,7 @@ function displayUnifiedRecommendations(
       // Regular bankroll display
       console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Bankroll: ${formatCurrency(bankroll!)})\n`));
 
-      console.log(chalk.bold('Rank | Sport | Matchup                     | Recommended Bet'));
+      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Matchup')}                     | ${chalk.green.bold('Recommended Bet')}`);
       console.log(chalk.gray('-----+-------+--------------------------------+-----------------'));
 
       for (let i = 0; i < kellyBets.length; i++) {
@@ -395,7 +395,7 @@ function displayRecommendations(sport: string, recommendations: Recommendation[]
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations\n'));
 
-  console.log(chalk.bold('Rank | Time  | Matchup                        | Pick                | Prob | Odds  | EV    | Edge  | Provider'));
+  console.log(`${chalk.bold('Rank')} | ${chalk.white.bold('Time')}  | ${chalk.gray.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Provider')}`);
   console.log(chalk.gray('-----+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------'));
 
   for (let i = 0; i < recommendations.length; i++) {
