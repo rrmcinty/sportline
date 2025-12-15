@@ -1,15 +1,11 @@
 {
     "sport": "nba",
-    "model": "logistic_regression",
+    "model": "ensemble",
     "market": "moneyline",
     "seasons": [
-        2019,
-        2020,
-        2022,
         2023,
         2024,
-        2025,
-        2026
+        2025
     ],
     "features": {
         "fieldGoalsMade": true,
@@ -49,7 +45,23 @@
         "homeRecentForm": true,
         "awayRecentForm": true,
         "homeAdvantage": true,
-        "marketImpliedProb": false
+        "marketImpliedProb": false,
+        "effectiveFgPct": true,
+        "trueShootingPct": true,
+        "assistRatio": true,
+        "turnoverRatio": true,
+        "offensiveReboundPct": true,
+        "defensiveReboundPct": true,
+        "pace": true,
+        "momentum": true,
+        "consistency": true,
+        "winStreak": true,
+        "restDays": true,
+        "headToHeadWins": true,
+        "headToHeadGames": true,
+        "headToHeadWinRate": true,
+        "offensiveRating": true,
+        "defensiveRating": true
     },
     "rolling_windows": [
         5,
@@ -68,7 +80,7 @@
         "temperature": 0.8
     },
     "calibration": {
-        "method": "temperature",
+        "method": "isotonic",
         "temperature": 0.8
     },
     "min_edge": 0.08,

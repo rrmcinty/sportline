@@ -177,6 +177,144 @@ export function calculateSimpleFormIndicators(
 }
 
 /**
+ * Compute win streak for a team leading up to a game
+ */
+export function computeWinStreak(teamId: string, gameId: string, games: Game[]): number {
+  const sortedGames = games
+    .filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id !== gameId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  let streak = 0;
+  for (const game of sortedGames) {
+    const isHome = game.home_team_id === teamId;
+    const teamScore = isHome ? game.home_score : game.away_score;
+    const oppScore = isHome ? game.away_score : game.home_score;
+
+    if (teamScore !== null && oppScore !== null) {
+      if (teamScore > oppScore) {
+        streak++; // Win, continue streak
+      } else {
+        break; // Loss, end streak
+      }
+    } else {
+      break; // Incomplete game, end streak
+    }
+
+    if (streak >= 10) break; // Cap at reasonable maximum
+  }
+
+  return streak;
+}
+
+/**
+ * Compute rest days for a team before a game
+ */
+export function computeRestDays(teamId: string, gameId: string, games: Game[]): number {
+  const sortedGames = games
+    .filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id !== gameId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  if (sortedGames.length === 0) return 7; // Default for teams with no recent games
+
+  const currentGame = games.find(g => g.id === gameId);
+  if (!currentGame) return 7;
+
+  const lastGameDate = new Date(sortedGames[0].date);
+  const currentGameDate = new Date(currentGame.date);
+
+  const daysDiff = Math.floor((currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24));
+  return Math.max(0, daysDiff);
+}
+
+/**
+ * Compute head-to-head record between two teams
+ */
+export function computeHeadToHead(homeId: string, awayId: string, gameId: string, games: Game[]): { wins: number; games: number } {
+  const h2hGames = games.filter(g =>
+    g.id !== gameId &&
+    ((g.home_team_id === homeId && g.away_team_id === awayId) ||
+     (g.home_team_id === awayId && g.away_team_id === homeId))
+  );
+
+  let homeWins = 0;
+  for (const game of h2hGames) {
+    if (game.home_score !== null && game.away_score !== null) {
+      if (game.home_score > game.away_score) {
+        if (game.home_team_id === homeId) {
+          homeWins++; // Home team won
+        }
+      } else {
+        if (game.away_team_id === homeId) {
+          homeWins++; // Away team (which is home in this context) won
+        }
+      }
+    }
+  }
+
+  return {
+    wins: homeWins,
+    games: h2hGames.length
+  };
+}
+
+/**
+ * Compute simplified offensive and defensive ratings
+ * ORtg = Points per 100 possessions
+ * DRtg = Opponent points per 100 possessions
+ */
+export function computeOffensiveDefensiveRatings(
+  homeId: string,
+  awayId: string,
+  gameId: string,
+  games: Game[],
+  db: DatabaseQueries
+): { homeORtg: number; homeDRtg: number; awayORtg: number; awayDRtg: number } {
+  // Get game scores
+  const game = games.find(g => g.id === gameId);
+  if (!game || game.home_score === null || game.away_score === null) {
+    return { homeORtg: 100, homeDRtg: 100, awayORtg: 100, awayDRtg: 100 }; // Default values
+  }
+
+  const homePoints = game.home_score;
+  const awayPoints = game.away_score;
+
+  // Get team stats for this game
+  const homeStats = db.getGameStats(gameId, homeId);
+  const awayStats = db.getGameStats(gameId, awayId);
+
+  // Calculate possessions (simplified)
+  const homePossessions = calculatePossessions(homeStats);
+  const awayPossessions = calculatePossessions(awayStats);
+
+  // Offensive Rating = (Points / Possessions) * 100
+  const homeORtg = homePossessions > 0 ? (homePoints / homePossessions) * 100 : 100;
+  const awayORtg = awayPossessions > 0 ? (awayPoints / awayPossessions) * 100 : 100;
+
+  // Defensive Rating = (Opponent Points / Opponent Possessions) * 100
+  const homeDRtg = awayPossessions > 0 ? (awayPoints / awayPossessions) * 100 : 100;
+  const awayDRtg = homePossessions > 0 ? (homePoints / homePossessions) * 100 : 100;
+
+  return {
+    homeORtg: Math.max(50, Math.min(150, homeORtg)), // Clamp to reasonable range
+    homeDRtg: Math.max(50, Math.min(150, homeDRtg)),
+    awayORtg: Math.max(50, Math.min(150, awayORtg)),
+    awayDRtg: Math.max(50, Math.min(150, awayDRtg))
+  };
+}
+
+/**
+ * Calculate team possessions from stats
+ */
+function calculatePossessions(stats: Record<string, number>): number {
+  const fga = stats.fieldGoalsAttempted || 0;
+  const fta = stats.freeThrowsAttempted || 0;
+  const tov = stats.totalTurnovers || 0;
+
+  // Simplified possession formula: FGA + 0.44*FTA + TOV
+  return fga + 0.44 * fta + tov;
+}
+
+/**
  * Compute rolling averages for a team's game stats
  */
 export function computeRollingAverages(
@@ -317,7 +455,8 @@ export function computeFixedFeatures(
   awayId: string,
   gameId: string,
   games: Game[],
-  oddsArr: OddsData[]
+  oddsArr: OddsData[],
+  db: DatabaseQueries
 ): Record<string, number> {
   const marketImpliedProbVal = getMarketImpliedProb(oddsArr);
 
@@ -344,6 +483,30 @@ export function computeFixedFeatures(
   // Consistency: simplified as the absolute difference (lower is more consistent)
   features.homeConsistency = Math.abs(features.homeWinRate5 - features.homeWinRate10);
   features.awayConsistency = Math.abs(features.awayWinRate5 - features.awayWinRate10);
+
+  // Advanced form features
+  const homeWinStreak = computeWinStreak(homeId, gameId, games);
+  const awayWinStreak = computeWinStreak(awayId, gameId, games);
+  features.homeWinStreak = homeWinStreak;
+  features.awayWinStreak = awayWinStreak;
+
+  const homeRestDays = computeRestDays(homeId, gameId, games);
+  const awayRestDays = computeRestDays(awayId, gameId, games);
+  features.homeRestDays = Math.min(homeRestDays, 7); // Cap at 7 days
+  features.awayRestDays = Math.min(awayRestDays, 7);
+
+  // Head-to-head record
+  const headToHead = computeHeadToHead(homeId, awayId, gameId, games);
+  features.headToHeadWins = headToHead.wins;
+  features.headToHeadGames = headToHead.games;
+  features.headToHeadWinRate = headToHead.games > 0 ? headToHead.wins / headToHead.games : 0.5;
+
+  // Simplified offensive/defensive ratings (requires database access)
+  const ratings = computeOffensiveDefensiveRatings(homeId, awayId, gameId, games, db);
+  features.homeOffensiveRating = ratings.homeORtg;
+  features.awayOffensiveRating = ratings.awayORtg;
+  features.homeDefensiveRating = ratings.homeDRtg;
+  features.awayDefensiveRating = ratings.awayDRtg;
 
   return features;
 }
@@ -512,7 +675,8 @@ export function extractFeaturesForDataset(
       awayId,
       gid,
       games,
-      oddsArr
+      oddsArr,
+      db
     );
 
     // Set home advantage
@@ -679,7 +843,8 @@ export function extractFeaturesForGame(
     awayId,
     gid,
     allGames,
-    oddsArr
+    oddsArr,
+    db
   );
 
   fixedFeatureValues.homeAdvantage =

@@ -1,6 +1,6 @@
 {
     "sport": "ncaam",
-    "model": "logistic_regression",
+    "model": "ensemble",
     "market": "moneyline",
     "seasons": [
         2023,
@@ -54,7 +54,14 @@
         "defensiveReboundPct": true,
         "pace": true,
         "momentum": true,
-        "consistency": true
+        "consistency": true,
+        "winStreak": true,
+        "restDays": true,
+        "headToHeadWins": true,
+        "headToHeadGames": true,
+        "headToHeadWinRate": true,
+        "offensiveRating": true,
+        "defensiveRating": true
     },
     "rolling_windows": [
         5,
