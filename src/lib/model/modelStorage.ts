@@ -99,7 +99,7 @@ export function saveModel(
     thresholds,
     backtestMetrics,
     recencyWeighting: config.recency_weighting,
-    calibration: config.calibration,
+    calibration: model.calibration || config.calibration,
   };
 
   // Ensure output directory exists

@@ -30,6 +30,153 @@ export function weightedAverage(values: number[], weights: number[]): number {
 }
 
 /**
+ * Calculate advanced statistical features from raw game stats
+ */
+export function calculateAdvancedStats(stats: Record<string, number>): Record<string, number> {
+  const advancedStats: Record<string, number> = {};
+
+  // Get raw stats with fallbacks
+  const fgm = stats.fieldGoalsMade || 0;
+  const fga = stats.fieldGoalsAttempted || 0;
+  const fg3m = stats.threePointFieldGoalsMade || 0;
+  const ftm = stats.freeThrowsMade || 0;
+  const fta = stats.freeThrowsAttempted || 0;
+  const ast = stats.assists || 0;
+  const tov = stats.totalTurnovers || 0;
+  const trb = stats.totalRebounds || 0;
+  const orb = stats.offensiveRebounds || 0;
+  const drb = stats.defensiveRebounds || 0;
+
+  // Effective Field Goal Percentage: eFG% = (FGM + 0.5*3PM) / FGA
+  if (fga > 0) {
+    advancedStats.effectiveFgPct = (fgm + 0.5 * fg3m) / fga;
+  }
+
+  // True Shooting Percentage: TS% = PTS / (2*(FGA + 0.44*FTA))
+  // Approximate PTS since we don't have exact points in game_stats
+  const estimatedPoints = fgm * 2 + fg3m + ftm; // Rough approximation: 2pts for FGM, 3pts for 3PM, 1pt for FTM
+  const trueShootingAttempts = fga + 0.44 * fta;
+  if (trueShootingAttempts > 0) {
+    advancedStats.trueShootingPct = estimatedPoints / (2 * trueShootingAttempts);
+  }
+
+  // Assist Ratio: AST / (FGA + 0.44*FTA + TOV)
+  const assistAttempts = fga + 0.44 * fta + tov;
+  if (assistAttempts > 0) {
+    advancedStats.assistRatio = ast / assistAttempts;
+  }
+
+  // Turnover Ratio: TOV / (FGA + 0.44*FTA + TOV)
+  if (assistAttempts > 0) {
+    advancedStats.turnoverRatio = tov / assistAttempts;
+  }
+
+  // Rebound Percentage (team only - would need opponent data for full calculation)
+  // For now, just offensive/defensive rebound split
+  if (trb > 0) {
+    advancedStats.offensiveReboundPct = orb / trb;
+    advancedStats.defensiveReboundPct = drb / trb;
+  }
+
+  // Pace calculation (simplified - possessions per game, assuming standard game length)
+  // Pace = Team possessions (rough estimate)
+  // This is a simplified version - full pace requires opponent possessions
+  const teamPossessions = fga + 0.44 * fta + tov;
+  advancedStats.pace = teamPossessions;
+
+  return advancedStats;
+}
+
+/**
+ * Calculate form indicators from game history
+ */
+export function calculateFormIndicators(
+  teamGames: Array<{ id: string; date: string; home_team_id: string; away_team_id: string; home_score: number; away_score: number }>,
+  teamId: string,
+  currentGameId: string
+): Record<string, number> {
+  const formStats: Record<string, number> = {};
+
+  // Sort games by date (most recent first)
+  const sortedGames = teamGames
+    .filter(g => g.id !== currentGameId) // Exclude current game
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Calculate win streak
+  let winStreak = 0;
+  for (const game of sortedGames.slice(0, 20)) { // Check last 20 games
+    const isHome = game.home_team_id === teamId;
+    const teamScore = isHome ? game.home_score : game.away_score;
+    const oppScore = isHome ? game.away_score : game.home_score;
+    const isWin = teamScore > oppScore;
+
+    if (isWin) {
+      winStreak++;
+    } else {
+      break; // Streak ends on first loss
+    }
+  }
+  formStats.winStreak = winStreak;
+
+  // Calculate recent form (last 5 games win percentage)
+  const recentGames = sortedGames.slice(0, 5);
+  if (recentGames.length > 0) {
+    const recentWins = recentGames.filter(game => {
+      const isHome = game.home_team_id === teamId;
+      const teamScore = isHome ? game.home_score : game.away_score;
+      const oppScore = isHome ? game.away_score : game.home_score;
+      return teamScore > oppScore;
+    }).length;
+    formStats.recentForm = recentWins / recentGames.length;
+  }
+
+  // Calculate rest days (days since last game)
+  if (sortedGames.length > 0) {
+    const lastGameDate = new Date(sortedGames[0].date);
+    const currentGame = teamGames.find(g => g.id === currentGameId);
+    if (currentGame) {
+      const currentGameDate = new Date(currentGame.date);
+      const restDays = Math.max(0, Math.floor((currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24)));
+      formStats.restDays = Math.min(restDays, 7); // Cap at 7 days
+    }
+  }
+
+  // Calculate back-to-back indicator
+  if (sortedGames.length > 0) {
+    const lastGameDate = new Date(sortedGames[0].date);
+    const currentGame = teamGames.find(g => g.id === currentGameId);
+    if (currentGame) {
+      const currentGameDate = new Date(currentGame.date);
+      const daysSinceLastGame = Math.floor((currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24));
+      formStats.backToBack = daysSinceLastGame === 1 ? 1 : 0;
+    }
+  }
+
+  return formStats;
+}
+
+/**
+ * Simplified form indicators that can be calculated from rolling stats
+ */
+export function calculateSimpleFormIndicators(
+  rollingStats: Record<string, Record<string, number>>,
+  latestGameId: string
+): Record<string, number> {
+  const formStats: Record<string, number> = {};
+
+  // Recent form momentum (difference between recent 5-game and 10-game win rates)
+  const winRate5 = rollingStats[latestGameId]?.['homeWinRate5_avg_5'] || 0;
+  const winRate10 = rollingStats[latestGameId]?.['homeWinRate10_avg_5'] || 0;
+  formStats.momentum = winRate5 - winRate10;
+
+  // Consistency (variance in recent performance - simplified)
+  // For now, just use the difference between max and min rolling win rates
+  formStats.consistency = Math.abs(winRate5 - winRate10);
+
+  return formStats;
+}
+
+/**
  * Compute rolling averages for a team's game stats
  */
 export function computeRollingAverages(
@@ -174,7 +321,7 @@ export function computeFixedFeatures(
 ): Record<string, number> {
   const marketImpliedProbVal = getMarketImpliedProb(oddsArr);
 
-  return {
+  const features: Record<string, number> = {
     homeWinRate5: computeWinRate(homeId, gameId, 5, games),
     awayWinRate5: computeWinRate(awayId, gameId, 5, games),
     homeAvgMargin5: computeAvgMargin(homeId, gameId, 5, games),
@@ -188,6 +335,17 @@ export function computeFixedFeatures(
     homeAdvantage: 0, // Will be set below
     marketImpliedProb: marketImpliedProbVal ?? 0,
   };
+
+  // Add form indicators calculated from win rates
+  // Momentum: difference between recent 5-game and 10-game win rates
+  features.homeMomentum = features.homeWinRate5 - features.homeWinRate10;
+  features.awayMomentum = features.awayWinRate5 - features.awayWinRate10;
+
+  // Consistency: simplified as the absolute difference (lower is more consistent)
+  features.homeConsistency = Math.abs(features.homeWinRate5 - features.homeWinRate10);
+  features.awayConsistency = Math.abs(features.awayWinRate5 - features.awayWinRate10);
+
+  return features;
 }
 
 /**
@@ -219,19 +377,33 @@ export function extractFeaturesForDataset(
     Record<string, Record<string, number>>
   > = {};
 
+  // Get list of advanced features that should be included in rolling calculations
+  const advancedFeatures = ['effectiveFgPct', 'trueShootingPct', 'assistRatio', 'turnoverRatio', 'offensiveReboundPct', 'defensiveReboundPct', 'pace'];
+  const enabledAdvancedFeatures = advancedFeatures.filter(feature => isFeatureEnabled(config, feature));
+
   for (const [teamId, teamGames] of gameStatsMap.entries()) {
     const gameIds = Array.from(teamGames.keys()).sort();
     const statsByGame: Record<string, Record<string, number>> = {};
 
     for (const [gameId, stats] of teamGames.entries()) {
-      statsByGame[gameId] = stats;
+      // Start with raw stats
+      const gameStats = { ...stats };
+
+      // Calculate and add advanced stats
+      const advancedStats = calculateAdvancedStats(stats);
+      Object.assign(gameStats, advancedStats);
+
+      statsByGame[gameId] = gameStats;
     }
+
+    // Include advanced features in rolling calculations if they're enabled
+    const allRollingFeatures = [...enabledRollingFeatures, ...enabledAdvancedFeatures];
 
     teamRollingStats[teamId] = computeRollingAverages(
       statsByGame,
       gameIds,
       config.rolling_windows,
-      enabledRollingFeatures,
+      allRollingFeatures,
       useExponentialRecency,
       recencyDecay
     );

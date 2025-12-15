@@ -6,6 +6,7 @@
 import LogisticRegression from 'ml-logistic-regression';
 import { Matrix } from 'ml-matrix';
 import { RandomForestClassifier as RFClassifier } from 'ml-random-forest';
+import { createCalibrator, applyCalibration, type CalibrationModel } from './calibration.js';
 import type { GameFeatures, FeatureConfig } from '../db/types.js';
 
 /**
@@ -131,10 +132,16 @@ export interface TrainingResult {
     train: number[];
     test: number[];
   };
+  calibratedProbabilities?: {
+    train: number[];
+    test: number[];
+  };
+  calibration?: CalibrationModel;
   metrics: {
     trainAccuracy: number;
     testAccuracy: number;
     logLoss: number;
+    calibratedLogLoss?: number;
   };
   splits: {
     X_train: number[][];
@@ -418,6 +425,53 @@ export function trainModel(
   console.log(`[Trainer] Test accuracy: ${(testAccuracy * 100).toFixed(2)}%`);
   console.log(`[Trainer] Test log loss: ${testLogLoss.toFixed(4)}`);
 
+  // Fit probability calibration
+  let calibration: CalibrationModel | undefined;
+  let calibratedProbabilities: { train: number[]; test: number[] } | undefined;
+  let calibratedLogLoss: number | undefined;
+
+  if (config.calibration && config.calibration.method !== 'temperature') {
+    console.log(`[Trainer] Fitting ${config.calibration.method} calibration...`);
+
+    const calibrator = createCalibrator(config.calibration.method as 'isotonic' | 'beta');
+    if (calibrator) {
+      // Fit calibrator on test set (to avoid overfitting)
+      calibrator.fit(y_prob_test, y_test);
+
+      // Apply calibration to both train and test sets
+      const calibratedTrainProbs = calibrator.calibrate(y_prob_train);
+      const calibratedTestProbs = calibrator.calibrate(y_prob_test);
+
+      calibratedProbabilities = {
+        train: calibratedTrainProbs,
+        test: calibratedTestProbs,
+      };
+
+      // Calculate calibrated log loss
+      calibratedLogLoss = logLoss(y_test, calibratedTestProbs);
+
+      console.log(`[Trainer] Calibrated test log loss: ${calibratedLogLoss.toFixed(4)}`);
+
+      // Create calibration model for storage
+      const method = config.calibration.method as 'isotonic' | 'beta';
+      if (method === 'isotonic') {
+        const isotonicCalibrator = calibrator as any;
+        const serialized = isotonicCalibrator.serialize();
+        calibration = {
+          method: 'isotonic' as const,
+          isotonicThresholds: serialized.thresholds,
+          isotonicValues: serialized.values,
+        };
+      } else if (method === 'beta') {
+        const betaCalibrator = calibrator as any;
+        calibration = {
+          method: 'beta' as const,
+          betaParams: betaCalibrator.getParams(),
+        };
+      }
+    }
+  }
+
   return {
     model,
     modelType: modelType as 'logistic_regression' | 'ensemble',
@@ -432,10 +486,13 @@ export function trainModel(
       train: y_prob_train,
       test: y_prob_test,
     },
+    calibratedProbabilities,
+    calibration,
     metrics: {
       trainAccuracy,
       testAccuracy,
       logLoss: testLogLoss,
+      calibratedLogLoss,
     },
     splits: {
       X_train,

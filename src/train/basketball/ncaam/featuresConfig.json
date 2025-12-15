@@ -45,7 +45,16 @@
         "homeRecentForm": true,
         "awayRecentForm": true,
         "homeAdvantage": true,
-        "marketImpliedProb": false
+        "marketImpliedProb": false,
+        "effectiveFgPct": true,
+        "trueShootingPct": true,
+        "assistRatio": true,
+        "turnoverRatio": true,
+        "offensiveReboundPct": true,
+        "defensiveReboundPct": true,
+        "pace": true,
+        "momentum": true,
+        "consistency": true
     },
     "rolling_windows": [
         5,
@@ -64,7 +73,7 @@
         "temperature": 0.8
     },
     "calibration": {
-        "method": "temperature",
+        "method": "isotonic",
         "temperature": 0.8
     },
     "min_edge": 0.08,

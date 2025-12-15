@@ -185,8 +185,11 @@ export interface TrainedModel {
     decay: number;
   };
   calibration?: {
-    method: 'temperature' | 'platt' | 'isotonic';
-    temperature: number;
+    method: 'temperature' | 'platt' | 'isotonic' | 'beta';
+    temperature?: number;
+    betaParams?: { a: number; b: number };
+    isotonicThresholds?: number[];
+    isotonicValues?: number[];
   };
 }
 

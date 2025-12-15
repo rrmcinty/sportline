@@ -4,6 +4,7 @@
 
 import LogisticRegression from 'ml-logistic-regression';
 import { Matrix } from 'ml-matrix';
+import { applyCalibration } from './calibration.js';
 import type { TrainedModel, Prediction } from '../db/types.js';
 
 /**
@@ -106,6 +107,16 @@ export function predict(
     throw new Error(
       'Ensemble model prediction not yet supported in saved models. Use logistic_regression instead.'
     );
+  }
+
+  // Apply probability calibration if available
+  if (model.calibration) {
+    const calibratedProbs = applyCalibration([probHome], model.calibration);
+    probHome = calibratedProbs[0];
+
+    if (debug) {
+      console.log(`  Calibration applied (${model.calibration.method}): ${probHome.toFixed(4)}`);
+    }
   }
 
   return {
