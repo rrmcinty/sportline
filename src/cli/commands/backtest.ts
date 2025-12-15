@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import { DatabaseQueries } from '../../lib/db/queries.js';
 import { loadFeatureConfig } from '../../lib/features/featureConfig.js';
 import { extractFeaturesForDataset } from '../../lib/features/featureEngineering.js';
-import { trainModel } from '../../lib/model/trainer.js';
+import { trainModel, calculateCoefficientImportance } from '../../lib/model/trainer.js';
 import {
   generateRecommendations,
   runBacktestGrid,
@@ -55,6 +55,41 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   // Step 3: Train model
   console.log('\n[3/5] Training model...');
   const trainingResult = trainModel(dataset, config);
+
+  // Feature Importance Analysis
+  console.log('\n🔍 Feature Importance Analysis:');
+  const coeffImportance = calculateCoefficientImportance(trainingResult, trainingResult.featureKeys);
+
+  console.log('\n📊 Top 20 Most Important Features (Coefficient-based):');
+  coeffImportance.slice(0, 20).forEach((item, i) => {
+    const direction = item.coefficient >= 0 ? '📈' : '📉';
+    console.log(`${(i + 1).toString().padStart(2)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)} | ${direction}`);
+  });
+
+  console.log('\n🗑️  Bottom 10 Least Important Features:');
+  coeffImportance.slice(-10).forEach((item, i) => {
+    const rank = coeffImportance.length - 10 + i + 1;
+    console.log(`${rank.toString().padStart(3)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)}`);
+  });
+
+  // Recommendations
+  const uselessFeatures = coeffImportance.filter(item => item.importance < 0.001);
+  const lowImportanceFeatures = coeffImportance.filter(item => item.importance < 0.01);
+
+  console.log(`\n💡 Recommendations:`);
+  console.log(`  - ${uselessFeatures.length} features have importance < 0.001 (consider disabling)`);
+  console.log(`  - ${lowImportanceFeatures.length} features have importance < 0.01 (review these)`);
+  console.log(`  - Top feature: ${coeffImportance[0].feature} (${coeffImportance[0].importance.toFixed(4)})`);
+
+  console.log(`\n🗑️ Features to Consider Disabling (< 0.001 importance):`);
+  uselessFeatures.forEach((item, i) => {
+    console.log(`${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`);
+  });
+
+  console.log(`\n⚠️  Features to Review (< 0.01 importance):`);
+  lowImportanceFeatures.forEach((item, i) => {
+    console.log(`${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`);
+  });
 
   // Step 4: Generate recommendations
   console.log('\n[4/5] Generating recommendations for backtesting...');

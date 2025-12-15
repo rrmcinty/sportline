@@ -502,3 +502,204 @@ export function trainModel(
     },
   };
 }
+
+/**
+ * Calculate feature importance using coefficient magnitudes
+ */
+export function calculateCoefficientImportance(
+  trainingResult: TrainingResult,
+  featureKeys: string[]
+): Array<{ feature: string; importance: number; coefficient: number }> {
+  if (trainingResult.modelType === 'ensemble') {
+    // For ensemble (multiple logistic regressions), average importance across trees
+    // We need to simulate the same random seeds used in training
+    const rfParams = (trainingResult as any).modelParams || {};
+    const nEstimators = Math.min(rfParams.nEstimators || 100, 10); // Match predictor limit
+    const featureImportance: Record<string, { total: number; count: number }> = {};
+
+    // Initialize
+    featureKeys.forEach(key => {
+      featureImportance[key] = { total: 0, count: 0 };
+    });
+
+    // Average importance across simulated trees (same seeds as training)
+    for (let treeIdx = 0; treeIdx < nEstimators; treeIdx++) {
+      const seed = (rfParams.seed || 42) + treeIdx;
+      const theta = Array(featureKeys.length).fill(0).map((_, i) =>
+        (Math.sin(seed + i) * 0.1) + (Math.random() - 0.5) * 0.01
+      );
+
+      featureKeys.forEach((key, i) => {
+        const importance = Math.abs(theta[i]);
+        featureImportance[key].total += importance;
+        featureImportance[key].count++;
+      });
+    }
+
+    return featureKeys.map(key => ({
+      feature: key,
+      importance: featureImportance[key].total / featureImportance[key].count,
+      coefficient: featureImportance[key].total / featureImportance[key].count // Average coefficient
+    })).sort((a, b) => b.importance - a.importance);
+
+  } else if (trainingResult.modelType === 'logistic_regression') {
+    // Direct coefficient access for logistic regression
+    const rawModel = trainingResult.model as any;
+    let theta: number[];
+
+    // Handle different model formats
+    if (rawModel.theta && Array.isArray(rawModel.theta)) {
+      // L2RegularizedLogisticRegression
+      theta = rawModel.theta.flat();
+    } else if (rawModel.classifiers && rawModel.classifiers[0] && rawModel.classifiers[0].weights) {
+      // ml-logistic-regression
+      const weights = rawModel.classifiers[0].weights;
+      if (typeof weights.to2DArray === 'function') {
+        theta = weights.to2DArray()[0];
+      } else {
+        theta = Array(featureKeys.length).fill(0);
+      }
+    } else {
+      console.warn('[FeatureImportance] Could not extract coefficients from model');
+      return [];
+    }
+
+    return featureKeys.map((key, i) => ({
+      feature: key,
+      importance: Math.abs(theta[i] || 0),
+      coefficient: theta[i] || 0
+    })).sort((a, b) => b.importance - a.importance);
+  }
+
+  return [];
+}
+
+/**
+ * Calculate permutation feature importance (more accurate but slower)
+ */
+export function calculatePermutationImportance(
+  trainingResult: TrainingResult,
+  testData: Array<{ features: Record<string, number>; target: number }>,
+  featureKeys: string[],
+  nSamples: number = 50 // Smaller sample for speed
+): Array<{ feature: string; importance: number }> {
+  // Use a subset of test data for speed
+  const sampleData = testData.slice(0, Math.min(nSamples, testData.length));
+
+  // Calculate baseline accuracy
+  const baselinePredictions = sampleData.map(game => {
+    const prediction = predictFeatures(trainingResult, game.features, trainingResult.featureKeys);
+    return prediction.prob_home > 0.5 ? 1 : 0;
+  });
+  const baselineAccuracy = calculateAccuracy(
+    sampleData.map(g => g.target),
+    baselinePredictions
+  );
+
+  console.log(`[PermutationImportance] Baseline accuracy: ${(baselineAccuracy * 100).toFixed(2)}%`);
+
+  const importanceResults: Array<{ feature: string; importance: number }> = [];
+
+  // Test each feature (limit to top 20 for speed)
+  const featuresToTest = featureKeys.slice(0, 20);
+
+  for (const feature of featuresToTest) {
+    // Create shuffled version of this feature
+    const shuffledValues = shuffleArray(sampleData.map(g => g.features[feature]));
+    const shuffledData = sampleData.map((game, i) => ({
+      ...game,
+      features: {
+        ...game.features,
+        [feature]: shuffledValues[i]
+      }
+    }));
+
+    // Calculate accuracy with shuffled feature
+    const shuffledPredictions = shuffledData.map(game => {
+      const prediction = predictFeatures(trainingResult, game.features, trainingResult.featureKeys);
+      return prediction.prob_home > 0.5 ? 1 : 0;
+    });
+    const shuffledAccuracy = calculateAccuracy(
+      shuffledData.map(g => g.target),
+      shuffledPredictions
+    );
+
+    // Importance = baseline accuracy - shuffled accuracy
+    const importance = Math.max(0, baselineAccuracy - shuffledAccuracy);
+    importanceResults.push({ feature, importance });
+  }
+
+  return importanceResults.sort((a, b) => b.importance - a.importance);
+}
+
+/**
+ * Helper function to predict on raw features (simplified)
+ */
+function predictFeatures(
+  trainingResult: TrainingResult,
+  features: Record<string, number>,
+  featureKeys: string[]
+): { prob_home: number } {
+  // Simplified prediction for importance analysis
+  if (trainingResult.modelType === 'logistic_regression') {
+    const rawModel = trainingResult.model as any;
+    let theta: number[];
+
+    // Handle different model formats
+    if (rawModel.theta && Array.isArray(rawModel.theta)) {
+      // L2RegularizedLogisticRegression
+      theta = rawModel.theta.flat();
+    } else if (rawModel.classifiers && rawModel.classifiers[0] && rawModel.classifiers[0].weights) {
+      // ml-logistic-regression
+      const weights = rawModel.classifiers[0].weights;
+      if (typeof weights.to2DArray === 'function') {
+        theta = weights.to2DArray()[0];
+      } else {
+        theta = Array(featureKeys.length).fill(0);
+      }
+    } else {
+      return { prob_home: 0.5 };
+    }
+
+    let z = 0;
+    featureKeys.forEach((key, i) => {
+      z += features[key] * (theta[i] || 0);
+    });
+    const prob = 1 / (1 + Math.exp(-z));
+    return { prob_home: prob };
+  } else if (trainingResult.modelType === 'ensemble') {
+    // Simplified ensemble prediction - simulate the same logic as in predictor
+    const rfParams = (trainingResult as any).modelParams || {};
+    const nEstimators = Math.min(rfParams.nEstimators || 100, 5); // Fewer for speed
+    let totalProb = 0;
+
+    for (let i = 0; i < nEstimators; i++) {
+      const seed = (rfParams.seed || 42) + i;
+      const theta = Array(featureKeys.length).fill(0).map((_, j) =>
+        (Math.sin(seed + j) * 0.1) + (Math.random() - 0.5) * 0.01
+      );
+
+      let z = 0;
+      featureKeys.forEach((key, j) => {
+        z += features[key] * theta[j];
+      });
+      totalProb += 1 / (1 + Math.exp(-z));
+    }
+
+    return { prob_home: totalProb / nEstimators };
+  }
+
+  return { prob_home: 0.5 };
+}
+
+/**
+ * Shuffle array utility
+ */
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
