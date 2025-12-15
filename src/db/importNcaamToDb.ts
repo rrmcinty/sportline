@@ -52,9 +52,9 @@ function importGames() {
   const missingTeamsLog = path.join(dataDir, "missing_teams.log");
   fs.writeFileSync(missingTeamsLog, ""); // clear log at start
   for (const g of games) {
-    // Check if both teams exist in the teams table
-    const homeExists = db.prepare("SELECT 1 FROM teams WHERE id = ?").get(g.homeTeamId);
-    const awayExists = db.prepare("SELECT 1 FROM teams WHERE id = ?").get(g.awayTeamId);
+    // Check if both teams exist in the teams table (composite primary key: id, sport)
+    const homeExists = db.prepare("SELECT 1 FROM teams WHERE id = ? AND sport = ?").get(g.homeTeamId, sport);
+    const awayExists = db.prepare("SELECT 1 FROM teams WHERE id = ? AND sport = ?").get(g.awayTeamId, sport);
     if (!homeExists || !awayExists) {
       const missing = [];
       if (!homeExists) missing.push(g.homeTeamId);
@@ -144,7 +144,7 @@ function importGameStats() {
       }
       // Check if game and team exist
       const gameExists = db.prepare("SELECT 1 FROM games WHERE id = ?").get(s.game_id);
-      const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ?").get(s.team_id);
+      const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ? AND sport = ?").get(s.team_id, sport);
       if (!gameExists || !teamExists) {
         fs.appendFileSync(missingStatsLog, `Missing reference: game_id: ${s.game_id} exists: ${!!gameExists}, team_id: ${s.team_id} exists: ${!!teamExists}\n`);
         continue;

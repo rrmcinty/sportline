@@ -168,7 +168,7 @@ function importGameStats() {
       }
       // Check if game and team exist
       const gameExists = db.prepare("SELECT 1 FROM games WHERE id = ?").get(s.game_id);
-      const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ?").get(s.team_id);
+      const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ? AND sport = ?").get(s.team_id, sport);
       if (!gameExists || !teamExists) {
         fs.appendFileSync(missingStatsLog, `Missing reference: game_id: ${s.game_id} exists: ${!!gameExists}, team_id: ${s.team_id} exists: ${!!teamExists}\n`);
         continue;

@@ -37,7 +37,8 @@ async function getRecommendationsForSport(
   options: RecommendOptions,
   db: DatabaseQueries
 ): Promise<Recommendation[]> {
-  console.log(`\n[${sport.toUpperCase()}] Loading trained model...`);
+  console.log(`\n[${sport.toUpperCase()}] Starting recommendation generation...`);
+  console.log(`[${sport.toUpperCase()}] Loading trained model...`);
   const modelsDir = path.join(
     process.cwd(),
     'src/train/basketball/ncaam/models'  // All models are currently stored here
@@ -190,33 +191,192 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   // Determine which sports to process
   const sportsToProcess = options.sport ? [options.sport] : ['ncaam', 'nba'];
 
-  let totalRecommendations = 0;
+  // Collect all recommendations from all sports
+  const allRecommendations: Array<{sport: string, recommendation: Recommendation}> = [];
+  let totalGamesFound = 0;
 
   for (const sport of sportsToProcess) {
     try {
       const recommendations = await getRecommendationsForSport(sport, options, db);
 
-      if (recommendations.length === 0) {
-        console.log(`\n${chalk.yellow('⚠️')} No ${sport.toUpperCase()} recommendations found for today.`);
-        continue;
+      // Add sport identifier to each recommendation
+      recommendations.forEach(rec => {
+        allRecommendations.push({ sport: sport.toUpperCase(), recommendation: rec });
+      });
+
+      if (recommendations.length > 0) {
+        console.log(`✓ Found ${recommendations.length} ${sport.toUpperCase()} recommendations`);
       }
 
-      // Display recommendations for this sport
-      displayRecommendations(sport, recommendations, options);
-
-      totalRecommendations += recommendations.length;
+      totalGamesFound += recommendations.length;
     } catch (error) {
       console.error(`❌ Error processing ${sport}:`, error);
     }
   }
 
-  if (totalRecommendations === 0) {
+  if (allRecommendations.length === 0) {
     console.log(`\n${chalk.red('❌')} No recommendations found for any sport.`);
     console.log('Make sure you have trained models and upcoming games in the database.');
+    return;
   }
+
+  // Sort all recommendations by EV (best bets first)
+  allRecommendations.sort((a, b) => {
+    const evA = a.recommendation.recommended_side === 'home'
+      ? a.recommendation.ev_home!
+      : a.recommendation.ev_away!;
+    const evB = b.recommendation.recommended_side === 'home'
+      ? b.recommendation.ev_home!
+      : b.recommendation.ev_away!;
+    return evB - evA;
+  });
+
+  // Display unified recommendations
+  displayUnifiedRecommendations(allRecommendations, options);
 }
 
-// Helper function to display recommendations for a sport
+// Helper function to display unified recommendations across all sports
+function displayUnifiedRecommendations(
+  allRecommendations: Array<{sport: string, recommendation: Recommendation}>,
+  options: RecommendOptions
+): void {
+  // Get today's date for header
+  const headerDate = options.date ? new Date(options.date + 'T12:00:00Z') : new Date();
+  const dateStr = headerDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const sportsList = [...new Set(allRecommendations.map(r => r.sport))].join(' & ');
+  console.log(chalk.cyan.bold(`\n🎯 All Sports Betting Recommendations - ${dateStr}\n`));
+  console.log(chalk.gray(`Sports: ${sportsList} | Total Recommendations: ${allRecommendations.length}`));
+
+  // Main recommendations table
+  console.log(chalk.cyan.bold('\n🎯 Top Recommendations Across All Sports\n'));
+
+  console.log(chalk.bold('Rank | Sport | Time  | Matchup                        | Pick                | Prob | Odds  | EV    | Edge  | Provider'));
+  console.log(chalk.gray('-----+-------+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------'));
+
+  for (let i = 0; i < allRecommendations.length; i++) {
+    const { sport, recommendation: rec } = allRecommendations[i];
+    const gameTime = new Date(rec.date).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const matchup = `${rec.away_team} @ ${rec.home_team}`;
+    const pick = rec.recommended_side === 'home' ? rec.home_team : rec.away_team;
+    const prob = rec.recommended_side === 'home'
+      ? formatPercentage(rec.model_prob_home, 1)
+      : formatPercentage(rec.model_prob_away, 1);
+    const odds = rec.recommended_side === 'home'
+      ? formatOdds(rec.odds_home!)
+      : formatOdds(rec.odds_away!);
+    const ev = rec.recommended_side === 'home'
+      ? formatPercentage(rec.ev_home!, 1)
+      : formatPercentage(rec.ev_away!, 1);
+    const edge = rec.recommended_side === 'home'
+      ? formatPercentage(rec.edge_home!, 1)
+      : formatPercentage(rec.edge_away!, 1);
+
+    const rank = chalk.yellow((i + 1).toString().padStart(4));
+    const sportDisplay = chalk.bold(sport.padEnd(5));
+    const time = chalk.white(gameTime.padStart(5));
+    const matchupDisplay = chalk.gray(matchup.padEnd(30));
+    const pickDisplay = rec.recommended_side === 'home'
+      ? chalk.green(pick.padEnd(19))
+      : chalk.red(pick.padEnd(19));
+    const probDisplay = chalk.blue(prob.padStart(4));
+    const oddsDisplay = chalk.magenta(odds.padStart(5));
+    const evDisplay = chalk.cyan(ev.padStart(5));
+    const edgeDisplay = chalk.green(edge.padStart(5));
+    const providerDisplay = chalk.gray(rec.provider.padEnd(9));
+
+    console.log(`${rank} | ${sportDisplay} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${providerDisplay}`);
+  }
+
+  console.log('');
+
+  // Kelly Criterion section
+  const bankroll = options.bankroll ? parseFloat(options.bankroll) : null;
+  const dailyBudget = options.dailyBudget ? parseFloat(options.dailyBudget) : null;
+
+  if (bankroll || dailyBudget) {
+    const kellyBets = allRecommendations.map(({ sport, recommendation: rec }) => ({
+      sport,
+      matchup: `${rec.away_team.substring(0, 15)} @ ${rec.home_team.substring(0, 15)}`,
+      betSize: calculateKellyBetSize(
+        rec.recommended_side === 'home' ? rec.model_prob_home : rec.model_prob_away,
+        rec.recommended_side === 'home' ? rec.odds_home! : rec.odds_away!,
+        bankroll || 1000
+      ),
+      betPct: ((calculateKellyBetSize(
+        rec.recommended_side === 'home' ? rec.model_prob_home : rec.model_prob_away,
+        rec.recommended_side === 'home' ? rec.odds_home! : rec.odds_away!,
+        bankroll || 1000
+      ) / (bankroll || 1000)) * 100),
+      scaledBet: undefined as number | undefined,
+      scaledPct: undefined as number | undefined,
+    }));
+
+    if (dailyBudget) {
+      // Scale bets to fit daily budget proportionally
+      const totalKelly = kellyBets.reduce((sum, kelly) => sum + kelly.betSize, 0);
+      if (totalKelly > 0) {
+        const scaleFactor = dailyBudget / totalKelly;
+        kellyBets.forEach(kelly => {
+          kelly.scaledBet = kelly.betSize * scaleFactor;
+          kelly.scaledPct = (kelly.scaledBet / dailyBudget) * 100;
+        });
+      }
+
+      console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Daily Budget: ${formatCurrency(dailyBudget)})\n`));
+
+      console.log(chalk.bold('Rank | Sport | Matchup                     | Raw Kelly Bet | Scaled Bet'));
+      console.log(chalk.gray('-----+-------+--------------------------------+---------------+-----------------'));
+
+      for (let i = 0; i < kellyBets.length; i++) {
+        const kelly = kellyBets[i];
+        const rank = chalk.yellow((i + 1).toString().padStart(4));
+        const sportDisplay = chalk.bold(kelly.sport.padEnd(5));
+        const matchup = kelly.matchup.padEnd(30);
+        const kellyDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
+        const scaledDisplay = `${formatCurrency(kelly.scaledBet!)} (${kelly.scaledPct!.toFixed(1)}%)`;
+
+        console.log(`${rank} | ${sportDisplay} | ${matchup} | ${chalk.blue(kellyDisplay)} | ${chalk.green(scaledDisplay)}`);
+      }
+
+      const totalScaled = kellyBets.reduce((sum, kelly) => sum + (kelly.scaledBet || 0), 0);
+      console.log(chalk.gray(`\nTotal: ${formatCurrency(totalScaled)} (exactly matches your budget)`));
+    } else {
+      // Regular bankroll display
+      console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Bankroll: ${formatCurrency(bankroll!)})\n`));
+
+      console.log(chalk.bold('Rank | Sport | Matchup                     | Recommended Bet'));
+      console.log(chalk.gray('-----+-------+--------------------------------+-----------------'));
+
+      for (let i = 0; i < kellyBets.length; i++) {
+        const kelly = kellyBets[i];
+        const rank = chalk.yellow((i + 1).toString().padStart(4));
+        const sportDisplay = chalk.bold(kelly.sport.padEnd(5));
+        const matchup = kelly.matchup.padEnd(30);
+        const betDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
+
+        console.log(`${rank} | ${sportDisplay} | ${matchup} | ${chalk.green(betDisplay)}`);
+      }
+    }
+    console.log('');
+  }
+
+  console.log(chalk.blue.bold('💡 Tips:'));
+  console.log(chalk.gray('   - These are recommendations, not guarantees'));
+  console.log(chalk.gray('   - Kelly sizing optimizes long-term growth'));
+  console.log(chalk.gray('   - Always gamble responsibly\n'));
+}
+
+// Helper function to display recommendations for a specific sport (kept for backward compatibility)
 function displayRecommendations(sport: string, recommendations: Recommendation[], options: RecommendOptions): void {
   if (recommendations.length === 0) return;
 

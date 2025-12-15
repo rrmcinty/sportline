@@ -36,8 +36,8 @@ export class DatabaseQueries {
         COALESCE(a.display_name, a.name) as away_team_name,
         a.abbreviation as away_team_abbr
       FROM games g
-      JOIN teams h ON g.home_team_id = h.id
-      JOIN teams a ON g.away_team_id = a.id
+      JOIN teams h ON g.home_team_id = h.id AND g.sport = h.sport
+      JOIN teams a ON g.away_team_id = a.id AND g.sport = a.sport
       WHERE g.sport = ?
         AND DATE(DATETIME(g.date, '-5 hours')) = DATE(?)
       ORDER BY g.date ASC
