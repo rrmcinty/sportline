@@ -98,7 +98,36 @@ async function getRecommendationsForSport(
 
       // Get prediction
       const temperature = config.calibration?.temperature ?? config.regularization?.temperature ?? 1.0;
-      const prediction = predict(features, model, false, temperature);
+
+      // Debug: Check for problematic games
+      const isDebugGame = (game.home_team_name.includes('North Alabama') && game.away_team_name.includes('Alabama A&M')) ||
+                         (game.away_team_name.includes('North Alabama') && game.home_team_name.includes('Alabama A&M'));
+      const debug = isDebugGame;
+
+      if (debug) {
+        console.log(`\n🐛 DEBUG: ${game.home_team_name} vs ${game.away_team_name}`);
+        console.log('Raw features:');
+        Object.entries(features).forEach(([key, value]) => {
+          if (isNaN(value) || !isFinite(value)) {
+            console.log(`❌ BAD FEATURE: ${key} = ${value}`);
+          } else if (Math.abs(value) > 100) {
+            console.log(`⚠️ LARGE FEATURE: ${key} = ${value}`);
+          }
+        });
+      }
+
+      const prediction = predict(features, model, debug, temperature);
+
+      if (debug || prediction.prob_home === 0 || prediction.prob_away === 0) {
+        console.log(`\n🐛 DEBUG: ${game.home_team_name} vs ${game.away_team_name}`);
+        console.log(`Prediction: prob_home=${prediction.prob_home}, prob_away=${prediction.prob_away}`);
+        if (!debug) {
+          console.log('Raw features (showing first 10):');
+          Object.entries(features).slice(0, 10).forEach(([key, value]) => {
+            console.log(`  ${key}: ${value}`);
+          });
+        }
+      }
 
       // Get odds
       const odds = game.odds.length > 0 ? game.odds[0] : null;

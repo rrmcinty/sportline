@@ -527,6 +527,7 @@ export function extractFeaturesForDataset(
   const useExponentialRecency = config.recency_weighting?.enabled ?? true;
   const recencyDecay = config.recency_weighting?.decay ?? 0.7;
 
+
   // Step 1: Extract and pivot game_stats for all games/teams
   const gameStatsMap = db.getGameStatsForSeasons(
     config.sport,
@@ -539,6 +540,7 @@ export function extractFeaturesForDataset(
     string,
     Record<string, Record<string, number>>
   > = {};
+
 
   // Get list of advanced features that should be included in rolling calculations
   const advancedFeatures = ['effectiveFgPct', 'trueShootingPct', 'assistRatio', 'turnoverRatio', 'offensiveReboundPct', 'defensiveReboundPct', 'pace'];
@@ -809,6 +811,7 @@ export function extractFeaturesForGame(
     recencyDecay
   );
 
+
   // Get most recent rolling stats (or use all if not enough games)
   const homeLatestGameId = homeGameIds.length > 0 ? homeGameIds[homeGameIds.length - 1] : null;
   const awayLatestGameId = awayGameIds.length > 0 ? awayGameIds[awayGameIds.length - 1] : null;
@@ -835,6 +838,7 @@ export function extractFeaturesForGame(
       }
     }
   }
+
 
   // Add fixed features if enabled
   const oddsArr = db.getMoneylineOdds(gid, config.allowed_providers);
@@ -864,3 +868,4 @@ export function extractFeaturesForGame(
 
   return features;
 }
+

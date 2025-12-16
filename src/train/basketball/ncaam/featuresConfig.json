@@ -13,7 +13,7 @@
         "fieldGoalsMade": true,
         "fieldGoalsAttempted": false,
         "fieldGoalPct": true,
-        "threePointFieldGoalsMade": true,
+        "threePointFieldGoalsMade": false,
         "threePointFieldGoalsAttempted": true,
         "threePointFieldGoalPct": false,
         "freeThrowsMade": false,
@@ -63,7 +63,11 @@
         "headToHeadGames": false,
         "headToHeadWinRate": false,
         "offensiveRating": false,
-        "defensiveRating": false
+        "defensiveRating": false,
+        "fgSuppression": false,
+        "threePtSuppression": false,
+        "scoringSuppression": false,
+        "turnoverInduction": false
     },
     "rolling_windows": [
         5,
@@ -82,7 +86,7 @@
         "temperature": 0.8
     },
     "calibration": {
-        "method": "isotonic",
+        "method": "temperature",
         "temperature": 0.8
     },
     "min_edge": 0.08,
