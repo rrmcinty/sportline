@@ -29,6 +29,48 @@ import {
   getShortHistoricalInsight 
 } from '../../lib/analysis/historicalContext.js';
 
+/**
+ * Calculate a quality score for bet ranking
+ * Prioritizes bets with positive historical ROI, then by EV
+ */
+function calculateBetQualityScore(ev: number, context: any): number {
+  // Base score from EV (0-100 scale)
+  const evScore = Math.max(0, Math.min(100, ev * 100));
+  
+  // Historical ROI bonus/penalty based on actual ROI and recommendation
+  let roiMultiplier = 1.0;
+  
+  // Use the overall recommendation from historical context
+  if (context.overallRecommendation === 'STRONG_BET') {
+    roiMultiplier = 3.0; // Triple weight for strong bets
+  } else if (context.overallRecommendation === 'GOOD_BET') {
+    roiMultiplier = 2.0; // Double weight for good bets
+  } else if (context.overallRecommendation === 'WEAK_BET') {
+    roiMultiplier = 0.5; // Half weight for weak bets
+  } else if (context.overallRecommendation === 'AVOID') {
+    roiMultiplier = 0.1; // Heavy penalty for avoid bets
+  }
+  
+  // Additional penalty for very negative ROI
+  if (context.oddsRangeROI < -0.4) { // Less than -40% ROI
+    roiMultiplier *= 0.1;
+  } else if (context.oddsRangeROI < -0.2) { // Less than -20% ROI
+    roiMultiplier *= 0.3;
+  }
+  
+  // Bonus for positive ROI
+  if (context.oddsRangeROI > 0) {
+    roiMultiplier *= 2.0;
+  }
+  
+  // Additional penalty for high risk
+  if (context.riskLevel === 'HIGH') {
+    roiMultiplier *= 0.5;
+  }
+  
+  return evScore * roiMultiplier;
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -324,7 +366,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     console.log(`✅ ${filteredRecommendations.length} recommendations passed the '${options.filter}' filter`);
   }
 
-  // Sort all recommendations by EV (best bets first)
+  // Sort all recommendations by quality score (best bets first)
   filteredRecommendations.sort((a, b) => {
     const evA = a.recommendation.recommended_side === 'home'
       ? a.recommendation.ev_home!
@@ -332,7 +374,16 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     const evB = b.recommendation.recommended_side === 'home'
       ? b.recommendation.ev_home!
       : b.recommendation.ev_away!;
-    return evB - evA;
+    
+    // Get historical context for quality assessment
+    const contextA = getHistoricalContext(a.recommendation);
+    const contextB = getHistoricalContext(b.recommendation);
+    
+    // Calculate quality score: prioritize positive ROI categories, then EV
+    const qualityScoreA = calculateBetQualityScore(evA, contextA);
+    const qualityScoreB = calculateBetQualityScore(evB, contextB);
+    
+    return qualityScoreB - qualityScoreA;
   });
 
   // Display unified recommendations
