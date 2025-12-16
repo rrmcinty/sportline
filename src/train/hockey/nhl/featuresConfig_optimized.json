@@ -9,31 +9,31 @@
         2025
     ],
     "features": {
-        "goals": true,
+        "goals": false,
         "assists": false,
         "points": false,
         "plusMinus": false,
-        "penaltyMinutes": false,
+        "penaltyMinutes": true,
         "shotsTotal": true,
-        "shootingPct": true,
+        "shootingPct": false,
         "saves": false,
-        "savePct": true,
-        "goalsAgainst": true,
+        "savePct": false,
+        "goalsAgainst": false,
         "avgGoalsAgainst": false,
         "shotsAgainst": false,
-        "faceoffsWon": false,
+        "faceoffsWon": true,
         "faceoffsLost": false,
         "faceoffPercent": true,
         "powerPlayGoals": true,
         "powerPlayAssists": false,
         "powerPlayPct": true,
-        "powerPlayOpportunities": false,
-        "shortHandedGoals": false,
+        "powerPlayOpportunities": true,
+        "shortHandedGoals": true,
         "shortHandedAssists": false,
-        "penaltyKillPct": true,
-        "hits": false,
+        "penaltyKillPct": false,
+        "hits": true,
         "blockedShots": true,
-        "takeaways": false,
+        "takeaways": true,
         "giveaways": true,
         "gameWinningGoals": false,
         "overtimeLosses": false,
@@ -48,9 +48,9 @@
         "awayWinRate5": true,
         "homeAvgMargin5": true,
         "awayAvgMargin5": true,
-        "homeWinRate10": false,
+        "homeWinRate10": true,
         "awayWinRate10": false,
-        "homeAvgMargin10": false,
+        "homeAvgMargin10": true,
         "awayAvgMargin10": false,
         "homeRecentForm": false,
         "awayRecentForm": false,
@@ -75,22 +75,23 @@
         "goalSuppression": false,
         "shotSuppression": false,
         "powerPlaySuppression": false,
-        "penaltyKillEfficiency": false,
+        "penaltyKillEfficiency": true,
         "homeOpponentWinRate": false,
         "awayOpponentWinRate": false,
-        "homeOpponentStrengthRating": true,
-        "awayOpponentStrengthRating": true,
-        "homeRecentOpponentStrength5": true,
-        "awayRecentOpponentStrength5": true,
+        "homeOpponentStrengthRating": false,
+        "awayOpponentStrengthRating": false,
+        "homeRecentOpponentStrength5": false,
+        "awayRecentOpponentStrength5": false,
         "homeRecentOpponentStrength10": false,
         "awayRecentOpponentStrength10": false,
         "sosWinRateDifferential": false,
-        "sosStrengthDifferential": true,
-        "sosRecentStrengthDiff5": true,
+        "sosStrengthDifferential": false,
+        "sosRecentStrengthDiff5": false,
         "sosRecentStrengthDiff10": false
     },
     "rolling_windows": [
-        5
+        5,
+        10
     ],
     "allowed_providers": [
         "ESPN BET",
@@ -103,14 +104,14 @@
         "decay": 0.7
     },
     "regularization": {
-        "lambda": 0.25,
-        "temperature": 0.9
+        "lambda": 0.08,
+        "temperature": 0.75
     },
     "calibration": {
         "method": "temperature",
-        "temperature": 0.9
+        "temperature": 0.75
     },
     "min_edge": 0.04,
-    "min_ev": 0.02,
-    "max_ev": 0.10
+    "min_ev": 0.015,
+    "max_ev": 0.08
 }
