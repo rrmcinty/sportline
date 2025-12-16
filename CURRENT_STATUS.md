@@ -289,12 +289,30 @@ The system is architecturally complete. Performance tuning remains:
 
 ## 📞 Where We Left Off
 
-1. **Just completed:** L2 regularization implementation — 100% probability bug FIXED ✅
-2. **Current state:** Model is working correctly with realistic probabilities
-3. **Next action:** Improve ROI through better feature engineering
-4. **Recommended next steps:**
-   - Add more predictive features (team strength ratings, rest days, etc.)
-   - Explore different markets (spreads, totals)
-   - Fine-tune regularization lambda if needed
+1. **Just completed:** Historical Context for Recommendations — FULLY IMPLEMENTED ✅
+2. **Current state:** Recommendations now show historical ROI data and insights explaining WHY each bet is recommended
+3. **What was added:**
+   - Historical ROI data from backtesting analysis (odds ranges, model confidence, months)
+   - Contextual insights for each recommendation (profitable categories, risk warnings)
+   - Enhanced recommendation display with historical context section
+   - Short historical insights in the main table
+4. **Files modified:**
+   - `src/lib/analysis/historicalContext.ts` - Complete historical context system
+   - `src/cli/commands/recommend.ts` - Enhanced display with historical analysis
+5. **Example output:**
+   ```
+   🎯 Top Recommendations Across All Sports
+   Rank | Sport | Time  | Matchup                        | Pick                | Prob | Odds  | EV    | Edge  | Historical Context
+   -----+-------+-------+--------------------------------+---------------------+------+-------+-------+-------+------------------
+      1 | NCAAM | 07:00 PM | UT Rio Grande Valley Vaqueros @ Lamar Cardinals | UT Rio Grande Valley Vaqueros | 47.8% |  +114 |  2.3% |  1.1% | 🔴 AVOID (-25% ROI)
+   
+   📊 Historical Context & Analysis
+   1. UT Rio Grande Valley Vaqueros @ Lamar Cardinals (NCAAM)
+      Pick: UT Rio Grande Valley Vaqueros
+      🔴 AVOID | 🟢 LOW Risk | Slight Favorites (-110 to -150): -25.0% ROI
+      Key Insights:
+      • ❌ Slight Favorites (-110 to -150) historically unprofitable (-25.0%)
+      • ⚠️ Low model confidence - higher risk
+   ```
 
-The codebase is clean, modular, and the core model is working correctly. The remaining challenge is improving ROI, which is a normal model optimization task.
+The system now provides complete transparency about WHY each recommendation is made, backed by historical data from our profitability analysis. Users can see the historical ROI for similar situations and understand the risk level of each bet.
