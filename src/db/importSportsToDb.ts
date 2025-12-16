@@ -2,23 +2,68 @@ import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 
+// Supported sports configuration
+const SUPPORTED_SPORTS = {
+  // Basketball
+  ncaam: { name: "NCAA Men's Basketball", defaultSeason: 2025 },
+  nba: { name: "NBA Basketball", defaultSeason: 2024 },
+  // Hockey
+  nhl: { name: "NHL Hockey", defaultSeason: 2024 },
+  // Football
+  nfl: { name: "NFL Football", defaultSeason: 2024 },
+  cfb: { name: "College Football", defaultSeason: 2024 }
+};
+
+// Sport-specific stat handling configurations
+const SPORT_STAT_CONFIGS = {
+  basketball: {
+    // Basketball-specific combined stats that need to be split
+    combinedMetrics: {
+      "fieldGoalsMade-fieldGoalsAttempted": ["fieldGoalsMade", "fieldGoalsAttempted"],
+      "threePointFieldGoalsMade-threePointFieldGoalsAttempted": ["threePointFieldGoalsMade", "threePointFieldGoalsAttempted"],
+      "freeThrowsMade-freeThrowsAttempted": ["freeThrowsMade", "freeThrowsAttempted"]
+    }
+  },
+  hockey: {
+    // Hockey stats are typically individual metrics
+    combinedMetrics: {}
+  },
+  football: {
+    // Football stats are typically individual metrics
+    combinedMetrics: {}
+  }
+};
+
+// Map sports to their stat config
+const SPORT_TO_CONFIG = {
+  ncaam: 'basketball',
+  nba: 'basketball',
+  nhl: 'hockey',
+  nfl: 'football',
+  cfb: 'football'
+};
+
 // Parse sport and season from command line arguments
 const sportArg = process.argv[2];
 const seasonArg = process.argv[3];
 
-if (!sportArg || !["ncaam", "nba"].includes(sportArg)) {
-  console.error("Invalid or missing sport argument. Supported sports: ncaam, nba");
-  console.error("Usage: node importBasketballToDb.ts <sport> [season]");
+if (!sportArg || !Object.keys(SUPPORTED_SPORTS).includes(sportArg)) {
+  console.error(`Invalid or missing sport argument. Supported sports: ${Object.keys(SUPPORTED_SPORTS).join(', ')}`);
+  console.error("Usage: node importSportsToDb.ts <sport> [season]");
   console.error("Examples:");
-  console.error("  node importBasketballToDb.ts ncaam 2025");
-  console.error("  node importBasketballToDb.ts nba 2024");
+  console.error("  node importSportsToDb.ts ncaam 2025    # NCAA Men's Basketball");
+  console.error("  node importSportsToDb.ts nba 2024     # NBA Basketball");
+  console.error("  node importSportsToDb.ts nhl 2024     # NHL Hockey");
+  console.error("  node importSportsToDb.ts nfl 2024     # NFL Football");
+  console.error("  node importSportsToDb.ts cfb 2024     # College Football");
   process.exit(1);
 }
 
 const sport = sportArg;
-const season = seasonArg ? parseInt(seasonArg, 10) : 2025;
+const sportConfig = SUPPORTED_SPORTS[sportArg as keyof typeof SUPPORTED_SPORTS];
+const season = seasonArg ? parseInt(seasonArg, 10) : sportConfig.defaultSeason;
 if (isNaN(season)) {
-  console.error("Invalid season argument. Usage: node importBasketballToDb.ts <sport> [season]");
+  console.error("Invalid season argument. Usage: node importSportsToDb.ts <sport> [season]");
   process.exit(1);
 }
 
@@ -38,12 +83,12 @@ for (const file of requiredFiles) {
   if (!fs.existsSync(file)) {
     console.error(`Required file not found: ${file}`);
     console.error("Make sure to run the data ingestion first:");
-    console.error(`  node src/ingest/ingestBasketballToJson.ts ${sport} ${season}`);
+    console.error(`  node dist/ingest/ingestSportsToJson.js ${sport} ${season}`);
     process.exit(1);
   }
 }
 
-console.log(`Starting import for ${sport.toUpperCase()} season ${season}`);
+console.log(`Starting import for ${sportConfig.name} (${sport.toUpperCase()}) season ${season}`);
 console.log(`Data directory: ${dataDir}`);
 console.log(`Database: ${dbPath}`);
 
@@ -154,77 +199,77 @@ function importOdds() {
   console.log(`[odds] Imported ${count} odds.`);
 }
 
-// --- GAME STATS (per-game, not used for season_stats) ---
+// --- GAME STATS (per-game, sport-specific handling) ---
 function importGameStats() {
   console.log(`[game_stats] Importing ${sport.toUpperCase()} game stats...`);
   const stats = JSON.parse(fs.readFileSync(gameStatsPath, "utf8"));
   let count = 0;
   const missingStatsLog = path.join(dataDir, "missing_game_stats.log");
   fs.writeFileSync(missingStatsLog, ""); // clear log at start
-    for (const s of stats) {
-      if (!s.stats || !Array.isArray(s.stats) || s.stats.length === 0) {
-        fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing or empty stats, skipping.\n`);
-        continue;
-      }
-      // Check if game and team exist
-      const gameExists = db.prepare("SELECT 1 FROM games WHERE id = ?").get(s.game_id);
-      const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ? AND sport = ?").get(s.team_id, sport);
-      if (!gameExists || !teamExists) {
-        fs.appendFileSync(missingStatsLog, `Missing reference: game_id: ${s.game_id} exists: ${!!gameExists}, team_id: ${s.team_id} exists: ${!!teamExists}\n`);
-        continue;
-      }
-      for (const stat of s.stats) {
-        const metricName: string = stat.name ?? stat.abbreviation;
-        if (!metricName) {
-          fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing metric_name and abbreviation, skipping stat: ${JSON.stringify(stat)}\n`);
-          continue;
-        }
-
-        // Handle combined stats: split into made/attempted
-        const combinedMetrics: Record<string, [string, string]> = {
-          "fieldGoalsMade-fieldGoalsAttempted": ["fieldGoalsMade", "fieldGoalsAttempted"],
-          "threePointFieldGoalsMade-threePointFieldGoalsAttempted": ["threePointFieldGoalsMade", "threePointFieldGoalsAttempted"],
-          "freeThrowsMade-freeThrowsAttempted": ["freeThrowsMade", "freeThrowsAttempted"]
-        };
-        if (metricName in combinedMetrics && typeof stat.value === "string" && stat.value.includes("-")) {
-          const [made, attempted] = stat.value.split("-").map(Number);
-          const [madeName, attemptedName] = combinedMetrics[metricName];
-          if (!isNaN(made)) {
-            db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
-              s.game_id,
-              s.team_id,
-              sport,
-              season,
-              madeName,
-              made
-            );
-            count++;
-          }
-          if (!isNaN(attempted)) {
-            db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
-              s.game_id,
-              s.team_id,
-              sport,
-              season,
-              attemptedName,
-              attempted
-            );
-            count++;
-          }
-          continue; // skip inserting the combined metric
-        }
-
-        db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
-          s.game_id,
-          s.team_id,
-          sport,
-          season,
-          metricName,
-          stat.value
-        );
-        count++;
-      }
+  
+  // Get sport-specific configuration
+  const sportType = SPORT_TO_CONFIG[sport as keyof typeof SPORT_TO_CONFIG] || 'generic';
+  const statConfig = SPORT_STAT_CONFIGS[sportType as keyof typeof SPORT_STAT_CONFIGS] || { combinedMetrics: {} };
+  
+  for (const s of stats) {
+    if (!s.stats || !Array.isArray(s.stats) || s.stats.length === 0) {
+      fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing or empty stats, skipping.\n`);
+      continue;
     }
+    // Check if game and team exist
+    const gameExists = db.prepare("SELECT 1 FROM games WHERE id = ?").get(s.game_id);
+    const teamExists = db.prepare("SELECT 1 FROM teams WHERE id = ? AND sport = ?").get(s.team_id, sport);
+    if (!gameExists || !teamExists) {
+      fs.appendFileSync(missingStatsLog, `Missing reference: game_id: ${s.game_id} exists: ${!!gameExists}, team_id: ${s.team_id} exists: ${!!teamExists}\n`);
+      continue;
+    }
+    for (const stat of s.stats) {
+      const metricName: string = stat.name ?? stat.abbreviation;
+      if (!metricName) {
+        fs.appendFileSync(missingStatsLog, `game_id: ${s.game_id}, team_id: ${s.team_id} missing metric_name and abbreviation, skipping stat: ${JSON.stringify(stat)}\n`);
+        continue;
+      }
+
+      // Handle sport-specific combined stats: split into made/attempted
+      if (metricName in statConfig.combinedMetrics && typeof stat.value === "string" && stat.value.includes("-")) {
+        const [made, attempted] = stat.value.split("-").map(Number);
+        const [madeName, attemptedName] = (statConfig.combinedMetrics as Record<string, [string, string]>)[metricName];
+        if (!isNaN(made)) {
+          db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+            s.game_id,
+            s.team_id,
+            sport,
+            season,
+            madeName,
+            made
+          );
+          count++;
+        }
+        if (!isNaN(attempted)) {
+          db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+            s.game_id,
+            s.team_id,
+            sport,
+            season,
+            attemptedName,
+            attempted
+          );
+          count++;
+        }
+        continue; // skip inserting the combined metric
+      }
+
+      db.prepare(`INSERT INTO game_stats (game_id, team_id, sport, season, metric_name, metric_value) VALUES (?, ?, ?, ?, ?, ?);`).run(
+        s.game_id,
+        s.team_id,
+        sport,
+        season,
+        metricName,
+        stat.value
+      );
+      count++;
+    }
+  }
   console.log(`[game_stats] Imported ${count} game stats.`);
 }
 
@@ -271,7 +316,7 @@ function main() {
     importOdds();
     importGameStats();
     importSeasonStats();
-    console.log(`✅ Import from JSON files complete for ${sport.toUpperCase()} season ${season}.`);
+    console.log(`✅ Import from JSON files complete for ${sportConfig.name} (${sport.toUpperCase()}) season ${season}.`);
   } catch (error) {
     console.error("❌ Import failed:", error);
     process.exit(1);
