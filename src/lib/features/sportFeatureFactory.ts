@@ -15,6 +15,11 @@ import {
   computeHockeyOffensiveDefensiveRatings,
   getHockeyAdvancedFeatures
 } from './hockey/hockeyFeatures.js';
+import { 
+  calculateFootballAdvancedStats, 
+  computeFootballOffensiveDefensiveRatings,
+  getFootballAdvancedFeatures
+} from './football/footballFeatures.js';
 
 // Sport category mapping
 const SPORT_CATEGORIES: Record<string, string> = {
@@ -40,8 +45,7 @@ export function calculateAdvancedStats(
     case 'hockey':
       return calculateHockeyAdvancedStats(stats);
     case 'football':
-      // TODO: Implement football-specific advanced stats
-      return {};
+      return calculateFootballAdvancedStats(stats);
     default:
       return {};
   }
@@ -66,8 +70,7 @@ export function computeOffensiveDefensiveRatings(
     case 'hockey':
       return computeHockeyOffensiveDefensiveRatings(homeId, awayId, gameId, games, db);
     case 'football':
-      // TODO: Implement football-specific ratings
-      return { homeORtg: 100, homeDRtg: 100, awayORtg: 100, awayDRtg: 100 };
+      return computeFootballOffensiveDefensiveRatings(homeId, awayId, gameId, games, db);
     default:
       return { homeORtg: 100, homeDRtg: 100, awayORtg: 100, awayDRtg: 100 };
   }
@@ -85,8 +88,7 @@ export function getAdvancedFeatures(sport: string): string[] {
     case 'hockey':
       return getHockeyAdvancedFeatures();
     case 'football':
-      // TODO: Implement football-specific features
-      return [];
+      return getFootballAdvancedFeatures();
     default:
       return [];
   }

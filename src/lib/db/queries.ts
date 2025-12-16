@@ -72,6 +72,34 @@ export class DatabaseQueries {
   }
 
   /**
+   * Parse metric value, handling special formats like efficiency fractions
+   */
+  private parseMetricValue(metricName: string, metricValue: string | number): number {
+    // If already a number, return it
+    if (typeof metricValue === 'number') {
+      return metricValue;
+    }
+    
+    // Handle efficiency fractions (e.g., "3-12" for third down efficiency)
+    if ((metricName === 'thirdDownEff' || metricName === 'fourthDownEff') && 
+        metricValue.includes('-')) {
+      const parts = metricValue.split('-');
+      if (parts.length === 2) {
+        const made = parseFloat(parts[0]);
+        const attempted = parseFloat(parts[1]);
+        if (attempted > 0) {
+          return made / attempted; // Convert to percentage (0-1)
+        }
+      }
+      return 0; // Default for invalid formats
+    }
+    
+    // Handle regular numeric values
+    const numValue = Number(metricValue);
+    return isNaN(numValue) ? 0 : numValue;
+  }
+
+  /**
    * Get game stats for a specific game and team
    */
   getGameStats(gameId: string, teamId: string): Record<string, number> {
@@ -87,7 +115,7 @@ export class DatabaseQueries {
 
     const stats: Record<string, number> = {};
     for (const row of rows) {
-      stats[row.metric_name] = Number(row.metric_value);
+      stats[row.metric_name] = this.parseMetricValue(row.metric_name, row.metric_value);
     }
     return stats;
   }
@@ -129,7 +157,7 @@ export class DatabaseQueries {
         teamMap.set(row.game_id, {});
       }
       const gameStats = teamMap.get(row.game_id)!;
-      gameStats[row.metric_name] = Number(row.metric_value);
+      gameStats[row.metric_name] = this.parseMetricValue(row.metric_name, row.metric_value);
     }
 
     return result;
