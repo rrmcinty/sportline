@@ -15,6 +15,10 @@ import {
   printBacktestSummary,
 } from '../../lib/backtest/backtester.js';
 import { getThresholdRecommendations } from '../../lib/backtest/thresholdOptimizer.js';
+import { 
+  analyzeProfitableBets, 
+  printProfitabilityAnalysis 
+} from '../../lib/backtest/profitabilityAnalyzer.js';
 import type { BacktestResult } from '../../lib/db/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -158,6 +162,23 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   }
 
   console.log('======================================================\n');
+
+  // Step 6: Analyze profitable bet characteristics
+  console.log('\n[6/6] Analyzing profitable bet characteristics...\n');
+  
+  // Use the recommended thresholds for profitability analysis
+  const recommendedEdge = thresholdRecs.recommended.min_edge;
+  const recommendedEV = thresholdRecs.recommended.min_ev;
+  
+  const profitabilityAnalysis = analyzeProfitableBets(
+    recommendations,
+    dataset,
+    recommendedEdge,
+    recommendedEV,
+    100 // $100 unit size
+  );
+  
+  printProfitabilityAnalysis(profitabilityAnalysis);
 
   // Calculate overall metrics
   const totalGames = recommendations.length;

@@ -17,7 +17,12 @@ import {
   formatPercentage,
   formatCurrency,
 } from '../../lib/odds/evCalculator.js';
-import type { FeatureConfig, Recommendation } from '../../lib/db/types.js';
+import type { FeatureConfig, Recommendation, GameFeatures } from '../../lib/db/types.js';
+import { 
+  applySituationalFilters, 
+  printFilterStats, 
+  getFilterConfig 
+} from '../../lib/filters/situationalFilter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +35,7 @@ interface RecommendOptions {
   bankroll?: string;
   dailyBudget?: string;
   all?: boolean; // New flag to show all games
+  filter?: string; // Situational filter: 'profitable', 'conservative', 'none'
 }
 
 // Helper function to get recommendations for a specific sport
@@ -250,8 +256,22 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     return;
   }
 
+  // Apply situational filtering if requested
+  let filteredRecommendations = allRecommendations;
+  
+  if (options.filter && options.filter !== 'none') {
+    console.log(`\n[FILTER] Applying '${options.filter}' situational filters...`);
+    
+    // We need to collect GameFeatures for filtering
+    // For now, we'll need to reconstruct this data or modify the flow
+    // This is a limitation of the current architecture - we need GameFeatures for filtering
+    console.log(`⚠️  Situational filtering requires GameFeatures data.`);
+    console.log(`   This feature will be available in a future update.`);
+    console.log(`   For now, showing all recommendations that meet basic thresholds.`);
+  }
+
   // Sort all recommendations by EV (best bets first)
-  allRecommendations.sort((a, b) => {
+  filteredRecommendations.sort((a, b) => {
     const evA = a.recommendation.recommended_side === 'home'
       ? a.recommendation.ev_home!
       : a.recommendation.ev_away!;
@@ -262,7 +282,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   });
 
   // Display unified recommendations
-  displayUnifiedRecommendations(allRecommendations, options);
+  displayUnifiedRecommendations(filteredRecommendations, options);
 }
 
 // Helper function to display unified recommendations across all sports

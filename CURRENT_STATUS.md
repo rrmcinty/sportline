@@ -298,14 +298,3 @@ The system is architecturally complete. Performance tuning remains:
    - Fine-tune regularization lambda if needed
 
 The codebase is clean, modular, and the core model is working correctly. The remaining challenge is improving ROI, which is a normal model optimization task.
-
-Recommendations:
-Short-term:
-Raise thresholds dramatically (min 5-8% edge, 3-5% EV)
-Only bet 80%+ confidence predictions (where model shows positive ROI)
-Implement stricter Kelly sizing to limit exposure
-Long-term:
-Recalibrate probabilities using isotonic regression or beta calibration
-Feature engineering: Add new predictive features
-Try ensemble methods (Random Forest, XGBoost)
-Check for data leakage or overfitting issues

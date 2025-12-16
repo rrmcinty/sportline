@@ -10,6 +10,7 @@ import { train } from './commands/train.js';
 import { recommend } from './commands/recommend.js';
 import { backtest } from './commands/backtest.js';
 import { update } from './commands/update.js';
+import { analyze } from './commands/analyze.js';
 
 const program = new Command();
 
@@ -76,6 +77,21 @@ program
       await update(options);
     } catch (error) {
       console.error('Error during update:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('analyze')
+  .description('Analyze profitable bet characteristics and test situational filters')
+  .option('--sport <sport>', 'Sport to analyze (ncaam, nba, nfl, etc.)', 'ncaam')
+  .option('--config <path>', 'Path to feature config file')
+  .option('--filter <filter>', 'Filter configuration to test (profitable, conservative, none)', 'profitable')
+  .action(async (options) => {
+    try {
+      await analyze(options);
+    } catch (error) {
+      console.error('Error during analysis:', error);
       process.exit(1);
     }
   });
