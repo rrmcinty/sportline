@@ -22,10 +22,11 @@ Sportline is a **production-ready sports betting recommendation system** focused
 
 ### ✅ **Recent Major Fixes (Last 2 Weeks)**
 1. **100% Probability Bug**: Fixed with custom L2-regularized LR → Realistic 9-71% range
-2. **Timezone Issues**: Fixed UTC→EST conversion → Correct date filtering
-3. **Kelly Criterion**: Added bet sizing with `--bankroll` and `--daily-budget`
-4. **Team Names**: Added full team names ("Butler Bulldogs" vs "Bulldogs")
-5. **Date Defaulting**: `recommend --sport ncaam` now defaults to today correctly
+2. **Isotonic Calibration Bug**: Fixed by switching to Temperature Scaling only → Reliable predictions
+3. **Timezone Issues**: Fixed UTC→EST conversion → Correct date filtering
+4. **Kelly Criterion**: Added bet sizing with `--bankroll` and `--daily-budget`
+5. **Team Names**: Added full team names ("Butler Bulldogs" vs "Bulldogs")
+6. **Date Defaulting**: `recommend --sport ncaam` now defaults to today correctly
 
 ## 🏗️ **ARCHITECTURE OVERVIEW**
 

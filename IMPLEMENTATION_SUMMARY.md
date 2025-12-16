@@ -276,6 +276,7 @@ node dist/cli/index.js backtest --sport ncaam
    - Try ensemble models
    - Hyperparameter tuning
    - Add more recent data
+   - **Investigate Profitable Bet Characteristics**: Analyze backtest results to find common situations or characteristics of profitable bets to combine with model predictions.
 
 2. **Additional Features**
    - Player injury data
