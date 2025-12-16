@@ -1,0 +1,945 @@
+[
+{
+  "eventId": "401779840",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401779840",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401779840",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -102,
+  "awayTeamOdds": -118
+},
+{
+  "eventId": "401831583",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401831583",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401831583",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -155
+},
+{
+  "eventId": "401778324",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778324",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401778324",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 164,
+  "awayTeamOdds": -198
+},
+{
+  "eventId": "401838053",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401838053",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401838053",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -118,
+  "awayTeamOdds": -102
+},
+{
+  "eventId": "401778329",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401778329",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401778329",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -142,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401778318",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -8.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778318",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401778318",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -310,
+  "awayTeamOdds": 250
+},
+{
+  "eventId": "401778319",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401778319",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 56.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778319",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -192,
+  "awayTeamOdds": 160
+},
+{
+  "eventId": "401778302",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -10,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778302",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 55.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778302",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -380,
+  "awayTeamOdds": 300
+},
+{
+  "eventId": "401778312",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401778312",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778312",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -102,
+  "awayTeamOdds": -118
+},
+{
+  "eventId": "401778313",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778313",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778313",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -425,
+  "awayTeamOdds": 330
+},
+{
+  "eventId": "401778333",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 7,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401778333",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778333",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 210,
+  "awayTeamOdds": -258
+},
+{
+  "eventId": "401778325",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -8.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401778325",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401778325",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -325,
+  "awayTeamOdds": 260
+},
+{
+  "eventId": "401778317",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -102,
+  "awayTeamOdds": -118
+},
+{
+  "eventId": "401778317",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401778317",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -162,
+  "awayTeamOdds": 136
+},
+{
+  "eventId": "401778305",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778305",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 61.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401778305",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -155
+},
+{
+  "eventId": "401778316",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 7,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401778316",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 57.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401778316",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 230,
+  "awayTeamOdds": -285
+},
+{
+  "eventId": "401778315",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -8.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778315",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401778315",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -325,
+  "awayTeamOdds": 260
+},
+{
+  "eventId": "401778320",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778320",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778320",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -192,
+  "awayTeamOdds": 160
+},
+{
+  "eventId": "401778326",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778326",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 60.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401778326",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 120,
+  "awayTeamOdds": -142
+},
+{
+  "eventId": "401778323",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778323",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401778323",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -148,
+  "awayTeamOdds": 124
+},
+{
+  "eventId": "401778303",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401778303",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778303",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401779843",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -21,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401779843",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401779843",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -2100,
+  "awayTeamOdds": 1100
+},
+{
+  "eventId": "401778306",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401778306",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401778306",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -175,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401778309",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778309",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401778309",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -290,
+  "awayTeamOdds": 235
+},
+{
+  "eventId": "401778307",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778307",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 58.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778307",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -205,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401778314",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778314",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401778314",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -142,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401778330",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401778330",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778330",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -285,
+  "awayTeamOdds": 230
+},
+{
+  "eventId": "401778334",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401778334",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 56.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401778334",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -142,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401833989",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401833989",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401833989",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -180,
+  "awayTeamOdds": 150
+},
+{
+  "eventId": "401778322",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401778322",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401778322",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -265,
+  "awayTeamOdds": 215
+},
+{
+  "eventId": "401778331",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -16.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401778331",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401778331",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -750,
+  "awayTeamOdds": 525
+},
+{
+  "eventId": "401778321",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778321",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 55.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778321",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -155
+},
+{
+  "eventId": "401778311",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401778311",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 62.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401778311",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 164,
+  "awayTeamOdds": -198
+},
+{
+  "eventId": "401778304",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401778304",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778304",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -155,
+  "awayTeamOdds": 130
+},
+{
+  "eventId": "401779842",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -17.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401779842",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 56.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401779842",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -850,
+  "awayTeamOdds": 575
+},
+{
+  "eventId": "401778332",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401778332",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401778332",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -410,
+  "awayTeamOdds": 320
+},
+{
+  "eventId": "401779841",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -118,
+  "awayTeamOdds": -102
+},
+{
+  "eventId": "401779841",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401779841",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -166,
+  "awayTeamOdds": 140
+},
+{
+  "eventId": "401778327",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778327",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 57.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401778327",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 160,
+  "awayTeamOdds": -192
+},
+{
+  "eventId": "401778308",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401778308",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401778308",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -135,
+  "awayTeamOdds": 114
+},
+{
+  "eventId": "401778328",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778328",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401778328",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -218,
+  "awayTeamOdds": 180
+},
+{
+  "eventId": "401833990",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401833990",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401833990",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401778310",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 4,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401778310",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 56.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401778310",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 154,
+  "awayTeamOdds": -185
+}
+]

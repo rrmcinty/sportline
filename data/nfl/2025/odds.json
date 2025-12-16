@@ -1,0 +1,9505 @@
+[
+{
+  "eventId": "401772830",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772830",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772830",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772830",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 165,
+  "awayTeamOdds": -225
+},
+{
+  "eventId": "401772830",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -650,
+  "underOdds": 375
+},
+{
+  "eventId": "401772830",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 115,
+  "awayTeamOdds": -145
+},
+{
+  "eventId": "401772718",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772718",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772718",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 210,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772718",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": 1400,
+  "awayTeamOdds": -5000
+},
+{
+  "eventId": "401772718",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": 1400,
+  "underOdds": -5000
+},
+{
+  "eventId": "401772726",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772726",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772726",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -800,
+  "awayTeamOdds": 500
+},
+{
+  "eventId": "401772726",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -27.5,
+  "homeTeamOdds": 150,
+  "awayTeamOdds": -215
+},
+{
+  "eventId": "401772726",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -180,
+  "underOdds": 130
+},
+{
+  "eventId": "401772847",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -175,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772847",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772847",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -240,
+  "awayTeamOdds": 200
+},
+{
+  "eventId": "401772847",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -29.5,
+  "homeTeamOdds": -175,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772847",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": 165,
+  "underOdds": -225
+},
+{
+  "eventId": "401772838",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772838",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772838",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 180,
+  "awayTeamOdds": -215
+},
+{
+  "eventId": "401772838",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -29.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772838",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 32.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772843",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772843",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772843",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772843",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772843",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 33.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772843",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -6000,
+  "awayTeamOdds": 1200
+},
+{
+  "eventId": "401772858",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772858",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772858",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 135,
+  "awayTeamOdds": -155
+},
+{
+  "eventId": "401772858",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 125,
+  "awayTeamOdds": -175
+},
+{
+  "eventId": "401772858",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 63.5,
+  "overOdds": 110,
+  "underOdds": -140
+},
+{
+  "eventId": "401772858",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -2500,
+  "awayTeamOdds": 800
+},
+{
+  "eventId": "401772860",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772860",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772860",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772860",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772860",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 19.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772860",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 1400,
+  "awayTeamOdds": -3500
+},
+{
+  "eventId": "401772828",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772828",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772828",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -210,
+  "awayTeamOdds": 175
+},
+{
+  "eventId": "401772828",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -15.5,
+  "homeTeamOdds": -700,
+  "awayTeamOdds": 400
+},
+{
+  "eventId": "401772828",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 36.5,
+  "overOdds": 350,
+  "underOdds": -600
+},
+{
+  "eventId": "401772918",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772918",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772918",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772918",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772918",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 72.5,
+  "overOdds": 165,
+  "underOdds": -225
+},
+{
+  "eventId": "401772918",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772812",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772812",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772812",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -240,
+  "awayTeamOdds": 200
+},
+{
+  "eventId": "401772812",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772812",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 55.5,
+  "overOdds": 400,
+  "underOdds": -700
+},
+{
+  "eventId": "401772812",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3000,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772852",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772852",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772852",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772852",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772852",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772852",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -4000,
+  "awayTeamOdds": 1000
+},
+{
+  "eventId": "401772743",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772743",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772743",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 125,
+  "awayTeamOdds": -145
+},
+{
+  "eventId": "401772743",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 31.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772743",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": -150,
+  "underOdds": 115
+},
+{
+  "eventId": "401772727",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772727",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772727",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 220,
+  "awayTeamOdds": -270
+},
+{
+  "eventId": "401772727",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 17.5,
+  "homeTeamOdds": 750,
+  "awayTeamOdds": -3500
+},
+{
+  "eventId": "401772727",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -275,
+  "underOdds": 185
+},
+{
+  "eventId": "401772922",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772922",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772922",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -425,
+  "awayTeamOdds": 320
+},
+{
+  "eventId": "401772922",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 1400,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772922",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 2200,
+  "underOdds": -10000
+},
+{
+  "eventId": "401772922",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2000,
+  "awayTeamOdds": -20000
+},
+{
+  "eventId": "401772865",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772865",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772865",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 300,
+  "awayTeamOdds": -400
+},
+{
+  "eventId": "401772865",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 25.5,
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772865",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772937",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -11.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772937",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772937",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -750,
+  "awayTeamOdds": 475
+},
+{
+  "eventId": "401772937",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772937",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": 2200,
+  "underOdds": -10000
+},
+{
+  "eventId": "401772740",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -14.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772740",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772740",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1600,
+  "awayTeamOdds": 800
+},
+{
+  "eventId": "401772740",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772740",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -120,
+  "underOdds": -110
+},
+{
+  "eventId": "401772741",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772741",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772741",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 120,
+  "awayTeamOdds": -140
+},
+{
+  "eventId": "401772741",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -23.5,
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772741",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": 145,
+  "underOdds": -200
+},
+{
+  "eventId": "401772730",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772730",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772730",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -340,
+  "awayTeamOdds": 270
+},
+{
+  "eventId": "401772730",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772730",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -1200,
+  "underOdds": 550
+},
+{
+  "eventId": "401772747",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772747",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772747",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -450,
+  "awayTeamOdds": 340
+},
+{
+  "eventId": "401772747",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772747",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 36.5,
+  "overOdds": -175,
+  "underOdds": 125
+},
+{
+  "eventId": "401772747",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 900,
+  "awayTeamOdds": -3000
+},
+{
+  "eventId": "401772919",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772919",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772919",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -170,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772919",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 9.5,
+  "homeTeamOdds": 550,
+  "awayTeamOdds": -1400
+},
+{
+  "eventId": "401772919",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 27.5,
+  "overOdds": -190,
+  "underOdds": 135
+},
+{
+  "eventId": "401772739",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772739",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772739",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -145,
+  "awayTeamOdds": 125
+},
+{
+  "eventId": "401772739",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772739",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 58.5,
+  "overOdds": -1400,
+  "underOdds": 550
+},
+{
+  "eventId": "401772739",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2000
+},
+{
+  "eventId": "401772938",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772938",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772938",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772938",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -1400,
+  "awayTeamOdds": 550
+},
+{
+  "eventId": "401772938",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": 125,
+  "underOdds": -175
+},
+{
+  "eventId": "401772938",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772815",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772815",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772815",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 170,
+  "awayTeamOdds": -200
+},
+{
+  "eventId": "401772815",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772815",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772815",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772872",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -13.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772872",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772872",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1000,
+  "awayTeamOdds": 600
+},
+{
+  "eventId": "401772872",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772872",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 29.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772789",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772789",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772789",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772789",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772789",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 145,
+  "awayTeamOdds": -170
+},
+{
+  "eventId": "401772789",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 18.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772789",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 30.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772877",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772877",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772877",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -250,
+  "awayTeamOdds": 210
+},
+{
+  "eventId": "401772877",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 8.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772877",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 29.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772855",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772855",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772855",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 230,
+  "awayTeamOdds": -280
+},
+{
+  "eventId": "401772855",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 13.5,
+  "homeTeamOdds": 400,
+  "awayTeamOdds": -700
+},
+{
+  "eventId": "401772855",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 20.5,
+  "overOdds": 400,
+  "underOdds": -700
+},
+{
+  "eventId": "401772855",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3000,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772924",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772924",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772924",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772924",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -8.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772924",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 30.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772943",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772943",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772943",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 360,
+  "awayTeamOdds": -500
+},
+{
+  "eventId": "401772943",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 22.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2000
+},
+{
+  "eventId": "401772943",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 34.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772882",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772882",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772882",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -225,
+  "awayTeamOdds": 190
+},
+{
+  "eventId": "401772882",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -140
+},
+{
+  "eventId": "401772882",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772882",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2000,
+  "awayTeamOdds": -10000
+},
+{
+  "eventId": "401772776",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772776",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772776",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -225,
+  "awayTeamOdds": 190
+},
+{
+  "eventId": "401772776",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -11.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772776",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 75.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772885",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": 103,
+  "awayTeamOdds": -122
+},
+{
+  "eventId": "401772885",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772885",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 180,
+  "awayTeamOdds": -215
+},
+{
+  "eventId": "401772885",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 19.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772885",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 63.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772768",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -104,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772768",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -104,
+  "underOdds": -110
+},
+{
+  "eventId": "401772768",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 119,
+  "awayTeamOdds": -135
+},
+{
+  "eventId": "401772768",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772768",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772768",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772894",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 10,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772894",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772894",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 425,
+  "awayTeamOdds": -575
+},
+{
+  "eventId": "401772894",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 9.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772894",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772894",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 380,
+  "awayTeamOdds": -550
+},
+{
+  "eventId": "401772894",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772894",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 65.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772773",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772773",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -107,
+  "underOdds": -107
+},
+{
+  "eventId": "401772773",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -340,
+  "awayTeamOdds": 280
+},
+{
+  "eventId": "401772773",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -22.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772773",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 66.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772773",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772763",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772763",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772763",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -240,
+  "awayTeamOdds": 200
+},
+{
+  "eventId": "401772763",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772763",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772818",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772818",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772818",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -185,
+  "awayTeamOdds": 155
+},
+{
+  "eventId": "401772818",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 9.5,
+  "homeTeamOdds": 200,
+  "awayTeamOdds": -290
+},
+{
+  "eventId": "401772818",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772820",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772820",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -115,
+  "underOdds": -115
+},
+{
+  "eventId": "401772820",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -102,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401772820",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772820",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -360,
+  "awayTeamOdds": 300
+},
+{
+  "eventId": "401772820",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772820",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 32.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772820",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3500
+},
+{
+  "eventId": "401772889",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772889",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772889",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772889",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 9.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772889",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772912",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772912",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772912",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -155
+},
+{
+  "eventId": "401772782",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -14.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772782",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772782",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1600,
+  "awayTeamOdds": 800
+},
+{
+  "eventId": "401772782",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772782",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 33.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772782",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772795",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772795",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772795",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 120,
+  "awayTeamOdds": -142
+},
+{
+  "eventId": "401772902",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -6,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772902",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772902",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -285,
+  "awayTeamOdds": 230
+},
+{
+  "eventId": "401772908",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772908",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772908",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 124,
+  "awayTeamOdds": -148
+},
+{
+  "eventId": "401772802",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 10,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772802",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772802",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 455,
+  "awayTeamOdds": -575
+},
+{
+  "eventId": "401772783",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772783",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772783",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772783",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 150,
+  "awayTeamOdds": -215
+},
+{
+  "eventId": "401772783",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": 250,
+  "underOdds": -400
+},
+{
+  "eventId": "401772783",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 190,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772893",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772893",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772893",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772893",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772893",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 135,
+  "awayTeamOdds": -155
+},
+{
+  "eventId": "401772893",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -375,
+  "awayTeamOdds": 240
+},
+{
+  "eventId": "401772893",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772893",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -500,
+  "awayTeamOdds": 320
+},
+{
+  "eventId": "401772636",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772636",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772636",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -270,
+  "awayTeamOdds": 220
+},
+{
+  "eventId": "401772636",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772636",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772636",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -50000,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772760",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772760",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772760",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -340,
+  "awayTeamOdds": 270
+},
+{
+  "eventId": "401772760",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 24.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772760",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772760",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3000,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772863",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772863",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772863",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 260,
+  "awayTeamOdds": -320
+},
+{
+  "eventId": "401772863",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772863",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772948",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -6,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772948",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772948",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -285,
+  "awayTeamOdds": 230
+},
+{
+  "eventId": "401772946",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -109
+},
+{
+  "eventId": "401772946",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -102,
+  "underOdds": -112
+},
+{
+  "eventId": "401772946",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 205,
+  "awayTeamOdds": -245
+},
+{
+  "eventId": "401772946",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3500
+},
+{
+  "eventId": "401772946",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772946",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -185,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772900",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 7,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772900",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772900",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 285,
+  "awayTeamOdds": -360
+},
+{
+  "eventId": "401772901",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 9.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772901",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772901",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 370,
+  "awayTeamOdds": -485
+},
+{
+  "eventId": "401772771",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 8.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772771",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772771",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 360,
+  "awayTeamOdds": -500
+},
+{
+  "eventId": "401772771",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -16.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772771",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772856",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -8.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772856",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772856",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -425,
+  "awayTeamOdds": 320
+},
+{
+  "eventId": "401772856",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 1400
+},
+{
+  "eventId": "401772856",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 61.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772856",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -600,
+  "awayTeamOdds": 400
+},
+{
+  "eventId": "401772759",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772759",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772759",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -145,
+  "awayTeamOdds": 125
+},
+{
+  "eventId": "401772759",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3500
+},
+{
+  "eventId": "401772759",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772759",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2500
+},
+{
+  "eventId": "401772876",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772876",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772876",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 195,
+  "awayTeamOdds": -230
+},
+{
+  "eventId": "401772876",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772876",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772914",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401772914",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772914",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 120,
+  "awayTeamOdds": -142
+},
+{
+  "eventId": "401772777",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -122,
+  "awayTeamOdds": 102
+},
+{
+  "eventId": "401772777",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772777",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 320,
+  "awayTeamOdds": -425
+},
+{
+  "eventId": "401772777",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772777",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772777",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 800,
+  "awayTeamOdds": -1600
+},
+{
+  "eventId": "401772903",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772903",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772903",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -625,
+  "awayTeamOdds": 455
+},
+{
+  "eventId": "401772796",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772796",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772796",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 136,
+  "awayTeamOdds": -162
+},
+{
+  "eventId": "401772844",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772844",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772844",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772844",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -16.5,
+  "homeTeamOdds": -180,
+  "awayTeamOdds": 130
+},
+{
+  "eventId": "401772844",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": 120,
+  "underOdds": -160
+},
+{
+  "eventId": "401772810",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772810",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772810",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772810",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -190,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772810",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -1200,
+  "underOdds": 550
+},
+{
+  "eventId": "401772810",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 1400,
+  "awayTeamOdds": -4000
+},
+{
+  "eventId": "401772835",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772835",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772835",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -280,
+  "awayTeamOdds": 230
+},
+{
+  "eventId": "401772835",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -31.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772835",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 76.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772717",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772717",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772717",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -240,
+  "awayTeamOdds": 200
+},
+{
+  "eventId": "401772717",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772717",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772930",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772930",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772930",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -118,
+  "awayTeamOdds": 103
+},
+{
+  "eventId": "401772930",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": -104,
+  "underOdds": -110
+},
+{
+  "eventId": "401772930",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -400,
+  "awayTeamOdds": 325
+},
+{
+  "eventId": "401772930",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 17.5,
+  "homeTeamOdds": 1400,
+  "awayTeamOdds": -5000
+},
+{
+  "eventId": "401772930",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772742",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772742",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772742",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -140,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401772742",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 1400,
+  "awayTeamOdds": -5000
+},
+{
+  "eventId": "401772742",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -175,
+  "underOdds": 125
+},
+{
+  "eventId": "401772742",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -150,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401772895",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772895",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772895",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772895",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772895",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -210,
+  "awayTeamOdds": 175
+},
+{
+  "eventId": "401772895",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772895",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": 185,
+  "underOdds": -275
+},
+{
+  "eventId": "401772895",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -700,
+  "awayTeamOdds": 425
+},
+{
+  "eventId": "401772791",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772791",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772791",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -278,
+  "awayTeamOdds": 225
+},
+{
+  "eventId": "401772829",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772829",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772829",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 180,
+  "awayTeamOdds": -215
+},
+{
+  "eventId": "401772829",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772829",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772854",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 9.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772854",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772854",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 400,
+  "awayTeamOdds": -600
+},
+{
+  "eventId": "401772854",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": 2200,
+  "awayTeamOdds": -10000
+},
+{
+  "eventId": "401772854",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 58.5,
+  "overOdds": -550,
+  "underOdds": 320
+},
+{
+  "eventId": "401772716",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772716",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772716",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -425,
+  "awayTeamOdds": 320
+},
+{
+  "eventId": "401772716",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -24.5,
+  "homeTeamOdds": -20000,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772716",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 30.5,
+  "overOdds": -110,
+  "underOdds": -120
+},
+{
+  "eventId": "401772731",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772731",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772731",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -170,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772731",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -38.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772731",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 61.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772765",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772765",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772765",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 140,
+  "awayTeamOdds": -165
+},
+{
+  "eventId": "401772765",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772765",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 68.5,
+  "overOdds": -275,
+  "underOdds": 185
+},
+{
+  "eventId": "401772765",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": -20000
+},
+{
+  "eventId": "401772780",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772780",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": 105,
+  "underOdds": -125
+},
+{
+  "eventId": "401772780",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -140,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401772780",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772780",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772780",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772875",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772875",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772875",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -225,
+  "awayTeamOdds": 190
+},
+{
+  "eventId": "401772875",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772875",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772875",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772804",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772804",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772804",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -148,
+  "awayTeamOdds": 124
+},
+{
+  "eventId": "401772861",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772861",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772861",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401772861",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -11.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772861",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772758",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772758",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772758",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -250,
+  "awayTeamOdds": 210
+},
+{
+  "eventId": "401772758",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 200,
+  "awayTeamOdds": -290
+},
+{
+  "eventId": "401772758",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 78.5,
+  "overOdds": 220,
+  "underOdds": -325
+},
+{
+  "eventId": "401772758",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 200,
+  "awayTeamOdds": -260
+},
+{
+  "eventId": "401772941",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772941",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772941",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 200,
+  "awayTeamOdds": -240
+},
+{
+  "eventId": "401772941",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772941",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 60.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772941",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -50000,
+  "awayTeamOdds": 2000
+},
+{
+  "eventId": "401772897",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772897",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772897",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -305,
+  "awayTeamOdds": 245
+},
+{
+  "eventId": "401772850",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772850",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772850",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -130,
+  "awayTeamOdds": 110
+},
+{
+  "eventId": "401772850",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 20.5,
+  "homeTeamOdds": -250,
+  "awayTeamOdds": 175
+},
+{
+  "eventId": "401772850",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -175,
+  "underOdds": 125
+},
+{
+  "eventId": "401772834",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772834",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772834",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -210,
+  "awayTeamOdds": 175
+},
+{
+  "eventId": "401772834",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -2000,
+  "awayTeamOdds": 750
+},
+{
+  "eventId": "401772834",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 77.5,
+  "overOdds": 120,
+  "underOdds": -160
+},
+{
+  "eventId": "401772834",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -165
+},
+{
+  "eventId": "401772510",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -140
+},
+{
+  "eventId": "401772510",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -130,
+  "underOdds": 100
+},
+{
+  "eventId": "401772510",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -400,
+  "awayTeamOdds": 300
+},
+{
+  "eventId": "401772510",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772510",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 160,
+  "underOdds": -250
+},
+{
+  "eventId": "401772864",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772864",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772864",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -130,
+  "awayTeamOdds": 110
+},
+{
+  "eventId": "401772864",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -22.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772864",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 68.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772725",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772725",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772725",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401772725",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772725",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -1200,
+  "underOdds": 550
+},
+{
+  "eventId": "401772725",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -350,
+  "awayTeamOdds": 250
+},
+{
+  "eventId": "401772904",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401772904",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772904",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -375,
+  "awayTeamOdds": 295
+},
+{
+  "eventId": "401772621",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772621",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772621",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7,
+  "homeTeamOdds": -118,
+  "awayTeamOdds": 103
+},
+{
+  "eventId": "401772621",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": 100
+},
+{
+  "eventId": "401772621",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -355,
+  "awayTeamOdds": 295
+},
+{
+  "eventId": "401772621",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772621",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772621",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 4000,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772846",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772846",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772846",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -600,
+  "awayTeamOdds": 400
+},
+{
+  "eventId": "401772846",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -23.5,
+  "homeTeamOdds": -20000,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772846",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 2200,
+  "underOdds": -10000
+},
+{
+  "eventId": "401772880",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772880",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772880",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -155,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772880",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772880",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 27.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772880",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 240,
+  "awayTeamOdds": -350
+},
+{
+  "eventId": "401772754",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772754",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772754",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -140,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401772754",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -24.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772754",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772754",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3500
+},
+{
+  "eventId": "401772633",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772633",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772633",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 170,
+  "awayTeamOdds": -200
+},
+{
+  "eventId": "401772633",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772633",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 31.5,
+  "overOdds": -1600,
+  "underOdds": 600
+},
+{
+  "eventId": "401772633",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2000,
+  "awayTeamOdds": -10000
+},
+{
+  "eventId": "401772762",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772762",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772762",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -210,
+  "awayTeamOdds": 175
+},
+{
+  "eventId": "401772762",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -20.5,
+  "homeTeamOdds": 550,
+  "awayTeamOdds": -1200
+},
+{
+  "eventId": "401772762",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 68.5,
+  "overOdds": 300,
+  "underOdds": -500
+},
+{
+  "eventId": "401772762",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2000
+},
+{
+  "eventId": "401772752",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -13.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772752",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772752",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1000,
+  "awayTeamOdds": 600
+},
+{
+  "eventId": "401772752",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -500,
+  "awayTeamOdds": 300
+},
+{
+  "eventId": "401772752",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 125,
+  "underOdds": -175
+},
+{
+  "eventId": "401772752",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2000
+},
+{
+  "eventId": "401772694",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772694",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -117,
+  "awayTeamOdds": 102
+},
+{
+  "eventId": "401772694",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": -106,
+  "underOdds": -108
+},
+{
+  "eventId": "401772694",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 160,
+  "awayTeamOdds": -184
+},
+{
+  "eventId": "401772694",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772694",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772694",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2000
+},
+{
+  "eventId": "401772613",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772613",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772613",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772774",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772774",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772774",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -260,
+  "awayTeamOdds": 215
+},
+{
+  "eventId": "401772774",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -16.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772774",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772819",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -104
+},
+{
+  "eventId": "401772819",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -107,
+  "underOdds": -107
+},
+{
+  "eventId": "401772819",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 170,
+  "awayTeamOdds": -194
+},
+{
+  "eventId": "401772819",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 17,
+  "homeTeamOdds": 475,
+  "awayTeamOdds": -800
+},
+{
+  "eventId": "401772819",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772921",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772921",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772921",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 250,
+  "awayTeamOdds": -300
+},
+{
+  "eventId": "401772921",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -215,
+  "awayTeamOdds": 150
+},
+{
+  "eventId": "401772921",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 63.5,
+  "overOdds": -140,
+  "underOdds": 110
+},
+{
+  "eventId": "401772921",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 190,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772934",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772934",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772934",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772769",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772769",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772769",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772769",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772769",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772784",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772784",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 36.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772784",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -165,
+  "awayTeamOdds": 140
+},
+{
+  "eventId": "401772784",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 12.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772784",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 34.5,
+  "overOdds": 1400,
+  "underOdds": -5000
+},
+{
+  "eventId": "401772729",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772729",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772729",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772729",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -215,
+  "awayTeamOdds": 150
+},
+{
+  "eventId": "401772729",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 57.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772729",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3000,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772947",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772947",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 55.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772947",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -185,
+  "awayTeamOdds": 154
+},
+{
+  "eventId": "401772634",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772634",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772634",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 270,
+  "awayTeamOdds": -340
+},
+{
+  "eventId": "401772634",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -190,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772634",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 24.5,
+  "overOdds": -290,
+  "underOdds": 200
+},
+{
+  "eventId": "401772634",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 250,
+  "awayTeamOdds": -350
+},
+{
+  "eventId": "401772842",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772842",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772842",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 320,
+  "awayTeamOdds": -425
+},
+{
+  "eventId": "401772842",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -3500,
+  "awayTeamOdds": 750
+},
+{
+  "eventId": "401772842",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 13.5,
+  "overOdds": 110,
+  "underOdds": -140
+},
+{
+  "eventId": "401772842",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -350,
+  "awayTeamOdds": 240
+},
+{
+  "eventId": "401772735",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772735",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772735",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -155,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772735",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -5000,
+  "awayTeamOdds": 1400
+},
+{
+  "eventId": "401772735",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -190,
+  "underOdds": 135
+},
+{
+  "eventId": "401772735",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -2000,
+  "awayTeamOdds": 900
+},
+{
+  "eventId": "401772745",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772745",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772745",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -230,
+  "awayTeamOdds": 195
+},
+{
+  "eventId": "401772745",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 750,
+  "awayTeamOdds": -3500
+},
+{
+  "eventId": "401772745",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": -800,
+  "underOdds": 400
+},
+{
+  "eventId": "401772745",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 700,
+  "awayTeamOdds": -1600
+},
+{
+  "eventId": "401772933",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772933",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -118,
+  "underOdds": -102
+},
+{
+  "eventId": "401772933",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -265,
+  "awayTeamOdds": 215
+},
+{
+  "eventId": "401772910",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772910",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772910",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772748",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772748",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772748",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -300,
+  "awayTeamOdds": 250
+},
+{
+  "eventId": "401772748",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -13.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772748",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 32.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772832",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772832",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772832",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -500,
+  "awayTeamOdds": 360
+},
+{
+  "eventId": "401772832",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772832",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 34.5,
+  "overOdds": 700,
+  "underOdds": -2500
+},
+{
+  "eventId": "401772832",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772781",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772781",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772781",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 260,
+  "awayTeamOdds": -320
+},
+{
+  "eventId": "401772781",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772781",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772781",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 410,
+  "awayTeamOdds": -650
+},
+{
+  "eventId": "401772890",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -101,
+  "awayTeamOdds": -113
+},
+{
+  "eventId": "401772890",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772890",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -150
+},
+{
+  "eventId": "401772890",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3500
+},
+{
+  "eventId": "401772890",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772785",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772785",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772785",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 205,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772785",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772785",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772785",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 210,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772785",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 17.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772785",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 34.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772868",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772868",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772868",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -320,
+  "awayTeamOdds": 260
+},
+{
+  "eventId": "401772868",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -20.5,
+  "homeTeamOdds": 175,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772868",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -375,
+  "underOdds": 240
+},
+{
+  "eventId": "401772757",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772757",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772757",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -380,
+  "awayTeamOdds": 290
+},
+{
+  "eventId": "401772757",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772757",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -160,
+  "underOdds": 120
+},
+{
+  "eventId": "401772757",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -140,
+  "awayTeamOdds": 110
+},
+{
+  "eventId": "401772944",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": -103,
+  "awayTeamOdds": -111
+},
+{
+  "eventId": "401772944",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -112,
+  "underOdds": -102
+},
+{
+  "eventId": "401772944",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -450,
+  "awayTeamOdds": 340
+},
+{
+  "eventId": "401772944",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772944",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 17.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772944",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772931",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772931",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -114,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772931",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -103,
+  "underOdds": -111
+},
+{
+  "eventId": "401772931",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 230,
+  "awayTeamOdds": -270
+},
+{
+  "eventId": "401772931",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": -225,
+  "awayTeamOdds": 165
+},
+{
+  "eventId": "401772931",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": null,
+  "underOdds": 2200
+},
+{
+  "eventId": "401772931",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 190,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772870",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772870",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772870",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -135,
+  "awayTeamOdds": 115
+},
+{
+  "eventId": "401772870",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772870",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 33.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772778",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772778",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -107,
+  "underOdds": -107
+},
+{
+  "eventId": "401772778",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 190,
+  "awayTeamOdds": -225
+},
+{
+  "eventId": "401772778",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772778",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772778",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -350,
+  "awayTeamOdds": 250
+},
+{
+  "eventId": "401772794",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 8.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772794",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772794",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 360,
+  "awayTeamOdds": -470
+},
+{
+  "eventId": "401772913",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772913",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772913",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -162,
+  "awayTeamOdds": 136
+},
+{
+  "eventId": "401772800",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401772800",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772800",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 102,
+  "awayTeamOdds": -122
+},
+{
+  "eventId": "401772898",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772898",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 33.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772898",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -205,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401772722",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772722",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772722",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772722",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -20.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772722",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772722",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -50000,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772816",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772816",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772816",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -290,
+  "awayTeamOdds": 240
+},
+{
+  "eventId": "401772816",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -14.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772816",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 36.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772816",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772923",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772923",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772923",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -145,
+  "awayTeamOdds": 125
+},
+{
+  "eventId": "401772923",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -14.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772923",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772923",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772871",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772871",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772871",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -600,
+  "awayTeamOdds": 400
+},
+{
+  "eventId": "401772871",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772871",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772871",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3000,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772936",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 112,
+  "awayTeamOdds": -135
+},
+{
+  "eventId": "401772936",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772936",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -175,
+  "awayTeamOdds": 150
+},
+{
+  "eventId": "401772936",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": 700,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772936",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 350,
+  "underOdds": -600
+},
+{
+  "eventId": "401772887",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772887",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772887",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -290,
+  "awayTeamOdds": 240
+},
+{
+  "eventId": "401772887",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -17.5,
+  "homeTeamOdds": 115,
+  "awayTeamOdds": -145
+},
+{
+  "eventId": "401772887",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 29.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772630",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772630",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -104
+},
+{
+  "eventId": "401772630",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -104
+},
+{
+  "eventId": "401772630",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772630",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 20.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772925",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772925",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772925",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -150
+},
+{
+  "eventId": "401772925",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 11.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772925",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": -350,
+  "underOdds": 230
+},
+{
+  "eventId": "401772883",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772883",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772883",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 300,
+  "awayTeamOdds": -400
+},
+{
+  "eventId": "401772883",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772883",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772891",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772891",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -106
+},
+{
+  "eventId": "401772891",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -112,
+  "underOdds": -102
+},
+{
+  "eventId": "401772891",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -166,
+  "awayTeamOdds": 144
+},
+{
+  "eventId": "401772891",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772891",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772891",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 500,
+  "awayTeamOdds": -800
+},
+{
+  "eventId": "401772715",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772715",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772715",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -155,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772715",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772715",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 32.5,
+  "overOdds": -215,
+  "underOdds": 150
+},
+{
+  "eventId": "401772715",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3500,
+  "awayTeamOdds": -50000
+},
+{
+  "eventId": "401772826",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772826",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772826",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -155,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772826",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772826",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": 115,
+  "underOdds": -150
+},
+{
+  "eventId": "401772826",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772723",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772723",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772723",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -165,
+  "awayTeamOdds": 140
+},
+{
+  "eventId": "401772723",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772723",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 23.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772734",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772734",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772734",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772734",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772734",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 23.5,
+  "overOdds": 145,
+  "underOdds": -200
+},
+{
+  "eventId": "401772734",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -1000,
+  "awayTeamOdds": 550
+},
+{
+  "eventId": "401772909",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772909",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 54.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772909",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -245,
+  "awayTeamOdds": 200
+},
+{
+  "eventId": "401772806",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772806",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772806",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -340,
+  "awayTeamOdds": 270
+},
+{
+  "eventId": "401772878",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -102,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401772878",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -107,
+  "underOdds": -107
+},
+{
+  "eventId": "401772878",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 325,
+  "awayTeamOdds": -400
+},
+{
+  "eventId": "401772878",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 22.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772878",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 66.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772881",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772881",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772881",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 200,
+  "awayTeamOdds": -240
+},
+{
+  "eventId": "401772881",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772881",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 19.5,
+  "overOdds": -150,
+  "underOdds": 115
+},
+{
+  "eventId": "401772770",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772770",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772770",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -130,
+  "awayTeamOdds": 110
+},
+{
+  "eventId": "401772770",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772770",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772738",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772738",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772738",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -425,
+  "awayTeamOdds": 320
+},
+{
+  "eventId": "401772738",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -19.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772738",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 24.5,
+  "overOdds": -160,
+  "underOdds": 120
+},
+{
+  "eventId": "401772733",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772733",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772733",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 210,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772733",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 23.5,
+  "homeTeamOdds": 375,
+  "awayTeamOdds": -650
+},
+{
+  "eventId": "401772733",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 61.5,
+  "overOdds": -350,
+  "underOdds": 230
+},
+{
+  "eventId": "401772719",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772719",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772719",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772719",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -24.5,
+  "homeTeamOdds": -290,
+  "awayTeamOdds": 200
+},
+{
+  "eventId": "401772719",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": 300,
+  "underOdds": -500
+},
+{
+  "eventId": "401772719",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2500
+},
+{
+  "eventId": "401772888",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -14.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772888",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772888",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1400,
+  "awayTeamOdds": 750
+},
+{
+  "eventId": "401772888",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -18.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772888",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 56.5,
+  "overOdds": -140,
+  "underOdds": 110
+},
+{
+  "eventId": "401772888",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -4000,
+  "awayTeamOdds": 1300
+},
+{
+  "eventId": "401772635",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772635",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772635",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 150,
+  "awayTeamOdds": -175
+},
+{
+  "eventId": "401772635",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 27.5,
+  "homeTeamOdds": 600,
+  "awayTeamOdds": -1600
+},
+{
+  "eventId": "401772635",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": 650,
+  "underOdds": -2000
+},
+{
+  "eventId": "401772805",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -14,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772805",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772805",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -1450,
+  "awayTeamOdds": 850
+},
+{
+  "eventId": "401772756",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772756",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772756",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -140,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401772756",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 13.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772756",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 62.5,
+  "overOdds": 350,
+  "underOdds": -600
+},
+{
+  "eventId": "401772857",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772857",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772857",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772857",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": -10000,
+  "awayTeamOdds": 2200
+},
+{
+  "eventId": "401772857",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 32.5,
+  "overOdds": 1400,
+  "underOdds": -5000
+},
+{
+  "eventId": "401772857",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772866",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772866",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772866",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -165,
+  "awayTeamOdds": 140
+},
+{
+  "eventId": "401772866",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772866",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772866",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772787",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772787",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772787",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772787",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -170,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772787",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772787",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": 220,
+  "underOdds": -325
+},
+{
+  "eventId": "401772787",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 240,
+  "awayTeamOdds": -330
+},
+{
+  "eventId": "401772932",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772932",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772932",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -218,
+  "awayTeamOdds": 180
+},
+{
+  "eventId": "401772779",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -103,
+  "awayTeamOdds": -111
+},
+{
+  "eventId": "401772779",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -111,
+  "underOdds": -103
+},
+{
+  "eventId": "401772779",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -230,
+  "awayTeamOdds": 195
+},
+{
+  "eventId": "401772779",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772779",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772779",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -15000,
+  "awayTeamOdds": 2500
+},
+{
+  "eventId": "401772920",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772920",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772920",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 230,
+  "awayTeamOdds": -280
+},
+{
+  "eventId": "401772920",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772920",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 34.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772920",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3000,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772775",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772775",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772775",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 125,
+  "awayTeamOdds": -145
+},
+{
+  "eventId": "401772775",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -29.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772775",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772928",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -114,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772928",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -109,
+  "underOdds": -105
+},
+{
+  "eventId": "401772928",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -143,
+  "awayTeamOdds": 125
+},
+{
+  "eventId": "401772928",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772928",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 22.5,
+  "overOdds": -225,
+  "underOdds": 165
+},
+{
+  "eventId": "401772928",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -3000,
+  "awayTeamOdds": 1200
+},
+{
+  "eventId": "401772714",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772714",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772714",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 150,
+  "awayTeamOdds": -175
+},
+{
+  "eventId": "401772714",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772714",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772714",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -10000,
+  "awayTeamOdds": 2500
+},
+{
+  "eventId": "401772848",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 112,
+  "awayTeamOdds": -135
+},
+{
+  "eventId": "401772848",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772848",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -170,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772848",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -20000,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772848",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772753",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -13.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772753",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772753",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1000,
+  "awayTeamOdds": 600
+},
+{
+  "eventId": "401772753",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -28.5,
+  "homeTeamOdds": -4000,
+  "awayTeamOdds": 1500
+},
+{
+  "eventId": "401772753",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 31.5,
+  "overOdds": 1000,
+  "underOdds": -2500
+},
+{
+  "eventId": "401772849",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772849",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772849",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -190,
+  "awayTeamOdds": 160
+},
+{
+  "eventId": "401772849",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -10000,
+  "awayTeamOdds": 2200
+},
+{
+  "eventId": "401772849",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -150,
+  "underOdds": 115
+},
+{
+  "eventId": "401772851",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772851",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772851",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -380,
+  "awayTeamOdds": 290
+},
+{
+  "eventId": "401772851",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -31.5,
+  "homeTeamOdds": -2000,
+  "awayTeamOdds": 650
+},
+{
+  "eventId": "401772851",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": 2600,
+  "underOdds": -20000
+},
+{
+  "eventId": "401772814",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772814",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772814",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 155,
+  "awayTeamOdds": -185
+},
+{
+  "eventId": "401772814",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -650,
+  "awayTeamOdds": 375
+},
+{
+  "eventId": "401772814",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": 100,
+  "underOdds": -130
+},
+{
+  "eventId": "401772814",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -4000,
+  "awayTeamOdds": 1000
+},
+{
+  "eventId": "401772873",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772873",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772873",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772873",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": 240,
+  "awayTeamOdds": -375
+},
+{
+  "eventId": "401772873",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772873",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772798",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772798",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772798",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -258,
+  "awayTeamOdds": 210
+},
+{
+  "eventId": "401772797",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -13.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772797",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772797",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -1000,
+  "awayTeamOdds": 650
+},
+{
+  "eventId": "401772824",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772824",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -102,
+  "underOdds": -118
+},
+{
+  "eventId": "401772824",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 235,
+  "awayTeamOdds": -290
+},
+{
+  "eventId": "401772761",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -14.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772761",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772761",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1400,
+  "awayTeamOdds": 750
+},
+{
+  "eventId": "401772761",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -24.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772761",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772761",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3500
+},
+{
+  "eventId": "401772799",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -118,
+  "awayTeamOdds": -102
+},
+{
+  "eventId": "401772799",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772799",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -950,
+  "awayTeamOdds": 625
+},
+{
+  "eventId": "401772837",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772837",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772837",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772837",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -20000,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772837",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 33.5,
+  "overOdds": -120,
+  "underOdds": -110
+},
+{
+  "eventId": "401772837",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772786",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 6,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772786",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772786",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772786",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772786",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 225,
+  "awayTeamOdds": -275
+},
+{
+  "eventId": "401772786",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 22.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772786",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 28.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772817",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -11.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772817",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772817",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -600,
+  "awayTeamOdds": 400
+},
+{
+  "eventId": "401772817",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -21.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772817",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772811",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772811",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772811",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 160,
+  "awayTeamOdds": -190
+},
+{
+  "eventId": "401772811",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 13.5,
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -180
+},
+{
+  "eventId": "401772811",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 29.5,
+  "overOdds": -290,
+  "underOdds": 200
+},
+{
+  "eventId": "401772811",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772942",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772942",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772942",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -170,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772942",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -26.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772942",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": 100,
+  "underOdds": -130
+},
+{
+  "eventId": "401772853",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772853",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772853",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -175,
+  "awayTeamOdds": 150
+},
+{
+  "eventId": "401772853",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": -20000
+},
+{
+  "eventId": "401772853",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 30.5,
+  "overOdds": 185,
+  "underOdds": -275
+},
+{
+  "eventId": "401772766",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -130,
+  "awayTeamOdds": 110
+},
+{
+  "eventId": "401772766",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 51.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772766",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 145,
+  "awayTeamOdds": -170
+},
+{
+  "eventId": "401772766",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772766",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772793",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -108,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401772793",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772793",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 114,
+  "awayTeamOdds": -135
+},
+{
+  "eventId": "401772788",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772788",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772788",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772788",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772788",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -600,
+  "awayTeamOdds": 400
+},
+{
+  "eventId": "401772788",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -16.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772788",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772906",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772906",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 36.5,
+  "overOdds": -118,
+  "underOdds": -102
+},
+{
+  "eventId": "401772906",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -950,
+  "awayTeamOdds": 625
+},
+{
+  "eventId": "401772720",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772720",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772720",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -145,
+  "awayTeamOdds": 125
+},
+{
+  "eventId": "401772720",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772720",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772803",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772803",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 37.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772803",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 154,
+  "awayTeamOdds": -185
+},
+{
+  "eventId": "401772859",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772859",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772859",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401772859",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772859",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 29.5,
+  "overOdds": null,
+  "underOdds": 1400
+},
+{
+  "eventId": "401772750",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772750",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772750",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 160,
+  "awayTeamOdds": -190
+},
+{
+  "eventId": "401772750",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -2000,
+  "awayTeamOdds": 650
+},
+{
+  "eventId": "401772750",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": -3500,
+  "underOdds": 750
+},
+{
+  "eventId": "401772750",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 2500,
+  "awayTeamOdds": -5000
+},
+{
+  "eventId": "401772737",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772737",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772737",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 220,
+  "awayTeamOdds": -270
+},
+{
+  "eventId": "401772737",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772737",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772737",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -5000,
+  "awayTeamOdds": 1200
+},
+{
+  "eventId": "401772764",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 9.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772764",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772764",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 425,
+  "awayTeamOdds": -650
+},
+{
+  "eventId": "401772764",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772764",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772841",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772841",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772841",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -150,
+  "awayTeamOdds": 130
+},
+{
+  "eventId": "401772841",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -18.5,
+  "homeTeamOdds": 2200,
+  "awayTeamOdds": -10000
+},
+{
+  "eventId": "401772841",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -275,
+  "underOdds": 185
+},
+{
+  "eventId": "401772927",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -102,
+  "awayTeamOdds": -112
+},
+{
+  "eventId": "401772927",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -107,
+  "underOdds": -107
+},
+{
+  "eventId": "401772927",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -186,
+  "awayTeamOdds": 159
+},
+{
+  "eventId": "401772927",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -15.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772927",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 28.5,
+  "overOdds": -160,
+  "underOdds": 120
+},
+{
+  "eventId": "401772927",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2500
+},
+{
+  "eventId": "401772899",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": -102,
+  "awayTeamOdds": -118
+},
+{
+  "eventId": "401772899",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -118,
+  "underOdds": -102
+},
+{
+  "eventId": "401772899",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772822",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772822",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772822",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772892",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772892",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772892",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772892",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -260,
+  "awayTeamOdds": 215
+},
+{
+  "eventId": "401772892",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772892",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 30.5,
+  "overOdds": null,
+  "underOdds": 1400
+},
+{
+  "eventId": "401772728",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772728",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772728",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -135,
+  "awayTeamOdds": 115
+},
+{
+  "eventId": "401772728",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772728",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 63.5,
+  "overOdds": -130,
+  "underOdds": 100
+},
+{
+  "eventId": "401772728",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 320,
+  "awayTeamOdds": -500
+},
+{
+  "eventId": "401772631",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772631",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772631",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -135,
+  "awayTeamOdds": 115
+},
+{
+  "eventId": "401772631",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -650,
+  "awayTeamOdds": 375
+},
+{
+  "eventId": "401772631",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 32.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772631",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -50000,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772724",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772724",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772724",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 200,
+  "awayTeamOdds": -240
+},
+{
+  "eventId": "401772724",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 14.5,
+  "homeTeamOdds": 550,
+  "awayTeamOdds": -1200
+},
+{
+  "eventId": "401772724",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": -325,
+  "underOdds": 220
+},
+{
+  "eventId": "401772790",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772790",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -108,
+  "underOdds": -112
+},
+{
+  "eventId": "401772790",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 124,
+  "awayTeamOdds": -148
+},
+{
+  "eventId": "401772862",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772862",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772862",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 120,
+  "awayTeamOdds": -140
+},
+{
+  "eventId": "401772862",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 5.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772862",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772911",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 3,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772911",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772911",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 124,
+  "awayTeamOdds": -148
+},
+{
+  "eventId": "401772939",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -8.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772939",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772939",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -450,
+  "awayTeamOdds": 340
+},
+{
+  "eventId": "401772939",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 145
+},
+{
+  "eventId": "401772939",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -600,
+  "underOdds": 350
+},
+{
+  "eventId": "401772939",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 150
+},
+{
+  "eventId": "401772632",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772632",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772632",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 115,
+  "awayTeamOdds": -135
+},
+{
+  "eventId": "401772632",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -9.5,
+  "homeTeamOdds": 240,
+  "awayTeamOdds": -375
+},
+{
+  "eventId": "401772632",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -400,
+  "underOdds": 250
+},
+{
+  "eventId": "401772874",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -14.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772874",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772874",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1600,
+  "awayTeamOdds": 800
+},
+{
+  "eventId": "401772874",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -26.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772874",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772755",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772755",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772755",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 230,
+  "awayTeamOdds": -280
+},
+{
+  "eventId": "401772755",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 18.5,
+  "homeTeamOdds": -225,
+  "awayTeamOdds": 165
+},
+{
+  "eventId": "401772755",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 165,
+  "underOdds": -225
+},
+{
+  "eventId": "401772945",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -102
+},
+{
+  "eventId": "401772945",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -111,
+  "underOdds": -103
+},
+{
+  "eventId": "401772945",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1200,
+  "awayTeamOdds": 700
+},
+{
+  "eventId": "401772945",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -11.5,
+  "homeTeamOdds": -10000,
+  "awayTeamOdds": 2200
+},
+{
+  "eventId": "401772945",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": 2200,
+  "underOdds": -10000
+},
+{
+  "eventId": "401772772",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -130,
+  "awayTeamOdds": 110
+},
+{
+  "eventId": "401772772",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772772",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -155,
+  "awayTeamOdds": 135
+},
+{
+  "eventId": "401772772",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772772",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772839",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772839",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772839",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401772839",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": 400,
+  "awayTeamOdds": -800
+},
+{
+  "eventId": "401772839",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 55.5,
+  "overOdds": -1000,
+  "underOdds": 475
+},
+{
+  "eventId": "401772839",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 470,
+  "awayTeamOdds": -800
+},
+{
+  "eventId": "401772823",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772823",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772823",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -185,
+  "awayTeamOdds": 154
+},
+{
+  "eventId": "401772751",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772751",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772751",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 165,
+  "awayTeamOdds": -195
+},
+{
+  "eventId": "401772751",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772751",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772732",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772732",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772732",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772732",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772732",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 35.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772896",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772896",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772896",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772896",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772896",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -1200,
+  "awayTeamOdds": 700
+},
+{
+  "eventId": "401772896",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -26.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772896",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 26.5,
+  "overOdds": 375,
+  "underOdds": -650
+},
+{
+  "eventId": "401772884",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": 104,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772884",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": -104,
+  "underOdds": -110
+},
+{
+  "eventId": "401772884",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -172,
+  "awayTeamOdds": 148
+},
+{
+  "eventId": "401772884",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -1.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772884",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 39.5,
+  "overOdds": null,
+  "underOdds": 2200
+},
+{
+  "eventId": "401772884",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 140,
+  "awayTeamOdds": -180
+},
+{
+  "eventId": "401772949",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -122,
+  "awayTeamOdds": 102
+},
+{
+  "eventId": "401772949",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772949",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772821",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772821",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772821",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -360,
+  "awayTeamOdds": 285
+},
+{
+  "eventId": "401772869",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772869",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772869",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 175,
+  "awayTeamOdds": -210
+},
+{
+  "eventId": "401772869",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 14.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772869",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 26.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772736",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772736",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772736",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -360,
+  "awayTeamOdds": 280
+},
+{
+  "eventId": "401772736",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -30.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 400
+},
+{
+  "eventId": "401772736",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 57.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772833",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772833",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772833",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 135,
+  "awayTeamOdds": -155
+},
+{
+  "eventId": "401772833",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 4.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772833",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": 2600,
+  "underOdds": -20000
+},
+{
+  "eventId": "401772744",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772744",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772744",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -140,
+  "awayTeamOdds": 120
+},
+{
+  "eventId": "401772744",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772744",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": 400,
+  "underOdds": -800
+},
+{
+  "eventId": "401772744",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2500
+},
+{
+  "eventId": "401772813",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772813",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772813",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -150,
+  "awayTeamOdds": 130
+},
+{
+  "eventId": "401772813",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 1400,
+  "awayTeamOdds": -5000
+},
+{
+  "eventId": "401772813",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -200,
+  "underOdds": 145
+},
+{
+  "eventId": "401772879",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772879",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": 100,
+  "underOdds": -115
+},
+{
+  "eventId": "401772879",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 210,
+  "awayTeamOdds": -250
+},
+{
+  "eventId": "401772879",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 16.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772879",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 68.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772879",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 3500,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772801",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -4.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772801",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772801",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -218,
+  "awayTeamOdds": 180
+},
+{
+  "eventId": "401772929",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 104,
+  "awayTeamOdds": -118
+},
+{
+  "eventId": "401772929",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 50.5,
+  "overOdds": -102,
+  "underOdds": -112
+},
+{
+  "eventId": "401772929",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -360,
+  "awayTeamOdds": 290
+},
+{
+  "eventId": "401772929",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -26.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772929",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772929",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 4000
+},
+{
+  "eventId": "401772792",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": -118,
+  "awayTeamOdds": -102
+},
+{
+  "eventId": "401772792",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772792",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -425,
+  "awayTeamOdds": 330
+},
+{
+  "eventId": "401772612",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": 6.5,
+  "homeTeamOdds": -110,
+  "awayTeamOdds": -110
+},
+{
+  "eventId": "401772612",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772612",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": 250,
+  "awayTeamOdds": -310
+},
+{
+  "eventId": "401772940",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 7.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772940",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772940",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 300,
+  "awayTeamOdds": -400
+},
+{
+  "eventId": "401772940",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -19.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772940",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 53.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772940",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3500
+},
+{
+  "eventId": "401772905",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -3,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772905",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772905",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -155,
+  "awayTeamOdds": 130
+},
+{
+  "eventId": "401772767",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772767",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772767",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 120,
+  "awayTeamOdds": -140
+},
+{
+  "eventId": "401772767",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 10.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772767",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 58.5,
+  "overOdds": null,
+  "underOdds": null
+},
+{
+  "eventId": "401772827",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -5.5,
+  "homeTeamOdds": -120,
+  "awayTeamOdds": 100
+},
+{
+  "eventId": "401772827",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772827",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -270,
+  "awayTeamOdds": 220
+},
+{
+  "eventId": "401772827",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -11.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772827",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 32.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772827",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2500
+},
+{
+  "eventId": "401772845",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": -125,
+  "awayTeamOdds": 105
+},
+{
+  "eventId": "401772845",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": -120,
+  "underOdds": 100
+},
+{
+  "eventId": "401772845",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 150,
+  "awayTeamOdds": -175
+},
+{
+  "eventId": "401772845",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 3.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772845",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 59.5,
+  "overOdds": 2600,
+  "underOdds": null
+},
+{
+  "eventId": "401772845",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 750,
+  "awayTeamOdds": -2000
+},
+{
+  "eventId": "401772721",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 110,
+  "awayTeamOdds": -130
+},
+{
+  "eventId": "401772721",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 38.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772721",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 140,
+  "awayTeamOdds": -165
+},
+{
+  "eventId": "401772721",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772721",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 63.5,
+  "overOdds": 130,
+  "underOdds": -180
+},
+{
+  "eventId": "401772721",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 450,
+  "awayTeamOdds": -700
+},
+{
+  "eventId": "401772840",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -6.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772840",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 42.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772840",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -290,
+  "awayTeamOdds": 240
+},
+{
+  "eventId": "401772840",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772840",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": 280,
+  "underOdds": -450
+},
+{
+  "eventId": "401772840",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": -5000,
+  "awayTeamOdds": 1200
+},
+{
+  "eventId": "401772836",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772836",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 40.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772836",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401772836",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 16.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772836",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 48.5,
+  "overOdds": 1400,
+  "underOdds": null
+},
+{
+  "eventId": "401772867",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -7.5,
+  "homeTeamOdds": 100,
+  "awayTeamOdds": -120
+},
+{
+  "eventId": "401772867",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 43.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772867",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -425,
+  "awayTeamOdds": 320
+},
+{
+  "eventId": "401772867",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -20.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772867",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 57.5,
+  "overOdds": null,
+  "underOdds": 2600
+},
+{
+  "eventId": "401772867",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": null,
+  "awayTeamOdds": 3000
+},
+{
+  "eventId": "401772831",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 1.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772831",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": 100,
+  "underOdds": -120
+},
+{
+  "eventId": "401772831",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 105,
+  "awayTeamOdds": -125
+},
+{
+  "eventId": "401772831",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 2600,
+  "awayTeamOdds": -20000
+},
+{
+  "eventId": "401772831",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 27.5,
+  "overOdds": -160,
+  "underOdds": 120
+},
+{
+  "eventId": "401772749",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772749",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 46.5,
+  "overOdds": -110,
+  "underOdds": -110
+},
+{
+  "eventId": "401772749",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -190,
+  "awayTeamOdds": 160
+},
+{
+  "eventId": "401772749",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -10.5,
+  "homeTeamOdds": -275,
+  "awayTeamOdds": 185
+},
+{
+  "eventId": "401772749",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 49.5,
+  "overOdds": 185,
+  "underOdds": -275
+},
+{
+  "eventId": "401772907",
+  "provider": "Draft Kings",
+  "market": "spread",
+  "value": -12.5,
+  "homeTeamOdds": -112,
+  "awayTeamOdds": -108
+},
+{
+  "eventId": "401772907",
+  "provider": "Draft Kings",
+  "market": "total",
+  "value": 44.5,
+  "overOdds": -112,
+  "underOdds": -108
+},
+{
+  "eventId": "401772907",
+  "provider": "Draft Kings",
+  "market": "moneyline",
+  "homeTeamOdds": -950,
+  "awayTeamOdds": 625
+},
+{
+  "eventId": "401772746",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": -3.5,
+  "homeTeamOdds": -115,
+  "awayTeamOdds": -105
+},
+{
+  "eventId": "401772746",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 45.5,
+  "overOdds": -105,
+  "underOdds": -115
+},
+{
+  "eventId": "401772746",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": -200,
+  "awayTeamOdds": 170
+},
+{
+  "eventId": "401772746",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": -2.5,
+  "homeTeamOdds": 120,
+  "awayTeamOdds": -160
+},
+{
+  "eventId": "401772746",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 72.5,
+  "overOdds": 175,
+  "underOdds": -250
+},
+{
+  "eventId": "401772746",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "moneyline",
+  "homeTeamOdds": 1000,
+  "awayTeamOdds": -3000
+},
+{
+  "eventId": "401772926",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 2.5,
+  "homeTeamOdds": 103,
+  "awayTeamOdds": -119
+},
+{
+  "eventId": "401772926",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -105,
+  "underOdds": -109
+},
+{
+  "eventId": "401772926",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 130,
+  "awayTeamOdds": -147
+},
+{
+  "eventId": "401772926",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 18.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": null
+},
+{
+  "eventId": "401772926",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 52.5,
+  "overOdds": 250,
+  "underOdds": -400
+},
+{
+  "eventId": "401772886",
+  "provider": "ESPN BET",
+  "market": "spread",
+  "value": 11.5,
+  "homeTeamOdds": -105,
+  "awayTeamOdds": -115
+},
+{
+  "eventId": "401772886",
+  "provider": "ESPN BET",
+  "market": "total",
+  "value": 41.5,
+  "overOdds": -115,
+  "underOdds": -105
+},
+{
+  "eventId": "401772886",
+  "provider": "ESPN BET",
+  "market": "moneyline",
+  "homeTeamOdds": 425,
+  "awayTeamOdds": -650
+},
+{
+  "eventId": "401772886",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "spread",
+  "value": 11.5,
+  "homeTeamOdds": null,
+  "awayTeamOdds": 2600
+},
+{
+  "eventId": "401772886",
+  "provider": "ESPN Bet - Live Odds",
+  "market": "total",
+  "value": 47.5,
+  "overOdds": -450,
+  "underOdds": 280
+}
+]
