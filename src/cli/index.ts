@@ -44,6 +44,7 @@ program
   .option('--bankroll <amount>', 'Bankroll amount for Kelly Criterion sizing', '1000')
   .option('--daily-budget <amount>', 'Fixed daily budget to allocate across bets using Kelly ratios')
   .option('--all', 'Show all games, regardless of EV/Edge thresholds', false)
+  .option('--filter <filter>', 'Apply situational filter (relaxed, profitable, conservative, none)', 'none')
   .action(async (options) => {
     try {
       await recommend(options);

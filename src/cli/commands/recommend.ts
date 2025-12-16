@@ -43,7 +43,7 @@ async function getRecommendationsForSport(
   sport: string,
   options: RecommendOptions,
   db: DatabaseQueries
-): Promise<Recommendation[]> {
+): Promise<{ recommendations: Recommendation[], gameFeatures: GameFeatures[] }> {
   console.log(`\n[${sport.toUpperCase()}] Starting recommendation generation...`);
   console.log(`[${sport.toUpperCase()}] Loading trained model...`);
   const modelsDir = path.join(
@@ -56,7 +56,7 @@ async function getRecommendationsForSport(
   if (!modelPath) {
     console.log(`⚠️  No trained model found for ${sport} ${options.market}`);
     console.log(`   Run "sportline train --sport ${sport}" first to train a model.`);
-    return [];
+    return { recommendations: [], gameFeatures: [] };
   }
 
   const model = loadModel(modelPath);
@@ -76,7 +76,7 @@ async function getRecommendationsForSport(
   console.log(`✓ Found ${todaysGames.length} ${sport.toUpperCase()} scheduled games for ${targetDate}`);
 
   if (todaysGames.length === 0) {
-    return [];
+    return { recommendations: [], gameFeatures: [] };
   }
 
   // Step 4: Generate predictions and recommendations
@@ -86,6 +86,7 @@ async function getRecommendationsForSport(
   const allGames = db.getHistoricalGames(sport, model.seasons);
 
   const recommendations: Recommendation[] = [];
+  const gameFeatures: GameFeatures[] = [];
 
   for (const game of todaysGames) {
     try {
@@ -197,6 +198,24 @@ async function getRecommendationsForSport(
 
       recommendation.recommended_side = recommendedSide;
 
+      // Create GameFeatures for filtering
+      const gameFeature: GameFeatures = {
+        game_id: game.id,
+        season: new Date(game.date).getFullYear(), // Approximate season from date
+        date: game.date,
+        home_team: game.home_team_id,
+        away_team: game.away_team_id,
+        features,
+        odds: game.odds.map(o => ({
+          provider: o.provider || 'Unknown',
+          home: o.price_home,
+          away: o.price_away
+        })),
+        target: null // Unknown for future games
+      };
+      
+      gameFeatures.push(gameFeature);
+
       // Only include recommendations that meet thresholds, or if --all flag is set
       if (recommendedSide || options.all) {
         recommendations.push(recommendation);
@@ -215,7 +234,7 @@ async function getRecommendationsForSport(
 
   console.log(`✓ Generated ${recommendations.length} ${sport.toUpperCase()} recommendations`);
 
-  return recommendations;
+  return { recommendations, gameFeatures };
 }
 
 export async function recommend(options: RecommendOptions): Promise<void> {
@@ -229,16 +248,20 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   // Collect all recommendations from all sports
   const allRecommendations: Array<{sport: string, recommendation: Recommendation}> = [];
+  const allGameFeatures: GameFeatures[] = [];
   let totalGamesFound = 0;
 
   for (const sport of sportsToProcess) {
     try {
-      const recommendations = await getRecommendationsForSport(sport, options, db);
+      const { recommendations, gameFeatures } = await getRecommendationsForSport(sport, options, db);
 
       // Add sport identifier to each recommendation
       recommendations.forEach(rec => {
         allRecommendations.push({ sport: sport.toUpperCase(), recommendation: rec });
       });
+
+      // Collect all game features for filtering
+      allGameFeatures.push(...gameFeatures);
 
       if (recommendations.length > 0) {
         console.log(`✓ Found ${recommendations.length} ${sport.toUpperCase()} recommendations`);
@@ -262,12 +285,27 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   if (options.filter && options.filter !== 'none') {
     console.log(`\n[FILTER] Applying '${options.filter}' situational filters...`);
     
-    // We need to collect GameFeatures for filtering
-    // For now, we'll need to reconstruct this data or modify the flow
-    // This is a limitation of the current architecture - we need GameFeatures for filtering
-    console.log(`⚠️  Situational filtering requires GameFeatures data.`);
-    console.log(`   This feature will be available in a future update.`);
-    console.log(`   For now, showing all recommendations that meet basic thresholds.`);
+    const filterConfig = getFilterConfig(options.filter);
+    
+    // Extract just the recommendations for filtering
+    const recommendationsOnly = allRecommendations.map(r => r.recommendation);
+    
+    const filterResult = applySituationalFilters(
+      recommendationsOnly,
+      allGameFeatures,
+      filterConfig
+    );
+    
+    // Print filter statistics
+    printFilterStats(filterResult.filterStats);
+    
+    // Convert filtered recommendations back to the format with sport labels
+    const filteredRecommendationIds = new Set(filterResult.filteredRecommendations.map(r => r.game_id));
+    filteredRecommendations = allRecommendations.filter(r => 
+      filteredRecommendationIds.has(r.recommendation.game_id)
+    );
+    
+    console.log(`✅ ${filteredRecommendations.length} recommendations passed the '${options.filter}' filter`);
   }
 
   // Sort all recommendations by EV (best bets first)
