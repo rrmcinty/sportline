@@ -532,6 +532,59 @@ export function printProfitabilityAnalysis(
     .sort((a, b) => a.roi - b.roi)
     .slice(0, 10);
   
+  // Special section: Day of Week Analysis (show all days, even with < 10 bets)
+  console.log('\n📅 DAY OF WEEK ANALYSIS (All Days):\n');
+  
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayBuckets = analysis.buckets.filter(b => b.bucketName.startsWith('Day:'));
+  
+  if (dayBuckets.length > 0) {
+    console.log('Day        | Bets | Win% | ROI     | Profit  | Status');
+    console.log('-----------+------+------+---------+---------+--------');
+    
+    for (let day = 0; day < 7; day++) {
+      const dayBucket = dayBuckets.find(b => b.bucketName === `Day: ${dayNames[day]}`);
+      if (dayBucket) {
+        const status = dayBucket.roi > 0 ? '✅ Profit' : '❌ Loss';
+        console.log(
+          `${dayNames[day].padEnd(10)} | ` +
+          `${dayBucket.totalBets.toString().padStart(4)} | ` +
+          `${(dayBucket.winRate * 100).toFixed(1).padStart(4)}% | ` +
+          `${(dayBucket.roi * 100).toFixed(2).padStart(6)}% | ` +
+          `$${dayBucket.totalProfit.toFixed(0).padStart(6)} | ` +
+          `${status}`
+        );
+      } else {
+        console.log(`${dayNames[day].padEnd(10)} |    0 |   0% |    N/A |     N/A | No data`);
+      }
+    }
+    
+    // Calculate statistics
+    const daysWithData = dayBuckets.filter(b => b.totalBets > 0);
+    if (daysWithData.length > 0) {
+      const avgROI = daysWithData.reduce((sum, b) => sum + b.roi, 0) / daysWithData.length;
+      const maxROI = Math.max(...daysWithData.map(b => b.roi));
+      const minROI = Math.min(...daysWithData.map(b => b.roi));
+      const roiSpread = maxROI - minROI;
+      
+      console.log(`\n💡 Day of Week Statistics:`);
+      console.log(`   Average ROI: ${(avgROI * 100).toFixed(2)}%`);
+      console.log(`   Best day: ${dayBuckets.find(b => b.roi === maxROI)?.bucketName} (${(maxROI * 100).toFixed(2)}%)`);
+      console.log(`   Worst day: ${dayBuckets.find(b => b.roi === minROI)?.bucketName} (${(minROI * 100).toFixed(2)}%)`);
+      console.log(`   ROI spread: ${(roiSpread * 100).toFixed(2)} percentage points`);
+      
+      if (roiSpread < 0.10) {
+        console.log(`   ⚠️  Small spread (< 10pp) - likely random variation, not a real pattern`);
+      } else if (roiSpread < 0.20) {
+        console.log(`   📊 Moderate spread (10-20pp) - possible pattern but needs more data`);
+      } else {
+        console.log(`   📈 Large spread (> 20pp) - significant pattern worth filtering on`);
+      }
+    }
+  }
+  
+  console.log('\n');
+  
   console.log('Situation                              | Bets | Win% | ROI     | Loss    | Criteria');
   console.log('--------------------------------------+------+------+---------+---------+------------------');
   
