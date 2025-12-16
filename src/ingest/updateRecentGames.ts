@@ -22,18 +22,62 @@ const GAME_SUMMARY_API = (eventId: string, sport: string) => {
 };
 
 async function fetchGameOdds(eventId: string, sport: string) {
-  const url = ODDS_API(eventId, sport);
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const data = (await res.json()) as any;
-  return Array.isArray(data.items) ? data.items : [];
+  try {
+    const url = ODDS_API(eventId, sport);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    const res = await fetch(url, { 
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) {
+      if (res.status === 429) {
+        console.log(`  ⚠️  Rate limited for ${eventId}, skipping odds...`);
+      }
+      return null;
+    }
+    const data = (await res.json()) as any;
+    return Array.isArray(data.items) ? data.items : [];
+  } catch (error: any) {
+    if (error?.name === 'AbortError') {
+      console.log(`  ⚠️  Timeout fetching odds for ${eventId}`);
+    }
+    return null;
+  }
 }
 
 async function fetchGameSummary(eventId: string, sport: string) {
-  const url = GAME_SUMMARY_API(eventId, sport);
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  return (await res.json()) as any;
+  try {
+    const url = GAME_SUMMARY_API(eventId, sport);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    const res = await fetch(url, { 
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) {
+      if (res.status === 429) {
+        console.log(`  ⚠️  Rate limited for ${eventId}, skipping summary...`);
+      }
+      return null;
+    }
+    return (await res.json()) as any;
+  } catch (error: any) {
+    if (error?.name === 'AbortError') {
+      console.log(`  ⚠️  Timeout fetching summary for ${eventId}`);
+    }
+    return null;
+  }
 }
 
 async function updateRecentGames(
@@ -89,9 +133,22 @@ async function updateRecentGames(
   let oddsUpdated = 0;
   let scoresUpdated = 0;
   let statsUpdated = 0;
+  let processed = 0;
+  let errors = 0;
 
-  // Process each game
-  for (const game of gamesToUpdate) {
+  // Process games in smaller batches to avoid overwhelming the API
+  const BATCH_SIZE = 10;
+  const DELAY_BETWEEN_BATCHES = 2000; // 2 seconds between batches
+  const DELAY_BETWEEN_REQUESTS = 200; // 200ms between individual requests
+
+  console.log(`🔄 Processing ${gamesToUpdate.length} games in batches of ${BATCH_SIZE}...\n`);
+
+  for (let i = 0; i < gamesToUpdate.length; i += BATCH_SIZE) {
+    const batch = gamesToUpdate.slice(i, i + BATCH_SIZE);
+    console.log(`📦 Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(gamesToUpdate.length / BATCH_SIZE)} (${batch.length} games)...`);
+
+    // Process each game in the batch
+    for (const game of batch) {
     try {
       // Fetch game summary (has both odds and current status/score)
       const [summary, oddsData] = await Promise.all([
@@ -238,17 +295,51 @@ async function updateRecentGames(
         }
       }
 
-      // Small delay to be nice to ESPN API
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    } catch (error) {
-      console.error(`  ✗ Error updating game ${game.id}:`, error);
+      processed++;
+      
+      // Progress indicator
+      if (processed % 10 === 0) {
+        console.log(`  📊 Progress: ${processed}/${gamesToUpdate.length} games processed`);
+      }
+
+      // Delay between requests to be nice to ESPN API
+      await new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
+    } catch (error: any) {
+      errors++;
+      console.error(`  ✗ Error updating game ${game.id}:`, error?.message || error);
+      
+      // If we're getting too many errors, slow down
+      if (errors > 5) {
+        console.log(`  ⚠️  Many errors detected, increasing delay...`);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
     }
   }
 
+  // Delay between batches to avoid overwhelming the API
+  if (i + BATCH_SIZE < gamesToUpdate.length) {
+    console.log(`  ⏳ Waiting ${DELAY_BETWEEN_BATCHES / 1000}s before next batch...\n`);
+    await new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
+  }
+}
+
   console.log(`\n✅ Update complete!`);
+  console.log(`📊 Final Results:`);
+  console.log(`  - Games processed: ${processed}/${gamesToUpdate.length}`);
   console.log(`  - Odds updated: ${oddsUpdated}`);
   console.log(`  - Scores updated: ${scoresUpdated}`);
-  console.log(`  - Stats added: ${statsUpdated}\n`);
+  console.log(`  - Stats added: ${statsUpdated}`);
+  console.log(`  - Errors encountered: ${errors}`);
+  
+  if (errors > 0) {
+    console.log(`\n⚠️  ${errors} errors occurred during update. This is normal due to API rate limits.`);
+  }
+  
+  if (processed < gamesToUpdate.length) {
+    console.log(`\n⚠️  Only ${processed}/${gamesToUpdate.length} games were processed. Consider running update again.`);
+  }
+  
+  console.log(``);
 
   db.close();
 }

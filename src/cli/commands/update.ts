@@ -21,9 +21,9 @@ export async function update(options: UpdateOptions): Promise<void> {
   const dbPath = path.join(process.cwd(), 'data', 'sportline.db');
   const updateScriptPath = path.join(process.cwd(), 'src/ingest/updateRecentGames.ts');
 
-  // Default values (look back 1 day, forward 7 days)
+  // Default values (look back 1 day, forward 3 days to avoid overwhelming API)
   const daysBack = options.daysBack || '1';
-  const daysForward = options.daysForward || '7';
+  const daysForward = options.daysForward || '3';
 
   console.log(`Updating games from ${daysBack} day(s) ago to ${daysForward} day(s) ahead...`);
   console.log(`Database: ${dbPath}`);

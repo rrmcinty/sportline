@@ -72,7 +72,7 @@ program
   .command('update')
   .description('Update odds and game data for upcoming games')
   .option('--days-back <number>', 'Days to look back for completed games', '1')
-  .option('--days-forward <number>', 'Days to look forward for upcoming games', '7')
+  .option('--days-forward <number>', 'Days to look forward for upcoming games', '3')
   .action(async (options) => {
     try {
       await update(options);
