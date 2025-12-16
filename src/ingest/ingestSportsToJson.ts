@@ -5,6 +5,8 @@ import path from "path";
 // League configurations
 interface LeagueConfig {
 	name: string;
+	sport: string;
+	league: string;
 	teamsApiBase: string;
 	scheduleApi: (teamId: string, season: number) => string;
 	teamStatsApi: (teamId: string, season: number) => string;
@@ -13,8 +15,11 @@ interface LeagueConfig {
 }
 
 const LEAGUES: Record<string, LeagueConfig> = {
+	// Basketball leagues
 	ncaam: {
 		name: "ncaam",
+		sport: "basketball",
+		league: "mens-college-basketball",
 		teamsApiBase: "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams",
 		scheduleApi: (teamId: string, season: number) =>
 			`https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/${teamId}/schedule?season=${season}`,
@@ -27,6 +32,8 @@ const LEAGUES: Record<string, LeagueConfig> = {
 	},
 	nba: {
 		name: "nba",
+		sport: "basketball",
+		league: "nba",
 		teamsApiBase: "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams",
 		scheduleApi: (teamId: string, season: number) =>
 			`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/${teamId}/schedule?season=${season}`,
@@ -36,6 +43,50 @@ const LEAGUES: Record<string, LeagueConfig> = {
 			`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${eventId}`,
 		oddsApi: (eventId: string) =>
 			`https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/${eventId}/competitions/${eventId}/odds`
+	},
+	// Hockey leagues
+	nhl: {
+		name: "nhl",
+		sport: "hockey",
+		league: "nhl",
+		teamsApiBase: "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/teams",
+		scheduleApi: (teamId: string, season: number) =>
+			`https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/teams/${teamId}/schedule?season=${season}`,
+		teamStatsApi: (teamId: string, season: number) =>
+			`https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/teams/${teamId}/statistics?season=${season}`,
+		gameSummaryApi: (eventId: string) =>
+			`https://site.api.espn.com/apis/site/v2/sports/hockey/nhl/summary?event=${eventId}`,
+		oddsApi: (eventId: string) =>
+			`https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl/events/${eventId}/competitions/${eventId}/odds`
+	},
+	// Football leagues
+	nfl: {
+		name: "nfl",
+		sport: "football",
+		league: "nfl",
+		teamsApiBase: "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams",
+		scheduleApi: (teamId: string, season: number) =>
+			`https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/schedule?season=${season}`,
+		teamStatsApi: (teamId: string, season: number) =>
+			`https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamId}/statistics?season=${season}`,
+		gameSummaryApi: (eventId: string) =>
+			`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${eventId}`,
+		oddsApi: (eventId: string) =>
+			`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${eventId}/competitions/${eventId}/odds`
+	},
+	cfb: {
+		name: "cfb",
+		sport: "football",
+		league: "college-football",
+		teamsApiBase: "https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams",
+		scheduleApi: (teamId: string, season: number) =>
+			`https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/${teamId}/schedule?season=${season}`,
+		teamStatsApi: (teamId: string, season: number) =>
+			`https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/${teamId}/statistics?season=${season}`,
+		gameSummaryApi: (eventId: string) =>
+			`https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event=${eventId}`,
+		oddsApi: (eventId: string) =>
+			`https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/events/${eventId}/competitions/${eventId}/odds`
 	}
 };
 
@@ -330,8 +381,11 @@ async function main() {
 			console.error(`Invalid or missing league. Supported leagues: ${Object.keys(LEAGUES).join(', ')}`);
 			console.error("Usage: node script.js <league> [season]");
 			console.error("Examples:");
-			console.error("  node script.js ncaam 2025");
-			console.error("  node script.js nba 2024");
+			console.error("  node script.js ncaam 2025    # NCAA Men's Basketball");
+			console.error("  node script.js nba 2024     # NBA Basketball");
+			console.error("  node script.js nhl 2024     # NHL Hockey");
+			console.error("  node script.js nfl 2024     # NFL Football");
+			console.error("  node script.js cfb 2024     # College Football");
 			process.exit(1);
 		}
 
@@ -343,7 +397,7 @@ async function main() {
 			process.exit(1);
 		}
 
-		console.log(`Starting ingestion for ${league.name.toUpperCase()} season ${season}`);
+		console.log(`Starting ingestion for ${league.name.toUpperCase()} (${league.sport}) season ${season}`);
 		await processAllTeams(season, league);
 	} catch (err) {
 		console.error("Error processing teams or schedules:", err);
