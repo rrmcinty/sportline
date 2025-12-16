@@ -105,17 +105,17 @@
     ],
     "recency_weighting": {
         "enabled": true,
-        "decay": 0.95
+        "decay": 0.9
     },
     "regularization": {
-        "lambda": 0.01,
-        "temperature": 0.6
+        "lambda": 0.05,
+        "temperature": 0.7
     },
     "calibration": {
         "method": "temperature",
-        "temperature": 0.6
+        "temperature": 0.7
     },
-    "min_edge": 0.01,
-    "min_ev": 0.001,
-    "max_ev": 0.20
+    "min_edge": 0.02,
+    "min_ev": 0.005,
+    "max_ev": 0.15
 }
