@@ -158,6 +158,147 @@ export function calculateBasketballDefensiveMetrics(stats: Record<string, number
 }
 
 /**
+ * Calculate NBA-specific situational features for better prediction accuracy
+ */
+export function calculateNBAAdvancedSituationalFeatures(
+  teamId: string,
+  gameDate: Date,
+  games: Game[],
+  db: DatabaseQueries
+): Record<string, number> {
+  const situationalFeatures: Record<string, number> = {};
+
+  // Get recent games for this team (last 10 games)
+  const recentGames = games
+    .filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && 
+                 new Date(g.date) < gameDate)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 10);
+
+  if (recentGames.length === 0) {
+    return situationalFeatures;
+  }
+
+  // 1. Rest/Fatigue Analysis
+  const lastGame = recentGames[0];
+  if (lastGame) {
+    const daysSinceLastGame = Math.floor((gameDate.getTime() - new Date(lastGame.date).getTime()) / (1000 * 60 * 60 * 24));
+    situationalFeatures.daysSinceLastGame = daysSinceLastGame;
+    situationalFeatures.isBackToBack = daysSinceLastGame === 1 ? 1 : 0;
+    situationalFeatures.isWellRested = daysSinceLastGame >= 3 ? 1 : 0;
+  }
+
+  // 2. Recent Performance Trends (last 5 games)
+  const last5Games = recentGames.slice(0, 5);
+  if (last5Games.length >= 3) {
+    let wins = 0;
+    let totalMargin = 0;
+    let clutchGames = 0; // Games decided by 5 points or less
+    let blowouts = 0; // Games decided by 15+ points
+
+    last5Games.forEach(game => {
+      const isHome = game.home_team_id === teamId;
+      const teamScore = isHome ? game.home_score : game.away_score;
+      const oppScore = isHome ? game.away_score : game.home_score;
+      
+      if (teamScore !== null && oppScore !== null) {
+        const margin = teamScore - oppScore;
+        totalMargin += margin;
+        
+        if (margin > 0) wins++;
+        if (Math.abs(margin) <= 5) clutchGames++;
+        if (Math.abs(margin) >= 15) blowouts++;
+      }
+    });
+
+    situationalFeatures.recentWinPct = wins / last5Games.length;
+    situationalFeatures.recentAvgMargin = totalMargin / last5Games.length;
+    situationalFeatures.recentClutchGamePct = clutchGames / last5Games.length;
+    situationalFeatures.recentBlowoutPct = blowouts / last5Games.length;
+  }
+
+  // 3. Home/Away Streak Analysis
+  let homeStreak = 0;
+  let awayStreak = 0;
+  
+  for (const game of recentGames) {
+    const isHome = game.home_team_id === teamId;
+    const teamScore = isHome ? game.home_score : game.away_score;
+    const oppScore = isHome ? game.away_score : game.home_score;
+    
+    if (teamScore !== null && oppScore !== null) {
+      const won = teamScore > oppScore;
+      
+      if (isHome) {
+        if (won) homeStreak++;
+        else break;
+      } else {
+        if (won) awayStreak++;
+        else break;
+      }
+    }
+  }
+  
+  situationalFeatures.homeWinStreak = homeStreak;
+  situationalFeatures.awayWinStreak = awayStreak;
+
+  // 4. Pace and Style Metrics (last 5 games average)
+  if (last5Games.length >= 3) {
+    let totalPace = 0;
+    let totalOffRating = 0;
+    let totalDefRating = 0;
+    let validGames = 0;
+
+    last5Games.forEach(game => {
+      const isHome = game.home_team_id === teamId;
+      const teamStats = db.getGameStats(game.id, teamId);
+      
+      if (teamStats && Object.keys(teamStats).length > 0) {
+        const pace = calculateBasketballPossessions(teamStats);
+        const teamScore = isHome ? game.home_score : game.away_score;
+        const oppScore = isHome ? game.away_score : game.home_score;
+        
+        if (pace > 0 && teamScore !== null && oppScore !== null) {
+          totalPace += pace;
+          totalOffRating += (teamScore / pace) * 100;
+          totalDefRating += (oppScore / pace) * 100;
+          validGames++;
+        }
+      }
+    });
+
+    if (validGames > 0) {
+      situationalFeatures.recentPace = totalPace / validGames;
+      situationalFeatures.recentOffRating = totalOffRating / validGames;
+      situationalFeatures.recentDefRating = totalDefRating / validGames;
+    }
+  }
+
+  // 5. Clutch Time Performance (4th quarter/OT performance in close games)
+  const clutchGames = recentGames.filter(game => {
+    const isHome = game.home_team_id === teamId;
+    const teamScore = isHome ? game.home_score : game.away_score;
+    const oppScore = isHome ? game.away_score : game.home_score;
+    return teamScore !== null && oppScore !== null && Math.abs(teamScore - oppScore) <= 10;
+  });
+
+  if (clutchGames.length >= 2) {
+    let clutchWins = 0;
+    clutchGames.forEach(game => {
+      const isHome = game.home_team_id === teamId;
+      const teamScore = isHome ? game.home_score : game.away_score;
+      const oppScore = isHome ? game.away_score : game.home_score;
+      if (teamScore !== null && oppScore !== null && teamScore > oppScore) {
+        clutchWins++;
+      }
+    });
+    situationalFeatures.clutchWinPct = clutchWins / clutchGames.length;
+  }
+
+  return situationalFeatures;
+}
+
+/**
  * Get list of basketball-specific advanced features
  */
 export function getBasketballAdvancedFeatures(): string[] {
@@ -172,6 +313,20 @@ export function getBasketballAdvancedFeatures(): string[] {
     'fgSuppression',
     'threePtSuppression',
     'scoringSuppression',
-    'turnoverInduction'
+    'turnoverInduction',
+    // New NBA-specific situational features
+    'daysSinceLastGame',
+    'isBackToBack',
+    'isWellRested',
+    'recentWinPct',
+    'recentAvgMargin',
+    'recentClutchGamePct',
+    'recentBlowoutPct',
+    'homeWinStreak',
+    'awayWinStreak',
+    'recentPace',
+    'recentOffRating',
+    'recentDefRating',
+    'clutchWinPct'
   ];
 }

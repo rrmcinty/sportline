@@ -12,6 +12,7 @@ import { backtest } from './commands/backtest.js';
 import { update } from './commands/update.js';
 import { analyze } from './commands/analyze.js';
 import { createSimpleBucketsCommand } from './commands/simple-buckets.js';
+import { createOddsImpactCommand } from './commands/odds-impact-analysis.js';
 
 const program = new Command();
 
@@ -99,6 +100,7 @@ program
   });
 
 program.addCommand(createSimpleBucketsCommand());
+program.addCommand(createOddsImpactCommand());
 
 program.parse(process.argv);
 

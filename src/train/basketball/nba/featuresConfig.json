@@ -82,7 +82,20 @@
         "sosWinRateDifferential": false,
         "sosStrengthDifferential": false,
         "sosRecentStrengthDiff5": false,
-        "sosRecentStrengthDiff10": false
+        "sosRecentStrengthDiff10": false,
+        "daysSinceLastGame": true,
+        "isBackToBack": true,
+        "isWellRested": true,
+        "recentWinPct": true,
+        "recentAvgMargin": true,
+        "recentClutchGamePct": true,
+        "recentBlowoutPct": true,
+        "homeWinStreak": true,
+        "awayWinStreak": true,
+        "recentPace": true,
+        "recentOffRating": true,
+        "recentDefRating": true,
+        "clutchWinPct": true
     },
     "rolling_windows": [
         5

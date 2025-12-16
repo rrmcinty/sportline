@@ -8,7 +8,8 @@ import { DatabaseQueries } from '../db/queries.js';
 import { 
   calculateBasketballAdvancedStats, 
   computeBasketballOffensiveDefensiveRatings,
-  getBasketballAdvancedFeatures
+  getBasketballAdvancedFeatures,
+  calculateNBAAdvancedSituationalFeatures
 } from './basketball/basketballFeatures.js';
 import { 
   calculateHockeyAdvancedStats, 
@@ -73,6 +74,32 @@ export function computeOffensiveDefensiveRatings(
       return computeFootballOffensiveDefensiveRatings(homeId, awayId, gameId, games, db);
     default:
       return { homeORtg: 100, homeDRtg: 100, awayORtg: 100, awayDRtg: 100 };
+  }
+}
+
+/**
+ * Calculate sport-specific situational features
+ */
+export function calculateSituationalFeatures(
+  sport: string,
+  teamId: string,
+  gameDate: Date,
+  games: Game[],
+  db: DatabaseQueries
+): Record<string, number> {
+  const sportCategory = SPORT_CATEGORIES[sport] || 'basketball';
+  
+  switch (sportCategory) {
+    case 'basketball':
+      return calculateNBAAdvancedSituationalFeatures(teamId, gameDate, games, db);
+    case 'hockey':
+      // Could add NHL-specific situational features here
+      return {};
+    case 'football':
+      // Could add NFL-specific situational features here
+      return {};
+    default:
+      return {};
   }
 }
 

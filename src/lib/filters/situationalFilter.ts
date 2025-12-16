@@ -146,6 +146,43 @@ export const CONSERVATIVE_FILTER_CONFIG: FilterConfig = {
 };
 
 /**
+ * NBA_60_70_BUCKET filter - Specifically optimized for NBA 60-70% confidence bucket
+ * Targets the nearly break-even bucket with situational improvements
+ * Expected: Turn -0.3% ROI into positive ROI with ~15-20 bets per year
+ */
+export const NBA_60_70_BUCKET_FILTER_CONFIG: FilterConfig = {
+  // OPTIMIZED: Focus on slight favorites and toss-ups (where 60-70% confidence typically falls)
+  allowedOddsRanges: ['slight_favorite', 'toss_up'],
+  
+  // TARGETED: Specifically target the 60-70% confidence range
+  minModelConfidence: 0.60, // 60% confidence minimum
+  maxModelConfidence: 0.70, // 70% confidence maximum
+  
+  // VALIDATED: March games are terrible (-55.04% ROI)
+  allowedMonths: [11, 12, 1, 2], // Nov, Dec, Jan, Feb only
+  
+  // UPDATED: Allow all days (day-of-week data was incomplete)
+  allowedDaysOfWeek: [0, 1, 2, 3, 4, 5, 6], // All days
+  
+  // NBA-SPECIFIC: Avoid teams on long win streaks (often overvalued in NBA)
+  maxWinStreak: 5, // Conservative for NBA
+  
+  // NBA-SPECIFIC: Back-to-back games are important in NBA (fatigue factor)
+  minRestDays: 1, // Avoid back-to-back games
+  maxRestDays: 10, // Allow any rest amount
+  
+  // TARGETED: Tighter probability differences for this confidence range
+  minImpliedProbDiff: -0.10, // Model can be slightly less confident
+  maxImpliedProbDiff: 0.20,  // But not overly confident
+  
+  // OPTIMIZED: Focus on medium edges (small edges might not overcome -0.3% ROI)
+  allowedEdgeSizes: ['medium', 'large'],
+  
+  // VALIDATED: Recent seasons with good data quality
+  allowedSeasons: [2023, 2024, 2025],
+};
+
+/**
  * Apply situational filters to a list of recommendations
  */
 export function applySituationalFilters(
@@ -305,6 +342,9 @@ export function getFilterConfig(configName: string): FilterConfig {
       return CONSERVATIVE_FILTER_CONFIG;
     case 'relaxed':
       return RELAXED_FILTER_CONFIG;
+    case 'nba_60_70_bucket':
+    case 'nba-60-70-bucket':
+      return NBA_60_70_BUCKET_FILTER_CONFIG;
     case 'none':
     case 'off':
       return {
