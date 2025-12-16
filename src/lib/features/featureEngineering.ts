@@ -12,6 +12,10 @@ import {
   computeOffensiveDefensiveRatings,
   getAdvancedFeatures
 } from './sportFeatureFactory.js';
+import { 
+  calculateSOSDifferential,
+  getStrengthOfScheduleFeatures
+} from './strengthOfSchedule.js';
 
 /**
  * Generate exponential recency weights for a given window size
@@ -406,6 +410,10 @@ export function computeFixedFeatures(
     features.homeDefensiveRating = ratings.homeDRtg;
     features.awayDefensiveRating = ratings.awayDRtg;
   }
+
+  // Strength of Schedule features
+  const sosFeatures = calculateSOSDifferential(homeId, awayId, gameId, games, db);
+  Object.assign(features, sosFeatures);
 
   return features;
 }

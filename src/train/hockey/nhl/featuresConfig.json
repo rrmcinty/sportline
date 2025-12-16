@@ -75,7 +75,19 @@
         "goalSuppression": false,
         "shotSuppression": true,
         "powerPlaySuppression": false,
-        "penaltyKillEfficiency": true
+        "penaltyKillEfficiency": true,
+        "homeOpponentWinRate": true,
+        "awayOpponentWinRate": true,
+        "homeOpponentStrengthRating": true,
+        "awayOpponentStrengthRating": true,
+        "homeRecentOpponentStrength5": true,
+        "awayRecentOpponentStrength5": true,
+        "homeRecentOpponentStrength10": true,
+        "awayRecentOpponentStrength10": true,
+        "sosWinRateDifferential": true,
+        "sosStrengthDifferential": true,
+        "sosRecentStrengthDiff5": true,
+        "sosRecentStrengthDiff10": true
     },
     "rolling_windows": [
         5,
