@@ -11,6 +11,7 @@ import { recommend } from './commands/recommend.js';
 import { backtest } from './commands/backtest.js';
 import { update } from './commands/update.js';
 import { analyze } from './commands/analyze.js';
+import { createSimpleBucketsCommand } from './commands/simple-buckets.js';
 
 const program = new Command();
 
@@ -96,6 +97,8 @@ program
       process.exit(1);
     }
   });
+
+program.addCommand(createSimpleBucketsCommand());
 
 program.parse(process.argv);
 
