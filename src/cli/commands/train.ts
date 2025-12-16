@@ -36,9 +36,19 @@ export async function train(options: TrainOptions): Promise<void> {
 
   // Step 1: Load configuration
   // Note: Config file is in src/, not dist/, so we need to navigate correctly
+  // Map sports to their sport categories
+  const sportToCategory: Record<string, string> = {
+    'ncaam': 'basketball',
+    'nba': 'basketball',
+    'nhl': 'hockey',
+    'nfl': 'football',
+    'cfb': 'football'
+  };
+  
+  const sportCategory = sportToCategory[options.sport] || 'basketball';
   const defaultConfigPath = path.join(
     process.cwd(),
-    `src/train/basketball/${options.sport}/featuresConfig.json`
+    `src/train/${sportCategory}/${options.sport}/featuresConfig.json`
   );
   const configPath = options.config || defaultConfigPath;
 
@@ -163,7 +173,7 @@ export async function train(options: TrainOptions): Promise<void> {
   console.log('\n[7/7] Saving model...');
   const modelsDir = path.join(
     process.cwd(),
-    'src/train/basketball/ncaam/models'
+    `src/train/${sportCategory}/${options.sport}/models`
   );
   const modelFilename = generateModelFilename(config.sport, config.market);
   const modelPath = path.join(modelsDir, modelFilename);

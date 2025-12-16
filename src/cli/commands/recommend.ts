@@ -51,9 +51,20 @@ async function getRecommendationsForSport(
 ): Promise<{ recommendations: Recommendation[], gameFeatures: GameFeatures[] }> {
   console.log(`\n[${sport.toUpperCase()}] Starting recommendation generation...`);
   console.log(`[${sport.toUpperCase()}] Loading trained model...`);
+  
+  // Map sports to their sport categories
+  const sportToCategory: Record<string, string> = {
+    'ncaam': 'basketball',
+    'nba': 'basketball', 
+    'nhl': 'hockey',
+    'nfl': 'football',
+    'cfb': 'football'
+  };
+  
+  const sportCategory = sportToCategory[sport] || 'basketball';
   const modelsDir = path.join(
     process.cwd(),
-    'src/train/basketball/ncaam/models'  // All models are currently stored here
+    `src/train/${sportCategory}/${sport}/models`
   );
 
   const modelPath = findLatestModel(sport, options.market, modelsDir);
@@ -69,7 +80,7 @@ async function getRecommendationsForSport(
   console.log(`[${sport.toUpperCase()}] Loading configuration...`);
   const configPath = path.join(
     process.cwd(),
-    `src/train/basketball/${sport}/featuresConfig.json`
+    `src/train/${sportCategory}/${sport}/featuresConfig.json`
   );
   const config = loadFeatureConfig(configPath);
 
@@ -249,7 +260,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   const db = new DatabaseQueries(dbPath);
 
   // Determine which sports to process
-  const sportsToProcess = options.sport ? [options.sport] : ['ncaam', 'nba'];
+  const sportsToProcess = options.sport ? [options.sport] : ['ncaam', 'nba', 'nhl', 'nfl', 'cfb'];
 
   // Collect all recommendations from all sports
   const allRecommendations: Array<{sport: string, recommendation: Recommendation}> = [];

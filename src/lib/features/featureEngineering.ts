@@ -7,6 +7,11 @@ import type { Game, GameFeatures, OddsData, FeatureConfig } from '../db/types.js
 import { DatabaseQueries } from '../db/queries.js';
 import { getMarketImpliedProb } from '../odds/evCalculator.js';
 import { getEnabledRollingFeatures, isFeatureEnabled } from './featureConfig.js';
+import { 
+  calculateAdvancedStats, 
+  computeOffensiveDefensiveRatings,
+  getAdvancedFeatures
+} from './sportFeatureFactory.js';
 
 /**
  * Generate exponential recency weights for a given window size
@@ -29,63 +34,8 @@ export function weightedAverage(values: number[], weights: number[]): number {
   return values.reduce((sum, v, i) => sum + v * weights[i], 0) / totalWeight;
 }
 
-/**
- * Calculate advanced statistical features from raw game stats
- */
-export function calculateAdvancedStats(stats: Record<string, number>): Record<string, number> {
-  const advancedStats: Record<string, number> = {};
-
-  // Get raw stats with fallbacks
-  const fgm = stats.fieldGoalsMade || 0;
-  const fga = stats.fieldGoalsAttempted || 0;
-  const fg3m = stats.threePointFieldGoalsMade || 0;
-  const ftm = stats.freeThrowsMade || 0;
-  const fta = stats.freeThrowsAttempted || 0;
-  const ast = stats.assists || 0;
-  const tov = stats.totalTurnovers || 0;
-  const trb = stats.totalRebounds || 0;
-  const orb = stats.offensiveRebounds || 0;
-  const drb = stats.defensiveRebounds || 0;
-
-  // Effective Field Goal Percentage: eFG% = (FGM + 0.5*3PM) / FGA
-  if (fga > 0) {
-    advancedStats.effectiveFgPct = (fgm + 0.5 * fg3m) / fga;
-  }
-
-  // True Shooting Percentage: TS% = PTS / (2*(FGA + 0.44*FTA))
-  // Approximate PTS since we don't have exact points in game_stats
-  const estimatedPoints = fgm * 2 + fg3m + ftm; // Rough approximation: 2pts for FGM, 3pts for 3PM, 1pt for FTM
-  const trueShootingAttempts = fga + 0.44 * fta;
-  if (trueShootingAttempts > 0) {
-    advancedStats.trueShootingPct = estimatedPoints / (2 * trueShootingAttempts);
-  }
-
-  // Assist Ratio: AST / (FGA + 0.44*FTA + TOV)
-  const assistAttempts = fga + 0.44 * fta + tov;
-  if (assistAttempts > 0) {
-    advancedStats.assistRatio = ast / assistAttempts;
-  }
-
-  // Turnover Ratio: TOV / (FGA + 0.44*FTA + TOV)
-  if (assistAttempts > 0) {
-    advancedStats.turnoverRatio = tov / assistAttempts;
-  }
-
-  // Rebound Percentage (team only - would need opponent data for full calculation)
-  // For now, just offensive/defensive rebound split
-  if (trb > 0) {
-    advancedStats.offensiveReboundPct = orb / trb;
-    advancedStats.defensiveReboundPct = drb / trb;
-  }
-
-  // Pace calculation (simplified - possessions per game, assuming standard game length)
-  // Pace = Team possessions (rough estimate)
-  // This is a simplified version - full pace requires opponent possessions
-  const teamPossessions = fga + 0.44 * fta + tov;
-  advancedStats.pace = teamPossessions;
-
-  return advancedStats;
-}
+// This function is now handled by sport-specific modules
+// See sportFeatureFactory.ts for the new implementation
 
 /**
  * Calculate form indicators from game history
@@ -257,62 +207,8 @@ export function computeHeadToHead(homeId: string, awayId: string, gameId: string
   };
 }
 
-/**
- * Compute simplified offensive and defensive ratings
- * ORtg = Points per 100 possessions
- * DRtg = Opponent points per 100 possessions
- */
-export function computeOffensiveDefensiveRatings(
-  homeId: string,
-  awayId: string,
-  gameId: string,
-  games: Game[],
-  db: DatabaseQueries
-): { homeORtg: number; homeDRtg: number; awayORtg: number; awayDRtg: number } {
-  // Get game scores
-  const game = games.find(g => g.id === gameId);
-  if (!game || game.home_score === null || game.away_score === null) {
-    return { homeORtg: 100, homeDRtg: 100, awayORtg: 100, awayDRtg: 100 }; // Default values
-  }
-
-  const homePoints = game.home_score;
-  const awayPoints = game.away_score;
-
-  // Get team stats for this game
-  const homeStats = db.getGameStats(gameId, homeId);
-  const awayStats = db.getGameStats(gameId, awayId);
-
-  // Calculate possessions (simplified)
-  const homePossessions = calculatePossessions(homeStats);
-  const awayPossessions = calculatePossessions(awayStats);
-
-  // Offensive Rating = (Points / Possessions) * 100
-  const homeORtg = homePossessions > 0 ? (homePoints / homePossessions) * 100 : 100;
-  const awayORtg = awayPossessions > 0 ? (awayPoints / awayPossessions) * 100 : 100;
-
-  // Defensive Rating = (Opponent Points / Opponent Possessions) * 100
-  const homeDRtg = awayPossessions > 0 ? (awayPoints / awayPossessions) * 100 : 100;
-  const awayDRtg = homePossessions > 0 ? (homePoints / homePossessions) * 100 : 100;
-
-  return {
-    homeORtg: Math.max(50, Math.min(150, homeORtg)), // Clamp to reasonable range
-    homeDRtg: Math.max(50, Math.min(150, homeDRtg)),
-    awayORtg: Math.max(50, Math.min(150, awayORtg)),
-    awayDRtg: Math.max(50, Math.min(150, awayDRtg))
-  };
-}
-
-/**
- * Calculate team possessions from stats
- */
-function calculatePossessions(stats: Record<string, number>): number {
-  const fga = stats.fieldGoalsAttempted || 0;
-  const fta = stats.freeThrowsAttempted || 0;
-  const tov = stats.totalTurnovers || 0;
-
-  // Simplified possession formula: FGA + 0.44*FTA + TOV
-  return fga + 0.44 * fta + tov;
-}
+// These functions are now handled by sport-specific modules
+// See sportFeatureFactory.ts for the new implementation
 
 /**
  * Compute rolling averages for a team's game stats
@@ -456,7 +352,8 @@ export function computeFixedFeatures(
   gameId: string,
   games: Game[],
   oddsArr: OddsData[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
+  sport?: string
 ): Record<string, number> {
   const marketImpliedProbVal = getMarketImpliedProb(oddsArr);
 
@@ -501,12 +398,14 @@ export function computeFixedFeatures(
   features.headToHeadGames = headToHead.games;
   features.headToHeadWinRate = headToHead.games > 0 ? headToHead.wins / headToHead.games : 0.5;
 
-  // Simplified offensive/defensive ratings (requires database access)
-  const ratings = computeOffensiveDefensiveRatings(homeId, awayId, gameId, games, db);
-  features.homeOffensiveRating = ratings.homeORtg;
-  features.awayOffensiveRating = ratings.awayORtg;
-  features.homeDefensiveRating = ratings.homeDRtg;
-  features.awayDefensiveRating = ratings.awayDRtg;
+  // Sport-specific offensive/defensive ratings
+  if (sport) {
+    const ratings = computeOffensiveDefensiveRatings(sport, homeId, awayId, gameId, games, db);
+    features.homeOffensiveRating = ratings.homeORtg;
+    features.awayOffensiveRating = ratings.awayORtg;
+    features.homeDefensiveRating = ratings.homeDRtg;
+    features.awayDefensiveRating = ratings.awayDRtg;
+  }
 
   return features;
 }
@@ -542,8 +441,8 @@ export function extractFeaturesForDataset(
   > = {};
 
 
-  // Get list of advanced features that should be included in rolling calculations
-  const advancedFeatures = ['effectiveFgPct', 'trueShootingPct', 'assistRatio', 'turnoverRatio', 'offensiveReboundPct', 'defensiveReboundPct', 'pace'];
+  // Get sport-specific advanced features that should be included in rolling calculations
+  const advancedFeatures = getAdvancedFeatures(config.sport);
   const enabledAdvancedFeatures = advancedFeatures.filter(feature => isFeatureEnabled(config, feature));
 
   for (const [teamId, teamGames] of gameStatsMap.entries()) {
@@ -554,8 +453,8 @@ export function extractFeaturesForDataset(
       // Start with raw stats
       const gameStats = { ...stats };
 
-      // Calculate and add advanced stats
-      const advancedStats = calculateAdvancedStats(stats);
+      // Calculate and add sport-specific advanced stats
+      const advancedStats = calculateAdvancedStats(config.sport, stats);
       Object.assign(gameStats, advancedStats);
 
       statsByGame[gameId] = gameStats;
@@ -678,7 +577,8 @@ export function extractFeaturesForDataset(
       gid,
       games,
       oddsArr,
-      db
+      db,
+      config.sport
     );
 
     // Set home advantage
@@ -848,7 +748,8 @@ export function extractFeaturesForGame(
     gid,
     allGames,
     oddsArr,
-    db
+    db,
+    config.sport
   );
 
   fixedFeatureValues.homeAdvantage =

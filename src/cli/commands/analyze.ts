@@ -35,9 +35,19 @@ export async function analyze(options: AnalyzeOptions): Promise<void> {
   console.log('\n🔍 Sportline Profitability Analysis & Filter Testing\n');
 
   // Step 1: Load configuration
+  // Map sports to their sport categories
+  const sportToCategory: Record<string, string> = {
+    'ncaam': 'basketball',
+    'nba': 'basketball',
+    'nhl': 'hockey',
+    'nfl': 'football',
+    'cfb': 'football'
+  };
+  
+  const sportCategory = sportToCategory[options.sport] || 'basketball';
   const defaultConfigPath = path.join(
     process.cwd(),
-    `src/train/basketball/${options.sport}/featuresConfig.json`
+    `src/train/${sportCategory}/${options.sport}/featuresConfig.json`
   );
   const configPath = options.config || defaultConfigPath;
 
