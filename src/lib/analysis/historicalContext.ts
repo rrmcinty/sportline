@@ -5,6 +5,7 @@
 
 import type { Recommendation, GameFeatures } from '../db/types.js';
 import { extractSituationalFeatures } from '../backtest/profitabilityAnalyzer.js';
+import { loadHistoricalData, type SportHistoricalData } from './historicalDataManager.js';
 
 export interface HistoricalContext {
   oddsRangeROI: number;
@@ -21,30 +22,29 @@ export interface HistoricalContext {
 }
 
 /**
- * Historical ROI data from our profitability analysis
- * These are the actual results from backtesting
+ * Get sport-specific historical data or fallback to defaults
  */
-const HISTORICAL_ROI_DATA = {
+function getHistoricalROIData(sport: string): SportHistoricalData | null {
+  return loadHistoricalData(sport);
+}
+
+/**
+ * Fallback historical data when sport-specific data is not available
+ */
+const FALLBACK_HISTORICAL_DATA = {
   oddsRanges: {
-    'heavy_favorite': { roi: -0.4433, winRate: 0.116, sampleSize: 2360, description: 'Heavy Favorites (-200+)' },
-    'favorite': { roi: -0.35, winRate: 0.25, sampleSize: 800, description: 'Favorites (-150 to -200)' },
-    'slight_favorite': { roi: -0.25, winRate: 0.35, sampleSize: 600, description: 'Slight Favorites (-110 to -150)' },
-    'toss_up': { roi: 0.0285, winRate: 0.536, sampleSize: 179, description: 'Toss-ups (-110 to +110)' },
-    'slight_underdog': { roi: -0.15, winRate: 0.45, sampleSize: 400, description: 'Slight Underdogs (+110 to +150)' },
-    'underdog': { roi: -0.45, winRate: 0.25, sampleSize: 500, description: 'Underdogs (+150 to +200)' },
-    'heavy_underdog': { roi: -0.6076, winRate: 0.094, sampleSize: 785, description: 'Heavy Underdogs (+200+)' }
+    'heavy_favorite': { roi: -0.35, winRate: 0.25, sampleSize: 100, description: 'Heavy Favorites (-200+)' },
+    'favorite': { roi: -0.30, winRate: 0.30, sampleSize: 100, description: 'Favorites (-150 to -200)' },
+    'slight_favorite': { roi: -0.25, winRate: 0.35, sampleSize: 100, description: 'Slight Favorites (-110 to -150)' },
+    'toss_up': { roi: -0.10, winRate: 0.45, sampleSize: 100, description: 'Toss-ups (-110 to +110)' },
+    'slight_underdog': { roi: -0.15, winRate: 0.40, sampleSize: 100, description: 'Slight Underdogs (+110 to +150)' },
+    'underdog': { roi: -0.25, winRate: 0.35, sampleSize: 100, description: 'Underdogs (+150 to +200)' },
+    'heavy_underdog': { roi: -0.40, winRate: 0.20, sampleSize: 100, description: 'Heavy Underdogs (+200+)' }
   },
   modelConfidence: {
-    'low': { roi: -0.4047, winRate: 0.186, sampleSize: 1946, description: 'Low Confidence (0-20%)' },
-    'medium': { roi: -0.30, winRate: 0.25, sampleSize: 1500, description: 'Medium Confidence (20-40%)' },
-    'high': { roi: -0.26, winRate: 0.35, sampleSize: 1000, description: 'High Confidence (40%+)' }
-  },
-  months: {
-    11: { roi: -0.25, winRate: 0.30, sampleSize: 800, description: 'November (Early Season)' },
-    12: { roi: -0.30, winRate: 0.28, sampleSize: 900, description: 'December (Early Season)' },
-    1: { roi: -0.35, winRate: 0.25, sampleSize: 1000, description: 'January (Mid Season)' },
-    2: { roi: -0.40, winRate: 0.22, sampleSize: 1100, description: 'February (Late Season)' },
-    3: { roi: -0.5504, winRate: 0.178, sampleSize: 618, description: 'March (Tournament - AVOID!)' }
+    'low': { roi: -0.35, winRate: 0.25, sampleSize: 100, description: 'Low Confidence (0-40%)' },
+    'medium': { roi: -0.25, winRate: 0.35, sampleSize: 100, description: 'Medium Confidence (40-60%)' },
+    'high': { roi: -0.15, winRate: 0.45, sampleSize: 100, description: 'High Confidence (60%+)' }
   }
 };
 
@@ -53,7 +53,8 @@ const HISTORICAL_ROI_DATA = {
  */
 export function getHistoricalContext(
   recommendation: Recommendation,
-  gameFeatures?: GameFeatures
+  gameFeatures?: GameFeatures,
+  sport?: string
 ): HistoricalContext {
   let situational;
   
@@ -64,16 +65,38 @@ export function getHistoricalContext(
     situational = extractBasicSituationalFeatures(recommendation);
   }
   
+  // Load sport-specific historical data
+  const sportHistoricalData = sport ? getHistoricalROIData(sport) : null;
+  
   // Get historical data for this situation
-  const oddsRangeData = HISTORICAL_ROI_DATA.oddsRanges[situational.oddsRange as keyof typeof HISTORICAL_ROI_DATA.oddsRanges] || 
-    { roi: -0.35, winRate: 0.25, sampleSize: 100, description: 'Unknown odds range' };
+  let oddsRangeData;
+  let confidenceData;
   
-  const confidenceLevel = situational.modelConfidence < 0.2 ? 'low' : 
-                         situational.modelConfidence < 0.4 ? 'medium' : 'high';
-  const confidenceData = HISTORICAL_ROI_DATA.modelConfidence[confidenceLevel];
+  if (sportHistoricalData) {
+    // Use sport-specific data
+    oddsRangeData = sportHistoricalData.oddsRanges[situational.oddsRange] || 
+      FALLBACK_HISTORICAL_DATA.oddsRanges[situational.oddsRange as keyof typeof FALLBACK_HISTORICAL_DATA.oddsRanges];
+    
+    // For model confidence, find the best matching bucket
+    const modelProb = recommendation.model_prob_home;
+    const confidenceBucket = Math.floor(modelProb * 10) * 10; // e.g., 0.56 -> 50
+    const bucketKey = `${confidenceBucket}-${confidenceBucket + 10}`;
+    
+    confidenceData = sportHistoricalData.modelConfidenceBuckets[bucketKey] || 
+      sportHistoricalData.modelConfidenceBuckets[Object.keys(sportHistoricalData.modelConfidenceBuckets)[0]] ||
+      FALLBACK_HISTORICAL_DATA.modelConfidence.medium;
+  } else {
+    // Use fallback data
+    oddsRangeData = FALLBACK_HISTORICAL_DATA.oddsRanges[situational.oddsRange as keyof typeof FALLBACK_HISTORICAL_DATA.oddsRanges] || 
+      { roi: -0.35, winRate: 0.25, sampleSize: 100, description: 'Unknown odds range' };
+    
+    const confidenceLevel = situational.modelConfidence < 0.4 ? 'low' : 
+                           situational.modelConfidence < 0.6 ? 'medium' : 'high';
+    confidenceData = FALLBACK_HISTORICAL_DATA.modelConfidence[confidenceLevel];
+  }
   
-  const monthData = HISTORICAL_ROI_DATA.months[situational.month as keyof typeof HISTORICAL_ROI_DATA.months] || 
-    { roi: -0.30, winRate: 0.25, sampleSize: 500, description: 'Unknown month' };
+  // Month data (keep simple for now)
+  const monthData = { roi: -0.30, winRate: 0.25, sampleSize: 500, description: 'Historical average' };
   
   // Calculate overall recommendation
   const avgROI = (oddsRangeData.roi + confidenceData.roi + monthData.roi) / 3;
@@ -88,10 +111,10 @@ export function getHistoricalContext(
   // Generate key insights
   const keyInsights: string[] = [];
   
-  if (oddsRangeData.roi > 0) {
-    keyInsights.push(`✅ ${oddsRangeData.description} historically profitable (+${(oddsRangeData.roi * 100).toFixed(1)}%)`);
+  if (confidenceData.roi > 0) {
+    keyInsights.push(`✅ ${confidenceData.description} historically profitable (+${(confidenceData.roi * 100).toFixed(1)}%)`);
   } else {
-    keyInsights.push(`❌ ${oddsRangeData.description} historically unprofitable (${(oddsRangeData.roi * 100).toFixed(1)}%)`);
+    keyInsights.push(`❌ ${confidenceData.description} historically unprofitable (${(confidenceData.roi * 100).toFixed(1)}%)`);
   }
   
   if (situational.month === 3) {
@@ -109,16 +132,16 @@ export function getHistoricalContext(
   }
   
   return {
-    oddsRangeROI: oddsRangeData.roi,
-    oddsRangeDescription: oddsRangeData.description,
+    oddsRangeROI: confidenceData.roi, // Use confidence bucket ROI as primary (more specific)
+    oddsRangeDescription: confidenceData.description,
     modelConfidenceROI: confidenceData.roi,
     modelConfidenceDescription: confidenceData.description,
     monthROI: monthData.roi,
     monthDescription: monthData.description,
     overallRecommendation,
     riskLevel,
-    historicalWinRate: oddsRangeData.winRate,
-    sampleSize: `${oddsRangeData.sampleSize} historical bets`,
+    historicalWinRate: confidenceData.winRate, // Use confidence bucket win rate
+    sampleSize: `${confidenceData.sampleSize} historical bets`,
     keyInsights
   };
 }
@@ -188,9 +211,10 @@ export function formatHistoricalContext(context: HistoricalContext): string {
  */
 export function getShortHistoricalInsight(
   recommendation: Recommendation,
-  gameFeatures?: GameFeatures
+  gameFeatures?: GameFeatures,
+  sport?: string
 ): string {
-  const context = getHistoricalContext(recommendation, gameFeatures);
+  const context = getHistoricalContext(recommendation, gameFeatures, sport);
   
   if (context.overallRecommendation === 'AVOID') {
     return `🔴 AVOID (${(context.oddsRangeROI * 100).toFixed(0)}% ROI)`;

@@ -14,6 +14,7 @@ import { analyze } from './commands/analyze.js';
 import { createSimpleBucketsCommand } from './commands/simple-buckets.js';
 import { createOddsImpactCommand } from './commands/odds-impact-analysis.js';
 import { createMultiSportBucketsCommand } from './commands/multi-sport-buckets.js';
+import { createHistoricalStatusCommand } from './commands/historical-status.js';
 
 const program = new Command();
 
@@ -103,6 +104,7 @@ program
 program.addCommand(createSimpleBucketsCommand());
 program.addCommand(createOddsImpactCommand());
 program.addCommand(createMultiSportBucketsCommand());
+program.addCommand(createHistoricalStatusCommand());
 
 program.parse(process.argv);
 

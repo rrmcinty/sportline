@@ -373,8 +373,8 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       : b.recommendation.ev_away!;
     
     // Get historical context for quality assessment
-    const contextA = getHistoricalContext(a.recommendation);
-    const contextB = getHistoricalContext(b.recommendation);
+    const contextA = getHistoricalContext(a.recommendation, undefined, a.sport.toLowerCase());
+    const contextB = getHistoricalContext(b.recommendation, undefined, b.sport.toLowerCase());
     
     // Calculate quality score: prioritize positive ROI categories, then EV
     const qualityScoreA = calculateBetQualityScore(evA, contextA);
@@ -408,7 +408,7 @@ function displayUnifiedRecommendations(
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations Across All Sports\n'));
 
-  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.white.bold('Time')}  | ${chalk.gray.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.red.bold('Historical Context')}`);
+  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.red.bold('Historical Context')}`);
   console.log(chalk.gray('-----+-------+-------+--------------------------------+---------------------+------+-------+-------+-------+------------------'));
 
   for (let i = 0; i < allRecommendations.length; i++) {
@@ -434,12 +434,12 @@ function displayUnifiedRecommendations(
       : formatPercentage(rec.edge_away!, 1);
 
     // Get historical context for this recommendation
-    const historicalInsight = getShortHistoricalInsight(rec);
+    const historicalInsight = getShortHistoricalInsight(rec, undefined, sport.toLowerCase());
 
     const rank = chalk.yellow((i + 1).toString().padStart(4));
     const sportDisplay = chalk.bold(sport.padEnd(5));
     const time = chalk.white(gameTime.padStart(5));
-    const matchupDisplay = chalk.gray(matchup.padEnd(30));
+    const matchupDisplay = chalk.white(matchup.padEnd(30));
     const pickDisplay = rec.recommended_side === 'home'
       ? chalk.green(pick.padEnd(19))
       : chalk.red(pick.padEnd(19));
@@ -454,33 +454,7 @@ function displayUnifiedRecommendations(
 
   console.log('');
 
-  // Historical Context Details section
-  if (allRecommendations.length > 0) {
-    console.log(chalk.cyan.bold('\n📊 Historical Context & Analysis\n'));
-    
-    for (let i = 0; i < Math.min(allRecommendations.length, 5); i++) {
-      const { sport, recommendation: rec } = allRecommendations[i];
-      const context = getHistoricalContext(rec);
-      
-      console.log(chalk.yellow.bold(`${i + 1}. ${rec.away_team} @ ${rec.home_team} (${sport})`));
-      console.log(chalk.gray(`   Pick: ${rec.recommended_side === 'home' ? rec.home_team : rec.away_team}`));
-      console.log(`   ${formatHistoricalContext(context)}`);
-      
-      // Show key insights
-      if (context.keyInsights.length > 0) {
-        console.log(chalk.gray('   Key Insights:'));
-        context.keyInsights.forEach(insight => {
-          console.log(chalk.gray(`   • ${insight}`));
-        });
-      }
-      
-      console.log(''); // Empty line between recommendations
-    }
-    
-    if (allRecommendations.length > 5) {
-      console.log(chalk.gray(`   ... and ${allRecommendations.length - 5} more recommendations\n`));
-    }
-  }
+  // Removed duplicate detailed historical context section - info is already in the main table
 
   // Kelly Criterion section
   const bankroll = options.bankroll ? parseFloat(options.bankroll) : null;

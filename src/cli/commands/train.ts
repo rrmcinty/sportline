@@ -20,6 +20,7 @@ import {
   printBacktestSummary,
 } from '../../lib/backtest/backtester.js';
 import { calculateCoefficientImportance, calculatePermutationImportance } from '../../lib/model/trainer.js';
+import { saveHistoricalData, clearHistoricalDataCache } from '../../lib/analysis/historicalDataManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -168,6 +169,27 @@ export async function train(options: TrainOptions): Promise<void> {
         `${(bucket.roi * 100).toFixed(1).padStart(6)}%`
     );
   }
+
+  // Save historical data for this sport
+  console.log('\n[HISTORICAL] Saving historical ROI data...');
+  const calibrationBuckets = buckets.map(bucket => ({
+    bucket: bucket.bucket,
+    count: bucket.count,
+    accuracy: bucket.accuracy * 100,
+    avgEV: bucket.avg_ev * 100,
+    roi: bucket.roi * 100
+  }));
+  
+  saveHistoricalData(
+    options.sport,
+    calibrationBuckets,
+    trainingResult.metrics.testAccuracy * 100,
+    bestResult.roi * 100,
+    bestResult.total_bets
+  );
+  
+  // Clear cache so new data is loaded on next access
+  clearHistoricalDataCache();
 
   // Step 7: Save model
   console.log('\n[7/7] Saving model...');

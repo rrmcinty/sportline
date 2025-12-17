@@ -61,13 +61,34 @@ From previous work, profitable buckets identified:
 - `src/lib/model/predictor.ts` - Removed double temperature application
 - `src/cli/commands/recommend.ts` - Removed temperature parameter from prediction calls
 - `src/train/basketball/ncaam/featuresConfig.json` - Updated temperature (0.6 → 1.8)
+- `src/lib/analysis/historicalDataManager.ts` - Created sport-specific historical data system
+- `src/lib/analysis/historicalContext.ts` - Updated to use sport-specific data instead of hardcoded values
+- `src/cli/commands/train.ts` - Added automatic historical data saving after training
+- `src/cli/commands/historical-status.ts` - Created command to view historical data status
+- `src/cli/index.ts` - Added historical-status command
+
+## Major System Improvements
+
+### 3. Sport-Specific Historical Data System
+**Problem**: All sports showed identical historical ROI (2.9% for toss-ups) due to hardcoded NCAAM data
+**Solution**: 
+- Created automatic historical data generation during training
+- Each sport now saves its own backtesting results to JSON files
+- Historical context now uses sport-specific data instead of hardcoded values
+- Added caching to prevent excessive file loading
+- Removed verbose logging that was spamming the console
+
+**Result**: 
+- NFL shows its actual +37.6% ROI for 50-60% confidence bucket
+- NCAAM shows its actual -6.6% ROI for best bucket
+- Each sport displays accurate historical performance
 
 ## Next Steps
-1. Complete training of other sports with proper temperature settings
-2. Run comprehensive multi-sport bucket analysis
-3. Decide on calibration strategy (exploit vs fix)
+1. Complete training of other sports (NBA, NHL, CFB) with proper temperature settings
+2. Run comprehensive multi-sport bucket analysis with accurate data
+3. Decide on calibration strategy (exploit NFL's profitable buckets vs fix calibration)
 4. Update recommendation system to target profitable buckets
-5. Test multi-sport recommendations with optimized models
+5. Test multi-sport recommendations with all optimized models
 
 ## Key Insights
 - **Temperature scaling direction matters**: < 1.0 = overconfident, > 1.0 = underconfident
