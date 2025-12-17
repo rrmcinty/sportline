@@ -57,6 +57,7 @@ export function generateRecommendations(
       recommended_side: null, // Will be set based on thresholds
       actual: row.target,
       provider: odds?.provider ?? '',
+      line: odds?.line ?? null,
     });
   }
 

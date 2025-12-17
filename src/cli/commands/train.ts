@@ -29,6 +29,7 @@ interface TrainOptions {
   sport: string;
   force: boolean;
   config?: string;
+  market?: string;
 }
 
 export async function train(options: TrainOptions): Promise<void> {
@@ -47,10 +48,22 @@ export async function train(options: TrainOptions): Promise<void> {
   };
   
   const sportCategory = sportToCategory[options.sport] || 'basketball';
-  const defaultConfigPath = path.join(
-    process.cwd(),
-    `src/train/${sportCategory}/${options.sport}/featuresConfig.json`
-  );
+  const market = options.market || 'moneyline';
+  
+  // Determine config file path based on market
+  let defaultConfigPath: string;
+  if (market === 'moneyline') {
+    defaultConfigPath = path.join(
+      process.cwd(),
+      `src/train/${sportCategory}/${options.sport}/featuresConfig.json`
+    );
+  } else {
+    defaultConfigPath = path.join(
+      process.cwd(),
+      `src/train/${sportCategory}/${options.sport}/featuresConfig_${market}.json`
+    );
+  }
+  
   const configPath = options.config || defaultConfigPath;
 
   console.log(`\n[1/7] Loading configuration from ${configPath}...`);
@@ -185,7 +198,8 @@ export async function train(options: TrainOptions): Promise<void> {
     calibrationBuckets,
     trainingResult.metrics.testAccuracy * 100,
     bestResult.roi * 100,
-    bestResult.total_bets
+    bestResult.total_bets,
+    config.market
   );
   
   // Clear cache so new data is loaded on next access

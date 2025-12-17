@@ -127,8 +127,15 @@ export interface GameFeatures {
 
 export interface OddsData {
   provider: string;
+  market: string;
+  line: number | null;
   home: number | null;
   away: number | null;
+  price_home: number | null;
+  price_away: number | null;
+  price_over: number | null;
+  price_under: number | null;
+  timestamp: string;
 }
 
 export interface Prediction {
@@ -155,6 +162,7 @@ export interface Recommendation {
   recommended_side: 'home' | 'away' | null;
   actual: number | null;
   provider: string;
+  line: number | null; // Spread line (e.g., -3.5, +7.5) or total (e.g., 215.5)
 }
 
 export interface TrainedModel {

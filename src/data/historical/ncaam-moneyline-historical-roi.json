@@ -1,0 +1,124 @@
+{
+  "sport": "ncaam",
+  "market": "moneyline",
+  "lastUpdated": "2025-12-17T03:03:20.473Z",
+  "modelAccuracy": 77.83029001074114,
+  "overallROI": -32.887985072389874,
+  "totalBets": 4426,
+  "oddsRanges": {
+    "heavy_favorite": {
+      "roi": -32.887985072389874,
+      "winRate": 0.7783029001074113,
+      "sampleSize": 442,
+      "avgEV": 0,
+      "description": "Heavy Favorites (-200+)"
+    },
+    "favorite": {
+      "roi": -32.887985072389874,
+      "winRate": 0.7783029001074113,
+      "sampleSize": 663,
+      "avgEV": 0,
+      "description": "Favorites (-150 to -200)"
+    },
+    "slight_favorite": {
+      "roi": -32.887985072389874,
+      "winRate": 0.7783029001074113,
+      "sampleSize": 1106,
+      "avgEV": 0,
+      "description": "Slight Favorites (-110 to -150)"
+    },
+    "toss_up": {
+      "roi": -32.887985072389874,
+      "winRate": 0.7783029001074113,
+      "sampleSize": 885,
+      "avgEV": 0,
+      "description": "Toss-ups (-110 to +110)"
+    },
+    "slight_underdog": {
+      "roi": -32.887985072389874,
+      "winRate": 0.7783029001074113,
+      "sampleSize": 663,
+      "avgEV": 0,
+      "description": "Slight Underdogs (+110 to +150)"
+    },
+    "underdog": {
+      "roi": -32.887985072389874,
+      "winRate": 0.7783029001074113,
+      "sampleSize": 442,
+      "avgEV": 0,
+      "description": "Underdogs (+150 to +200)"
+    },
+    "heavy_underdog": {
+      "roi": -32.887985072389874,
+      "winRate": 0.7783029001074113,
+      "sampleSize": 221,
+      "avgEV": 0,
+      "description": "Heavy Underdogs (+200+)"
+    }
+  },
+  "modelConfidenceBuckets": {
+    "0-10": {
+      "roi": -0.13690824533862817,
+      "winRate": 0.6151832460732984,
+      "sampleSize": 382,
+      "avgEV": -0.7850140674429421,
+      "description": "0-10 Model Confidence"
+    },
+    "10-20": {
+      "roi": -0.12326704597317682,
+      "winRate": 0.6171548117154811,
+      "sampleSize": 478,
+      "avgEV": -0.5732125615110776,
+      "description": "10-20 Model Confidence"
+    },
+    "20-30": {
+      "roi": -0.09288671296480697,
+      "winRate": 0.6403940886699507,
+      "sampleSize": 406,
+      "avgEV": -0.38882959565849246,
+      "description": "20-30 Model Confidence"
+    },
+    "30-40": {
+      "roi": -0.16462787725267222,
+      "winRate": 0.5835294117647059,
+      "sampleSize": 425,
+      "avgEV": 0.06648380887641875,
+      "description": "30-40 Model Confidence"
+    },
+    "40-50": {
+      "roi": -0.10745489313732795,
+      "winRate": 0.62217659137577,
+      "sampleSize": 487,
+      "avgEV": 0.37615574318786144,
+      "description": "40-50 Model Confidence"
+    },
+    "50-60": {
+      "roi": -0.07783149735332646,
+      "winRate": 0.639412997903564,
+      "sampleSize": 477,
+      "avgEV": 0.48002918420467316,
+      "description": "50-60 Model Confidence"
+    },
+    "60-70": {
+      "roi": -0.15352240366692402,
+      "winRate": 0.6272401433691757,
+      "sampleSize": 558,
+      "avgEV": 0.8101926643034227,
+      "description": "60-70 Model Confidence"
+    },
+    "70-80": {
+      "roi": -0.10271702206572568,
+      "winRate": 0.6443661971830985,
+      "sampleSize": 852,
+      "avgEV": 1.085147376010078,
+      "description": "70-80 Model Confidence"
+    },
+    "80-90": {
+      "roi": -0.0751401818251112,
+      "winRate": 0.6457627118644068,
+      "sampleSize": 590,
+      "avgEV": 1.3146304040170507,
+      "description": "80-90 Model Confidence"
+    }
+  }
+}

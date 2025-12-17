@@ -27,6 +27,7 @@ program
   .command('train')
   .description('Train the prediction model on historical data')
   .option('--sport <sport>', 'Sport to train on (ncaam, nba, nfl, etc.)', 'ncaam')
+  .option('--market <market>', 'Market to train on (moneyline, spread, total)', 'moneyline')
   .option('--force', 'Force retrain even if recent model exists', false)
   .option('--config <path>', 'Path to feature config file')
   .action(async (options) => {
@@ -43,12 +44,12 @@ program
   .description("Get betting recommendations for today's games")
   .option('--sport <sport>', 'Sport to recommend (ncaam, nba, nfl, etc.) - if not specified, shows all sports')
   .option('--date <date>', 'Date to recommend for (YYYY-MM-DD, default: today)')
-  .option('--market <market>', 'Market to recommend (moneyline, spread, total)', 'moneyline')
+  .option('--market <market>', 'Market to recommend (moneyline, spread, total, all)', 'all')
   .option('--min-bets <number>', 'Minimum number of recommendations to show', '3')
   .option('--bankroll <amount>', 'Bankroll amount for Kelly Criterion sizing', '1000')
   .option('--daily-budget <amount>', 'Fixed daily budget to allocate across bets using Kelly ratios')
-  .option('--all', 'Show all games, regardless of EV/Edge thresholds', false)
-  .option('--filter <filter>', 'Apply situational filter (relaxed, profitable, conservative, none)', 'none')
+
+
   .action(async (options) => {
     try {
       await recommend(options);

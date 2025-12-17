@@ -24,8 +24,8 @@ export interface HistoricalContext {
 /**
  * Get sport-specific historical data or fallback to defaults
  */
-function getHistoricalROIData(sport: string): SportHistoricalData | null {
-  return loadHistoricalData(sport);
+function getHistoricalROIData(sport: string, market: string = 'moneyline'): SportHistoricalData | null {
+  return loadHistoricalData(sport, market);
 }
 
 /**
@@ -54,7 +54,8 @@ const FALLBACK_HISTORICAL_DATA = {
 export function getHistoricalContext(
   recommendation: Recommendation,
   gameFeatures?: GameFeatures,
-  sport?: string
+  sport?: string,
+  market: string = 'moneyline'
 ): HistoricalContext {
   let situational;
   
@@ -66,7 +67,7 @@ export function getHistoricalContext(
   }
   
   // Load sport-specific historical data
-  const sportHistoricalData = sport ? getHistoricalROIData(sport) : null;
+  const sportHistoricalData = sport ? getHistoricalROIData(sport, market) : null;
   
   // Get historical data for this situation
   let oddsRangeData;
@@ -212,9 +213,10 @@ export function formatHistoricalContext(context: HistoricalContext): string {
 export function getShortHistoricalInsight(
   recommendation: Recommendation,
   gameFeatures?: GameFeatures,
-  sport?: string
+  sport?: string,
+  market: string = 'moneyline'
 ): string {
-  const context = getHistoricalContext(recommendation, gameFeatures, sport);
+  const context = getHistoricalContext(recommendation, gameFeatures, sport, market);
   
   if (context.overallRecommendation === 'AVOID') {
     return `🔴 AVOID (${(context.oddsRangeROI * 100).toFixed(0)}% ROI)`;

@@ -18,11 +18,7 @@ import {
   formatCurrency,
 } from '../../lib/odds/evCalculator.js';
 import type { FeatureConfig, Recommendation, GameFeatures } from '../../lib/db/types.js';
-import { 
-  applySituationalFilters, 
-  printFilterStats, 
-  getFilterConfig 
-} from '../../lib/filters/situationalFilter.js';
+
 import { 
   getHistoricalContext, 
   formatHistoricalContext,
@@ -81,8 +77,6 @@ interface RecommendOptions {
   minBets: string;
   bankroll?: string;
   dailyBudget?: string;
-  all?: boolean; // New flag to show all games
-  filter?: string; // Situational filter: 'profitable', 'conservative', 'none'
 }
 
 // Helper function to get recommendations for a specific sport
@@ -129,7 +123,7 @@ async function getRecommendationsForSport(
   // Step 3: Query today's games
   console.log(`[${sport.toUpperCase()}] Querying games from database...`);
   const targetDate = options.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
-  const todaysGames = db.getTodaysGames(sport, targetDate);
+  const todaysGames = db.getTodaysGames(sport, targetDate, options.market);
 
   console.log(`✓ Found ${todaysGames.length} ${sport.toUpperCase()} scheduled games for ${targetDate}`);
 
@@ -221,33 +215,19 @@ async function getRecommendationsForSport(
         edge_away: metrics.edge_away,
         recommended_side: null, // Will be set below
         actual: null,
-        provider: odds.provider || 'Unknown'
+        provider: odds.provider || 'Unknown',
+        line: odds.line
       };
 
-      // Apply thresholds to determine recommended side
+      // Determine recommended side based on higher EV (no thresholds)
       let recommendedSide: 'home' | 'away' | null = null;
 
-      if (
-        metrics.ev_home !== null &&
-        metrics.ev_home > model.thresholds.min_ev &&
-        metrics.ev_home <= (config.max_ev || 1.0) &&
-        metrics.edge_home !== null &&
-        metrics.edge_home > model.thresholds.min_edge
-      ) {
-        if (
-          metrics.ev_away === null ||
-          metrics.edge_away === null ||
-          metrics.ev_home > metrics.ev_away
-        ) {
-          recommendedSide = 'home';
-        }
-      } else if (
-        metrics.ev_away !== null &&
-        metrics.ev_away > model.thresholds.min_ev &&
-        metrics.ev_away <= (config.max_ev || 1.0) &&
-        metrics.edge_away !== null &&
-        metrics.edge_away > model.thresholds.min_edge
-      ) {
+      if (metrics.ev_home !== null && metrics.ev_away !== null) {
+        // Pick the side with higher EV
+        recommendedSide = metrics.ev_home > metrics.ev_away ? 'home' : 'away';
+      } else if (metrics.ev_home !== null) {
+        recommendedSide = 'home';
+      } else if (metrics.ev_away !== null) {
         recommendedSide = 'away';
       }
 
@@ -263,16 +243,23 @@ async function getRecommendationsForSport(
         features,
         odds: game.odds.map(o => ({
           provider: o.provider || 'Unknown',
+          market: 'moneyline',
+          line: null,
           home: o.price_home,
-          away: o.price_away
+          away: o.price_away,
+          price_home: o.price_home,
+          price_away: o.price_away,
+          price_over: null,
+          price_under: null,
+          timestamp: new Date().toISOString()
         })),
         target: null // Unknown for future games
       };
       
       gameFeatures.push(gameFeature);
 
-      // Only include recommendations that meet thresholds, or if --all flag is set
-      if (recommendedSide || options.all) {
+      // Include all games with predictions (no threshold filtering)
+      if (recommendedSide) {
         recommendations.push(recommendation);
       }
     } catch (error) {
@@ -300,31 +287,44 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   // Determine which sports to process
   const sportsToProcess = options.sport ? [options.sport] : ['ncaam', 'nba', 'nhl', 'nfl', 'cfb'];
+  
+  // Determine which markets to process - if market is 'all', process all available markets
+  const marketsToProcess = options.market === 'all' 
+    ? ['moneyline', 'spread'] // Add 'total' when implemented
+    : [options.market];
 
-  // Collect all recommendations from all sports
-  const allRecommendations: Array<{sport: string, recommendation: Recommendation}> = [];
+  // Collect all recommendations from all sports and markets
+  const allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation}> = [];
   const allGameFeatures: GameFeatures[] = [];
   let totalGamesFound = 0;
 
   for (const sport of sportsToProcess) {
-    try {
-      const { recommendations, gameFeatures } = await getRecommendationsForSport(sport, options, db);
+    for (const market of marketsToProcess) {
+      try {
+        // Create market-specific options
+        const marketOptions = { ...options, market };
+        const { recommendations, gameFeatures } = await getRecommendationsForSport(sport, marketOptions, db);
 
-      // Add sport identifier to each recommendation
-      recommendations.forEach(rec => {
-        allRecommendations.push({ sport: sport.toUpperCase(), recommendation: rec });
-      });
+        // Add sport and market identifiers to each recommendation
+        recommendations.forEach(rec => {
+          allRecommendations.push({ 
+            sport: sport.toUpperCase(), 
+            market: market.toUpperCase(),
+            recommendation: rec 
+          });
+        });
 
-      // Collect all game features for filtering
-      allGameFeatures.push(...gameFeatures);
+        // Collect all game features for filtering
+        allGameFeatures.push(...gameFeatures);
 
-      if (recommendations.length > 0) {
-        console.log(`✓ Found ${recommendations.length} ${sport.toUpperCase()} recommendations`);
+        if (recommendations.length > 0) {
+          console.log(`✓ Found ${recommendations.length} ${sport.toUpperCase()} ${market} recommendations`);
+        }
+
+        totalGamesFound += recommendations.length;
+      } catch (error) {
+        console.error(`❌ Error processing ${sport} ${market}:`, error);
       }
-
-      totalGamesFound += recommendations.length;
-    } catch (error) {
-      console.error(`❌ Error processing ${sport}:`, error);
     }
   }
 
@@ -334,37 +334,8 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     return;
   }
 
-  // Apply situational filtering if requested
-  let filteredRecommendations = allRecommendations;
-  
-  if (options.filter && options.filter !== 'none') {
-    console.log(`\n[FILTER] Applying '${options.filter}' situational filters...`);
-    
-    const filterConfig = getFilterConfig(options.filter);
-    
-    // Extract just the recommendations for filtering
-    const recommendationsOnly = allRecommendations.map(r => r.recommendation);
-    
-    const filterResult = applySituationalFilters(
-      recommendationsOnly,
-      allGameFeatures,
-      filterConfig
-    );
-    
-    // Print filter statistics
-    printFilterStats(filterResult.filterStats);
-    
-    // Convert filtered recommendations back to the format with sport labels
-    const filteredRecommendationIds = new Set(filterResult.filteredRecommendations.map(r => r.game_id));
-    filteredRecommendations = allRecommendations.filter(r => 
-      filteredRecommendationIds.has(r.recommendation.game_id)
-    );
-    
-    console.log(`✅ ${filteredRecommendations.length} recommendations passed the '${options.filter}' filter`);
-  }
-
   // Sort all recommendations by quality score (best bets first)
-  filteredRecommendations.sort((a, b) => {
+  allRecommendations.sort((a, b) => {
     const evA = a.recommendation.recommended_side === 'home'
       ? a.recommendation.ev_home!
       : a.recommendation.ev_away!;
@@ -372,9 +343,9 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       ? b.recommendation.ev_home!
       : b.recommendation.ev_away!;
     
-    // Get historical context for quality assessment
-    const contextA = getHistoricalContext(a.recommendation, undefined, a.sport.toLowerCase());
-    const contextB = getHistoricalContext(b.recommendation, undefined, b.sport.toLowerCase());
+    // Get historical context for quality assessment - use the specific market for each recommendation
+    const contextA = getHistoricalContext(a.recommendation, undefined, a.sport.toLowerCase(), a.market.toLowerCase());
+    const contextB = getHistoricalContext(b.recommendation, undefined, b.sport.toLowerCase(), b.market.toLowerCase());
     
     // Calculate quality score: prioritize positive ROI categories, then EV
     const qualityScoreA = calculateBetQualityScore(evA, contextA);
@@ -384,12 +355,12 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   });
 
   // Display unified recommendations
-  displayUnifiedRecommendations(filteredRecommendations, options);
+  displayUnifiedRecommendations(allRecommendations, options);
 }
 
-// Helper function to display unified recommendations across all sports
+// Helper function to display unified recommendations across all sports and markets
 function displayUnifiedRecommendations(
-  allRecommendations: Array<{sport: string, recommendation: Recommendation}>,
+  allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation}>,
   options: RecommendOptions
 ): void {
   // Get today's date for header
@@ -402,17 +373,18 @@ function displayUnifiedRecommendations(
   });
 
   const sportsList = [...new Set(allRecommendations.map(r => r.sport))].join(' & ');
+  const marketsList = [...new Set(allRecommendations.map(r => r.market))].join(' & ');
   console.log(chalk.cyan.bold(`\n🎯 All Sports Betting Recommendations - ${dateStr}\n`));
-  console.log(chalk.gray(`Sports: ${sportsList} | Total Recommendations: ${allRecommendations.length}`));
+  console.log(chalk.gray(`Sports: ${sportsList} | Markets: ${marketsList} | Total Recommendations: ${allRecommendations.length}`));
 
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations Across All Sports\n'));
 
-  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.red.bold('Historical Context')}`);
-  console.log(chalk.gray('-----+-------+-------+--------------------------------+---------------------+------+-------+-------+-------+------------------'));
+  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Line')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.red.bold('Historical Context')}`);
+  console.log(chalk.gray('-----+-------+--------+------+-------+--------------------------------+---------------------+------+-------+-------+-------+------------------'));
 
   for (let i = 0; i < allRecommendations.length; i++) {
-    const { sport, recommendation: rec } = allRecommendations[i];
+    const { sport, market, recommendation: rec } = allRecommendations[i];
     const gameTime = new Date(rec.date).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
@@ -433,11 +405,33 @@ function displayUnifiedRecommendations(
       ? formatPercentage(rec.edge_home!, 1)
       : formatPercentage(rec.edge_away!, 1);
 
-    // Get historical context for this recommendation
-    const historicalInsight = getShortHistoricalInsight(rec, undefined, sport.toLowerCase());
+    // Get historical context for this recommendation using the specific market
+    const historicalInsight = getShortHistoricalInsight(rec, undefined, sport.toLowerCase(), market.toLowerCase());
+
+    // Format line display based on market type
+    let lineDisplay = '';
+    if (rec.line !== null) {
+      if (market.toLowerCase() === 'spread') {
+        // For spreads, show the line relative to the recommended team
+        const homeLine = rec.line;
+        const awayLine = -rec.line;
+        const displayLine = rec.recommended_side === 'home' ? homeLine : awayLine;
+        lineDisplay = displayLine > 0 ? `+${displayLine}` : displayLine.toString();
+      } else if (market.toLowerCase() === 'total') {
+        // For totals, show O/U with the total
+        lineDisplay = `O/U ${rec.line}`;
+      } else {
+        // For other markets, just show the line
+        lineDisplay = rec.line.toString();
+      }
+    } else {
+      lineDisplay = 'N/A';
+    }
 
     const rank = chalk.yellow((i + 1).toString().padStart(4));
     const sportDisplay = chalk.bold(sport.padEnd(5));
+    const marketDisplay = chalk.gray(market.padEnd(6));
+    const lineDisplayFormatted = chalk.gray(lineDisplay.padEnd(4));
     const time = chalk.white(gameTime.padStart(5));
     const matchupDisplay = chalk.white(matchup.padEnd(30));
     const pickDisplay = rec.recommended_side === 'home'
@@ -449,7 +443,7 @@ function displayUnifiedRecommendations(
     const edgeDisplay = chalk.green(edge.padStart(5));
     const historicalDisplay = historicalInsight.padEnd(18);
 
-    console.log(`${rank} | ${sportDisplay} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${historicalDisplay}`);
+    console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${lineDisplayFormatted} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${historicalDisplay}`);
   }
 
   console.log('');
@@ -461,8 +455,9 @@ function displayUnifiedRecommendations(
   const dailyBudget = options.dailyBudget ? parseFloat(options.dailyBudget) : null;
 
   if (bankroll || dailyBudget) {
-    const kellyBets = allRecommendations.map(({ sport, recommendation: rec }) => ({
+    const kellyBets = allRecommendations.map(({ sport, market, recommendation: rec }) => ({
       sport,
+      market,
       matchup: `${rec.away_team.substring(0, 15)} @ ${rec.home_team.substring(0, 15)}`,
       betSize: calculateKellyBetSize(
         rec.recommended_side === 'home' ? rec.model_prob_home : rec.model_prob_away,
@@ -491,18 +486,19 @@ function displayUnifiedRecommendations(
 
       console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Daily Budget: ${formatCurrency(dailyBudget)})\n`));
 
-      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Matchup')}                     | ${chalk.blue.bold('Raw Kelly Bet')} | ${chalk.green.bold('Scaled Bet')}`);
-      console.log(chalk.gray('-----+-------+--------------------------------+---------------+-----------------'));
+      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Matchup')}                | ${chalk.blue.bold('Raw Kelly Bet')} | ${chalk.green.bold('Scaled Bet')}`);
+      console.log(chalk.gray('-----+-------+--------+---------------------------+---------------+-----------------'));
 
       for (let i = 0; i < kellyBets.length; i++) {
         const kelly = kellyBets[i];
         const rank = chalk.yellow((i + 1).toString().padStart(4));
         const sportDisplay = chalk.bold(kelly.sport.padEnd(5));
-        const matchup = kelly.matchup.padEnd(30);
+        const marketDisplay = chalk.gray(kelly.market.padEnd(6));
+        const matchup = kelly.matchup.padEnd(25);
         const kellyDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
         const scaledDisplay = `${formatCurrency(kelly.scaledBet!)} (${kelly.scaledPct!.toFixed(1)}%)`;
 
-        console.log(`${rank} | ${sportDisplay} | ${matchup} | ${chalk.blue(kellyDisplay)} | ${chalk.green(scaledDisplay)}`);
+        console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${matchup} | ${chalk.blue(kellyDisplay)} | ${chalk.green(scaledDisplay)}`);
       }
 
       const totalScaled = kellyBets.reduce((sum, kelly) => sum + (kelly.scaledBet || 0), 0);
@@ -511,17 +507,18 @@ function displayUnifiedRecommendations(
       // Regular bankroll display
       console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Bankroll: ${formatCurrency(bankroll!)})\n`));
 
-      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Matchup')}                     | ${chalk.green.bold('Recommended Bet')}`);
-      console.log(chalk.gray('-----+-------+--------------------------------+-----------------'));
+      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Matchup')}                | ${chalk.green.bold('Recommended Bet')}`);
+      console.log(chalk.gray('-----+-------+--------+---------------------------+-----------------'));
 
       for (let i = 0; i < kellyBets.length; i++) {
         const kelly = kellyBets[i];
         const rank = chalk.yellow((i + 1).toString().padStart(4));
         const sportDisplay = chalk.bold(kelly.sport.padEnd(5));
-        const matchup = kelly.matchup.padEnd(30);
+        const marketDisplay = chalk.gray(kelly.market.padEnd(6));
+        const matchup = kelly.matchup.padEnd(25);
         const betDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
 
-        console.log(`${rank} | ${sportDisplay} | ${matchup} | ${chalk.green(betDisplay)}`);
+        console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${matchup} | ${chalk.green(betDisplay)}`);
       }
     }
     console.log('');

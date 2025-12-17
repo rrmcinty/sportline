@@ -19,6 +19,7 @@ export interface HistoricalBucketData {
 
 export interface SportHistoricalData {
   sport: string;
+  market?: string;
   lastUpdated: string;
   modelAccuracy: number;
   overallROI: number;
@@ -42,10 +43,12 @@ export function saveHistoricalData(
   }>,
   modelAccuracy: number,
   overallROI: number,
-  totalBets: number
+  totalBets: number,
+  market: string = 'moneyline'
 ): void {
   const historicalData: SportHistoricalData = {
     sport,
+    market,
     lastUpdated: new Date().toISOString(),
     modelAccuracy,
     overallROI,
@@ -121,32 +124,34 @@ export function saveHistoricalData(
     }
   };
 
-  // Save to file
-  const filePath = path.join(process.cwd(), 'src', 'data', 'historical', `${sport}-historical-roi.json`);
+  // Save to file with market-specific filename
+  const filePath = path.join(process.cwd(), 'src', 'data', 'historical', `${sport}-${market}-historical-roi.json`);
   
   try {
     fs.writeFileSync(filePath, JSON.stringify(historicalData, null, 2));
-    console.log(`✅ Saved historical data for ${sport.toUpperCase()} to ${filePath}`);
+    console.log(`✅ Saved historical data for ${sport.toUpperCase()} ${market} to ${filePath}`);
   } catch (error) {
-    console.error(`❌ Failed to save historical data for ${sport}:`, error);
+    console.error(`❌ Failed to save historical data for ${sport} ${market}:`, error);
   }
 }
 
 /**
- * Load historical data for a sport (with caching)
+ * Load historical data for a sport and market (with caching)
  */
-export function loadHistoricalData(sport: string): SportHistoricalData | null {
+export function loadHistoricalData(sport: string, market: string = 'moneyline'): SportHistoricalData | null {
+  const cacheKey = `${sport}-${market}`;
+  
   // Check cache first
-  if (historicalDataCache.has(sport)) {
-    return historicalDataCache.get(sport) || null;
+  if (historicalDataCache.has(cacheKey)) {
+    return historicalDataCache.get(cacheKey) || null;
   }
   
-  const filePath = path.join(process.cwd(), 'src', 'data', 'historical', `${sport}-historical-roi.json`);
+  const filePath = path.join(process.cwd(), 'src', 'data', 'historical', `${sport}-${market}-historical-roi.json`);
   
   try {
     if (!fs.existsSync(filePath)) {
       // Cache the null result
-      historicalDataCache.set(sport, null);
+      historicalDataCache.set(cacheKey, null);
       return null;
     }
     
@@ -154,11 +159,11 @@ export function loadHistoricalData(sport: string): SportHistoricalData | null {
     const historicalData: SportHistoricalData = JSON.parse(data);
     
     // Cache the result
-    historicalDataCache.set(sport, historicalData);
+    historicalDataCache.set(cacheKey, historicalData);
     return historicalData;
   } catch (error) {
-    console.error(`❌ Failed to load historical data for ${sport}:`, error);
-    historicalDataCache.set(sport, null);
+    console.error(`❌ Failed to load historical data for ${sport} ${market}:`, error);
+    historicalDataCache.set(cacheKey, null);
     return null;
   }
 }

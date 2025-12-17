@@ -23,7 +23,7 @@ export class DatabaseQueries {
    * Get all games for today (or specified date)
    * For testing with historical data, this returns all games regardless of status
    */
-  getTodaysGames(sport: string, date?: string): TodaysGame[] {
+  getTodaysGames(sport: string, date?: string, market: string = 'moneyline'): TodaysGame[] {
     const targetDate = date || new Date().toISOString().split('T')[0];
 
     const games = this.db
@@ -45,9 +45,9 @@ export class DatabaseQueries {
       )
       .all(sport, targetDate) as any[];
 
-    // Get odds for each game
+    // Get odds for each game based on the specified market
     return games.map((game) => {
-      const odds = this.getOdds(game.id, 'moneyline');
+      const odds = this.getOdds(game.id, market);
       return {
         ...game,
         odds,
@@ -189,6 +189,55 @@ export class DatabaseQueries {
   }
 
   /**
+   * Get odds for a game by market type
+   */
+  getOddsByMarket(gameId: string, market: string, allowedProviders: string[]): OddsData[] {
+    let oddsRows: any[] = [];
+    
+    if (allowedProviders && allowedProviders.length > 0) {
+      oddsRows = this.db
+        .prepare(
+          `
+        SELECT provider, market, line, price_home, price_away, price_over, price_under, timestamp
+        FROM odds
+        WHERE game_id = ? 
+          AND market = ?
+          AND provider IN (${allowedProviders.map(() => '?').join(',')})
+        ORDER BY timestamp DESC
+      `
+        )
+        .all(gameId, market, ...allowedProviders) as any[];
+    }
+
+    if (!oddsRows.length) {
+      // Fallback: try any provider
+      oddsRows = this.db
+        .prepare(
+          `
+        SELECT provider, market, line, price_home, price_away, price_over, price_under, timestamp
+        FROM odds
+        WHERE game_id = ? AND market = ?
+        ORDER BY timestamp DESC
+      `
+        )
+        .all(gameId, market) as any[];
+    }
+
+    return oddsRows.map((row) => ({
+      provider: row.provider,
+      market: row.market,
+      line: row.line,
+      home: row.price_home,
+      away: row.price_away,
+      price_home: row.price_home,
+      price_away: row.price_away,
+      price_over: row.price_over,
+      price_under: row.price_under,
+      timestamp: row.timestamp,
+    }));
+  }
+
+  /**
    * Get moneyline odds for a game (returns simplified format)
    */
   getMoneylineOdds(gameId: string, allowedProviders: string[]): OddsData[] {
@@ -198,7 +247,7 @@ export class DatabaseQueries {
       oddsRows = this.db
         .prepare(
           `
-        SELECT provider, price_home, price_away
+        SELECT provider, price_home, price_away, timestamp
         FROM odds
         WHERE game_id = ? 
           AND market = 'moneyline' 
@@ -216,7 +265,7 @@ export class DatabaseQueries {
       oddsRows = this.db
         .prepare(
           `
-        SELECT provider, price_home, price_away
+        SELECT provider, price_home, price_away, timestamp
         FROM odds
         WHERE game_id = ? 
           AND market = 'moneyline'
@@ -230,8 +279,15 @@ export class DatabaseQueries {
 
     return oddsRows.map((row) => ({
       provider: row.provider,
+      market: 'moneyline',
+      line: null,
       home: row.price_home,
       away: row.price_away,
+      price_home: row.price_home,
+      price_away: row.price_away,
+      price_over: null,
+      price_under: null,
+      timestamp: row.timestamp || new Date().toISOString(),
     }));
   }
 

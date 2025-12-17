@@ -499,7 +499,7 @@ export function extractFeaturesForDataset(
       continue;
     }
 
-    const oddsArr = db.getMoneylineOdds(gid, config.allowed_providers);
+    const oddsArr = db.getOddsByMarket(gid, config.market, config.allowed_providers);
     if (!oddsArr.length) {
       skipNoOdds++;
       continue;
@@ -551,7 +551,7 @@ export function extractFeaturesForDataset(
       continue;
     }
 
-    const oddsArr = db.getMoneylineOdds(gid, config.allowed_providers);
+    const oddsArr = db.getOddsByMarket(gid, config.market, config.allowed_providers);
     if (!oddsArr.length) continue;
 
     // Build features from rolling stats
@@ -603,10 +603,26 @@ export function extractFeaturesForDataset(
       }
     }
 
-    // Determine target (1 for home win, 0 for away win)
+    // Determine target based on market type
     let target: number | null = null;
     if (game.home_score !== null && game.away_score !== null) {
-      target = game.home_score > game.away_score ? 1 : 0;
+      if (config.market === 'spread') {
+        // For spread betting: 1 if home team covers spread, 0 if away team covers
+        // Find the spread from odds data
+        const spreadOdds = oddsArr.find(odds => odds.line !== null);
+        if (spreadOdds && spreadOdds.line !== null) {
+          const spread = spreadOdds.line; // Positive means home team is favored by this amount
+          const homeMargin = game.home_score - game.away_score;
+          // Home team covers if their actual margin beats the spread
+          target = homeMargin > spread ? 1 : 0;
+        } else {
+          // No spread data available, skip this game
+          target = null;
+        }
+      } else {
+        // For moneyline: 1 for home win, 0 for away win
+        target = game.home_score > game.away_score ? 1 : 0;
+      }
     }
 
     dataset.push({
@@ -749,7 +765,7 @@ export function extractFeaturesForGame(
 
 
   // Add fixed features if enabled
-  const oddsArr = db.getMoneylineOdds(gid, config.allowed_providers);
+  const oddsArr = db.getOddsByMarket(gid, config.market, config.allowed_providers);
   const fixedFeatureValues = computeFixedFeatures(
     homeId,
     awayId,
