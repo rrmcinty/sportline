@@ -10,16 +10,29 @@ import path from "path";
 const dbPath = path.join(process.cwd(), "data", "sportline.db");
 const db = new Database(dbPath);
 
-// ESPN API endpoints
+// ESPN API endpoints - sport-generic
 const ODDS_API = (eventId: string, sport: string) => {
-  const league = sport === 'ncaam' ? 'mens-college-basketball' : 'nba';
-  return `https://sports.core.api.espn.com/v2/sports/basketball/leagues/${league}/events/${eventId}/competitions/${eventId}/odds`;
+  const sportConfig = getSportConfig(sport);
+  return `https://sports.core.api.espn.com/v2/sports/${sportConfig.espnSport}/leagues/${sportConfig.league}/events/${eventId}/competitions/${eventId}/odds`;
 };
 
 const GAME_SUMMARY_API = (eventId: string, sport: string) => {
-  const league = sport === 'ncaam' ? 'mens-college-basketball' : 'nba';
-  return `https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/summary?event=${eventId}`;
+  const sportConfig = getSportConfig(sport);
+  return `https://site.api.espn.com/apis/site/v2/sports/${sportConfig.espnSport}/${sportConfig.league}/summary?event=${eventId}`;
 };
+
+// Sport configuration mapping
+function getSportConfig(sport: string) {
+  const configs: Record<string, { espnSport: string; league: string }> = {
+    'ncaam': { espnSport: 'basketball', league: 'mens-college-basketball' },
+    'nba': { espnSport: 'basketball', league: 'nba' },
+    'nhl': { espnSport: 'hockey', league: 'nhl' },
+    'nfl': { espnSport: 'football', league: 'nfl' },
+    'cfb': { espnSport: 'football', league: 'college-football' }
+  };
+  
+  return configs[sport] || configs['ncaam']; // Default fallback
+}
 
 async function fetchGameOdds(eventId: string, sport: string) {
   try {
@@ -95,13 +108,13 @@ async function updateRecentGames(
 
   console.log(`\n🔄 Updating games from ${startDateStr} to ${endDateStr}\n`);
 
-  // Find games that need updating
+  // Find games that need updating - now includes all sports
   const gamesToUpdate = db
     .prepare(
       `
     SELECT id, date, status, home_team_id, away_team_id, home_score, away_score, sport
     FROM games
-    WHERE sport IN ('ncaam', 'nba')
+    WHERE sport IN ('ncaam', 'nba', 'nhl', 'nfl', 'cfb')
       AND DATE(DATETIME(date, '-5 hours')) >= DATE(?)
       AND DATE(DATETIME(date, '-5 hours')) <= DATE(?)
       AND (status IN ('pre', 'scheduled', 'in') OR (status = 'post' AND home_score IS NULL))
@@ -118,17 +131,29 @@ async function updateRecentGames(
     return;
   }
 
-  // Group by status
+  // Group by status and sport
   const scheduled = gamesToUpdate.filter((g) => g.status === "scheduled");
   const inProgress = gamesToUpdate.filter((g) => g.status === "in");
   const needStats = gamesToUpdate.filter(
     (g) => g.status === "post" && g.home_score === null
   );
 
+  // Sport breakdown
+  const sportCounts = gamesToUpdate.reduce((acc, game) => {
+    acc[game.sport] = (acc[game.sport] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
   console.log(`📊 Status breakdown:`);
   console.log(`  - Scheduled: ${scheduled.length}`);
   console.log(`  - In Progress: ${inProgress.length}`);
-  console.log(`  - Need final stats: ${needStats.length}\n`);
+  console.log(`  - Need final stats: ${needStats.length}`);
+  
+  console.log(`\n🏈 Sport breakdown:`);
+  Object.entries(sportCounts).forEach(([sport, count]) => {
+    console.log(`  - ${sport.toUpperCase()}: ${count}`);
+  });
+  console.log('');
 
   let oddsUpdated = 0;
   let scoresUpdated = 0;

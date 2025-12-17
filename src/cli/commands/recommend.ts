@@ -17,7 +17,7 @@ import {
   formatPercentage,
   formatCurrency,
 } from '../../lib/odds/evCalculator.js';
-import type { FeatureConfig, Recommendation, GameFeatures } from '../../lib/db/types.js';
+import type { FeatureConfig, Recommendation, GameFeatures, TodaysGame } from '../../lib/db/types.js';
 
 import { 
   getHistoricalContext, 
@@ -84,7 +84,7 @@ async function getRecommendationsForSport(
   sport: string,
   options: RecommendOptions,
   db: DatabaseQueries
-): Promise<{ recommendations: Recommendation[], gameFeatures: GameFeatures[] }> {
+): Promise<{ recommendations: Recommendation[], gameFeatures: GameFeatures[], games: TodaysGame[] }> {
   console.log(`\n[${sport.toUpperCase()}] Starting recommendation generation...`);
   console.log(`[${sport.toUpperCase()}] Loading trained model...`);
   
@@ -108,7 +108,7 @@ async function getRecommendationsForSport(
   if (!modelPath) {
     console.log(`⚠️  No trained model found for ${sport} ${options.market}`);
     console.log(`   Run "sportline train --sport ${sport}" first to train a model.`);
-    return { recommendations: [], gameFeatures: [] };
+    return { recommendations: [], gameFeatures: [], games: [] };
   }
 
   const model = loadModel(modelPath);
@@ -128,7 +128,7 @@ async function getRecommendationsForSport(
   console.log(`✓ Found ${todaysGames.length} ${sport.toUpperCase()} scheduled games for ${targetDate}`);
 
   if (todaysGames.length === 0) {
-    return { recommendations: [], gameFeatures: [] };
+    return { recommendations: [], gameFeatures: [], games: [] };
   }
 
   // Step 4: Generate predictions and recommendations
@@ -276,7 +276,7 @@ async function getRecommendationsForSport(
 
   console.log(`✓ Generated ${recommendations.length} ${sport.toUpperCase()} recommendations`);
 
-  return { recommendations, gameFeatures };
+  return { recommendations, gameFeatures, games: todaysGames };
 }
 
 export async function recommend(options: RecommendOptions): Promise<void> {
@@ -294,7 +294,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     : [options.market];
 
   // Collect all recommendations from all sports and markets
-  const allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation}> = [];
+  const allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation, game?: TodaysGame}> = [];
   const allGameFeatures: GameFeatures[] = [];
   let totalGamesFound = 0;
 
@@ -303,14 +303,17 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       try {
         // Create market-specific options
         const marketOptions = { ...options, market };
-        const { recommendations, gameFeatures } = await getRecommendationsForSport(sport, marketOptions, db);
+        const { recommendations, gameFeatures, games } = await getRecommendationsForSport(sport, marketOptions, db);
 
         // Add sport and market identifiers to each recommendation
         recommendations.forEach(rec => {
+          // Find the corresponding game for result checking
+          const correspondingGame = games.find(g => g.id === rec.game_id);
           allRecommendations.push({ 
             sport: sport.toUpperCase(), 
             market: market.toUpperCase(),
-            recommendation: rec 
+            recommendation: rec,
+            game: correspondingGame
           });
         });
 
@@ -358,9 +361,62 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   displayUnifiedRecommendations(allRecommendations, options);
 }
 
+// Helper function to check if a bet was correct
+function checkBetResult(
+  recommendation: Recommendation,
+  game: TodaysGame,
+  market: string
+): { result: 'WIN' | 'LOSS' | 'PUSH' | 'PENDING', score?: string } {
+  // Check if game is completed
+  if (game.home_score === null || game.away_score === null) {
+    return { result: 'PENDING' };
+  }
+
+  const score = `${game.away_score}-${game.home_score}`;
+  const recommendedSide = recommendation.recommended_side;
+
+  if (market.toLowerCase() === 'moneyline') {
+    // Moneyline: simple win/loss
+    const homeWon = game.home_score > game.away_score;
+    const betWon = (recommendedSide === 'home' && homeWon) || (recommendedSide === 'away' && !homeWon);
+    return { 
+      result: betWon ? 'WIN' : 'LOSS',
+      score 
+    };
+  } else if (market.toLowerCase() === 'spread') {
+    // Spread: check if team covered the spread
+    if (recommendation.line === null) {
+      return { result: 'PENDING', score };
+    }
+
+    const spread = recommendation.line;
+    const homeMargin = game.home_score - game.away_score;
+    
+    if (recommendedSide === 'home') {
+      // Home team recommended, check if they covered
+      const betWon = homeMargin > spread;
+      const isPush = homeMargin === spread;
+      return { 
+        result: isPush ? 'PUSH' : (betWon ? 'WIN' : 'LOSS'),
+        score 
+      };
+    } else {
+      // Away team recommended, check if they covered
+      const betWon = homeMargin < spread;
+      const isPush = homeMargin === spread;
+      return { 
+        result: isPush ? 'PUSH' : (betWon ? 'WIN' : 'LOSS'),
+        score 
+      };
+    }
+  }
+
+  return { result: 'PENDING', score };
+}
+
 // Helper function to display unified recommendations across all sports and markets
 function displayUnifiedRecommendations(
-  allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation}>,
+  allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation, game?: TodaysGame}>,
   options: RecommendOptions
 ): void {
   // Get today's date for header
@@ -380,11 +436,11 @@ function displayUnifiedRecommendations(
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations Across All Sports\n'));
 
-  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Line')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.red.bold('Historical Context')}`);
-  console.log(chalk.gray('-----+-------+--------+------+-------+--------------------------------+---------------------+------+-------+-------+-------+------------------'));
+  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Line')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.red.bold('Result')} | ${chalk.red.bold('Historical Context')}`);
+  console.log(chalk.gray('-----+-------+--------+------+-------+--------------------------------+---------------------+------+-------+-------+-------+---------+------------------'));
 
   for (let i = 0; i < allRecommendations.length; i++) {
-    const { sport, market, recommendation: rec } = allRecommendations[i];
+    const { sport, market, recommendation: rec, game } = allRecommendations[i];
     const gameTime = new Date(rec.date).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
@@ -407,6 +463,23 @@ function displayUnifiedRecommendations(
 
     // Get historical context for this recommendation using the specific market
     const historicalInsight = getShortHistoricalInsight(rec, undefined, sport.toLowerCase(), market.toLowerCase());
+
+    // Check bet result if game is completed
+    let resultDisplay = 'PENDING';
+    if (game) {
+      const betResult = checkBetResult(rec, game, market);
+      if (betResult.result === 'WIN') {
+        resultDisplay = chalk.green(`✅ WIN (${betResult.score})`);
+      } else if (betResult.result === 'LOSS') {
+        resultDisplay = chalk.red(`❌ LOSS (${betResult.score})`);
+      } else if (betResult.result === 'PUSH') {
+        resultDisplay = chalk.yellow(`🟡 PUSH (${betResult.score})`);
+      } else {
+        resultDisplay = chalk.gray('PENDING');
+      }
+    } else {
+      resultDisplay = chalk.gray('PENDING');
+    }
 
     // Format line display based on market type
     let lineDisplay = '';
@@ -443,7 +516,7 @@ function displayUnifiedRecommendations(
     const edgeDisplay = chalk.green(edge.padStart(5));
     const historicalDisplay = historicalInsight.padEnd(18);
 
-    console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${lineDisplayFormatted} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${historicalDisplay}`);
+    console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${lineDisplayFormatted} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${resultDisplay.padEnd(17)} | ${historicalDisplay}`);
   }
 
   console.log('');
