@@ -109,13 +109,13 @@
     },
     "regularization": {
         "lambda": 0.01,
-        "temperature": 0.6
+        "temperature": 2.5
     },
     "calibration": {
         "method": "temperature",
-        "temperature": 0.6
+        "temperature": 2.5
     },
-    "min_edge": 0.01,
-    "min_ev": 0.001,
+    "min_edge": 0.001,
+    "min_ev": 0.0001,
     "max_ev": 0.20
 }

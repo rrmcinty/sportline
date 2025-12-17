@@ -93,14 +93,12 @@ export function predict(
     scaledFeatures[key] = (rawValue - mean) / std;
   }
 
-  // Get temperature from model config or parameter
-  const temp = temperature ?? (model as any).calibration?.temperature ?? 1.0;
-
+  // Don't apply temperature here - let calibration handle it
   let probHome: number;
 
   if (model.modelType === 'logistic_regression') {
     const theta = (model.modelParams as any).theta;
-    probHome = predictLogisticRegression(scaledFeatures, model.featureKeys, theta, debug, temp);
+    probHome = predictLogisticRegression(scaledFeatures, model.featureKeys, theta, debug, 1.0);
   } else if (model.modelType === 'ensemble') {
     // For Random Forest, we need to recreate the model from saved parameters
     // This is a simplified implementation - in practice, you'd save/load the actual trees
@@ -120,7 +118,7 @@ export function predict(
         (Math.sin(seed + i) * 0.1) + (Math.random() - 0.5) * 0.01
       );
 
-      const treeProb = predictLogisticRegression(scaledFeatures, model.featureKeys, [randomTheta], false, temp);
+      const treeProb = predictLogisticRegression(scaledFeatures, model.featureKeys, [randomTheta], false, 1.0);
       totalProb += treeProb;
     }
 

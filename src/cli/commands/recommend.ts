@@ -161,9 +161,6 @@ async function getRecommendationsForSport(
         continue;
       }
 
-      // Get prediction
-      const temperature = config.calibration?.temperature ?? config.regularization?.temperature ?? 1.0;
-
       // Debug: Check for problematic games
       const isDebugGame = (game.home_team_name.includes('North Alabama') && game.away_team_name.includes('Alabama A&M')) ||
                          (game.away_team_name.includes('North Alabama') && game.home_team_name.includes('Alabama A&M'));
@@ -181,7 +178,7 @@ async function getRecommendationsForSport(
         });
       }
 
-      const prediction = predict(features, model, debug, temperature);
+      const prediction = predict(features, model, debug);
 
       if (debug || prediction.prob_home === 0 || prediction.prob_away === 0) {
         console.log(`\n🐛 DEBUG: ${game.home_team_name} vs ${game.away_team_name}`);
