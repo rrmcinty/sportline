@@ -205,9 +205,12 @@ export function computeHeadToHead(homeId: string, awayId: string, gameId: string
     }
   }
 
+  // Only count games with valid scores for the total count
+  const validGames = h2hGames.filter(g => g.home_score !== null && g.away_score !== null);
+  
   return {
     wins: homeWins,
-    games: h2hGames.length
+    games: validGames.length
   };
 }
 
@@ -244,7 +247,7 @@ export function computeRollingAverages(
           if (useExponentialRecency) {
             // Use exponential recency weighting (most recent first)
             const weights = getExponentialWeights(vals.length, recencyDecay);
-            avg = weightedAverage(vals.slice().reverse(), weights); // reverse: most recent first
+            avg = weightedAverage(vals, weights); // vals are already in chronological order, weights are reversed
           } else {
             avg = vals.reduce((a, b) => a + b, 0) / vals.length;
           }
@@ -277,14 +280,16 @@ export function computeWinRate(
   if (!gamesForTeam.length) return 0;
 
   let wins = 0;
+  let validGames = 0;
   for (const g of gamesForTeam) {
     const isHome = g.home_team_id === teamId;
     if (g.home_score == null || g.away_score == null) continue;
+    validGames++;
     if (isHome && g.home_score > g.away_score) wins++;
     if (!isHome && g.away_score > g.home_score) wins++;
   }
 
-  return wins / gamesForTeam.length;
+  return validGames > 0 ? wins / validGames : 0;
 }
 
 /**

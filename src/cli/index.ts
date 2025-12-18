@@ -61,9 +61,10 @@ program
 
 program
   .command('backtest')
-  .description('Run backtesting to analyze model performance and find optimal thresholds')
+  .description('Run backtesting analysis using existing trained models')
   .option('--sport <sport>', 'Sport to backtest (ncaam, nba, nfl, etc.)', 'ncaam')
-  .option('--config <path>', 'Path to feature config file')
+  .option('--market <market>', 'Market to backtest (moneyline, spread, total)', 'moneyline')
+  .option('--config <path>', 'Path to feature config file (optional - uses model config by default)')
   .action(async (options) => {
     try {
       await backtest(options);

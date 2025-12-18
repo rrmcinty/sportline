@@ -214,7 +214,7 @@ function computeRollingAverages(
 					if (useExponentialRecency) {
 						// Use exponential recency weighting (most recent first)
 						const weights = getExponentialWeights(vals.length, recencyDecay);
-						avg = weightedAverage(vals.slice().reverse(), weights); // reverse: most recent first
+						avg = weightedAverage(vals, weights); // vals are already in chronological order, weights are reversed
 					} else {
 						avg = vals.reduce((a, b) => a + b, 0) / vals.length;
 					}

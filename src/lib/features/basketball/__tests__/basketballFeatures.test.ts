@@ -150,8 +150,10 @@ describe('Basketball Features', () => {
       away_team_id: 'team2',
       home_score: 110,
       away_score: 100,
-      season: '2024',
-      sport: 'nba'
+      season: 2024,
+      sport: 'nba',
+      venue: null,
+      status: 'completed'
     };
 
     beforeEach(() => {
@@ -304,8 +306,10 @@ describe('Basketball Features', () => {
         away_team_id: 'team2',
         home_score: 110,
         away_score: 100,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game2',
@@ -314,8 +318,10 @@ describe('Basketball Features', () => {
         away_team_id: 'team1',
         home_score: 95,
         away_score: 105,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game3',
@@ -324,8 +330,10 @@ describe('Basketball Features', () => {
         away_team_id: 'team4',
         home_score: 120,
         away_score: 110,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }
     ];
 
@@ -376,8 +384,10 @@ describe('Basketball Features', () => {
           away_team_id: 'team2',
           home_score: 103,
           away_score: 100, // 3-point game (clutch)
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+          venue: null,
+          status: 'completed'
         },
         {
           id: 'game2',
@@ -386,8 +396,10 @@ describe('Basketball Features', () => {
           away_team_id: 'team1',
           home_score: 95,
           away_score: 120, // 25-point game (blowout)
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+          venue: null,
+          status: 'completed'
         }
       ];
 
@@ -493,7 +505,7 @@ describe('Basketball Features', () => {
       };
 
       const result = calculateBasketballAdvancedStats(stats);
-      expect(result.effectiveFgPct).toBeCloseTo(0.75); // Should still calculate correctly
+      expect(result.effectiveFgPct).toBeCloseTo(0.625); // (1000000 + 0.5*500000) / 2000000 = 0.625
     });
 
     it('should handle undefined/null values in stats', () => {

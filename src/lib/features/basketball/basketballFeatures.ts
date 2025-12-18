@@ -190,7 +190,7 @@ export function calculateNBAAdvancedSituationalFeatures(
 
   // 2. Recent Performance Trends (last 5 games)
   const last5Games = recentGames.slice(0, 5);
-  if (last5Games.length >= 3) {
+  if (last5Games.length >= 2) {
     let wins = 0;
     let totalMargin = 0;
     let clutchGames = 0; // Games decided by 5 points or less

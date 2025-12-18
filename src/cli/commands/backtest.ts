@@ -1,5 +1,5 @@
 /**
- * Backtest command - Run comprehensive backtesting with detailed analysis
+ * Backtest command - Run comprehensive backtesting with detailed analysis using existing trained models
  */
 
 import path from 'path';
@@ -7,7 +7,8 @@ import { fileURLToPath } from 'url';
 import { DatabaseQueries } from '../../lib/db/queries.js';
 import { loadFeatureConfig } from '../../lib/features/featureConfig.js';
 import { extractFeaturesForDataset } from '../../lib/features/featureEngineering.js';
-import { trainModel, calculateCoefficientImportance } from '../../lib/model/trainer.js';
+import { loadModel, findLatestModel } from '../../lib/model/modelStorage.js';
+import { batchPredict } from '../../lib/model/predictor.js';
 import {
   generateRecommendations,
   runBacktestGrid,
@@ -27,13 +28,13 @@ const __dirname = path.dirname(__filename);
 interface BacktestOptions {
   sport: string;
   config?: string;
+  market?: string;
 }
 
 export async function backtest(options: BacktestOptions): Promise<void> {
   console.log('\n📈 Sportline Backtesting Analysis\n');
 
-  // Step 1: Load configuration
-  // Map sports to their sport categories
+  // Step 1: Load existing trained model
   const sportToCategory: Record<string, string> = {
     'ncaam': 'basketball',
     'nba': 'basketball',
@@ -43,18 +44,52 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   };
   
   const sportCategory = sportToCategory[options.sport] || 'basketball';
-  const defaultConfigPath = path.join(
+  const market = options.market || 'moneyline';
+  
+  console.log('[1/4] Loading existing trained model...');
+  const modelsDir = path.join(
     process.cwd(),
-    `src/train/${sportCategory}/${options.sport}/featuresConfig.json`
+    `src/train/${sportCategory}/${options.sport}/models`
   );
-  const configPath = options.config || defaultConfigPath;
+  
+  const modelPath = findLatestModel(options.sport, market, modelsDir);
+  if (!modelPath) {
+    console.error(`❌ No trained model found for ${options.sport} ${market}`);
+    console.error(`   Expected location: ${modelsDir}`);
+    console.error(`   Run 'sportline train --sport ${options.sport}' first`);
+    process.exit(1);
+  }
+  
+  const model = loadModel(modelPath);
+  console.log(`✓ Loaded model: ${path.basename(modelPath)}`);
+  console.log(`✓ Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(2)}%`);
+  console.log(`✓ Model ROI: ${(model.backtestMetrics.roi * 100).toFixed(2)}%`);
 
-  console.log('[1/5] Loading configuration...');
-  const config = loadFeatureConfig(configPath);
+  // Step 2: Load configuration (from model or file)
+  let config;
+  if (options.config) {
+    console.log('\n[2/4] Loading custom configuration...');
+    config = loadFeatureConfig(options.config);
+  } else {
+    console.log('\n[2/4] Using model configuration...');
+    // Reconstruct config from model
+    config = {
+      sport: model.sport,
+      model: model.modelType,
+      market: model.market,
+      seasons: model.seasons,
+      features: model.features,
+      rolling_windows: model.rollingWindows,
+      allowed_providers: ['draftkings', 'fanduel', 'betmgm'], // Default
+      recency_weighting: model.recencyWeighting,
+      min_edge: model.thresholds.min_edge,
+      min_ev: model.thresholds.min_ev
+    };
+  }
   console.log(`✓ Config loaded for ${config.sport} ${config.market}`);
 
-  // Step 2: Load data and extract features
-  console.log('\n[2/5] Loading data and extracting features...');
+  // Step 3: Load data and extract features
+  console.log('\n[3/4] Loading data and extracting features...');
   const dbPath = path.join(process.cwd(), 'data', 'sportline.db');
   const db = new DatabaseQueries(dbPath);
 
@@ -62,60 +97,33 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   console.log(`✓ Loaded ${games.length} historical games`);
 
   const { dataset } = extractFeaturesForDataset(games, db, config);
-  console.log(`✓ Prepared ${dataset.length} games for training`);
+  console.log(`✓ Prepared ${dataset.length} games for backtesting`);
 
   db.close();
 
-  // Step 3: Train model
-  console.log('\n[3/5] Training model...');
-  const trainingResult = trainModel(dataset, config);
-
-  // Feature Importance Analysis
-  console.log('\n🔍 Feature Importance Analysis:');
-  const coeffImportance = calculateCoefficientImportance(trainingResult, trainingResult.featureKeys);
-
-  console.log('\n📊 Top 20 Most Important Features (Coefficient-based):');
-  coeffImportance.slice(0, 20).forEach((item, i) => {
-    const direction = item.coefficient >= 0 ? '📈' : '📉';
-    console.log(`${(i + 1).toString().padStart(2)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)} | ${direction}`);
-  });
-
-  console.log('\n🗑️  Bottom 10 Least Important Features:');
-  coeffImportance.slice(-10).forEach((item, i) => {
-    const rank = coeffImportance.length - 10 + i + 1;
-    console.log(`${rank.toString().padStart(3)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)}`);
-  });
-
-  // Recommendations
-  const uselessFeatures = coeffImportance.filter(item => item.importance < 0.001);
-  const lowImportanceFeatures = coeffImportance.filter(item => item.importance < 0.01);
-
-  console.log(`\n💡 Recommendations:`);
-  console.log(`  - ${uselessFeatures.length} features have importance < 0.001 (consider disabling)`);
-  console.log(`  - ${lowImportanceFeatures.length} features have importance < 0.01 (review these)`);
-  console.log(`  - Top feature: ${coeffImportance[0].feature} (${coeffImportance[0].importance.toFixed(4)})`);
-
-  console.log(`\n🗑️ Features to Consider Disabling (< 0.001 importance):`);
-  uselessFeatures.forEach((item, i) => {
-    console.log(`${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`);
-  });
-
-  console.log(`\n⚠️  Features to Review (< 0.01 importance):`);
-  lowImportanceFeatures.forEach((item, i) => {
-    console.log(`${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`);
-  });
-
-  // Step 4: Generate recommendations
-  console.log('\n[4/5] Generating recommendations for backtesting...');
+  // Step 4: Generate predictions using loaded model
+  console.log('\n[4/4] Generating predictions for backtesting...');
+  
+  // Use the same train/test split as original training (80/20)
   const splitIdx = Math.floor(0.8 * dataset.length);
+  const testDataset = dataset.slice(splitIdx);
+  
+  // Generate predictions using the loaded model
+  const testProbabilities = batchPredict(
+    testDataset.map(d => d.features),
+    model
+  );
+  
   const recommendations = generateRecommendations(
     dataset,
-    trainingResult.probabilities.test,
+    testProbabilities,
     splitIdx
   );
+  
+  console.log(`✓ Generated ${recommendations.length} recommendations for backtesting`);
 
   // Step 5: Run comprehensive backtest analysis
-  console.log('\n[5/5] Running comprehensive backtest analysis...\n');
+  console.log('\n========== Comprehensive Backtest Analysis ==========\n');
 
   // Test a wider range of thresholds
   const edgeRange = [
@@ -174,7 +182,7 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   console.log('======================================================\n');
 
   // Step 6: Analyze profitable bet characteristics
-  console.log('\n[6/6] Analyzing profitable bet characteristics...\n');
+  console.log('\n========== Profitable Bet Analysis ==========\n');
   
   // Use the recommended thresholds for profitability analysis
   const recommendedEdge = thresholdRecs.recommended.min_edge;
@@ -200,12 +208,12 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   console.log(`Total test games: ${totalGames}`);
   console.log(`Games with actuals: ${gamesWithActuals}`);
   console.log(
-    `Train accuracy: ${(trainingResult.metrics.trainAccuracy * 100).toFixed(2)}%`
+    `Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(2)}%`
   );
   console.log(
-    `Test accuracy: ${(trainingResult.metrics.testAccuracy * 100).toFixed(2)}%`
+    `Model ROI: ${(model.backtestMetrics.roi * 100).toFixed(2)}%`
   );
-  console.log(`Log loss: ${trainingResult.metrics.logLoss.toFixed(4)}`);
+  console.log(`Model trained: ${model.trainedAt}`);
 
   // Find best result for display
   const bestByROI = backtestResults

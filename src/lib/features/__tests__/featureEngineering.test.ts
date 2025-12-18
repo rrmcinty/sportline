@@ -1,17 +1,13 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   getExponentialWeights,
   weightedAverage,
-  calculateFormIndicators,
-  calculateSimpleFormIndicators,
   computeWinStreak,
   computeRestDays,
   computeHeadToHead,
   computeRollingAverages,
   computeWinRate,
-  computeAvgMargin,
-  computeRecentForm,
-  computeFixedFeatures
+  computeAvgMargin
 } from '../featureEngineering.js';
 import type { Game } from '../../db/types.js';
 
@@ -48,8 +44,8 @@ describe('Feature Engineering', () => {
       const weights = [0.1, 0.3, 0.6];
       const result = weightedAverage(values, weights);
       
-      // (10*0.1 + 20*0.3 + 30*0.6) / (0.1+0.3+0.6) = 24
-      expect(result).toBeCloseTo(24);
+      // (10*0.1 + 20*0.3 + 30*0.6) / (0.1+0.3+0.6) = (1 + 6 + 18) / 1 = 25
+      expect(result).toBeCloseTo(25);
     });
 
     it('should handle empty arrays', () => {
@@ -79,8 +75,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team2',
         home_score: 100,
         away_score: 90,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game2',
@@ -89,8 +87,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team3',
         home_score: 110,
         away_score: 95,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game3',
@@ -99,8 +99,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team1',
         home_score: 85,
         away_score: 105,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game4',
@@ -109,8 +111,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team4',
         home_score: 80,
         away_score: 90,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }
     ];
 
@@ -130,8 +134,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team5',
         home_score: 70,
         away_score: 80,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }];
       
       const streak = computeWinStreak('team1', 'game5', gamesWithLoss);
@@ -154,8 +160,10 @@ describe('Feature Engineering', () => {
           away_team_id: 'opponent',
           home_score: 100,
           away_score: 90,
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+        venue: null,
+        status: 'completed'
         });
       }
       
@@ -173,8 +181,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team2',
         home_score: 100,
         away_score: 90,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game2',
@@ -183,8 +193,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team3',
         home_score: 110,
         away_score: 95,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }
     ];
 
@@ -207,8 +219,10 @@ describe('Feature Engineering', () => {
           away_team_id: 'team2',
           home_score: 100,
           away_score: 90,
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+        venue: null,
+        status: 'completed'
         },
         {
           id: 'game2',
@@ -217,8 +231,10 @@ describe('Feature Engineering', () => {
           away_team_id: 'team3',
           home_score: 110,
           away_score: 95,
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+        venue: null,
+        status: 'completed'
         }
       ];
       
@@ -236,8 +252,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team2',
         home_score: 100,
         away_score: 90,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game2',
@@ -246,8 +264,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team1',
         home_score: 95,
         away_score: 105,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game3',
@@ -256,8 +276,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team2',
         home_score: 85,
         away_score: 95,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'current',
@@ -266,8 +288,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team2',
         home_score: null,
         away_score: null,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }
     ];
 
@@ -357,8 +381,8 @@ describe('Feature Engineering', () => {
       );
 
       // Should handle missing values without crashing
-      expect(result['game3']['points_avg_2']).toBeCloseTo(105); // Only game2 has points
-      expect(result['game3']['rebounds_avg_2']).toBeCloseTo(45); // game2 + game3 rebounds
+      expect(result['game3']['points_avg_2']).toBeCloseTo(105); // Only game2 has points (game1 missing)
+      expect(result['game3']['rebounds_avg_2']).toBeCloseTo(50); // Only game2 has rebounds (game1 missing)
     });
   });
 
@@ -371,8 +395,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team2',
         home_score: 100,
         away_score: 90,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game2',
@@ -381,8 +407,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team1',
         home_score: 85,
         away_score: 95,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game3',
@@ -391,8 +419,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team4',
         home_score: 80,
         away_score: 90,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game4',
@@ -401,8 +431,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team5',
         home_score: null,
         away_score: null,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }
     ];
 
@@ -431,8 +463,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team6',
         home_score: null,
         away_score: null,
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }];
 
       const winRate = computeWinRate('team1', 'game5', 5, gamesWithNull);
@@ -449,8 +483,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team2',
         home_score: 100,
         away_score: 90, // +10 margin for team1
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game2',
@@ -459,8 +495,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team1',
         home_score: 85,
         away_score: 95, // +10 margin for team1
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       },
       {
         id: 'game3',
@@ -469,8 +507,10 @@ describe('Feature Engineering', () => {
         away_team_id: 'team4',
         home_score: 80,
         away_score: 90, // -10 margin for team1
-        season: '2024',
-        sport: 'nba'
+        season: 2024,
+        sport: 'nba',
+        venue: null,
+        status: 'completed'
       }
     ];
 
@@ -489,8 +529,10 @@ describe('Feature Engineering', () => {
           away_team_id: 'team2',
           home_score: 80,
           away_score: 90, // -10 margin
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+        venue: null,
+        status: 'completed'
         },
         {
           id: 'game2',
@@ -499,8 +541,10 @@ describe('Feature Engineering', () => {
           away_team_id: 'team1',
           home_score: 95,
           away_score: 85, // -10 margin
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+        venue: null,
+        status: 'completed'
         }
       ];
 
@@ -526,8 +570,10 @@ describe('Feature Engineering', () => {
           away_team_id: 'team2',
           home_score: 100,
           away_score: 90,
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+        venue: null,
+        status: 'completed'
         }
       ];
 
@@ -544,8 +590,10 @@ describe('Feature Engineering', () => {
           away_team_id: 'team2',
           home_score: null,
           away_score: null,
-          season: '2024',
-          sport: 'nba'
+          season: 2024,
+          sport: 'nba',
+        venue: null,
+        status: 'completed'
         }
       ];
 
