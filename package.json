@@ -21,7 +21,9 @@
     "db:list:seasons": "sqlite3 data/sportline.db \"SELECT DISTINCT sport,season FROM games ORDER BY sport, season;\"",
     "dev": "tsc --watch",
     "start": "node src/index.js",
-    "test": "echo \"No tests yet\" && exit 0",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "all": "npm i && npm run build && chmod +x dist/cli/index.js && (npm link 2>/dev/null || echo '⚠️  npm link failed - run \"sudo npm link\" if you need global linking')",
     "ingest": "node src/index.js data daily",
     "update:odds": "node dist/cli/index.js update",
@@ -78,7 +80,9 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.10.4",
+    "@vitest/ui": "^1.1.0",
     "prettier": "^3.7.4",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
   }
 }
