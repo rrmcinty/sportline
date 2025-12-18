@@ -5,7 +5,7 @@
 
 import type { Recommendation, GameFeatures } from '../db/types.js';
 import { extractSituationalFeatures } from '../backtest/profitabilityAnalyzer.js';
-import { loadHistoricalData, type SportHistoricalData } from './historicalDataManager.js';
+import { loadHistoricalData, clearHistoricalDataCache, type SportHistoricalData } from './historicalDataManager.js';
 
 export interface HistoricalContext {
   oddsRangeROI: number;
@@ -57,6 +57,9 @@ export function getHistoricalContext(
   sport?: string,
   market: string = 'moneyline'
 ): HistoricalContext {
+  // Clear cache to ensure fresh data after removing fake odds ranges
+  clearHistoricalDataCache();
+  
   let situational;
   
   if (gameFeatures) {
@@ -74,9 +77,8 @@ export function getHistoricalContext(
   let confidenceData;
   
   if (sportHistoricalData) {
-    // Use sport-specific data
-    oddsRangeData = sportHistoricalData.oddsRanges[situational.oddsRange] || 
-      FALLBACK_HISTORICAL_DATA.oddsRanges[situational.oddsRange as keyof typeof FALLBACK_HISTORICAL_DATA.oddsRanges];
+    // Use sport-specific data - skip odds ranges since they were fake
+    oddsRangeData = null;
     
     // For model confidence, find the best matching bucket
     const modelProb = recommendation.model_prob_home;
@@ -87,9 +89,8 @@ export function getHistoricalContext(
       sportHistoricalData.modelConfidenceBuckets[Object.keys(sportHistoricalData.modelConfidenceBuckets)[0]] ||
       FALLBACK_HISTORICAL_DATA.modelConfidence.medium;
   } else {
-    // Use fallback data
-    oddsRangeData = FALLBACK_HISTORICAL_DATA.oddsRanges[situational.oddsRange as keyof typeof FALLBACK_HISTORICAL_DATA.oddsRanges] || 
-      { roi: -0.35, winRate: 0.25, sampleSize: 100, description: 'Unknown odds range' };
+    // No sport data available
+    oddsRangeData = null;
     
     const confidenceLevel = situational.modelConfidence < 0.4 ? 'low' : 
                            situational.modelConfidence < 0.6 ? 'medium' : 'high';
@@ -99,8 +100,8 @@ export function getHistoricalContext(
   // Month data (keep simple for now)
   const monthData = { roi: -0.30, winRate: 0.25, sampleSize: 500, description: 'Historical average' };
   
-  // Calculate overall recommendation
-  const avgROI = (oddsRangeData.roi + confidenceData.roi + monthData.roi) / 3;
+  // Calculate overall recommendation using ONLY real data (confidence + month)
+  const avgROI = (confidenceData.roi + monthData.roi) / 2;
   const overallRecommendation = avgROI > 0 ? 'STRONG_BET' : 
                                avgROI > -0.1 ? 'GOOD_BET' : 
                                avgROI > -0.3 ? 'WEAK_BET' : 'AVOID';
@@ -133,8 +134,8 @@ export function getHistoricalContext(
   }
   
   return {
-    oddsRangeROI: confidenceData.roi, // Use confidence bucket ROI as primary (more specific)
-    oddsRangeDescription: confidenceData.description,
+    oddsRangeROI: confidenceData.roi, // Use ONLY real confidence bucket data
+    oddsRangeDescription: `${confidenceData.sampleSize} games`,
     modelConfidenceROI: confidenceData.roi,
     modelConfidenceDescription: confidenceData.description,
     monthROI: monthData.roi,

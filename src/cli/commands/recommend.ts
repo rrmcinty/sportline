@@ -337,8 +337,21 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     return;
   }
 
-  // Sort all recommendations by quality score (best bets first)
+  // Sort all recommendations by historical ROI (best ROI first)
   allRecommendations.sort((a, b) => {
+    // Get historical context for ROI comparison
+    const contextA = getHistoricalContext(a.recommendation, undefined, a.sport.toLowerCase(), a.market.toLowerCase());
+    const contextB = getHistoricalContext(b.recommendation, undefined, b.sport.toLowerCase(), b.market.toLowerCase());
+    
+    // Primary sort: Historical ROI (higher is better)
+    const roiA = contextA.oddsRangeROI || -1; // Default to -100% if no ROI data
+    const roiB = contextB.oddsRangeROI || -1;
+    
+    if (Math.abs(roiA - roiB) > 0.01) { // If ROI difference is significant (>1%)
+      return roiB - roiA; // Higher ROI first
+    }
+    
+    // Secondary sort: EV (if ROI is similar)
     const evA = a.recommendation.recommended_side === 'home'
       ? a.recommendation.ev_home!
       : a.recommendation.ev_away!;
@@ -346,15 +359,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       ? b.recommendation.ev_home!
       : b.recommendation.ev_away!;
     
-    // Get historical context for quality assessment - use the specific market for each recommendation
-    const contextA = getHistoricalContext(a.recommendation, undefined, a.sport.toLowerCase(), a.market.toLowerCase());
-    const contextB = getHistoricalContext(b.recommendation, undefined, b.sport.toLowerCase(), b.market.toLowerCase());
-    
-    // Calculate quality score: prioritize positive ROI categories, then EV
-    const qualityScoreA = calculateBetQualityScore(evA, contextA);
-    const qualityScoreB = calculateBetQualityScore(evB, contextB);
-    
-    return qualityScoreB - qualityScoreA;
+    return evB - evA;
   });
 
   // Display unified recommendations

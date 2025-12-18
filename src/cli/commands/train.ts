@@ -188,16 +188,16 @@ export async function train(options: TrainOptions): Promise<void> {
   const calibrationBuckets = buckets.map(bucket => ({
     bucket: bucket.bucket,
     count: bucket.count,
-    accuracy: bucket.accuracy * 100,
-    avgEV: bucket.avg_ev * 100,
-    roi: bucket.roi * 100
+    accuracy: bucket.accuracy, // Keep as decimal (0.556 = 55.6%)
+    avgEV: bucket.avg_ev, // Keep as decimal
+    roi: bucket.roi // Keep as decimal (0.0556 = 5.56% ROI)
   }));
   
   saveHistoricalData(
     options.sport,
     calibrationBuckets,
-    trainingResult.metrics.testAccuracy * 100,
-    bestResult.roi * 100,
+    trainingResult.metrics.testAccuracy, // Keep as decimal
+    bestResult.roi, // Keep as decimal
     bestResult.total_bets,
     config.market
   );

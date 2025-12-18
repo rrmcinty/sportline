@@ -1,60 +1,9 @@
 {
   "sport": "ncaam",
-  "lastUpdated": "2025-12-17T02:37:56.888Z",
+  "lastUpdated": "2025-12-17T23:40:17.811Z",
   "modelAccuracy": 65.75982996811902,
   "overallROI": 4.466627344454631,
   "totalBets": 2753,
-  "oddsRanges": {
-    "heavy_favorite": {
-      "roi": 4.466627344454631,
-      "winRate": 0.6575982996811902,
-      "sampleSize": 275,
-      "avgEV": 0,
-      "description": "Heavy Favorites (-200+)"
-    },
-    "favorite": {
-      "roi": 4.466627344454631,
-      "winRate": 0.6575982996811902,
-      "sampleSize": 412,
-      "avgEV": 0,
-      "description": "Favorites (-150 to -200)"
-    },
-    "slight_favorite": {
-      "roi": 4.466627344454631,
-      "winRate": 0.6575982996811902,
-      "sampleSize": 688,
-      "avgEV": 0,
-      "description": "Slight Favorites (-110 to -150)"
-    },
-    "toss_up": {
-      "roi": 4.466627344454631,
-      "winRate": 0.6575982996811902,
-      "sampleSize": 550,
-      "avgEV": 0,
-      "description": "Toss-ups (-110 to +110)"
-    },
-    "slight_underdog": {
-      "roi": 4.466627344454631,
-      "winRate": 0.6575982996811902,
-      "sampleSize": 412,
-      "avgEV": 0,
-      "description": "Slight Underdogs (+110 to +150)"
-    },
-    "underdog": {
-      "roi": 4.466627344454631,
-      "winRate": 0.6575982996811902,
-      "sampleSize": 275,
-      "avgEV": 0,
-      "description": "Underdogs (+150 to +200)"
-    },
-    "heavy_underdog": {
-      "roi": 4.466627344454631,
-      "winRate": 0.6575982996811902,
-      "sampleSize": 137,
-      "avgEV": 0,
-      "description": "Heavy Underdogs (+200+)"
-    }
-  },
   "modelConfidenceBuckets": {
     "0-10": {
       "roi": 0.37762161751292184,

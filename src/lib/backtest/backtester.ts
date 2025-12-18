@@ -120,6 +120,9 @@ export function runBacktestForThreshold(
 
     if (!betSide || betOdds === null || rec.actual === null) continue;
 
+    // Filter out extreme odds that are likely data errors (> +/-500)
+    if (Math.abs(betOdds) > 500) continue;
+
     // Place bet
     totalBets++;
     totalStaked += unitSize;
@@ -233,6 +236,13 @@ export function findOptimalThresholds(
 
 /**
  * Generate probability bucket analysis for calibration
+ * 
+ * Buckets are based on MODEL CONFIDENCE for the HOME TEAM winning.
+ * For example, "50-60" bucket contains games where the model predicted 
+ * the home team had a 50-60% chance of winning.
+ * 
+ * ROI is calculated by betting on whichever side (home or away) has 
+ * positive expected value, just like the real betting system does.
  */
 export function generateProbabilityBuckets(
   recommendations: Recommendation[],
@@ -261,19 +271,48 @@ export function generateProbabilityBuckets(
       inBucket.reduce((sum, r) => sum + (r.edge_home ?? 0), 0) /
       inBucket.length;
 
-    // Calculate actual profit for this bucket
+    // Calculate actual profit for this bucket using smart betting (bet on best EV side)
     let totalProfit = 0;
     let totalStaked = 0;
     for (const rec of inBucket) {
-      if (rec.actual !== null && rec.odds_home !== null) {
-        totalStaked += 100;
-        if (rec.actual === 1) {
-          const payout =
-            rec.odds_home > 0 ? rec.odds_home / 100 : 100 / Math.abs(rec.odds_home);
-          totalProfit += 100 * payout;
-        } else {
-          totalProfit -= 100;
+      if (rec.actual === null) continue;
+
+      // Determine which side to bet on (same logic as runBacktestForThreshold)
+      let betSide: 'home' | 'away' | null = null;
+      let betOdds: number | null = null;
+
+      // Check home side
+      if (rec.ev_home !== null && rec.odds_home !== null && rec.ev_home > 0) {
+        if (rec.ev_away === null || rec.ev_home > rec.ev_away) {
+          betSide = 'home';
+          betOdds = rec.odds_home;
         }
+      }
+
+      // Check away side if home wasn't selected
+      if (!betSide && rec.ev_away !== null && rec.odds_away !== null && rec.ev_away > 0) {
+        betSide = 'away';
+        betOdds = rec.odds_away;
+      }
+
+      // Skip if no positive EV bet or extreme odds
+      if (!betSide || betOdds === null || Math.abs(betOdds) > 500) {
+        continue;
+      }
+
+      totalStaked += 100; // $100 bet
+
+      // Check if bet won
+      const won = (betSide === 'home' && rec.actual === 1) || (betSide === 'away' && rec.actual === 0);
+
+      if (won) {
+        // Calculate profit only (not including original stake)
+        const profit = betOdds > 0 
+          ? betOdds // +150 odds = $150 profit on $100 bet
+          : (100 / Math.abs(betOdds)) * 100; // -150 odds = $66.67 profit on $100 bet
+        totalProfit += profit;
+      } else {
+        totalProfit -= 100; // Lost the $100 stake
       }
     }
 
