@@ -292,21 +292,30 @@ export class DatabaseQueries {
   }
 
   /**
-   * Get team information by ID
+   * Get team information by ID and sport
    */
-  getTeam(teamId: string): Team | null {
-    return (
-      (this.db
-        .prepare('SELECT * FROM teams WHERE id = ?')
-        .get(teamId) as Team) || null
-    );
+  getTeam(teamId: string, sport?: string): Team | null {
+    if (sport) {
+      return (
+        (this.db
+          .prepare('SELECT * FROM teams WHERE id = ? AND sport = ?')
+          .get(teamId, sport) as Team) || null
+      );
+    } else {
+      // Fallback for backward compatibility - but this can cause cross-sport issues
+      return (
+        (this.db
+          .prepare('SELECT * FROM teams WHERE id = ?')
+          .get(teamId) as Team) || null
+      );
+    }
   }
 
   /**
    * Get team name (display name or regular name)
    */
-  getTeamName(teamId: string): string {
-    const team = this.getTeam(teamId);
+  getTeamName(teamId: string, sport?: string): string {
+    const team = this.getTeam(teamId, sport);
     return team?.display_name || team?.name || teamId;
   }
 
@@ -365,6 +374,38 @@ export class DatabaseQueries {
         metricsJson,
         artifactsPath
       );
+  }
+
+  /**
+   * Get upcoming games within a date range
+   */
+  getUpcomingGames(endDate: string): Game[] {
+    const today = new Date().toISOString().split('T')[0];
+    return this.db
+      .prepare(
+        `
+        SELECT * FROM games
+        WHERE date >= ? AND date <= ?
+          AND (home_score IS NULL OR away_score IS NULL)
+        ORDER BY date ASC, sport ASC
+        `
+      )
+      .all(today, endDate) as Game[];
+  }
+
+  /**
+   * Get all odds for a specific game (all markets)
+   */
+  getGameOdds(gameId: string): Odds[] {
+    return this.db
+      .prepare(
+        `
+        SELECT * FROM odds
+        WHERE game_id = ?
+        ORDER BY market ASC, provider ASC, timestamp DESC
+        `
+      )
+      .all(gameId) as Odds[];
   }
 
   /**

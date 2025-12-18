@@ -10,6 +10,7 @@ import { train } from './commands/train.js';
 import { recommend } from './commands/recommend.js';
 import { backtest } from './commands/backtest.js';
 import { update } from './commands/update.js';
+import { find } from './commands/find.js';
 import { analyze } from './commands/analyze.js';
 import { createSimpleBucketsCommand } from './commands/simple-buckets.js';
 import { createOddsImpactCommand } from './commands/odds-impact-analysis.js';
@@ -84,6 +85,21 @@ program
       await update(options);
     } catch (error) {
       console.error('Error during update:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('find')
+  .description('Search for teams and view their upcoming games with odds')
+  .option('--team <name>', 'Team name to search for (partial match)')
+  .option('--sport <sport>', 'Filter by sport (nba, nhl, ncaam, etc.)')
+  .option('--days <number>', 'Days ahead to search (default: 7)', '7')
+  .action(async (options) => {
+    try {
+      await find(options);
+    } catch (error) {
+      console.error('Error during find:', error);
       process.exit(1);
     }
   });
