@@ -10,8 +10,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
+    "format": "prettier --no-error-on-unmatched-pattern --write \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
+    "format:check": "prettier --no-error-on-unmatched-pattern --check \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
     "check": "npm run format:check && npm run lint && tsc",
     "build": "npm run check",
     "db:init": "sqlite3 data/sportline.db < src/db/schema.sql",
