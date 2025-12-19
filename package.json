@@ -8,10 +8,10 @@
     "sportline": "dist/cli/index.js"
   },
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix",
+    "format": "npx prettier --no-error-on-unmatched-pattern --write \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
+    "format:check": "npx prettier --no-error-on-unmatched-pattern --check \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
     "check": "npm run format:check && npm run lint && tsc",
     "build": "npm run check",
     "db:init": "sqlite3 data/sportline.db < src/db/schema.sql",
@@ -73,6 +73,7 @@
     "@eslint/js": "^9.39.2",
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.10.4",
+    "@vitest/coverage-v8": "^1.6.1",
     "@vitest/ui": "^1.1.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^9.1.2",
