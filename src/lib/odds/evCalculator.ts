@@ -2,7 +2,7 @@
  * Expected Value (EV) and edge calculation utilities
  */
 
-import type { OddsData } from '../db/types.js';
+import type { OddsData as _OddsData } from '../db/types.js';
 
 /**
  * Convert American odds to decimal payout (profit per $1 staked)

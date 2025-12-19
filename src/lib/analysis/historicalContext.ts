@@ -72,7 +72,7 @@ export function getHistoricalContext(
   const sportHistoricalData = sport ? getHistoricalROIData(sport, market) : null;
 
   // Get historical data for this situation
-  let oddsRangeData;
+  let _oddsRangeData;
   let confidenceData;
 
   if (sportHistoricalData) {

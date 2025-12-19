@@ -235,7 +235,7 @@ async function processAllTeams(season: number, league: LeagueConfig) {
         })),
       }));
       stats = { categories };
-    } catch (e) {
+    } catch (_e) {
       stats = null;
     }
 

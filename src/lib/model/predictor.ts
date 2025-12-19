@@ -2,8 +2,8 @@
  * Model prediction and inference utilities
  */
 
-import LogisticRegression from 'ml-logistic-regression';
-import { Matrix } from 'ml-matrix';
+import _LogisticRegression from 'ml-logistic-regression';
+import { Matrix as _Matrix } from 'ml-matrix';
 import { applyCalibration } from './calibration.js';
 import type { TrainedModel, Prediction } from '../db/types.js';
 
@@ -83,7 +83,7 @@ export function predict(
   features: Record<string, number>,
   model: TrainedModel,
   debug: boolean = false,
-  temperature?: number,
+  _temperature?: number,
 ): Prediction {
   // Standardize features using saved parameters
   const scaledFeatures: Record<string, number> = {};

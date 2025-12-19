@@ -3,8 +3,12 @@
  * Identifies situational features and patterns that lead to profitable bets
  */
 
-import type { GameFeatures, Recommendation, BacktestResult } from '../db/types.js';
-import { calculateBettingMetrics } from '../odds/evCalculator.js';
+import type {
+  GameFeatures,
+  Recommendation,
+  BacktestResult as _BacktestResult,
+} from '../db/types.js';
+import { calculateBettingMetrics as _calculateBettingMetrics } from '../odds/evCalculator.js';
 
 export interface SituationalFeatures {
   // Model confidence features
@@ -191,8 +195,6 @@ export function analyzeProfitableBets(
     if (!gameFeature || rec.actual === null) continue;
 
     let betSide: 'home' | 'away' | null = null;
-    let betEV: number | null = null;
-    let betEdge: number | null = null;
     let betOdds: number | null = null;
 
     // Determine if we should bet (same logic as original backtester)
@@ -204,8 +206,8 @@ export function analyzeProfitableBets(
     ) {
       if (rec.ev_away === null || rec.edge_away === null || rec.ev_home > rec.ev_away) {
         betSide = 'home';
-        betEV = rec.ev_home;
-        betEdge = rec.edge_home;
+        const _betEV = rec.ev_home;
+        const _betEdge = rec.edge_home;
         betOdds = rec.odds_home;
       }
     }
@@ -218,8 +220,8 @@ export function analyzeProfitableBets(
       rec.edge_away > minEdge
     ) {
       betSide = 'away';
-      betEV = rec.ev_away;
-      betEdge = rec.edge_away;
+      const _betEV = rec.ev_away;
+      const _betEdge = rec.edge_away;
       betOdds = rec.odds_away;
     }
 

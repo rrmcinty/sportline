@@ -20,7 +20,7 @@ import {
   analyzeProfitableBets,
   printProfitabilityAnalysis,
 } from '../../lib/backtest/profitabilityAnalyzer.js';
-import type { BacktestResult } from '../../lib/db/types.js';
+import type { BacktestResult as _BacktestResult } from '../../lib/db/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

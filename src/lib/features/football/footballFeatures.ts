@@ -21,14 +21,14 @@ export function calculateFootballAdvancedStats(
   const rushingAttempts = stats.rushingAttempts || 0;
   const completionAttempts = stats.completionAttempts || 0;
   const firstDowns = stats.firstDowns || 0;
-  const firstDownsPassing = stats.firstDownsPassing || 0;
-  const firstDownsRushing = stats.firstDownsRushing || 0;
+  const _firstDownsPassing = stats.firstDownsPassing || 0;
+  const _firstDownsRushing = stats.firstDownsRushing || 0;
   const thirdDownEff = stats.thirdDownEff || 0;
   const fourthDownEff = stats.fourthDownEff || 0;
   const redZoneAttempts = stats.redZoneAttempts || 0;
   const turnovers = stats.turnovers || 0;
-  const interceptions = stats.interceptions || 0;
-  const fumblesLost = stats.fumblesLost || 0;
+  const _interceptions = stats.interceptions || 0;
+  const _fumblesLost = stats.fumblesLost || 0;
   const sacksYardsLost = stats.sacksYardsLost || 0;
   const totalOffensivePlays = stats.totalOffensivePlays || 0;
   const possessionTime = stats.possessionTime || 0;
@@ -139,8 +139,8 @@ export function computeFootballOffensiveDefensiveRatings(
   const awayPoints = game.away_score;
 
   // Get team stats for this game
-  const homeStats = db.getGameStats(gameId, homeId);
-  const awayStats = db.getGameStats(gameId, awayId);
+  const _homeStats = db.getGameStats(gameId, homeId);
+  const _awayStats = db.getGameStats(gameId, awayId);
 
   // For football, we use points per game as the primary offensive rating
   // and points allowed per game as defensive rating
@@ -202,7 +202,7 @@ export function calculateFootballDefensiveMetrics(
  * Calculate football-specific special teams metrics
  */
 export function calculateFootballSpecialTeamsMetrics(
-  stats: Record<string, number>,
+  _stats: Record<string, number>,
 ): Record<string, number> {
   const specialTeamsStats: Record<string, number> = {};
 

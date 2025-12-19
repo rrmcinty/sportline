@@ -341,7 +341,7 @@ export function createSimpleBucketsCommand(): Command {
       });
 
       const nbaSortedBuckets = [...nbaBuckets].sort((a, b) => b.combinedScore - a.combinedScore);
-      const nbaProfitableBuckets = nbaSortedBuckets.filter((b) => b.roi > 0);
+      const _nbaProfitableBuckets = nbaSortedBuckets.filter((b) => b.roi > 0);
 
       console.log('📊 NBA CONFIDENCE BUCKETS (sorted by Combined Score):\n');
 

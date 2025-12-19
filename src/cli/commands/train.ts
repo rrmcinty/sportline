@@ -18,7 +18,7 @@ import {
 } from '../../lib/backtest/backtester.js';
 import {
   calculateCoefficientImportance,
-  calculatePermutationImportance,
+  calculatePermutationImportance as _calculatePermutationImportance,
 } from '../../lib/model/trainer.js';
 import {
   saveHistoricalData,

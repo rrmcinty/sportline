@@ -99,8 +99,8 @@ export function computeHockeyOffensiveDefensiveRatings(
   const awayGoals = game.away_score;
 
   // Get team stats for this game
-  const homeStats = db.getGameStats(gameId, homeId);
-  const awayStats = db.getGameStats(gameId, awayId);
+  const _homeStats = db.getGameStats(gameId, homeId);
+  const _awayStats = db.getGameStats(gameId, awayId);
 
   // For hockey, we use goals per game as the primary offensive rating
   // and goals against per game as defensive rating
@@ -132,7 +132,7 @@ export function calculateHockeySpecialTeamsMetrics(
   const powerPlayGoals = stats.powerPlayGoals || 0;
   const powerPlayOpportunities = stats.powerPlayOpportunities || 0;
   const shortHandedGoals = stats.shortHandedGoals || 0;
-  const penaltyKillOpportunities = stats.penaltyKillOpportunities || 0;
+  const _penaltyKillOpportunities = stats.penaltyKillOpportunities || 0;
 
   // Power play percentage
   if (powerPlayOpportunities > 0) {

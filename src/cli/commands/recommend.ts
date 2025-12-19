@@ -24,7 +24,7 @@ import type {
 
 import {
   getHistoricalContext,
-  formatHistoricalContext,
+  formatHistoricalContext as _formatHistoricalContext,
   getShortHistoricalInsight,
 } from '../../lib/analysis/historicalContext.js';
 
@@ -32,7 +32,7 @@ import {
  * Calculate a quality score for bet ranking
  * Prioritizes bets with positive historical ROI, then by EV
  */
-function calculateBetQualityScore(ev: number, context: any): number {
+function _calculateBetQualityScore(ev: number, context: any): number {
   // Base score from EV (0-100 scale)
   const evScore = Math.max(0, Math.min(100, ev * 100));
 
@@ -657,7 +657,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
     game?: TodaysGame;
   }> = [];
   const allGameFeatures: GameFeatures[] = [];
-  let totalGamesFound = 0;
+  let _totalGamesFound = 0;
 
   for (const sport of sportsToProcess) {
     for (const market of marketsToProcess) {
@@ -691,7 +691,7 @@ export async function recommend(options: RecommendOptions): Promise<void> {
           );
         }
 
-        totalGamesFound += recommendations.length;
+        _totalGamesFound += recommendations.length;
       } catch (error) {
         console.error(`❌ Error processing ${sport} ${market}:`, error);
       }
@@ -955,7 +955,7 @@ function displayUnifiedRecommendations(
 }
 
 // Helper function to display recommendations for a specific sport (kept for backward compatibility)
-function displayRecommendations(
+function _displayRecommendations(
   sport: string,
   recommendations: Recommendation[],
   options: RecommendOptions,

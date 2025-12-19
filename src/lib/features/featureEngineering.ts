@@ -12,7 +12,10 @@ import {
   computeOffensiveDefensiveRatings,
   getAdvancedFeatures,
 } from './sportFeatureFactory.js';
-import { calculateSOSDifferential, getStrengthOfScheduleFeatures } from './strengthOfSchedule.js';
+import {
+  calculateSOSDifferential,
+  getStrengthOfScheduleFeatures as _getStrengthOfScheduleFeatures,
+} from './strengthOfSchedule.js';
 
 /**
  * Generate exponential recency weights for a given window size

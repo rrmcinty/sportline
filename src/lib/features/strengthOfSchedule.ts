@@ -67,7 +67,7 @@ export function calculateStrengthOfSchedule(
   teamId: string,
   gameId: string,
   games: Game[],
-  db: DatabaseQueries,
+  _db: DatabaseQueries,
 ): StrengthOfScheduleMetrics {
   const currentGame = games.find((g) => g.id === gameId);
   if (!currentGame) {

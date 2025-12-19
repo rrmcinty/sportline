@@ -3,7 +3,7 @@
  */
 
 import fs from 'fs';
-import path from 'path';
+import _path from 'path';
 import type { FeatureConfig } from '../db/types.js';
 
 /**

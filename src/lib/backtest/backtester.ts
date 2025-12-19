@@ -82,8 +82,6 @@ export function runBacktestForThreshold(
 
   for (const rec of recommendations) {
     let betSide: 'home' | 'away' | null = null;
-    let betEV: number | null = null;
-    let betEdge: number | null = null;
     let betOdds: number | null = null;
 
     // Determine if we should bet
@@ -95,8 +93,8 @@ export function runBacktestForThreshold(
     ) {
       if (rec.ev_away === null || rec.edge_away === null || rec.ev_home > rec.ev_away) {
         betSide = 'home';
-        betEV = rec.ev_home;
-        betEdge = rec.edge_home;
+        const _betEV = rec.ev_home;
+        const _betEdge = rec.edge_home;
         betOdds = rec.odds_home;
       }
     }
@@ -109,8 +107,8 @@ export function runBacktestForThreshold(
       rec.edge_away > minEdge
     ) {
       betSide = 'away';
-      betEV = rec.ev_away;
-      betEdge = rec.edge_away;
+      const _betEV = rec.ev_away;
+      const _betEdge = rec.edge_away;
       betOdds = rec.odds_away;
     }
 
@@ -148,7 +146,7 @@ export function runBacktestForThreshold(
     const avgProfit = totalProfit / totalBets;
     const profitVariance =
       recommendations
-        .map((rec) => {
+        .map((_rec) => {
           // Simplified profit calculation per bet
           return 0; // Would need to track individual bet profits
         })

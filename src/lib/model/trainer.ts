@@ -4,9 +4,13 @@
  */
 
 import LogisticRegression from 'ml-logistic-regression';
-import { Matrix } from 'ml-matrix';
+import { Matrix as _Matrix } from 'ml-matrix';
 import { RandomForestClassifier as RFClassifier } from 'ml-random-forest';
-import { createCalibrator, applyCalibration, type CalibrationModel } from './calibration.js';
+import {
+  createCalibrator,
+  applyCalibration as _applyCalibration,
+  type CalibrationModel,
+} from './calibration.js';
 import type { GameFeatures, FeatureConfig } from '../db/types.js';
 
 /**
