@@ -8,8 +8,8 @@
     "sportline": "dist/cli/index.js"
   },
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix",
     "format": "npx prettier --no-error-on-unmatched-pattern --write \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
     "format:check": "npx prettier --no-error-on-unmatched-pattern --check \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
     "check": "npm run format:check && npm run lint && tsc",

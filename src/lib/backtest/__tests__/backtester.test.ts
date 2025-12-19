@@ -1,6 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { generateRecommendations } from '../backtester';
-import type { GameFeatures, Recommendation } from '../../types';
+import type { GameFeatures, OddsData } from '../../db/types.js';
+
+const mlOdds = (home: number, away: number): OddsData => ({
+  provider: 'test',
+  market: 'moneyline',
+  line: null,
+  home,
+  away,
+  price_home: null,
+  price_away: null,
+  price_over: null,
+  price_under: null,
+  timestamp: '2024-01-01T00:00:00Z',
+});
 
 describe('backtester', () => {
   describe('generateRecommendations', () => {
@@ -11,20 +24,20 @@ describe('backtester', () => {
           date: '2024-01-01',
           home_team: 'Team A',
           away_team: 'Team B',
-          sport: 'nba',
           season: 2024,
           features: { feature1: 1, feature2: 2 },
-          odds: [{ home: 110, away: -110 }],
+          odds: [mlOdds(110, -110)],
+          target: null,
         },
         {
           game_id: 'game2',
           date: '2024-01-02',
           home_team: 'Team C',
           away_team: 'Team D',
-          sport: 'nba',
           season: 2024,
           features: { feature1: 3, feature2: 4 },
-          odds: [{ home: -110, away: 110 }],
+          odds: [mlOdds(-110, 110)],
+          target: null,
         },
       ];
 
@@ -49,10 +62,10 @@ describe('backtester', () => {
           date: '2024-01-01',
           home_team: 'Team A',
           away_team: 'Team B',
-          sport: 'nba',
           season: 2024,
           features: { feature1: 1, feature2: 2 },
-          odds: null,
+          odds: [],
+          target: null,
         },
       ];
 
@@ -83,30 +96,30 @@ describe('backtester', () => {
           date: '2024-01-01',
           home_team: 'Team A',
           away_team: 'Team B',
-          sport: 'nba',
           season: 2024,
           features: { feature1: 1, feature2: 2 },
-          odds: [{ home: 110, away: -110 }],
+          odds: [mlOdds(110, -110)],
+          target: null,
         },
         {
           game_id: 'game2',
           date: '2024-01-02',
           home_team: 'Team C',
           away_team: 'Team D',
-          sport: 'nba',
           season: 2024,
           features: { feature1: 3, feature2: 4 },
-          odds: [{ home: -110, away: 110 }],
+          odds: [mlOdds(-110, 110)],
+          target: null,
         },
         {
           game_id: 'game3',
           date: '2024-01-03',
           home_team: 'Team E',
           away_team: 'Team F',
-          sport: 'nba',
           season: 2024,
           features: { feature1: 5, feature2: 6 },
-          odds: [{ home: 105, away: -105 }],
+          odds: [mlOdds(105, -105)],
+          target: null,
         },
       ];
 

@@ -1,6 +1,40 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { predict } from '../predictor';
-import type { TrainedModel, Prediction } from '../../db/types';
+import type { TrainedModel } from '../../db/types.js';
+
+const baseModel = (): TrainedModel => ({
+  sport: 'nba',
+  market: 'moneyline',
+  modelType: 'logistic_regression',
+  trainedAt: '2024-01-01T00:00:00Z',
+  seasons: [2024],
+  features: { feature1: true, feature2: true },
+  rollingWindows: [],
+  featureKeys: ['feature1', 'feature2'],
+  featureMeans: { feature1: 0, feature2: 0 },
+  featureStds: { feature1: 1, feature2: 1 },
+  modelParams: {
+    type: 'logistic_regression',
+    learningRate: 0.01,
+    numSteps: 1000,
+    theta: [[0.5], [0.3]],
+  },
+  thresholds: {
+    min_edge: 0,
+    min_ev: 0,
+  },
+  backtestMetrics: {
+    accuracy: 0,
+    logLoss: 0,
+    roi: 0,
+    totalBets: 0,
+    winRate: 0,
+  },
+  recencyWeighting: {
+    enabled: false,
+    decay: 0,
+  },
+});
 
 describe('predictor', () => {
   beforeEach(() => {
@@ -9,19 +43,7 @@ describe('predictor', () => {
 
   describe('predict', () => {
     it('should make predictions for valid features and model', () => {
-      const mockModel: TrainedModel = {
-        sport: 'nba',
-        modelType: 'logistic_regression',
-        featureKeys: ['feature1', 'feature2'],
-        featureMeans: { feature1: 0, feature2: 0 },
-        featureStds: { feature1: 1, feature2: 1 },
-        modelParams: {
-          type: 'logistic_regression' as const,
-          learningRate: 0.01,
-          numSteps: 1000,
-          theta: [[0.5], [0.3]],
-        },
-      };
+      const mockModel = baseModel();
 
       const features = { feature1: 1, feature2: 2 };
       const result = predict(features, mockModel);
@@ -36,19 +58,7 @@ describe('predictor', () => {
     });
 
     it('should handle missing features gracefully', () => {
-      const mockModel: TrainedModel = {
-        sport: 'nba',
-        modelType: 'logistic_regression',
-        featureKeys: ['feature1', 'feature2'],
-        featureMeans: { feature1: 0, feature2: 0 },
-        featureStds: { feature1: 1, feature2: 1 },
-        modelParams: {
-          type: 'logistic_regression' as const,
-          learningRate: 0.01,
-          numSteps: 1000,
-          theta: [[0.5], [0.3]],
-        },
-      };
+      const mockModel = baseModel();
 
       const features = { feature1: 1 }; // missing feature2
       const result = predict(features, mockModel);
@@ -61,19 +71,7 @@ describe('predictor', () => {
     });
 
     it('should handle debug mode', () => {
-      const mockModel: TrainedModel = {
-        sport: 'nba',
-        modelType: 'logistic_regression',
-        featureKeys: ['feature1', 'feature2'],
-        featureMeans: { feature1: 0, feature2: 0 },
-        featureStds: { feature1: 1, feature2: 1 },
-        modelParams: {
-          type: 'logistic_regression' as const,
-          learningRate: 0.01,
-          numSteps: 1000,
-          theta: [[0.5], [0.3]],
-        },
-      };
+      const mockModel = baseModel();
 
       const features = { feature1: 1, feature2: 2 };
 
