@@ -649,8 +649,11 @@ function checkBetResult(
   game: TodaysGame,
   market: string
 ): { result: 'WIN' | 'LOSS' | 'PUSH' | 'PENDING', score?: string } {
-  // Check if game is completed
-  if (game.home_score === null || game.away_score === null) {
+  const status = (game.status || '').toLowerCase();
+  const isFinal = status === 'post' || status === 'final' || status === 'completed';
+
+  // Only evaluate bets for completed games
+  if (!isFinal || game.home_score === null || game.away_score === null) {
     return { result: 'PENDING' };
   }
 
@@ -701,6 +704,19 @@ function displayUnifiedRecommendations(
   allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation, game?: TodaysGame}>,
   options: RecommendOptions
 ): void {
+  const formatOddsTimestamp = (ts?: string | null): string => {
+    if (!ts) return 'N/A';
+    const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return 'N/A';
+
+    return d.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   // Get today's date for header
   const headerDate = options.date ? new Date(options.date + 'T12:00:00Z') : new Date();
   const dateStr = headerDate.toLocaleDateString('en-US', {
@@ -718,8 +734,8 @@ function displayUnifiedRecommendations(
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations Across All Sports\n'));
 
-  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Line')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.red.bold('Result')} | ${chalk.red.bold('Historical Context')}`);
-  console.log(chalk.gray('-----+-------+--------+------+-------+--------------------------------+---------------------+------+-------+-------+-------+---------+------------------'));
+  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Line')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Book')}      | ${chalk.gray.bold('Odds Time')}      | ${chalk.red.bold('Result')} | ${chalk.red.bold('Historical Context')}`);
+  console.log(chalk.gray('-----+-------+--------+------+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------+---------------+---------+------------------'));
 
   for (let i = 0; i < allRecommendations.length; i++) {
     const { sport, market, recommendation: rec, game } = allRecommendations[i];
@@ -727,6 +743,9 @@ function displayUnifiedRecommendations(
       hour: '2-digit',
       minute: '2-digit',
     });
+
+    const oddsTimestamp = game?.odds?.[0]?.timestamp;
+    const oddsTimeDisplay = formatOddsTimestamp(oddsTimestamp);
 
     const matchup = `${rec.away_team} @ ${rec.home_team}`;
     const pick = rec.recommended_side === 'home' ? rec.home_team : rec.away_team;
@@ -757,7 +776,13 @@ function displayUnifiedRecommendations(
       } else if (betResult.result === 'PUSH') {
         resultDisplay = chalk.yellow(`🟡 PUSH (${betResult.score})`);
       } else {
-        resultDisplay = chalk.gray('PENDING');
+        const status = (game.status || '').toLowerCase();
+        const isLive = status === 'in' || status === 'live' || status === 'inprogress';
+        if (isLive && game.home_score !== null && game.away_score !== null) {
+          resultDisplay = chalk.yellow(`LIVE (${game.away_score}-${game.home_score})`);
+        } else {
+          resultDisplay = chalk.gray('PENDING');
+        }
       }
     } else {
       resultDisplay = chalk.gray('PENDING');
@@ -796,9 +821,11 @@ function displayUnifiedRecommendations(
     const oddsDisplay = chalk.magenta(odds.padStart(5));
     const evDisplay = chalk.cyan(ev.padStart(5));
     const edgeDisplay = chalk.green(edge.padStart(5));
+    const bookDisplay = chalk.gray((rec.provider || 'Unknown').padEnd(9));
+    const oddsTimeDisplayFormatted = chalk.gray(oddsTimeDisplay.padEnd(13));
     const historicalDisplay = historicalInsight.padEnd(18);
 
-    console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${lineDisplayFormatted} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${resultDisplay.padEnd(17)} | ${historicalDisplay}`);
+    console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${lineDisplayFormatted} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${bookDisplay} | ${oddsTimeDisplayFormatted} | ${resultDisplay.padEnd(17)} | ${historicalDisplay}`);
   }
 
   console.log('');
@@ -889,6 +916,19 @@ function displayUnifiedRecommendations(
 function displayRecommendations(sport: string, recommendations: Recommendation[], options: RecommendOptions): void {
   if (recommendations.length === 0) return;
 
+  const formatOddsTimestamp = (ts?: string | null): string => {
+    if (!ts) return 'N/A';
+    const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return 'N/A';
+
+    return d.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   // Get today's date for header
   const headerDate = options.date ? new Date(options.date + 'T12:00:00Z') : new Date();
   const dateStr = headerDate.toLocaleDateString('en-US', {
@@ -903,8 +943,8 @@ function displayRecommendations(sport: string, recommendations: Recommendation[]
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations\n'));
 
-  console.log(`${chalk.bold('Rank')} | ${chalk.white.bold('Time')}  | ${chalk.gray.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Provider')}`);
-  console.log(chalk.gray('-----+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------'));
+  console.log(`${chalk.bold('Rank')} | ${chalk.white.bold('Time')}  | ${chalk.gray.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Book')}      | ${chalk.gray.bold('Odds Time')}`);
+  console.log(chalk.gray('-----+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------+---------------'));
 
   for (let i = 0; i < recommendations.length; i++) {
     const rec = recommendations[i];
@@ -928,6 +968,8 @@ function displayRecommendations(sport: string, recommendations: Recommendation[]
       ? formatPercentage(rec.edge_home!, 1)
       : formatPercentage(rec.edge_away!, 1);
 
+    const oddsTimeDisplay = formatOddsTimestamp(null);
+
     const rank = chalk.yellow((i + 1).toString().padStart(4));
     const time = chalk.white(gameTime.padStart(5));
     const matchupDisplay = chalk.gray(matchup.padEnd(30));
@@ -940,7 +982,9 @@ function displayRecommendations(sport: string, recommendations: Recommendation[]
     const edgeDisplay = chalk.green(edge.padStart(5));
     const providerDisplay = chalk.gray(rec.provider.padEnd(9));
 
-    console.log(`${rank} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${providerDisplay}`);
+    const oddsTimeDisplayFormatted = chalk.gray(oddsTimeDisplay.padEnd(13));
+
+    console.log(`${rank} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${providerDisplay} | ${oddsTimeDisplayFormatted}`);
   }
 
   console.log('');
