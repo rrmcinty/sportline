@@ -68,6 +68,8 @@ function calculateBetQualityScore(ev: number, context: any): number {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const IS_VERBOSE = process.env.SPORTLINE_VERBOSE === '1';
+
 /**
  * Analyze a specific game by ID
  */
@@ -300,8 +302,10 @@ async function getRecommendationsForSport(
   options: RecommendOptions,
   db: DatabaseQueries
 ): Promise<{ recommendations: Recommendation[], gameFeatures: GameFeatures[], games: TodaysGame[] }> {
-  console.log(`\n[${sport.toUpperCase()}] Starting recommendation generation...`);
-  console.log(`[${sport.toUpperCase()}] Loading trained model...`);
+  if (IS_VERBOSE) {
+    console.log(`\n[${sport.toUpperCase()}] Starting recommendation generation...`);
+    console.log(`[${sport.toUpperCase()}] Loading trained model...`);
+  }
   
   // Map sports to their sport categories
   const sportToCategory: Record<string, string> = {
@@ -321,14 +325,18 @@ async function getRecommendationsForSport(
   const modelPath = findLatestModel(sport, options.market, modelsDir);
 
   if (!modelPath) {
-    console.log(`⚠️  No trained model found for ${sport} ${options.market}`);
-    console.log(`   Run "sportline train --sport ${sport}" first to train a model.`);
+    if (IS_VERBOSE) {
+      console.log(`⚠️  No trained model found for ${sport} ${options.market}`);
+      console.log(`   Run "sportline train --sport ${sport}" first to train a model.`);
+    }
     return { recommendations: [], gameFeatures: [], games: [] };
   }
 
   const model = loadModel(modelPath);
 
-  console.log(`[${sport.toUpperCase()}] Loading configuration...`);
+  if (IS_VERBOSE) {
+    console.log(`[${sport.toUpperCase()}] Loading configuration...`);
+  }
   const configPath = path.join(
     process.cwd(),
     `src/train/${sportCategory}/${sport}/featuresConfig.json`
@@ -336,18 +344,24 @@ async function getRecommendationsForSport(
   const config = loadFeatureConfig(configPath);
 
   // Step 3: Query today's games
-  console.log(`[${sport.toUpperCase()}] Querying games from database...`);
+  if (IS_VERBOSE) {
+    console.log(`[${sport.toUpperCase()}] Querying games from database...`);
+  }
   const targetDate = options.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
   const todaysGames = db.getTodaysGames(sport, targetDate, options.market);
 
-  console.log(`✓ Found ${todaysGames.length} ${sport.toUpperCase()} scheduled games for ${targetDate}`);
+  if (IS_VERBOSE) {
+    console.log(`✓ Found ${todaysGames.length} ${sport.toUpperCase()} scheduled games for ${targetDate}`);
+  }
 
   if (todaysGames.length === 0) {
     return { recommendations: [], gameFeatures: [], games: [] };
   }
 
   // Step 4: Generate predictions and recommendations
-  console.log(`[${sport.toUpperCase()}] Generating predictions...`);
+  if (IS_VERBOSE) {
+    console.log(`[${sport.toUpperCase()}] Generating predictions...`);
+  }
 
   // Get all historical games for feature extraction
   const allGames = db.getHistoricalGames(sport, model.seasons);
@@ -513,9 +527,11 @@ async function getRecommendationsForSport(
     return evB - evA;
   });
 
-  console.log(`✓ Generated ${recommendations.length} ${sport.toUpperCase()} recommendations`);
+  if (IS_VERBOSE) {
+    console.log(`✓ Generated ${recommendations.length} ${sport.toUpperCase()} recommendations`);
+  }
 
-  if (recommendations.length === 0) {
+  if (IS_VERBOSE && recommendations.length === 0) {
     console.log(`[${sport.toUpperCase()}] Skip summary for ${targetDate} (${options.market}):`);
     console.log(`  - Total games: ${stats.totalGames}`);
     console.log(`  - Games with any odds rows attached: ${stats.gamesWithAnyOddsRows}`);
@@ -709,13 +725,12 @@ function displayUnifiedRecommendations(
   const sportsList = [...new Set(allRecommendations.map(r => r.sport))].join(' & ');
   const marketsList = [...new Set(allRecommendations.map(r => r.market))].join(' & ');
   console.log(chalk.cyan.bold(`\n🎯 All Sports Betting Recommendations - ${dateStr}\n`));
-  console.log(chalk.gray(`Sports: ${sportsList} | Markets: ${marketsList} | Total Recommendations: ${allRecommendations.length}`));
+  if (IS_VERBOSE) {
+    console.log(chalk.gray(`Sports: ${sportsList} | Markets: ${marketsList} | Total Recommendations: ${allRecommendations.length}`));
+  }
 
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations Across All Sports\n'));
-
-  console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Line')} | ${chalk.white.bold('Time')}  | ${chalk.white.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Book')}      | ${chalk.gray.bold('Odds Time')}      | ${chalk.red.bold('Result')} | ${chalk.red.bold('Historical Context')}`);
-  console.log(chalk.gray('-----+-------+--------+------+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------+---------------+---------+------------------'));
 
   for (let i = 0; i < allRecommendations.length; i++) {
     const { sport, market, recommendation: rec, game } = allRecommendations[i];
@@ -788,24 +803,19 @@ function displayUnifiedRecommendations(
       lineDisplay = 'N/A';
     }
 
-    const rank = chalk.yellow((i + 1).toString().padStart(4));
-    const sportDisplay = chalk.bold(sport.padEnd(5));
-    const marketDisplay = chalk.gray(market.padEnd(6));
-    const lineDisplayFormatted = chalk.gray(lineDisplay.padEnd(4));
-    const time = chalk.white(gameTime.padStart(5));
-    const matchupDisplay = chalk.white(matchup.padEnd(30));
-    const pickDisplay = rec.recommended_side === 'home'
-      ? chalk.green(pick.padEnd(19))
-      : chalk.red(pick.padEnd(19));
-    const probDisplay = chalk.blue(prob.padStart(4));
-    const oddsDisplay = chalk.magenta(odds.padStart(5));
-    const evDisplay = chalk.cyan(ev.padStart(5));
-    const edgeDisplay = chalk.green(edge.padStart(5));
-    const bookDisplay = chalk.gray((rec.provider || 'Unknown').padEnd(9));
-    const oddsTimeDisplayFormatted = chalk.gray(oddsTimeDisplay.padEnd(13));
-    const historicalDisplay = historicalInsight.padEnd(18);
+    const rank = chalk.yellow.bold(`#${(i + 1).toString()}`);
+    const meta = chalk.white(`${sport} ${market}${lineDisplay !== 'N/A' ? ` ${lineDisplay}` : ''} · ${gameTime}`);
 
-    console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${lineDisplayFormatted} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${bookDisplay} | ${oddsTimeDisplayFormatted} | ${resultDisplay.padEnd(17)} | ${historicalDisplay}`);
+    const pickLabel = rec.recommended_side === 'home' ? chalk.green.bold(pick) : chalk.red.bold(pick);
+    const modelLine = `${chalk.blue(`Prob ${prob}`)}  ${chalk.cyan(`EV ${ev}`)}  ${chalk.green(`Edge ${edge}`)}`;
+    const oddsLine = `${chalk.magenta(`Odds ${odds}`)}  ${chalk.gray(`${rec.provider || 'Unknown'} · ${oddsTimeDisplay}`)}`;
+
+    console.log(`${rank} ${meta} · ${pickLabel}`);
+    console.log(chalk.white(` ${matchup}`));
+    console.log(` ${modelLine}`);
+    console.log(` ${oddsLine}`);
+    console.log(` ${resultDisplay}  ${historicalInsight}`);
+    console.log('');
   }
 
   console.log('');

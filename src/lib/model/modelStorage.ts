@@ -124,11 +124,14 @@ export function loadModel(modelPath: string): TrainedModel {
   const modelJson = fs.readFileSync(modelPath, 'utf8');
   const model = JSON.parse(modelJson) as TrainedModel;
 
-  console.log(`[ModelStorage] Loaded model from ${modelPath}`);
-  console.log(`[ModelStorage] Model type: ${model.modelType}`);
-  console.log(`[ModelStorage] Trained: ${model.trainedAt}`);
-  console.log(`[ModelStorage] Test accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(2)}%`);
-  console.log(`[ModelStorage] ROI: ${(model.backtestMetrics.roi * 100).toFixed(2)}%`);
+  const isVerbose = process.env.SPORTLINE_VERBOSE === '1';
+  if (isVerbose) {
+    console.log(`[ModelStorage] Loaded model from ${modelPath}`);
+    console.log(`[ModelStorage] Model type: ${model.modelType}`);
+    console.log(`[ModelStorage] Trained: ${model.trainedAt}`);
+    console.log(`[ModelStorage] Test accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(2)}%`);
+    console.log(`[ModelStorage] ROI: ${(model.backtestMetrics.roi * 100).toFixed(2)}%`);
+  }
 
   return model;
 }
