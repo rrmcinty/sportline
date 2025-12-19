@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 describe('db smoke', () => {
-    it('works', () => {
-        expect(1).toBe(1);
-    });
+  it('works', () => {
+    expect(1).toBe(1);
+  });
 });
