@@ -344,6 +344,8 @@ export function trainModel(
   config: FeatureConfig,
   splitRatio: number = 0.8
 ): TrainingResult {
+  const isVerbose = process.env.SPORTLINE_VERBOSE === '1';
+
   // Filter out rows with null target
   const filtered = dataset.filter((row) => row.target !== null);
 
@@ -367,18 +369,24 @@ export function trainModel(
   const X_test = X.slice(splitIdx);
   const y_test = y.slice(splitIdx);
 
-  console.log(
-    `[Trainer] Training with ${X_train.length} samples, testing with ${X_test.length} samples`
-  );
-  console.log(`[Trainer] Features: ${featureKeys.length}`);
+  if (isVerbose) {
+    console.log(
+      `[Trainer] Training with ${X_train.length} samples, testing with ${X_test.length} samples`
+    );
+    console.log(`[Trainer] Features: ${featureKeys.length}`);
+  }
 
   // Calculate feature statistics from training data
-  console.log('[Trainer] Calculating feature statistics for standardization...');
+  if (isVerbose) {
+    console.log('[Trainer] Calculating feature statistics for standardization...');
+  }
   const featureMeans = calculateColumnMeans(X_train);
   const featureStds = calculateColumnStds(X_train, featureMeans);
   
   // Standardize features
-  console.log('[Trainer] Standardizing features...');
+  if (isVerbose) {
+    console.log('[Trainer] Standardizing features...');
+  }
   const X_train_scaled = standardizeFeatures(X_train, featureMeans, featureStds);
   const X_test_scaled = standardizeFeatures(X_test, featureMeans, featureStds);
 
@@ -391,7 +399,9 @@ export function trainModel(
   let y_prob_test: number[];
 
   if (modelType === 'ensemble') {
-    console.log('[Trainer] Training Random Forest ensemble...');
+    if (isVerbose) {
+      console.log('[Trainer] Training Random Forest ensemble...');
+    }
     const result = trainRandomForest(
       X_train_scaled,
       y_train,
@@ -405,7 +415,9 @@ export function trainModel(
     y_prob_train = result.y_prob_train;
     y_prob_test = result.y_prob_test;
   } else {
-    console.log('[Trainer] Training Logistic Regression with L2 regularization...');
+    if (isVerbose) {
+      console.log('[Trainer] Training Logistic Regression with L2 regularization...');
+    }
     // Get regularization strength from config (default 0.1)
     const lambda = config.regularization?.lambda ?? 0.1;
     const result = trainLogisticRegression(X_train_scaled, y_train, X_test_scaled, y_test, lambda);
@@ -421,9 +433,11 @@ export function trainModel(
   const testAccuracy = calculateAccuracy(y_test, y_pred_test);
   const testLogLoss = logLoss(y_test, y_prob_test);
 
-  console.log(`[Trainer] Train accuracy: ${(trainAccuracy * 100).toFixed(2)}%`);
-  console.log(`[Trainer] Test accuracy: ${(testAccuracy * 100).toFixed(2)}%`);
-  console.log(`[Trainer] Test log loss: ${testLogLoss.toFixed(4)}`);
+  if (isVerbose) {
+    console.log(`[Trainer] Train accuracy: ${(trainAccuracy * 100).toFixed(2)}%`);
+    console.log(`[Trainer] Test accuracy: ${(testAccuracy * 100).toFixed(2)}%`);
+    console.log(`[Trainer] Test log loss: ${testLogLoss.toFixed(4)}`);
+  }
 
   // Fit probability calibration
   let calibration: CalibrationModel | undefined;
@@ -431,7 +445,9 @@ export function trainModel(
   let calibratedLogLoss: number | undefined;
 
   if (config.calibration && config.calibration.method !== 'temperature') {
-    console.log(`[Trainer] Fitting ${config.calibration.method} calibration...`);
+    if (isVerbose) {
+      console.log(`[Trainer] Fitting ${config.calibration.method} calibration...`);
+    }
 
     const calibrator = createCalibrator(config.calibration.method as 'isotonic' | 'beta');
     if (calibrator) {
@@ -450,7 +466,9 @@ export function trainModel(
       // Calculate calibrated log loss
       calibratedLogLoss = logLoss(y_test, calibratedTestProbs);
 
-      console.log(`[Trainer] Calibrated test log loss: ${calibratedLogLoss.toFixed(4)}`);
+      if (isVerbose) {
+        console.log(`[Trainer] Calibrated test log loss: ${calibratedLogLoss.toFixed(4)}`);
+      }
 
       // Create calibration model for storage
       const method = config.calibration.method as 'isotonic' | 'beta';

@@ -25,6 +25,8 @@ import { saveHistoricalData, clearHistoricalDataCache } from '../../lib/analysis
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const IS_VERBOSE = process.env.SPORTLINE_VERBOSE === '1';
+
 interface TrainOptions {
   sport: string;
   force: boolean;
@@ -95,9 +97,11 @@ export async function train(options: TrainOptions): Promise<void> {
   );
 
   console.log(`✓ Extracted features for ${dataset.length} games`);
-  console.log(`  Skipped (no rolling stats): ${skipStats.skipNoRollingStats}`);
-  console.log(`  Skipped (no odds): ${skipStats.skipNoOdds}`);
-  console.log(`  Feature count: ${Object.keys(dataset[0]?.features || {}).length}`);
+  if (IS_VERBOSE) {
+    console.log(`  Skipped (no rolling stats): ${skipStats.skipNoRollingStats}`);
+    console.log(`  Skipped (no odds): ${skipStats.skipNoOdds}`);
+    console.log(`  Feature count: ${Object.keys(dataset[0]?.features || {}).length}`);
+  }
 
   if (dataset.length === 0) {
     console.error('❌ No valid training data after feature extraction');
@@ -121,22 +125,24 @@ export async function train(options: TrainOptions): Promise<void> {
   // Step 6: Run backtest to find optimal thresholds
   console.log('\n[6/7] Running backtest to optimize thresholds...');
   
-  // Debug: Check dataset odds
   const testData = dataset.slice(splitIdx);
-  const testWithOdds = testData.filter(d => d.odds && d.odds.length > 0);
-  console.log(`  Test games with odds in dataset: ${testWithOdds.length}/${testData.length}`);
-  
-  // Debug: Log sample game from dataset
-  if (testData.length > 0) {
-    const sample = testData[0];
-    console.log(`  Sample game odds:`, JSON.stringify(sample.odds?.slice(0, 1)));
+  if (IS_VERBOSE) {
+    // Debug: Check dataset odds
+    const testWithOdds = testData.filter(d => d.odds && d.odds.length > 0);
+    console.log(`  Test games with odds in dataset: ${testWithOdds.length}/${testData.length}`);
+
+    // Debug: Log sample game from dataset
+    if (testData.length > 0) {
+      const sample = testData[0];
+      console.log(`  Sample game odds:`, JSON.stringify(sample.odds?.slice(0, 1)));
+    }
+
+    // Debug: Check how many recommendations have non-null odds
+    const recsWithOdds = recommendations.filter(
+      r => r.odds_home !== null && r.odds_away !== null
+    );
+    console.log(`  Recommendations with odds: ${recsWithOdds.length}/${recommendations.length}`);
   }
-  
-  // Debug: Check how many recommendations have non-null odds
-  const recsWithOdds = recommendations.filter(
-    r => r.odds_home !== null && r.odds_away !== null
-  );
-  console.log(`  Recommendations with odds: ${recsWithOdds.length}/${recommendations.length}`);
   
   // Use wider threshold ranges to ensure we find something
   const backtestResults = runBacktestGrid(
@@ -146,7 +152,9 @@ export async function train(options: TrainOptions): Promise<void> {
   );
   console.log(`✓ Tested ${backtestResults.length} threshold combinations`);
 
-  printBacktestSummary(backtestResults, 5);
+  if (IS_VERBOSE) {
+    printBacktestSummary(backtestResults, 5);
+  }
 
   // Lower minimum bets requirement for finding optimal thresholds
   const optimalThresholds = findOptimalThresholds(backtestResults, 10);
