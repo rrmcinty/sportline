@@ -313,3 +313,124 @@ node dist/cli/index.js backtest --sport nba            # ✅ Loads NBA config au
 **Ready For**: Any feature development - system is solid and extensible
 
 **Performance**: 77% accuracy, well-calibrated, professional output
+
+---
+
+## 🧭 Repo Orientation (Additional Scan Notes)
+
+This section was added after a codebase-wide scan to capture **repo structure, entry points, and data flow** in a way that’s useful for new agents.
+
+### Tech Stack
+
+- **Runtime**: Node.js (ES Modules: `"type": "module"`)
+- **Language**: TypeScript (`tsc` outputs to `dist/`)
+- **CLI**: Commander (`src/cli/index.ts` → `dist/cli/index.js`)
+- **DB**: SQLite via `better-sqlite3` (`data/sportline.db`)
+- **ML**: custom L2 logistic regression (plus partial/placeholder ensemble)
+- **Tests**: `vitest`
+- **Formatting**: `prettier` (no repo-level eslint config detected)
+
+### Key Entry Points
+
+- **CLI root**: `src/cli/index.ts`
+  - Commands:
+    - `train` → `src/cli/commands/train.ts`
+    - `recommend` → `src/cli/commands/recommend.ts`
+    - `backtest` → `src/cli/commands/backtest.ts`
+    - `update` → `src/cli/commands/update.ts` (spawns `src/ingest/updateRecentGames.ts`)
+    - `find` → `src/cli/commands/find.ts`
+    - `analyze` → `src/cli/commands/analyze.ts`
+    - Bucket / analysis helpers:
+      - `simple-buckets`, `multi-sport-buckets`, `odds-impact-analysis`, `historical-status`
+
+### Core Library Map (Authoritative Logic)
+
+- **DB layer**: `src/lib/db/queries.ts`
+  - `getTodaysGames()` uses timezone shifting: `DATE(DATETIME(g.date, '-5 hours'))`.
+  - `getHistoricalGames()` is used for training datasets.
+  - Odds access:
+    - `getOdds(gameId, market, providers?)`
+    - `getOddsByMarket()` / `getMoneylineOdds()`
+
+- **Schema**: `src/db/schema.sql`
+  - Tables: `teams`, `games`, `odds`, `game_stats`, `season_stats`, `team_stats`, `features`, `model_runs`.
+
+- **Feature engineering**: `src/lib/features/featureEngineering.ts`
+  - Rolling averages + optional recency weighting
+  - Includes form/rest/head-to-head helpers
+  - Uses sport-specific add-ons via `src/lib/features/sportFeatureFactory.ts`
+
+- **Modeling**:
+  - Train: `src/lib/model/trainer.ts` (custom `L2RegularizedLogisticRegression`)
+  - Predict: `src/lib/model/predictor.ts`
+    - Applies saved feature standardization
+    - Logit computed manually, clipped, optional calibration applied
+  - Persist/load: `src/lib/model/modelStorage.ts`
+    - Saves model JSON including: `theta`, thresholds, backtest metrics, scaling params
+
+- **Betting math**: `src/lib/odds/evCalculator.ts`
+  - `americanToImpliedProb`, `calculateEV`, `calculateEdge`, `calculateKellyBetSize`
+
+- **Backtesting**: `src/lib/backtest/backtester.ts`
+  - `generateRecommendations()` from test split
+  - `runBacktestGrid()` searches threshold combos
+  - `findOptimalThresholds()` chooses best ROI subject to min bets
+  - `generateProbabilityBuckets()` for calibration analysis
+
+- **Historical context annotations**:
+  - `src/lib/analysis/historicalContext.ts`
+  - Uses saved historical/bucket data to label picks as strong/good/weak/avoid
+
+### Data Ingestion Pipeline (Raw JSON → SQLite)
+
+There are two complementary ingest paths:
+
+1. **Full historical ingest** (initial setup / rebuilding DB)
+   - Collect raw JSON:
+     - `src/ingest/ingestSportsToJson.ts`
+     - Writes: `data/<sport>/<season>/{teams,games,odds,game_stats,season_stats}.json`
+   - Import JSON → DB:
+     - `src/db/importSportsToDb.ts`
+     - Validates games reference teams (composite `(id, sport)` key)
+     - Inserts odds by market (`moneyline`, `spread`, `total`)
+
+2. **Daily/near-term updates** (fresh odds + status + final stats)
+   - CLI `update` runs: `src/ingest/updateRecentGames.ts`
+   - Pulls from ESPN summary + odds APIs
+   - Updates:
+     - `games.status`, `games.home_score`, `games.away_score`
+     - inserts missing `game_stats`
+     - inserts new odds snapshots into `odds`
+
+### End-to-End Flow (What happens when you run commands)
+
+1. **Train**
+   - `cli train` → `DatabaseQueries.getHistoricalGames()`
+   - `extractFeaturesForDataset()` → dataset + feature means
+   - `trainModel()` → weights + metrics
+   - `runBacktestGrid()` + `findOptimalThresholds()`
+   - `saveModel()` → JSON to `src/train/<category>/<sport>/models/`
+   - `saveModelRun()` → metadata row in `model_runs`
+
+2. **Recommend**
+   - `cli recommend` → `findLatestModel()` + `loadModel()`
+   - `DatabaseQueries.getTodaysGames()`
+   - Per game: `extractFeaturesForGame()` → `predict()`
+   - Odds → EV/edge → choose side → rank
+   - Historical context is applied to influence ranking and display
+
+### Tests and Tooling
+
+- **Vitest config**: `vitest.config.ts`
+- **Unit tests (src)**:
+  - `src/cli/commands/__tests__/simple-buckets.test.ts`
+  - `src/cli/commands/__tests__/multi-sport-buckets.test.ts`
+  - `src/lib/features/__tests__/featureEngineering.test.ts`
+  - `src/lib/features/basketball/__tests__/basketballFeatures.test.ts`
+- **CI**: No `.github/workflows/` directory detected in repo root.
+
+### Notes / Potentially Confusing Repo Details
+
+- The repo has historically emphasized NCAAM, but ingestion + update code paths include:
+  - `ncaam`, `nba`, `nhl`, `nfl`, `cfb`
+- `predictor.ts` has an `ensemble` path that is **not a true random-forest reload** (it uses a simplified approximation). Treat ensemble prediction as experimental unless serialization/loading is implemented for real trees.

@@ -375,8 +375,23 @@ async function getRecommendationsForSport(
   const recommendations: Recommendation[] = [];
   const gameFeatures: GameFeatures[] = [];
 
+  const stats = {
+    totalGames: todaysGames.length,
+    gamesWithAnyOddsRows: 0,
+    skippedNoFeatures: 0,
+    skippedNoOddsRows: 0,
+    skippedMissingPrices: 0,
+    skippedNoRecommendedSide: 0,
+    processed: 0,
+  };
+
   for (const game of todaysGames) {
     try {
+      stats.processed++;
+      if (game.odds.length > 0) {
+        stats.gamesWithAnyOddsRows++;
+      }
+
       // Extract features for this game
       const features = extractFeaturesForGame(
         game,
@@ -387,6 +402,7 @@ async function getRecommendationsForSport(
       );
 
       if (!features) {
+        stats.skippedNoFeatures++;
         continue;
       }
 
@@ -423,7 +439,13 @@ async function getRecommendationsForSport(
       // Get odds
       const odds = game.odds.length > 0 ? game.odds[0] : null;
 
-      if (!odds || odds.price_home === null || odds.price_away === null) {
+      if (!odds) {
+        stats.skippedNoOddsRows++;
+        continue;
+      }
+
+      if (odds.price_home === null || odds.price_away === null) {
+        stats.skippedMissingPrices++;
         continue;
       }
 
@@ -496,6 +518,8 @@ async function getRecommendationsForSport(
       // Include all games with predictions (no threshold filtering)
       if (recommendedSide) {
         recommendations.push(recommendation);
+      } else {
+        stats.skippedNoRecommendedSide++;
       }
     } catch (error) {
       console.error(`Error processing game ${game.id}:`, error);
@@ -510,6 +534,17 @@ async function getRecommendationsForSport(
   });
 
   console.log(`✓ Generated ${recommendations.length} ${sport.toUpperCase()} recommendations`);
+
+  if (recommendations.length === 0) {
+    console.log(`[${sport.toUpperCase()}] Skip summary for ${targetDate} (${options.market}):`);
+    console.log(`  - Total games: ${stats.totalGames}`);
+    console.log(`  - Games with any odds rows attached: ${stats.gamesWithAnyOddsRows}`);
+    console.log(`  - Skipped (feature extraction returned null): ${stats.skippedNoFeatures}`);
+    console.log(`  - Skipped (no odds rows for this market/date): ${stats.skippedNoOddsRows}`);
+    console.log(`  - Skipped (odds missing price_home/price_away): ${stats.skippedMissingPrices}`);
+    console.log(`  - Skipped (could not choose recommended side): ${stats.skippedNoRecommendedSide}`);
+    console.log(`  - Note: sportline date filtering uses DATE(DATETIME(g.date, '-5 hours')) when querying games.`);
+  }
 
   return { recommendations, gameFeatures, games: todaysGames };
 }
