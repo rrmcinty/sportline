@@ -122,6 +122,10 @@ npm run check
 npm test
 ```
 
+## Documentation
+
+See `docs/README.md`.
+
 ## Notes
 
 - `coverage/` is gitignored.
