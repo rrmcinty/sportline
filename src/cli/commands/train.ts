@@ -172,14 +172,29 @@ export async function train(options: TrainOptions): Promise<void> {
   // Generate probability buckets for calibration
   const buckets = generateProbabilityBuckets(recommendations);
   console.log('\nProbability Calibration:');
-  console.log('Bucket | Count | Accuracy | Avg EV  | ROI');
-  console.log('-------+-------+----------+---------+--------');
+  console.log('Bucket | Count | Accuracy | Avg EV  | ROI      | Home Bets | Away Bets | Strategy');
+  console.log('-------+-------+----------+---------+----------+-----------+-----------+-----------');
   for (const bucket of buckets) {
+    // Determine strategy based on home/away split
+    let strategy = '';
+    if (bucket.home_bet_percentage > 0.7) {
+      strategy = 'Home Focus';
+    } else if (bucket.away_bet_percentage > 0.7) {
+      strategy = 'Away Focus';
+    } else if (Math.abs(bucket.home_bet_percentage - 0.5) < 0.1) {
+      strategy = 'Balanced';
+    } else {
+      strategy = 'Mixed';
+    }
+
     console.log(
       `${bucket.bucket.padEnd(6)} | ${bucket.count.toString().padStart(5)} | ` +
         `${(bucket.accuracy * 100).toFixed(1).padStart(7)}% | ` +
         `${(bucket.avg_ev * 100).toFixed(2).padStart(6)}% | ` +
-        `${(bucket.roi * 100).toFixed(1).padStart(6)}%`
+        `${(bucket.roi * 100).toFixed(1).padStart(7)}% | ` +
+        `${bucket.home_bet_count.toString().padStart(9)} | ` +
+        `${bucket.away_bet_count.toString().padStart(9)} | ` +
+        `${strategy.padEnd(9)}`
     );
   }
 

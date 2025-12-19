@@ -161,11 +161,24 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   console.log('\n========== Probability Calibration Analysis ==========\n');
   const buckets = generateProbabilityBuckets(recommendations, 0.1);
 
+  // Helper function to determine strategy label
+  function getStrategyLabel(bucket: any): string {
+    if (bucket.home_bet_percentage > 0.7) {
+      return 'Home Focus';
+    } else if (bucket.away_bet_percentage > 0.7) {
+      return 'Away Focus';
+    } else if (Math.abs(bucket.home_bet_percentage - 0.5) < 0.1) {
+      return 'Balanced';
+    } else {
+      return 'Mixed';
+    }
+  }
+
   console.log(
-    'Bucket | Count | Accuracy | Avg EV  | Avg Edge | ROI      | Profit'
+    'Bucket | Count | Accuracy | Avg EV  | ROI      | Home Bets | Away Bets | Strategy'
   );
   console.log(
-    '-------+-------+----------+---------+----------+----------+---------'
+    '-------+-------+----------+---------+----------+-----------+-----------+-----------'
   );
 
   for (const bucket of buckets) {
@@ -173,9 +186,11 @@ export async function backtest(options: BacktestOptions): Promise<void> {
       `${bucket.bucket.padEnd(6)} | ${bucket.count.toString().padStart(5)} | ` +
         `${(bucket.accuracy * 100).toFixed(1).padStart(7)}% | ` +
         `${(bucket.avg_ev * 100).toFixed(2).padStart(6)}% | ` +
-        `${(bucket.avg_edge * 100).toFixed(2).padStart(7)}% | ` +
         `${(bucket.roi * 100).toFixed(1).padStart(7)}% | ` +
-        `$${bucket.total_profit.toFixed(0).padStart(6)}`
+        `${bucket.home_bet_count.toString().padStart(9)} | ` +
+        `${bucket.away_bet_count.toString().padStart(9)} | ` +
+        `${getStrategyLabel(bucket).padEnd(9)}`
+
     );
   }
 

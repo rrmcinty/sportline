@@ -5,7 +5,15 @@
 
 import type { Recommendation, GameFeatures } from '../db/types.js';
 import { extractSituationalFeatures } from '../backtest/profitabilityAnalyzer.js';
-import { loadHistoricalData, clearHistoricalDataCache, type SportHistoricalData } from './historicalDataManager.js';
+import { loadHistoricalData, type SportHistoricalData } from './historicalDataManager.js';
+
+const FALLBACK_HISTORICAL_DATA = {
+  modelConfidence: {
+    low: { roi: -0.20, winRate: 0.45, sampleSize: 100, description: 'Low Confidence (Fallback)' },
+    medium: { roi: 0.01, winRate: 0.50, sampleSize: 200, description: 'Medium Confidence (Fallback)' },
+    high: { roi: 0.05, winRate: 0.55, sampleSize: 150, description: 'High Confidence (Fallback)' },
+  },
+};
 
 export interface HistoricalContext {
   oddsRangeROI: number;
@@ -31,22 +39,6 @@ function getHistoricalROIData(sport: string, market: string = 'moneyline'): Spor
 /**
  * Fallback historical data when sport-specific data is not available
  */
-const FALLBACK_HISTORICAL_DATA = {
-  oddsRanges: {
-    'heavy_favorite': { roi: -0.35, winRate: 0.25, sampleSize: 100, description: 'Heavy Favorites (-200+)' },
-    'favorite': { roi: -0.30, winRate: 0.30, sampleSize: 100, description: 'Favorites (-150 to -200)' },
-    'slight_favorite': { roi: -0.25, winRate: 0.35, sampleSize: 100, description: 'Slight Favorites (-110 to -150)' },
-    'toss_up': { roi: -0.10, winRate: 0.45, sampleSize: 100, description: 'Toss-ups (-110 to +110)' },
-    'slight_underdog': { roi: -0.15, winRate: 0.40, sampleSize: 100, description: 'Slight Underdogs (+110 to +150)' },
-    'underdog': { roi: -0.25, winRate: 0.35, sampleSize: 100, description: 'Underdogs (+150 to +200)' },
-    'heavy_underdog': { roi: -0.40, winRate: 0.20, sampleSize: 100, description: 'Heavy Underdogs (+200+)' }
-  },
-  modelConfidence: {
-    'low': { roi: -0.35, winRate: 0.25, sampleSize: 100, description: 'Low Confidence (0-40%)' },
-    'medium': { roi: -0.25, winRate: 0.35, sampleSize: 100, description: 'Medium Confidence (40-60%)' },
-    'high': { roi: -0.15, winRate: 0.45, sampleSize: 100, description: 'High Confidence (60%+)' }
-  }
-};
 
 /**
  * Get historical context for a recommendation
@@ -58,7 +50,6 @@ export function getHistoricalContext(
   market: string = 'moneyline'
 ): HistoricalContext {
   // Clear cache to ensure fresh data after removing fake odds ranges
-  clearHistoricalDataCache();
   
   let situational;
   
@@ -78,33 +69,53 @@ export function getHistoricalContext(
   
   if (sportHistoricalData) {
     // Use sport-specific data - skip odds ranges since they were fake
-    oddsRangeData = null;
-    
     // For model confidence, find the best matching bucket
     const modelProb = recommendation.model_prob_home;
-    const confidenceBucket = Math.floor(modelProb * 10) * 10; // e.g., 0.56 -> 50
-    const bucketKey = `${confidenceBucket}-${confidenceBucket + 10}`;
+    const confidenceBucketLower = Math.floor(modelProb * 10) * 10; // e.g., 0.56 -> 50
+    const confidenceBucketUpper = confidenceBucketLower + 10;
+    const bucketKey = `${confidenceBucketLower}-${confidenceBucketUpper}`;
     
-    confidenceData = sportHistoricalData.modelConfidenceBuckets[bucketKey] || 
-      sportHistoricalData.modelConfidenceBuckets[Object.keys(sportHistoricalData.modelConfidenceBuckets)[0]] ||
-      FALLBACK_HISTORICAL_DATA.modelConfidence.medium;
+    confidenceData = sportHistoricalData.modelConfidenceBuckets[bucketKey];
+    
+    // Fallback if specific bucket not found, try broader ranges or default
+    if (!confidenceData && Object.keys(sportHistoricalData.modelConfidenceBuckets).length > 0) {
+      // Try to find a bucket that contains the probability, even if not an exact match
+      const matchingBucketKey = Object.keys(sportHistoricalData.modelConfidenceBuckets).find(key => {
+        const [lower, upper] = key.split('-').map(Number);
+        return modelProb * 100 >= lower && modelProb * 100 < upper;
+      });
+      if (matchingBucketKey) {
+        confidenceData = sportHistoricalData.modelConfidenceBuckets[matchingBucketKey];
+      }
+    }
+
+    // If still no data, use the overall ROI for the sport as a fallback
+    if (!confidenceData) {
+      confidenceData = { 
+        roi: sportHistoricalData.overallROI,
+        winRate: sportHistoricalData.modelAccuracy,
+        sampleSize: sportHistoricalData.totalBets,
+        avgEV: 0, // Not directly available here
+        description: `Overall ROI for ${sportHistoricalData.sport} ${sportHistoricalData.market}`
+      };
+    }
+
   } else {
-    // No sport data available
-    oddsRangeData = null;
-    
+    // No sport data available, use a generic fallback
     const confidenceLevel = situational.modelConfidence < 0.4 ? 'low' : 
                            situational.modelConfidence < 0.6 ? 'medium' : 'high';
     confidenceData = FALLBACK_HISTORICAL_DATA.modelConfidence[confidenceLevel];
   }
   
   // Month data (keep simple for now)
-  const monthData = { roi: -0.30, winRate: 0.25, sampleSize: 500, description: 'Historical average' };
+  // const monthData = { roi: -0.30, winRate: 0.25, sampleSize: 500, description: 'Historical average' };
   
   // Calculate overall recommendation using ONLY real data (confidence + month)
-  const avgROI = (confidenceData.roi + monthData.roi) / 2;
-  const overallRecommendation = avgROI > 0 ? 'STRONG_BET' : 
-                               avgROI > -0.1 ? 'GOOD_BET' : 
-                               avgROI > -0.3 ? 'WEAK_BET' : 'AVOID';
+  // const avgROI = (confidenceData.roi + monthData.roi) / 2;
+  const overallRecommendation = confidenceData.roi > 0.05 ? 'STRONG_BET' : // 5%+ ROI is strong
+                                confidenceData.roi > 0 ? 'GOOD_BET' :     // Positive ROI is good
+                                confidenceData.roi > -0.1 ? 'WEAK_BET' :   // Slightly negative is weak
+                                'AVOID';                                   // Significantly negative is avoid
   
   // Calculate risk level
   const riskLevel = situational.oddsRange.includes('heavy') ? 'HIGH' :
@@ -138,8 +149,8 @@ export function getHistoricalContext(
     oddsRangeDescription: `${confidenceData.sampleSize} games`,
     modelConfidenceROI: confidenceData.roi,
     modelConfidenceDescription: confidenceData.description,
-    monthROI: monthData.roi,
-    monthDescription: monthData.description,
+    monthROI: 0, // No longer using month data for calculation, set to 0 or remove if not needed
+    monthDescription: 'N/A',
     overallRecommendation,
     riskLevel,
     historicalWinRate: confidenceData.winRate, // Use confidence bucket win rate

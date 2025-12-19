@@ -274,6 +274,9 @@ export function generateProbabilityBuckets(
     // Calculate actual profit for this bucket using smart betting (bet on best EV side)
     let totalProfit = 0;
     let totalStaked = 0;
+    let homeBetCount = 0;
+    let awayBetCount = 0;
+    
     for (const rec of inBucket) {
       if (rec.actual === null) continue;
 
@@ -300,6 +303,13 @@ export function generateProbabilityBuckets(
         continue;
       }
 
+      // Track home/away bet counts
+      if (betSide === 'home') {
+        homeBetCount++;
+      } else {
+        awayBetCount++;
+      }
+
       totalStaked += 100; // $100 bet
 
       // Check if bet won
@@ -317,6 +327,9 @@ export function generateProbabilityBuckets(
     }
 
     const roi = totalStaked > 0 ? totalProfit / totalStaked : 0;
+    const totalBets = homeBetCount + awayBetCount;
+    const homeBetPercentage = totalBets > 0 ? homeBetCount / totalBets : 0;
+    const awayBetPercentage = totalBets > 0 ? awayBetCount / totalBets : 0;
 
     buckets.push({
       bucket: label,
@@ -328,6 +341,10 @@ export function generateProbabilityBuckets(
       loss_count,
       total_profit: totalProfit,
       roi,
+      home_bet_count: homeBetCount,
+      away_bet_count: awayBetCount,
+      home_bet_percentage: homeBetPercentage,
+      away_bet_percentage: awayBetPercentage,
     });
   }
 

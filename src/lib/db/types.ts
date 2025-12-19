@@ -240,6 +240,10 @@ export interface ProbabilityBucket {
   loss_count: number;
   total_profit: number;
   roi: number;
+  home_bet_count: number;
+  away_bet_count: number;
+  home_bet_percentage: number;
+  away_bet_percentage: number;
 }
 
 export interface TodaysGame extends Game {

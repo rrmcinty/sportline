@@ -1,79 +1,131 @@
 {
   "sport": "ncaam",
-  "lastUpdated": "2025-12-17T23:40:17.811Z",
-  "modelAccuracy": 65.75982996811902,
-  "overallROI": 4.466627344454631,
-  "totalBets": 2753,
+  "market": "spread",
+  "lastUpdated": "2025-12-19T02:59:58.436Z",
+  "modelAccuracy": 0.6630664972469292,
+  "overallROI": 0.025950340082341764,
+  "totalBets": 2587,
+  "oddsRanges": {
+    "heavy_favorite": {
+      "roi": -0.1997404965991766,
+      "winRate": 0.1066306649724693,
+      "sampleSize": 258,
+      "avgEV": 0,
+      "description": "Heavy Favorites (-200+)"
+    },
+    "favorite": {
+      "roi": -0.09974049659917658,
+      "winRate": 0.0566306649724693,
+      "sampleSize": 388,
+      "avgEV": 0,
+      "description": "Favorites (-150 to -200)"
+    },
+    "slight_favorite": {
+      "roi": 0.00025950340082341765,
+      "winRate": 0.006630664972469292,
+      "sampleSize": 646,
+      "avgEV": 0,
+      "description": "Slight Favorites (-110 to -150)"
+    },
+    "toss_up": {
+      "roi": 0.10025950340082343,
+      "winRate": 0.006630664972469292,
+      "sampleSize": 517,
+      "avgEV": 0,
+      "description": "Toss-ups (-110 to +110)"
+    },
+    "slight_underdog": {
+      "roi": 0.00025950340082341765,
+      "winRate": 0.3,
+      "sampleSize": 388,
+      "avgEV": 0,
+      "description": "Slight Underdogs (+110 to +150)"
+    },
+    "underdog": {
+      "roi": -0.09974049659917658,
+      "winRate": 0.25,
+      "sampleSize": 258,
+      "avgEV": 0,
+      "description": "Underdogs (+150 to +200)"
+    },
+    "heavy_underdog": {
+      "roi": -0.1997404965991766,
+      "winRate": 0.2,
+      "sampleSize": 129,
+      "avgEV": 0,
+      "description": "Heavy Underdogs (+200+)"
+    }
+  },
   "modelConfidenceBuckets": {
     "0-10": {
-      "roi": 0.37762161751292184,
-      "winRate": 0.7,
-      "sampleSize": 20,
-      "avgEV": -0.8545054679936345,
-      "description": "0-10 Model Confidence"
+      "roi": -0.39737710801784026,
+      "winRate": 0.6842105263157895,
+      "sampleSize": 19,
+      "avgEV": -0.8578273550264663,
+      "description": "0-10% Home Team Win Probability"
     },
     "10-20": {
-      "roi": -0.006620625910113279,
-      "winRate": 0.5217391304347826,
-      "sampleSize": 184,
-      "avgEV": -0.6988353268259131,
-      "description": "10-20 Model Confidence"
+      "roi": -0.11476045192040049,
+      "winRate": 0.532967032967033,
+      "sampleSize": 182,
+      "avgEV": -0.7010909756546295,
+      "description": "10-20% Home Team Win Probability"
     },
     "20-30": {
-      "roi": 0.22526612744339627,
-      "winRate": 0.6370757180156658,
-      "sampleSize": 383,
-      "avgEV": -0.5183402648399041,
-      "description": "20-30 Model Confidence"
+      "roi": -0.3067439417029675,
+      "winRate": 0.6304909560723514,
+      "sampleSize": 387,
+      "avgEV": -0.5194095810852963,
+      "description": "20-30% Home Team Win Probability"
     },
     "30-40": {
-      "roi": 0.2623060078429025,
-      "winRate": 0.6557591623036649,
-      "sampleSize": 764,
-      "avgEV": -0.32389568355888476,
-      "description": "30-40 Model Confidence"
+      "roi": -0.3631417291244069,
+      "winRate": 0.672,
+      "sampleSize": 750,
+      "avgEV": -0.32476448028399874,
+      "description": "30-40% Home Team Win Probability"
     },
     "40-50": {
-      "roi": 0.23335389372358434,
-      "winRate": 0.6426512968299711,
-      "sampleSize": 1041,
-      "avgEV": -0.1349897622573244,
-      "description": "40-50 Model Confidence"
+      "roi": -0.23787704495129064,
+      "winRate": 0.642292490118577,
+      "sampleSize": 1012,
+      "avgEV": -0.1341798304801254,
+      "description": "40-50% Home Team Win Probability"
     },
     "50-60": {
-      "roi": 0.25845695801020246,
-      "winRate": 0.6514047866805411,
-      "sampleSize": 961,
-      "avgEV": 0.05151597163201146,
-      "description": "50-60 Model Confidence"
+      "roi": 0.2725762564704557,
+      "winRate": 0.6483971044467425,
+      "sampleSize": 967,
+      "avgEV": 0.045811191642801286,
+      "description": "50-60% Home Team Win Probability"
     },
     "60-70": {
-      "roi": 0.3634901964378845,
-      "winRate": 0.667142857142857,
-      "sampleSize": 700,
-      "avgEV": 0.27820944763127514,
-      "description": "60-70 Model Confidence"
+      "roi": 0.28681744712064894,
+      "winRate": 0.670958512160229,
+      "sampleSize": 699,
+      "avgEV": 0.2452044234122979,
+      "description": "60-70% Home Team Win Probability"
     },
     "70-80": {
-      "roi": 0.3730941945170573,
-      "winRate": 0.6921397379912664,
-      "sampleSize": 458,
-      "avgEV": 0.45051394041045045,
-      "description": "70-80 Model Confidence"
+      "roi": 0.3384734723267482,
+      "winRate": 0.6913319238900634,
+      "sampleSize": 473,
+      "avgEV": 0.4963393806011792,
+      "description": "70-80% Home Team Win Probability"
     },
     "80-90": {
-      "roi": 0.4143020562946616,
-      "winRate": 0.6610169491525424,
-      "sampleSize": 177,
-      "avgEV": 0.5898994967687164,
-      "description": "80-90 Model Confidence"
+      "roi": 0.261043897014971,
+      "winRate": 0.6571428571428571,
+      "sampleSize": 210,
+      "avgEV": 0.6037116711111951,
+      "description": "80-90% Home Team Win Probability"
     },
     "90-100": {
-      "roi": 0.348577735670127,
-      "winRate": 0.7058823529411765,
-      "sampleSize": 17,
-      "avgEV": 0.9308266319047591,
-      "description": "90-100 Model Confidence"
+      "roi": 0.4066761539587627,
+      "winRate": 0.6956521739130435,
+      "sampleSize": 23,
+      "avgEV": 0.7014901061187723,
+      "description": "90-100% Home Team Win Probability"
     }
   }
 }
