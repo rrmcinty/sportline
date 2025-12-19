@@ -17,7 +17,7 @@ export function createSimpleBucketsCommand(): Command {
     .description('Analyze NFL profitable buckets from recent training results')
     .action(async () => {
       console.log('\n🎯 Multi-Sport Profitable Bucket Analysis\n');
-      
+
       // Data from recent NFL training (80-90% bucket showed 111% ROI with 3 games)
       const nflBuckets: BucketData[] = [
         {
@@ -29,7 +29,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '20-30',
@@ -40,7 +40,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '30-40',
@@ -51,7 +51,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '40-50',
@@ -62,18 +62,18 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '50-60',
           count: 46,
           accuracy: 58.7,
-          avgEV: 3.80,
+          avgEV: 3.8,
           roi: -10.9,
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '60-70',
@@ -84,18 +84,18 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '70-80',
           count: 26,
           accuracy: 57.7,
-          avgEV: 19.20,
+          avgEV: 19.2,
           roi: -12.2,
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '80-90',
@@ -106,54 +106,72 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
-        }
+          combinedScore: 0,
+        },
       ];
 
       // Calculate scores for each bucket
       const seasonsAnalyzed = 3; // NFL data from 2022-2024
-      const maxCount = Math.max(...nflBuckets.map(b => b.count));
-      const maxRoi = Math.max(...nflBuckets.filter(b => b.roi > 0).map(b => b.roi));
+      const maxCount = Math.max(...nflBuckets.map((b) => b.count));
+      const maxRoi = Math.max(...nflBuckets.filter((b) => b.roi > 0).map((b) => b.roi));
 
-      nflBuckets.forEach(bucket => {
+      nflBuckets.forEach((bucket) => {
         bucket.estimatedBetsPerYear = Math.round(bucket.count / seasonsAnalyzed);
         bucket.volumeScore = Math.min(100, (bucket.count / Math.max(maxCount * 0.3, 10)) * 100);
-        bucket.roiScore = bucket.roi > 0 ? Math.min(100, (bucket.roi / Math.max(maxRoi * 0.5, 20)) * 100) : 0;
-        bucket.combinedScore = (bucket.volumeScore * 0.6) + (bucket.roiScore * 0.4);
+        bucket.roiScore =
+          bucket.roi > 0 ? Math.min(100, (bucket.roi / Math.max(maxRoi * 0.5, 20)) * 100) : 0;
+        bucket.combinedScore = bucket.volumeScore * 0.6 + bucket.roiScore * 0.4;
       });
 
       // Sort by combined score
       const sortedBuckets = [...nflBuckets].sort((a, b) => b.combinedScore - a.combinedScore);
-      const profitableBuckets = sortedBuckets.filter(b => b.roi > 0);
+      const profitableBuckets = sortedBuckets.filter((b) => b.roi > 0);
 
       console.log('📊 ALL NFL CONFIDENCE BUCKETS (sorted by Combined Score):\n');
-      
+
       sortedBuckets.forEach((bucket, index) => {
         const profitableEmoji = bucket.roi > 0 ? '💰' : '❌';
-        const volumeEmoji = bucket.estimatedBetsPerYear >= 20 ? '🔥' : 
-                           bucket.estimatedBetsPerYear >= 10 ? '📈' : 
-                           bucket.estimatedBetsPerYear >= 5 ? '⚠️' : '🚫';
-        
+        const volumeEmoji =
+          bucket.estimatedBetsPerYear >= 20
+            ? '🔥'
+            : bucket.estimatedBetsPerYear >= 10
+              ? '📈'
+              : bucket.estimatedBetsPerYear >= 5
+                ? '⚠️'
+                : '🚫';
+
         console.log(`${index + 1}. ${profitableEmoji} ${volumeEmoji} ${bucket.range}% Confidence`);
-        console.log(`   Games: ${bucket.count} (~${bucket.estimatedBetsPerYear}/year) | Win Rate: ${bucket.accuracy.toFixed(1)}% | ROI: ${bucket.roi > 0 ? '+' : ''}${bucket.roi.toFixed(1)}%`);
-        console.log(`   Volume Score: ${bucket.volumeScore.toFixed(0)}/100 | ROI Score: ${bucket.roiScore.toFixed(0)}/100 | Combined: ${bucket.combinedScore.toFixed(0)}/100`);
+        console.log(
+          `   Games: ${bucket.count} (~${bucket.estimatedBetsPerYear}/year) | Win Rate: ${bucket.accuracy.toFixed(1)}% | ROI: ${bucket.roi > 0 ? '+' : ''}${bucket.roi.toFixed(1)}%`,
+        );
+        console.log(
+          `   Volume Score: ${bucket.volumeScore.toFixed(0)}/100 | ROI Score: ${bucket.roiScore.toFixed(0)}/100 | Combined: ${bucket.combinedScore.toFixed(0)}/100`,
+        );
         console.log(`   Avg EV: ${bucket.avgEV.toFixed(1)}%`);
         console.log('');
       });
 
       if (profitableBuckets.length > 0) {
         console.log('🎯 PROFITABLE BUCKETS ANALYSIS:\n');
-        
+
         profitableBuckets.forEach((bucket, index) => {
-          const confidenceLevel = bucket.combinedScore >= 70 ? 'HIGH' : 
-                                 bucket.combinedScore >= 50 ? 'MEDIUM' : 'LOW';
-          const recommendation = bucket.combinedScore >= 70 ? 'STRONG_BET' : 
-                               bucket.combinedScore >= 30 ? 'MODERATE_BET' : 'AVOID';
-          
+          const confidenceLevel =
+            bucket.combinedScore >= 70 ? 'HIGH' : bucket.combinedScore >= 50 ? 'MEDIUM' : 'LOW';
+          const recommendation =
+            bucket.combinedScore >= 70
+              ? 'STRONG_BET'
+              : bucket.combinedScore >= 30
+                ? 'MODERATE_BET'
+                : 'AVOID';
+
           console.log(`${index + 1}. 🎯 ${bucket.range}% Confidence Bucket`);
           console.log(`   📊 Performance: 100% win rate (${bucket.count} games)`);
-          console.log(`   💰 ROI: +${bucket.roi.toFixed(1)}% | ROI Score: ${bucket.roiScore.toFixed(0)}/100`);
-          console.log(`   📈 Volume: ${bucket.count} games (~${bucket.estimatedBetsPerYear}/year) | Volume Score: ${bucket.volumeScore.toFixed(0)}/100`);
+          console.log(
+            `   💰 ROI: +${bucket.roi.toFixed(1)}% | ROI Score: ${bucket.roiScore.toFixed(0)}/100`,
+          );
+          console.log(
+            `   📈 Volume: ${bucket.count} games (~${bucket.estimatedBetsPerYear}/year) | Volume Score: ${bucket.volumeScore.toFixed(0)}/100`,
+          );
           console.log(`   🎯 Combined Score: ${bucket.combinedScore.toFixed(0)}/100`);
           console.log(`   📅 Confidence Level: ${confidenceLevel}`);
           console.log(`   🎯 Recommendation: ${recommendation}`);
@@ -168,46 +186,53 @@ export function createSimpleBucketsCommand(): Command {
         console.log(`   Historical Performance: 100% win rate (${bestBucket.count} games)`);
         console.log(`   Volume: ~${bestBucket.estimatedBetsPerYear} bets per year`);
         console.log(`   Combined Score: ${bestBucket.combinedScore.toFixed(0)}/100`);
-        
+
         console.log('\n⚠️  IMPORTANT CONSIDERATIONS:');
         if (bestBucket.estimatedBetsPerYear < 5) {
-          console.log('   🚫 VERY LOW VOLUME: Only ~1 bet per year - not practical for regular betting');
+          console.log(
+            '   🚫 VERY LOW VOLUME: Only ~1 bet per year - not practical for regular betting',
+          );
         } else if (bestBucket.estimatedBetsPerYear < 10) {
-          console.log('   ⚠️  LOW VOLUME: Limited betting opportunities - consider combining strategies');
+          console.log(
+            '   ⚠️  LOW VOLUME: Limited betting opportunities - consider combining strategies',
+          );
         }
-        
+
         if (bestBucket.count < 10) {
           console.log('   ⚠️  SMALL SAMPLE: Only 3 games - results may not be reliable');
-          console.log('   📊 Need more data to validate this bucket\'s profitability');
+          console.log("   📊 Need more data to validate this bucket's profitability");
         }
-        
+
         console.log('\n💡 PRACTICAL RECOMMENDATIONS:');
         console.log('   1. The 80-90% bucket is too low volume for practical betting');
         console.log('   2. Need to find buckets with at least 10-20 bets per year');
         console.log('   3. Consider expanding confidence ranges or combining buckets');
         console.log('   4. Look at other sports (NBA, NHL) for higher volume opportunities');
-        
+
         console.log('\n🔍 ALTERNATIVE STRATEGY ANALYSIS:');
-        console.log('   Looking at higher-volume buckets that might break even or have small losses...\n');
-        
+        console.log(
+          '   Looking at higher-volume buckets that might break even or have small losses...\n',
+        );
+
         // Find the best volume/ROI compromise
-        const practicalBuckets = sortedBuckets.filter(b => b.estimatedBetsPerYear >= 10);
+        const practicalBuckets = sortedBuckets.filter((b) => b.estimatedBetsPerYear >= 10);
         if (practicalBuckets.length > 0) {
-          const bestPractical = practicalBuckets.reduce((best, current) => 
-            current.roi > best.roi ? current : best
+          const bestPractical = practicalBuckets.reduce((best, current) =>
+            current.roi > best.roi ? current : best,
           );
-          
+
           console.log(`   🎯 MOST PRACTICAL BUCKET: ${bestPractical.range}% confidence`);
           console.log(`      Volume: ~${bestPractical.estimatedBetsPerYear} bets/year`);
-          console.log(`      ROI: ${bestPractical.roi > 0 ? '+' : ''}${bestPractical.roi.toFixed(1)}%`);
+          console.log(
+            `      ROI: ${bestPractical.roi > 0 ? '+' : ''}${bestPractical.roi.toFixed(1)}%`,
+          );
           console.log(`      Win Rate: ${bestPractical.accuracy.toFixed(1)}%`);
-          
+
           if (bestPractical.roi > -5) {
             console.log('      💡 This bucket is nearly break-even with good volume!');
             console.log('      💡 Small model improvements could make this profitable');
           }
         }
-        
       } else {
         console.log('❌ No profitable buckets found in NFL data.');
       }
@@ -221,7 +246,9 @@ export function createSimpleBucketsCommand(): Command {
       console.log('\n🚀 NFL UPDATED RESULTS (Ultra-Aggressive Model):');
       console.log('   🎯 50-60% Confidence: +37.6% ROI (22 games, ~7/year) - HIGHLY PROFITABLE!');
       console.log('   🎯 90-100% Confidence: +100% ROI (2 games, ~1/year) - PERFECT ROI!');
-      console.log('   🟡 20-30% Confidence: -2.0% ROI (29 games, ~10/year) - Nearly break-even with good volume!');
+      console.log(
+        '   🟡 20-30% Confidence: -2.0% ROI (29 games, ~10/year) - Nearly break-even with good volume!',
+      );
       console.log('   📊 Overall: -4.70% ROI (173 bets/year) - Much better than original -9.63%');
       console.log('');
       console.log('💡 STRATEGY: Target ALL NFL games and filter by confidence buckets:');
@@ -241,7 +268,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '30-40',
@@ -252,7 +279,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '40-50',
@@ -263,7 +290,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '50-60',
@@ -274,7 +301,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '60-70',
@@ -285,7 +312,7 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
+          combinedScore: 0,
         },
         {
           range: '70-80',
@@ -296,50 +323,68 @@ export function createSimpleBucketsCommand(): Command {
           estimatedBetsPerYear: 0,
           volumeScore: 0,
           roiScore: 0,
-          combinedScore: 0
-        }
+          combinedScore: 0,
+        },
       ];
 
       // NBA has 8 seasons of data (2019-2026)
       const nbaSeasonsAnalyzed = 8;
-      const nbaMaxCount = Math.max(...nbaBuckets.map(b => b.count));
-      const nbaMaxRoi = Math.max(...nbaBuckets.filter(b => b.roi > 0).map(b => b.roi));
+      const nbaMaxCount = Math.max(...nbaBuckets.map((b) => b.count));
+      const nbaMaxRoi = Math.max(...nbaBuckets.filter((b) => b.roi > 0).map((b) => b.roi));
 
-      nbaBuckets.forEach(bucket => {
+      nbaBuckets.forEach((bucket) => {
         bucket.estimatedBetsPerYear = Math.round(bucket.count / nbaSeasonsAnalyzed);
         bucket.volumeScore = Math.min(100, (bucket.count / Math.max(nbaMaxCount * 0.3, 10)) * 100);
-        bucket.roiScore = bucket.roi > 0 ? Math.min(100, (bucket.roi / Math.max(nbaMaxRoi * 0.5, 20)) * 100) : 0;
-        bucket.combinedScore = (bucket.volumeScore * 0.6) + (bucket.roiScore * 0.4);
+        bucket.roiScore =
+          bucket.roi > 0 ? Math.min(100, (bucket.roi / Math.max(nbaMaxRoi * 0.5, 20)) * 100) : 0;
+        bucket.combinedScore = bucket.volumeScore * 0.6 + bucket.roiScore * 0.4;
       });
 
       const nbaSortedBuckets = [...nbaBuckets].sort((a, b) => b.combinedScore - a.combinedScore);
-      const nbaProfitableBuckets = nbaSortedBuckets.filter(b => b.roi > 0);
+      const nbaProfitableBuckets = nbaSortedBuckets.filter((b) => b.roi > 0);
 
       console.log('📊 NBA CONFIDENCE BUCKETS (sorted by Combined Score):\n');
-      
+
       nbaSortedBuckets.forEach((bucket, index) => {
         const profitableEmoji = bucket.roi > 0 ? '💰' : bucket.roi > -5 ? '🟡' : '❌';
-        const volumeEmoji = bucket.estimatedBetsPerYear >= 50 ? '🔥' : 
-                           bucket.estimatedBetsPerYear >= 20 ? '📈' : 
-                           bucket.estimatedBetsPerYear >= 10 ? '⚠️' : '🚫';
-        
+        const volumeEmoji =
+          bucket.estimatedBetsPerYear >= 50
+            ? '🔥'
+            : bucket.estimatedBetsPerYear >= 20
+              ? '📈'
+              : bucket.estimatedBetsPerYear >= 10
+                ? '⚠️'
+                : '🚫';
+
         console.log(`${index + 1}. ${profitableEmoji} ${volumeEmoji} ${bucket.range}% Confidence`);
-        console.log(`   Games: ${bucket.count} (~${bucket.estimatedBetsPerYear}/year) | Win Rate: ${bucket.accuracy.toFixed(1)}% | ROI: ${bucket.roi > 0 ? '+' : ''}${bucket.roi.toFixed(1)}%`);
-        console.log(`   Volume Score: ${bucket.volumeScore.toFixed(0)}/100 | ROI Score: ${bucket.roiScore.toFixed(0)}/100 | Combined: ${bucket.combinedScore.toFixed(0)}/100`);
+        console.log(
+          `   Games: ${bucket.count} (~${bucket.estimatedBetsPerYear}/year) | Win Rate: ${bucket.accuracy.toFixed(1)}% | ROI: ${bucket.roi > 0 ? '+' : ''}${bucket.roi.toFixed(1)}%`,
+        );
+        console.log(
+          `   Volume Score: ${bucket.volumeScore.toFixed(0)}/100 | ROI Score: ${bucket.roiScore.toFixed(0)}/100 | Combined: ${bucket.combinedScore.toFixed(0)}/100`,
+        );
         console.log('');
       });
 
       console.log('🎯 NBA KEY INSIGHTS:');
-      const nearBreakEven = nbaSortedBuckets.find(b => b.roi > -5 && b.roi < 5);
+      const nearBreakEven = nbaSortedBuckets.find((b) => b.roi > -5 && b.roi < 5);
       if (nearBreakEven) {
-        console.log(`   🟡 NEARLY BREAK-EVEN: ${nearBreakEven.range}% bucket has ${nearBreakEven.roi.toFixed(1)}% ROI with ${nearBreakEven.estimatedBetsPerYear} bets/year`);
-        console.log(`   💡 This bucket shows promise - small model improvements could make it profitable!`);
+        console.log(
+          `   🟡 NEARLY BREAK-EVEN: ${nearBreakEven.range}% bucket has ${nearBreakEven.roi.toFixed(1)}% ROI with ${nearBreakEven.estimatedBetsPerYear} bets/year`,
+        );
+        console.log(
+          `   💡 This bucket shows promise - small model improvements could make it profitable!`,
+        );
       }
 
-      const highVolume = nbaSortedBuckets.filter(b => b.estimatedBetsPerYear >= 20);
+      const highVolume = nbaSortedBuckets.filter((b) => b.estimatedBetsPerYear >= 20);
       if (highVolume.length > 0) {
-        const bestHighVolume = highVolume.reduce((best, current) => current.roi > best.roi ? current : best);
-        console.log(`   📈 BEST HIGH-VOLUME: ${bestHighVolume.range}% bucket has ${bestHighVolume.estimatedBetsPerYear} bets/year with ${bestHighVolume.roi.toFixed(1)}% ROI`);
+        const bestHighVolume = highVolume.reduce((best, current) =>
+          current.roi > best.roi ? current : best,
+        );
+        console.log(
+          `   📈 BEST HIGH-VOLUME: ${bestHighVolume.range}% bucket has ${bestHighVolume.estimatedBetsPerYear} bets/year with ${bestHighVolume.roi.toFixed(1)}% ROI`,
+        );
       }
 
       console.log('\n🎯 FINAL RECOMMENDATION:');
@@ -349,7 +394,7 @@ export function createSimpleBucketsCommand(): Command {
       console.log(`      • Good sample size: ${nearBreakEven?.count} games`);
       console.log('      • Strategy: Focus model improvements on this bucket');
       console.log('      • Small accuracy improvements could make this profitable');
-      
+
       console.log('\n💡 ACTIONABLE STRATEGY:');
       console.log('   1. Target NBA games with 60-70% model confidence');
       console.log('   2. This provides ~26 betting opportunities per year');

@@ -9,7 +9,9 @@ import { DatabaseQueries } from '../../db/queries.js';
 /**
  * Calculate hockey-specific advanced statistical features
  */
-export function calculateHockeyAdvancedStats(stats: Record<string, number>): Record<string, number> {
+export function calculateHockeyAdvancedStats(
+  stats: Record<string, number>,
+): Record<string, number> {
   const advancedStats: Record<string, number> = {};
 
   // Get raw stats with fallbacks
@@ -59,7 +61,7 @@ export function calculateHockeyAdvancedStats(stats: Record<string, number>): Rec
 
   // Physical play metrics
   advancedStats.physicalPlay = hits + blockedShots;
-  
+
   // Puck possession proxy (takeaways vs giveaways)
   advancedStats.puckPossession = takeaways - giveaways;
 
@@ -85,10 +87,10 @@ export function computeHockeyOffensiveDefensiveRatings(
   awayId: string,
   gameId: string,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): { homeORtg: number; homeDRtg: number; awayORtg: number; awayDRtg: number } {
   // Get game scores
-  const game = games.find(g => g.id === gameId);
+  const game = games.find((g) => g.id === gameId);
   if (!game || game.home_score === null || game.away_score === null) {
     return { homeORtg: 3.0, homeDRtg: 3.0, awayORtg: 3.0, awayDRtg: 3.0 }; // Default NHL average ~3 goals per game
   }
@@ -102,7 +104,7 @@ export function computeHockeyOffensiveDefensiveRatings(
 
   // For hockey, we use goals per game as the primary offensive rating
   // and goals against per game as defensive rating
-  
+
   // Offensive Rating = Goals scored (simple version)
   const homeORtg = homeGoals;
   const awayORtg = awayGoals;
@@ -115,14 +117,16 @@ export function computeHockeyOffensiveDefensiveRatings(
     homeORtg: Math.max(0, Math.min(10, homeORtg)), // Clamp to reasonable range (0-10 goals)
     homeDRtg: Math.max(0, Math.min(10, homeDRtg)),
     awayORtg: Math.max(0, Math.min(10, awayORtg)),
-    awayDRtg: Math.max(0, Math.min(10, awayDRtg))
+    awayDRtg: Math.max(0, Math.min(10, awayDRtg)),
   };
 }
 
 /**
  * Calculate hockey-specific special teams metrics
  */
-export function calculateHockeySpecialTeamsMetrics(stats: Record<string, number>): Record<string, number> {
+export function calculateHockeySpecialTeamsMetrics(
+  stats: Record<string, number>,
+): Record<string, number> {
   const specialTeamsStats: Record<string, number> = {};
 
   const powerPlayGoals = stats.powerPlayGoals || 0;
@@ -145,7 +149,9 @@ export function calculateHockeySpecialTeamsMetrics(stats: Record<string, number>
 /**
  * Calculate hockey-specific goaltending metrics
  */
-export function calculateHockeyGoaltendingMetrics(stats: Record<string, number>): Record<string, number> {
+export function calculateHockeyGoaltendingMetrics(
+  stats: Record<string, number>,
+): Record<string, number> {
   const goaltendingStats: Record<string, number> = {};
 
   const saves = stats.saves || 0;
@@ -170,7 +176,7 @@ export function getHockeyAdvancedFeatures(): string[] {
   return [
     'pointsPerGame',
     'shootingEfficiency',
-    'saveEfficiency', 
+    'saveEfficiency',
     'powerPlayEfficiency',
     'penaltyKillEfficiency',
     'faceoffEfficiency',
@@ -178,6 +184,6 @@ export function getHockeyAdvancedFeatures(): string[] {
     'puckPossession',
     'discipline',
     'shotSuppression',
-    'goalSuppression'
+    'goalSuppression',
   ];
 }

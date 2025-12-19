@@ -7,7 +7,7 @@ import {
   computeHeadToHead,
   computeRollingAverages,
   computeWinRate,
-  computeAvgMargin
+  computeAvgMargin,
 } from '../featureEngineering.js';
 import type { Game } from '../../db/types.js';
 
@@ -17,8 +17,8 @@ describe('Feature Engineering', () => {
       const weights = getExponentialWeights(3, 0.7);
       expect(weights).toHaveLength(3);
       expect(weights[0]).toBeCloseTo(0.49); // 0.7^2
-      expect(weights[1]).toBeCloseTo(0.7);  // 0.7^1
-      expect(weights[2]).toBeCloseTo(1.0);  // 0.7^0 (most recent)
+      expect(weights[1]).toBeCloseTo(0.7); // 0.7^1
+      expect(weights[2]).toBeCloseTo(1.0); // 0.7^0 (most recent)
     });
 
     it('should handle edge cases', () => {
@@ -29,7 +29,7 @@ describe('Feature Engineering', () => {
     it('should handle different decay rates', () => {
       const weights1 = getExponentialWeights(3, 0.5);
       const weights2 = getExponentialWeights(3, 0.9);
-      
+
       // With lower decay (0.5), older games should have much less weight
       expect(weights1[0]).toBeLessThan(weights2[0]);
       // Most recent game should always have weight 1
@@ -43,7 +43,7 @@ describe('Feature Engineering', () => {
       const values = [10, 20, 30];
       const weights = [0.1, 0.3, 0.6];
       const result = weightedAverage(values, weights);
-      
+
       // (10*0.1 + 20*0.3 + 30*0.6) / (0.1+0.3+0.6) = (1 + 6 + 18) / 1 = 25
       expect(result).toBeCloseTo(25);
     });
@@ -60,7 +60,7 @@ describe('Feature Engineering', () => {
       const values = [10, 20];
       const weights = [2, 4]; // Should normalize to [1/3, 2/3]
       const result = weightedAverage(values, weights);
-      
+
       // (10*2 + 20*4) / (2+4) = 100/6 ≈ 16.67
       expect(result).toBeCloseTo(16.67, 1);
     });
@@ -78,7 +78,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game2',
@@ -90,7 +90,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game3',
@@ -102,7 +102,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game4',
@@ -114,8 +114,8 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     ];
 
     it('should calculate win streak correctly for winning team', () => {
@@ -127,19 +127,22 @@ describe('Feature Engineering', () => {
 
     it('should return 0 for team with no recent wins', () => {
       // Add a game where team1 loses, then check streak
-      const gamesWithLoss = [...mockGames, {
-        id: 'game5',
-        date: '2024-01-05',
-        home_team_id: 'team1',
-        away_team_id: 'team5',
-        home_score: 70,
-        away_score: 80,
-        season: 2024,
-        sport: 'nba',
-        venue: null,
-        status: 'completed'
-      }];
-      
+      const gamesWithLoss = [
+        ...mockGames,
+        {
+          id: 'game5',
+          date: '2024-01-05',
+          home_team_id: 'team1',
+          away_team_id: 'team5',
+          home_score: 70,
+          away_score: 80,
+          season: 2024,
+          sport: 'nba',
+          venue: null,
+          status: 'completed',
+        },
+      ];
+
       const streak = computeWinStreak('team1', 'game5', gamesWithLoss);
       expect(streak).toBe(0);
     });
@@ -162,11 +165,11 @@ describe('Feature Engineering', () => {
           away_score: 90,
           season: 2024,
           sport: 'nba',
-        venue: null,
-        status: 'completed'
+          venue: null,
+          status: 'completed',
         });
       }
-      
+
       const streak = computeWinStreak('team1', 'nextgame', manyWins);
       expect(streak).toBe(10); // Should cap at 10
     });
@@ -184,7 +187,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game2',
@@ -196,8 +199,8 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     ];
 
     it('should calculate rest days correctly', () => {
@@ -221,8 +224,8 @@ describe('Feature Engineering', () => {
           away_score: 90,
           season: 2024,
           sport: 'nba',
-        venue: null,
-        status: 'completed'
+          venue: null,
+          status: 'completed',
         },
         {
           id: 'game2',
@@ -233,11 +236,11 @@ describe('Feature Engineering', () => {
           away_score: 95,
           season: 2024,
           sport: 'nba',
-        venue: null,
-        status: 'completed'
-        }
+          venue: null,
+          status: 'completed',
+        },
       ];
-      
+
       const restDays = computeRestDays('team1', 'game2', backToBackGames);
       expect(restDays).toBe(1);
     });
@@ -255,7 +258,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game2',
@@ -267,7 +270,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game3',
@@ -279,7 +282,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'current',
@@ -291,13 +294,13 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     ];
 
     it('should calculate head-to-head record correctly', () => {
       const h2h = computeHeadToHead('team1', 'team2', 'current', mockGames);
-      
+
       // team1 won game1 (home), game2 (away), lost game3 (home)
       // So team1 has 2 wins out of 3 games
       expect(h2h.wins).toBe(2);
@@ -312,7 +315,7 @@ describe('Feature Engineering', () => {
 
     it('should exclude current game from calculation', () => {
       const h2h = computeHeadToHead('team1', 'team2', 'game3', mockGames);
-      
+
       // Should only count game1 and game2, not game3
       expect(h2h.games).toBe(2);
     });
@@ -320,10 +323,10 @@ describe('Feature Engineering', () => {
 
   describe('computeRollingAverages', () => {
     const mockStatsByGame = {
-      'game1': { points: 100, rebounds: 45 },
-      'game2': { points: 110, rebounds: 50 },
-      'game3': { points: 90, rebounds: 40 },
-      'game4': { points: 105, rebounds: 48 }
+      game1: { points: 100, rebounds: 45 },
+      game2: { points: 110, rebounds: 50 },
+      game3: { points: 90, rebounds: 40 },
+      game4: { points: 105, rebounds: 48 },
     };
 
     const gameOrder = ['game1', 'game2', 'game3', 'game4'];
@@ -337,7 +340,7 @@ describe('Feature Engineering', () => {
         windows,
         enabledFeatures,
         false, // no exponential weighting
-        0.7
+        0.7,
       );
 
       // For game3 (index 2), 2-game window should include game1 and game2
@@ -355,7 +358,7 @@ describe('Feature Engineering', () => {
         windows,
         enabledFeatures,
         true, // use exponential weighting
-        0.5
+        0.5,
       );
 
       // Should have different values than simple average
@@ -366,9 +369,9 @@ describe('Feature Engineering', () => {
 
     it('should handle missing stats gracefully', () => {
       const incompleteStats = {
-        'game1': { points: 100 }, // missing rebounds
-        'game2': { points: 110, rebounds: 50 },
-        'game3': { rebounds: 40 }, // missing points
+        game1: { points: 100 }, // missing rebounds
+        game2: { points: 110, rebounds: 50 },
+        game3: { rebounds: 40 }, // missing points
       };
 
       const result = computeRollingAverages(
@@ -377,7 +380,7 @@ describe('Feature Engineering', () => {
         [2],
         ['points', 'rebounds'],
         false,
-        0.7
+        0.7,
       );
 
       // Should handle missing values without crashing
@@ -398,7 +401,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game2',
@@ -410,7 +413,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game3',
@@ -422,7 +425,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game4',
@@ -434,20 +437,20 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     ];
 
     it('should calculate win rate correctly', () => {
       // team1: won game1 (home), won game2 (away), lost game3 (home)
       // Win rate for last 3 games before game4 should be 2/3
       const winRate = computeWinRate('team1', 'game4', 3, mockGames);
-      expect(winRate).toBeCloseTo(2/3);
+      expect(winRate).toBeCloseTo(2 / 3);
     });
 
     it('should handle window larger than available games', () => {
       const winRate = computeWinRate('team1', 'game4', 10, mockGames);
-      expect(winRate).toBeCloseTo(2/3); // Still 2 wins out of 3 games
+      expect(winRate).toBeCloseTo(2 / 3); // Still 2 wins out of 3 games
     });
 
     it('should return 0 for team with no games', () => {
@@ -456,21 +459,24 @@ describe('Feature Engineering', () => {
     });
 
     it('should exclude games with null scores', () => {
-      const gamesWithNull = [...mockGames, {
-        id: 'game5',
-        date: '2024-01-05',
-        home_team_id: 'team1',
-        away_team_id: 'team6',
-        home_score: null,
-        away_score: null,
-        season: 2024,
-        sport: 'nba',
-        venue: null,
-        status: 'completed'
-      }];
+      const gamesWithNull = [
+        ...mockGames,
+        {
+          id: 'game5',
+          date: '2024-01-05',
+          home_team_id: 'team1',
+          away_team_id: 'team6',
+          home_score: null,
+          away_score: null,
+          season: 2024,
+          sport: 'nba',
+          venue: null,
+          status: 'completed',
+        },
+      ];
 
       const winRate = computeWinRate('team1', 'game5', 5, gamesWithNull);
-      expect(winRate).toBeCloseTo(2/3); // Should ignore the null score game
+      expect(winRate).toBeCloseTo(2 / 3); // Should ignore the null score game
     });
   });
 
@@ -486,7 +492,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game2',
@@ -498,7 +504,7 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game3',
@@ -510,14 +516,14 @@ describe('Feature Engineering', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     ];
 
     it('should calculate average margin correctly', () => {
       // team1 margins: +10, +10, -10 = average of +3.33
       const avgMargin = computeAvgMargin('team1', 'nextgame', 3, mockGames);
-      expect(avgMargin).toBeCloseTo(10/3);
+      expect(avgMargin).toBeCloseTo(10 / 3);
     });
 
     it('should handle negative margins', () => {
@@ -531,8 +537,8 @@ describe('Feature Engineering', () => {
           away_score: 90, // -10 margin
           season: 2024,
           sport: 'nba',
-        venue: null,
-        status: 'completed'
+          venue: null,
+          status: 'completed',
         },
         {
           id: 'game2',
@@ -543,9 +549,9 @@ describe('Feature Engineering', () => {
           away_score: 85, // -10 margin
           season: 2024,
           sport: 'nba',
-        venue: null,
-        status: 'completed'
-        }
+          venue: null,
+          status: 'completed',
+        },
       ];
 
       const avgMargin = computeAvgMargin('team1', 'nextgame', 2, losingGames);
@@ -572,9 +578,9 @@ describe('Feature Engineering', () => {
           away_score: 90,
           season: 2024,
           sport: 'nba',
-        venue: null,
-        status: 'completed'
-        }
+          venue: null,
+          status: 'completed',
+        },
       ];
 
       // Functions should not crash with invalid dates
@@ -592,9 +598,9 @@ describe('Feature Engineering', () => {
           away_score: null,
           season: 2024,
           sport: 'nba',
-        venue: null,
-        status: 'completed'
-        }
+          venue: null,
+          status: 'completed',
+        },
       ];
 
       expect(computeWinRate('team1', 'game2', 5, nullScoreGames)).toBe(0);

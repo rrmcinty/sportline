@@ -102,16 +102,16 @@ export interface FeatureConfig {
     decay: number;
   };
   regularization?: {
-    lambda: number;  // L2 regularization strength (higher = smaller weights)
-    temperature?: number;  // Temperature scaling for calibration (default: 1.0)
+    lambda: number; // L2 regularization strength (higher = smaller weights)
+    temperature?: number; // Temperature scaling for calibration (default: 1.0)
   };
   calibration?: {
-    method: 'temperature' | 'platt' | 'isotonic';  // Calibration method
-    temperature: number;  // Temperature parameter (< 1.0 = less confident)
+    method: 'temperature' | 'platt' | 'isotonic'; // Calibration method
+    temperature: number; // Temperature parameter (< 1.0 = less confident)
   };
   min_edge: number;
   min_ev: number;
-  max_ev?: number;  // Maximum EV threshold to filter unrealistic bets
+  max_ev?: number; // Maximum EV threshold to filter unrealistic bets
 }
 
 export interface GameFeatures {

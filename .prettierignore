@@ -1,0 +1,12 @@
+dist/
+node_modules/
+data/
+models/
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.log.json
+
+src/train/basketball/ncaam/trainNcaamMoneyline.ts
+src/train/basketball/ncaam/trainNcaamMoneyline.*.json

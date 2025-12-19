@@ -5,14 +5,14 @@ import {
   computeBasketballOffensiveDefensiveRatings,
   calculateBasketballDefensiveMetrics,
   calculateNBAAdvancedSituationalFeatures,
-  getBasketballAdvancedFeatures
+  getBasketballAdvancedFeatures,
 } from '../basketballFeatures.js';
 import type { Game } from '../../../db/types.js';
 import type { DatabaseQueries } from '../../../db/queries.js';
 
 // Mock DatabaseQueries
 const mockDb = {
-  getGameStats: vi.fn()
+  getGameStats: vi.fn(),
 } as unknown as DatabaseQueries;
 
 describe('Basketball Features', () => {
@@ -25,11 +25,11 @@ describe('Basketball Features', () => {
       const stats = {
         fieldGoalsMade: 40,
         fieldGoalsAttempted: 80,
-        threePointFieldGoalsMade: 10
+        threePointFieldGoalsMade: 10,
       };
 
       const result = calculateBasketballAdvancedStats(stats);
-      
+
       // eFG% = (FGM + 0.5*3PM) / FGA = (40 + 0.5*10) / 80 = 45/80 = 0.5625
       expect(result.effectiveFgPct).toBeCloseTo(0.5625);
     });
@@ -40,11 +40,11 @@ describe('Basketball Features', () => {
         fieldGoalsAttempted: 60,
         threePointFieldGoalsMade: 8,
         freeThrowsMade: 12,
-        freeThrowsAttempted: 15
+        freeThrowsAttempted: 15,
       };
 
       const result = calculateBasketballAdvancedStats(stats);
-      
+
       // Estimated points = 30*2 + 8 + 12 = 80
       // True shooting attempts = 60 + 0.44*15 = 66.6
       // TS% = 80 / (2 * 66.6) = 80/133.2 ≈ 0.6006
@@ -57,11 +57,11 @@ describe('Basketball Features', () => {
         fieldGoalsAttempted: 0,
         threePointFieldGoalsMade: 0,
         freeThrowsMade: 0,
-        freeThrowsAttempted: 0
+        freeThrowsAttempted: 0,
       };
 
       const result = calculateBasketballAdvancedStats(stats);
-      
+
       // Should not have eFG% or TS% when no attempts
       expect(result.effectiveFgPct).toBeUndefined();
       expect(result.trueShootingPct).toBeUndefined();
@@ -72,11 +72,11 @@ describe('Basketball Features', () => {
         fieldGoalsAttempted: 80,
         freeThrowsAttempted: 20,
         assists: 25,
-        totalTurnovers: 15
+        totalTurnovers: 15,
       };
 
       const result = calculateBasketballAdvancedStats(stats);
-      
+
       // Assist attempts = FGA + 0.44*FTA + TOV = 80 + 8.8 + 15 = 103.8
       // Assist ratio = 25 / 103.8 ≈ 0.2408
       // Turnover ratio = 15 / 103.8 ≈ 0.1445
@@ -88,11 +88,11 @@ describe('Basketball Features', () => {
       const stats = {
         totalRebounds: 50,
         offensiveRebounds: 15,
-        defensiveRebounds: 35
+        defensiveRebounds: 35,
       };
 
       const result = calculateBasketballAdvancedStats(stats);
-      
+
       expect(result.offensiveReboundPct).toBeCloseTo(0.3); // 15/50
       expect(result.defensiveReboundPct).toBeCloseTo(0.7); // 35/50
     });
@@ -101,11 +101,11 @@ describe('Basketball Features', () => {
       const stats = {
         fieldGoalsAttempted: 80,
         freeThrowsAttempted: 20,
-        totalTurnovers: 15
+        totalTurnovers: 15,
       };
 
       const result = calculateBasketballAdvancedStats(stats);
-      
+
       // Pace = FGA + 0.44*FTA + TOV = 80 + 8.8 + 15 = 103.8
       expect(result.pace).toBeCloseTo(103.8);
     });
@@ -114,7 +114,7 @@ describe('Basketball Features', () => {
       const stats = {}; // Empty stats object
 
       const result = calculateBasketballAdvancedStats(stats);
-      
+
       // Should use 0 as fallback for missing stats
       expect(result.pace).toBe(0);
       expect(result.effectiveFgPct).toBeUndefined(); // No FGA
@@ -126,11 +126,11 @@ describe('Basketball Features', () => {
       const stats = {
         fieldGoalsAttempted: 80,
         freeThrowsAttempted: 20,
-        totalTurnovers: 15
+        totalTurnovers: 15,
       };
 
       const possessions = calculateBasketballPossessions(stats);
-      
+
       // Possessions = FGA + 0.44*FTA + TOV = 80 + 8.8 + 15 = 103.8
       expect(possessions).toBeCloseTo(103.8);
     });
@@ -153,7 +153,7 @@ describe('Basketball Features', () => {
       season: 2024,
       sport: 'nba',
       venue: null,
-      status: 'completed'
+      status: 'completed',
     };
 
     beforeEach(() => {
@@ -162,13 +162,13 @@ describe('Basketball Features', () => {
           return {
             fieldGoalsAttempted: 80,
             freeThrowsAttempted: 20,
-            totalTurnovers: 15
+            totalTurnovers: 15,
           };
         } else if (teamId === 'team2') {
           return {
             fieldGoalsAttempted: 75,
             freeThrowsAttempted: 25,
-            totalTurnovers: 18
+            totalTurnovers: 18,
           };
         }
         return {};
@@ -181,7 +181,7 @@ describe('Basketball Features', () => {
         'team2',
         'game1',
         [mockGame],
-        mockDb
+        mockDb,
       );
 
       // team1 possessions = 80 + 0.44*20 + 15 = 103.8
@@ -200,7 +200,7 @@ describe('Basketball Features', () => {
         'team2',
         'nonexistent',
         [mockGame],
-        mockDb
+        mockDb,
       );
 
       // Should return default values
@@ -214,7 +214,7 @@ describe('Basketball Features', () => {
       const gameWithNullScores: Game = {
         ...mockGame,
         home_score: null,
-        away_score: null
+        away_score: null,
       };
 
       const ratings = computeBasketballOffensiveDefensiveRatings(
@@ -222,7 +222,7 @@ describe('Basketball Features', () => {
         'team2',
         'game1',
         [gameWithNullScores],
-        mockDb
+        mockDb,
       );
 
       expect(ratings.homeORtg).toBe(100);
@@ -234,13 +234,13 @@ describe('Basketball Features', () => {
       (mockDb.getGameStats as any).mockImplementation(() => ({
         fieldGoalsAttempted: 1, // Very low possessions
         freeThrowsAttempted: 0,
-        totalTurnovers: 0
+        totalTurnovers: 0,
       }));
 
       const extremeGame: Game = {
         ...mockGame,
         home_score: 200, // Very high score
-        away_score: 10   // Very low score
+        away_score: 10, // Very low score
       };
 
       const ratings = computeBasketballOffensiveDefensiveRatings(
@@ -248,7 +248,7 @@ describe('Basketball Features', () => {
         'team2',
         'game1',
         [extremeGame],
-        mockDb
+        mockDb,
       );
 
       // Ratings should be clamped between 50 and 150
@@ -263,11 +263,11 @@ describe('Basketball Features', () => {
     it('should calculate field goal suppression', () => {
       const stats = {
         opponentFieldGoalsMade: 30,
-        opponentFieldGoalsAttempted: 80
+        opponentFieldGoalsAttempted: 80,
       };
 
       const result = calculateBasketballDefensiveMetrics(stats);
-      
+
       // FG suppression = 1 - (30/80) = 1 - 0.375 = 0.625
       expect(result.fgSuppression).toBeCloseTo(0.625);
     });
@@ -275,11 +275,11 @@ describe('Basketball Features', () => {
     it('should calculate three-point suppression', () => {
       const stats = {
         opponentThreePointFieldGoalsMade: 8,
-        opponentThreePointFieldGoalsAttempted: 25
+        opponentThreePointFieldGoalsAttempted: 25,
       };
 
       const result = calculateBasketballDefensiveMetrics(stats);
-      
+
       // 3PT suppression = 1 - (8/25) = 1 - 0.32 = 0.68
       expect(result.threePtSuppression).toBeCloseTo(0.68);
     });
@@ -287,11 +287,11 @@ describe('Basketball Features', () => {
     it('should handle zero attempts', () => {
       const stats = {
         opponentFieldGoalsMade: 0,
-        opponentFieldGoalsAttempted: 0
+        opponentFieldGoalsAttempted: 0,
       };
 
       const result = calculateBasketballDefensiveMetrics(stats);
-      
+
       // Should not calculate suppression when no attempts
       expect(result.fgSuppression).toBeUndefined();
     });
@@ -309,7 +309,7 @@ describe('Basketball Features', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game2',
@@ -321,7 +321,7 @@ describe('Basketball Features', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'game3',
@@ -333,15 +333,15 @@ describe('Basketball Features', () => {
         season: 2024,
         sport: 'nba',
         venue: null,
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     ];
 
     beforeEach(() => {
       (mockDb.getGameStats as any).mockReturnValue({
         fieldGoalsAttempted: 80,
         freeThrowsAttempted: 20,
-        totalTurnovers: 15
+        totalTurnovers: 15,
       });
     });
 
@@ -351,7 +351,7 @@ describe('Basketball Features', () => {
         'team1',
         gameDate,
         mockGames,
-        mockDb
+        mockDb,
       );
 
       expect(features.daysSinceLastGame).toBe(1); // 1 day since game3
@@ -365,12 +365,12 @@ describe('Basketball Features', () => {
         'team1',
         gameDate,
         mockGames,
-        mockDb
+        mockDb,
       );
 
       // team1 won game1 (home), game2 (away), game3 (home) = 3/3 = 100%
       expect(features.recentWinPct).toBe(1.0);
-      
+
       // Average margin: +10, +10, +10 = +10
       expect(features.recentAvgMargin).toBeCloseTo(10);
     });
@@ -387,7 +387,7 @@ describe('Basketball Features', () => {
           season: 2024,
           sport: 'nba',
           venue: null,
-          status: 'completed'
+          status: 'completed',
         },
         {
           id: 'game2',
@@ -399,8 +399,8 @@ describe('Basketball Features', () => {
           season: 2024,
           sport: 'nba',
           venue: null,
-          status: 'completed'
-        }
+          status: 'completed',
+        },
       ];
 
       const gameDate = new Date('2024-01-10');
@@ -408,7 +408,7 @@ describe('Basketball Features', () => {
         'team1',
         gameDate,
         clutchGames,
-        mockDb
+        mockDb,
       );
 
       expect(features.recentClutchGamePct).toBeCloseTo(0.5); // 1 out of 2 games
@@ -421,7 +421,7 @@ describe('Basketball Features', () => {
         'newteam',
         gameDate,
         mockGames,
-        mockDb
+        mockDb,
       );
 
       // Should return empty object or default values
@@ -434,7 +434,7 @@ describe('Basketball Features', () => {
         'team1',
         gameDate,
         mockGames,
-        mockDb
+        mockDb,
       );
 
       // Should have pace, offensive rating, and defensive rating
@@ -447,7 +447,7 @@ describe('Basketball Features', () => {
   describe('getBasketballAdvancedFeatures', () => {
     it('should return comprehensive list of basketball features', () => {
       const features = getBasketballAdvancedFeatures();
-      
+
       expect(features).toContain('effectiveFgPct');
       expect(features).toContain('trueShootingPct');
       expect(features).toContain('assistRatio');
@@ -455,7 +455,7 @@ describe('Basketball Features', () => {
       expect(features).toContain('pace');
       expect(features).toContain('isBackToBack');
       expect(features).toContain('clutchWinPct');
-      
+
       // Should have a reasonable number of features
       expect(features.length).toBeGreaterThan(10);
       expect(features.length).toBeLessThan(30);
@@ -464,7 +464,7 @@ describe('Basketball Features', () => {
     it('should not have duplicate features', () => {
       const features = getBasketballAdvancedFeatures();
       const uniqueFeatures = [...new Set(features)];
-      
+
       expect(features.length).toBe(uniqueFeatures.length);
     });
   });
@@ -476,11 +476,11 @@ describe('Basketball Features', () => {
         fieldGoalsAttempted: 0, // Division by zero case
         assists: 5,
         totalTurnovers: 0,
-        totalRebounds: 0
+        totalRebounds: 0,
       };
 
       expect(() => calculateBasketballAdvancedStats(stats)).not.toThrow();
-      
+
       const result = calculateBasketballAdvancedStats(stats);
       expect(result.effectiveFgPct).toBeUndefined();
       expect(result.offensiveReboundPct).toBeUndefined();
@@ -491,7 +491,7 @@ describe('Basketball Features', () => {
         fieldGoalsMade: -5, // Negative values shouldn't happen but let's test
         fieldGoalsAttempted: 10,
         assists: -2,
-        totalTurnovers: 5
+        totalTurnovers: 5,
       };
 
       expect(() => calculateBasketballAdvancedStats(stats)).not.toThrow();
@@ -501,7 +501,7 @@ describe('Basketball Features', () => {
       const stats = {
         fieldGoalsMade: 1000000,
         fieldGoalsAttempted: 2000000,
-        threePointFieldGoalsMade: 500000
+        threePointFieldGoalsMade: 500000,
       };
 
       const result = calculateBasketballAdvancedStats(stats);
@@ -512,7 +512,7 @@ describe('Basketball Features', () => {
       const stats = {
         fieldGoalsMade: undefined,
         fieldGoalsAttempted: null,
-        assists: 10
+        assists: 10,
       };
 
       expect(() => calculateBasketballAdvancedStats(stats as any)).not.toThrow();

@@ -30,7 +30,7 @@ export function americanToImpliedProb(odds: number): number {
  * Get market implied probability from odds array (normalized)
  */
 export function getMarketImpliedProb(
-  oddsArr: { home: number | null; away: number | null }[]
+  oddsArr: { home: number | null; away: number | null }[],
 ): number | null {
   for (const odds of oddsArr) {
     if (odds.home != null && odds.away != null) {
@@ -71,7 +71,7 @@ export function calculateEdge(modelProb: number, marketProb: number): number {
 export function calculateBettingMetrics(
   probHome: number,
   oddsHome: number | null,
-  oddsAway: number | null
+  oddsAway: number | null,
 ): {
   ev_home: number | null;
   ev_away: number | null;
@@ -122,30 +122,16 @@ export function getRecommendedSide(
   edge_home: number | null,
   edge_away: number | null,
   minEV: number,
-  minEdge: number
+  minEdge: number,
 ): 'home' | 'away' | null {
-  if (
-    ev_home !== null &&
-    ev_home > minEV &&
-    edge_home !== null &&
-    edge_home > minEdge
-  ) {
+  if (ev_home !== null && ev_home > minEV && edge_home !== null && edge_home > minEdge) {
     // Check if home is better than away
-    if (
-      ev_away === null ||
-      edge_away === null ||
-      ev_home > ev_away
-    ) {
+    if (ev_away === null || edge_away === null || ev_home > ev_away) {
       return 'home';
     }
   }
 
-  if (
-    ev_away !== null &&
-    ev_away > minEV &&
-    edge_away !== null &&
-    edge_away > minEdge
-  ) {
+  if (ev_away !== null && ev_away > minEV && edge_away !== null && edge_away > minEdge) {
     return 'away';
   }
 

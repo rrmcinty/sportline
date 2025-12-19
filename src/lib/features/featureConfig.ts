@@ -28,7 +28,7 @@ export function loadFeatureConfig(configPath: string): FeatureConfig {
  */
 function validateConfig(config: FeatureConfig): void {
   const required = ['sport', 'model', 'market', 'seasons', 'features', 'rolling_windows'];
-  
+
   for (const field of required) {
     if (!(field in config)) {
       throw new Error(`Missing required field in config: ${field}`);
@@ -78,9 +78,7 @@ export function getEnabledRollingFeatures(config: FeatureConfig): string[] {
     'marketImpliedProb',
   ];
 
-  return getEnabledFeatures(config).filter(
-    (name) => !fixedFeatures.includes(name)
-  );
+  return getEnabledFeatures(config).filter((name) => !fixedFeatures.includes(name));
 }
 
 /**

@@ -43,7 +43,10 @@ program
 program
   .command('recommend')
   .description("Get betting recommendations for today's games")
-  .option('--sport <sport>', 'Sport to recommend (ncaam, nba, nfl, etc.) - if not specified, shows all sports')
+  .option(
+    '--sport <sport>',
+    'Sport to recommend (ncaam, nba, nfl, etc.) - if not specified, shows all sports',
+  )
   .option('--game <id>', 'Specific game ID to analyze (from sportline find)')
   .option('--date <date>', 'Date to recommend for (YYYY-MM-DD, default: today)')
   .option('--market <market>', 'Market to recommend (moneyline, spread, total, all)', 'all')
@@ -62,7 +65,10 @@ program
   .description('Run backtesting analysis using existing trained models')
   .option('--sport <sport>', 'Sport to backtest (ncaam, nba, nfl, etc.)', 'ncaam')
   .option('--market <market>', 'Market to backtest (moneyline, spread, total)', 'moneyline')
-  .option('--config <path>', 'Path to feature config file (optional - uses model config by default)')
+  .option(
+    '--config <path>',
+    'Path to feature config file (optional - uses model config by default)',
+  )
   .action(async (options) => {
     try {
       await backtest(options);
@@ -106,7 +112,11 @@ program
   .description('Analyze profitable bet characteristics and test situational filters')
   .option('--sport <sport>', 'Sport to analyze (ncaam, nba, nfl, etc.)', 'ncaam')
   .option('--config <path>', 'Path to feature config file')
-  .option('--filter <filter>', 'Filter configuration to test (profitable, conservative, none)', 'profitable')
+  .option(
+    '--filter <filter>',
+    'Filter configuration to test (profitable, conservative, none)',
+    'profitable',
+  )
   .action(async (options) => {
     try {
       await analyze(options);

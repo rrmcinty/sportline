@@ -16,7 +16,7 @@ import { calculateBettingMetrics } from '../odds/evCalculator.js';
 export function generateRecommendations(
   fullDataset: GameFeatures[],
   predictions: number[],
-  splitIdx: number
+  splitIdx: number,
 ): Recommendation[] {
   const recommendations: Recommendation[] = [];
 
@@ -28,7 +28,7 @@ export function generateRecommendations(
 
     const oddsArr = row.odds;
     const odds = oddsArr && oddsArr.length > 0 ? oddsArr[0] : null;
-    
+
     // Don't skip if no odds - just set them to null
     // if (!odds) continue;
 
@@ -38,7 +38,7 @@ export function generateRecommendations(
     const metrics = calculateBettingMetrics(
       model_prob_home,
       odds?.home ?? null,
-      odds?.away ?? null
+      odds?.away ?? null,
     );
 
     recommendations.push({
@@ -71,7 +71,7 @@ export function runBacktestForThreshold(
   recommendations: Recommendation[],
   minEdge: number,
   minEV: number,
-  unitSize: number = 100
+  unitSize: number = 100,
 ): BacktestResult {
   let totalBets = 0;
   let totalStaked = 0;
@@ -93,11 +93,7 @@ export function runBacktestForThreshold(
       rec.edge_home !== null &&
       rec.edge_home > minEdge
     ) {
-      if (
-        rec.ev_away === null ||
-        rec.edge_away === null ||
-        rec.ev_home > rec.ev_away
-      ) {
+      if (rec.ev_away === null || rec.edge_away === null || rec.ev_home > rec.ev_away) {
         betSide = 'home';
         betEV = rec.ev_home;
         betEdge = rec.edge_home;
@@ -128,8 +124,7 @@ export function runBacktestForThreshold(
     totalStaked += unitSize;
 
     const won =
-      (betSide === 'home' && rec.actual === 1) ||
-      (betSide === 'away' && rec.actual === 0);
+      (betSide === 'home' && rec.actual === 1) || (betSide === 'away' && rec.actual === 0);
 
     if (won) {
       wins++;
@@ -183,7 +178,7 @@ export function runBacktestForThreshold(
 export function runBacktestGrid(
   recommendations: Recommendation[],
   edgeRange: number[] = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08],
-  evRange: number[] = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03]
+  evRange: number[] = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03],
 ): BacktestResult[] {
   const results: BacktestResult[] = [];
 
@@ -202,15 +197,13 @@ export function runBacktestGrid(
  */
 export function findOptimalThresholds(
   backtestResults: BacktestResult[],
-  minBets: number = 20
+  minBets: number = 20,
 ): { min_edge: number; min_ev: number } {
   // Filter results with sufficient bets
   const validResults = backtestResults.filter((r) => r.total_bets >= minBets);
 
   if (validResults.length === 0) {
-    console.warn(
-      '[Backtester] No threshold combinations met minimum bet requirement'
-    );
+    console.warn('[Backtester] No threshold combinations met minimum bet requirement');
     return { min_edge: 0.03, min_ev: 0.01 }; // Default fallback
   }
 
@@ -219,14 +212,12 @@ export function findOptimalThresholds(
 
   const best = validResults[0];
   console.log(
-    `[Backtester] Optimal thresholds: edge=${(best.threshold_edge * 100).toFixed(1)}%, ev=${(best.threshold_ev * 100).toFixed(1)}%`
+    `[Backtester] Optimal thresholds: edge=${(best.threshold_edge * 100).toFixed(1)}%, ev=${(best.threshold_ev * 100).toFixed(1)}%`,
   );
   console.log(
-    `[Backtester] Expected ROI: ${(best.roi * 100).toFixed(2)}% over ${best.total_bets} bets`
+    `[Backtester] Expected ROI: ${(best.roi * 100).toFixed(2)}% over ${best.total_bets} bets`,
   );
-  console.log(
-    `[Backtester] Win rate: ${(best.win_rate * 100).toFixed(2)}%`
-  );
+  console.log(`[Backtester] Win rate: ${(best.win_rate * 100).toFixed(2)}%`);
 
   return {
     min_edge: best.threshold_edge,
@@ -236,17 +227,17 @@ export function findOptimalThresholds(
 
 /**
  * Generate probability bucket analysis for calibration
- * 
+ *
  * Buckets are based on MODEL CONFIDENCE for the HOME TEAM winning.
- * For example, "50-60" bucket contains games where the model predicted 
+ * For example, "50-60" bucket contains games where the model predicted
  * the home team had a 50-60% chance of winning.
- * 
- * ROI is calculated by betting on whichever side (home or away) has 
+ *
+ * ROI is calculated by betting on whichever side (home or away) has
  * positive expected value, just like the real betting system does.
  */
 export function generateProbabilityBuckets(
   recommendations: Recommendation[],
-  bucketSize: number = 0.1
+  bucketSize: number = 0.1,
 ): ProbabilityBucket[] {
   const buckets: ProbabilityBucket[] = [];
 
@@ -256,7 +247,7 @@ export function generateProbabilityBuckets(
     const label = `${Math.round(lower * 100)}-${Math.round(upper * 100)}`;
 
     const inBucket = recommendations.filter(
-      (r) => r.model_prob_home >= lower && r.model_prob_home < upper
+      (r) => r.model_prob_home >= lower && r.model_prob_home < upper,
     );
 
     if (inBucket.length === 0) continue;
@@ -264,19 +255,15 @@ export function generateProbabilityBuckets(
     const win_count = inBucket.filter((r) => r.actual === 1).length;
     const loss_count = inBucket.filter((r) => r.actual === 0).length;
     const accuracy = win_count / inBucket.length;
-    const avg_ev =
-      inBucket.reduce((sum, r) => sum + (r.ev_home ?? 0), 0) /
-      inBucket.length;
-    const avg_edge =
-      inBucket.reduce((sum, r) => sum + (r.edge_home ?? 0), 0) /
-      inBucket.length;
+    const avg_ev = inBucket.reduce((sum, r) => sum + (r.ev_home ?? 0), 0) / inBucket.length;
+    const avg_edge = inBucket.reduce((sum, r) => sum + (r.edge_home ?? 0), 0) / inBucket.length;
 
     // Calculate actual profit for this bucket using smart betting (bet on best EV side)
     let totalProfit = 0;
     let totalStaked = 0;
     let homeBetCount = 0;
     let awayBetCount = 0;
-    
+
     for (const rec of inBucket) {
       if (rec.actual === null) continue;
 
@@ -313,13 +300,15 @@ export function generateProbabilityBuckets(
       totalStaked += 100; // $100 bet
 
       // Check if bet won
-      const won = (betSide === 'home' && rec.actual === 1) || (betSide === 'away' && rec.actual === 0);
+      const won =
+        (betSide === 'home' && rec.actual === 1) || (betSide === 'away' && rec.actual === 0);
 
       if (won) {
         // Calculate profit only (not including original stake)
-        const profit = betOdds > 0 
-          ? betOdds // +150 odds = $150 profit on $100 bet
-          : (100 / Math.abs(betOdds)) * 100; // -150 odds = $66.67 profit on $100 bet
+        const profit =
+          betOdds > 0
+            ? betOdds // +150 odds = $150 profit on $100 bet
+            : (100 / Math.abs(betOdds)) * 100; // -150 odds = $66.67 profit on $100 bet
         totalProfit += profit;
       } else {
         totalProfit -= 100; // Lost the $100 stake
@@ -354,24 +343,15 @@ export function generateProbabilityBuckets(
 /**
  * Print backtest summary
  */
-export function printBacktestSummary(
-  backtestResults: BacktestResult[],
-  topN: number = 10
-): void {
+export function printBacktestSummary(backtestResults: BacktestResult[], topN: number = 10): void {
   console.log('\n========== Backtest Results ==========\n');
 
   // Sort by ROI
   const sorted = [...backtestResults].sort((a, b) => b.roi - a.roi);
 
-  console.log(
-    'Top threshold combinations by ROI:\n'
-  );
-  console.log(
-    'Edge  | EV    | Bets | ROI      | Win Rate | Avg Odds'
-  );
-  console.log(
-    '------+-------+------+----------+----------+---------'
-  );
+  console.log('Top threshold combinations by ROI:\n');
+  console.log('Edge  | EV    | Bets | ROI      | Win Rate | Avg Odds');
+  console.log('------+-------+------+----------+----------+---------');
 
   for (let i = 0; i < Math.min(topN, sorted.length); i++) {
     const r = sorted[i];
@@ -381,7 +361,7 @@ export function printBacktestSummary(
         `${r.total_bets.toString().padStart(4)} | ` +
         `${(r.roi * 100).toFixed(2).padStart(7)}% | ` +
         `${(r.win_rate * 100).toFixed(2).padStart(7)}% | ` +
-        `${r.avg_odds.toFixed(0).padStart(7)}`
+        `${r.avg_odds.toFixed(0).padStart(7)}`,
     );
   }
 

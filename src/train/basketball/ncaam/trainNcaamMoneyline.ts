@@ -537,7 +537,7 @@ if (modelType === "ensemble") {
 	y_pred = rf.predict(X_test);
 	// Estimate probability as the proportion of trees voting for class 1
 	// ml-random-forest does not provide predictProba, so we approximate
-	let nSamples = X_test.length;
+	const nSamples = X_test.length;
 	if (Array.isArray(rf.estimators) && rf.estimators.length > 0) {
 		const allPredictions = rf.estimators.map(tree => tree.predict(X_test)); // shape: [nTrees][nSamples]
 		const nTrees = allPredictions.length;

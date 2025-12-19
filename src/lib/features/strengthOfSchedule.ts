@@ -22,13 +22,14 @@ export interface StrengthOfScheduleMetrics {
 function calculateTeamStrength(
   teamId: string,
   games: Game[],
-  beforeDate: string
+  beforeDate: string,
 ): { winRate: number; avgMargin: number; strengthRating: number } {
-  const teamGames = games.filter(g => 
-    (g.home_team_id === teamId || g.away_team_id === teamId) &&
-    g.date < beforeDate &&
-    g.home_score !== null &&
-    g.away_score !== null
+  const teamGames = games.filter(
+    (g) =>
+      (g.home_team_id === teamId || g.away_team_id === teamId) &&
+      g.date < beforeDate &&
+      g.home_score !== null &&
+      g.away_score !== null,
   );
 
   if (teamGames.length === 0) {
@@ -50,11 +51,11 @@ function calculateTeamStrength(
 
   const winRate = wins / teamGames.length;
   const avgMargin = totalMargin / teamGames.length;
-  
+
   // Composite strength rating (0-1 scale)
   // Combines win rate (70%) and normalized margin (30%)
   const normalizedMargin = Math.max(0, Math.min(1, (avgMargin + 20) / 40)); // Normalize margin to 0-1
-  const strengthRating = (winRate * 0.7) + (normalizedMargin * 0.3);
+  const strengthRating = winRate * 0.7 + normalizedMargin * 0.3;
 
   return { winRate, avgMargin, strengthRating };
 }
@@ -66,9 +67,9 @@ export function calculateStrengthOfSchedule(
   teamId: string,
   gameId: string,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): StrengthOfScheduleMetrics {
-  const currentGame = games.find(g => g.id === gameId);
+  const currentGame = games.find((g) => g.id === gameId);
   if (!currentGame) {
     return {
       opponentWinRate: 0.5,
@@ -77,18 +78,19 @@ export function calculateStrengthOfSchedule(
       recentOpponentWinRate5: 0.5,
       recentOpponentWinRate10: 0.5,
       recentOpponentStrength5: 0.5,
-      recentOpponentStrength10: 0.5
+      recentOpponentStrength10: 0.5,
     };
   }
 
   // Get all games for this team before the current game
   const teamGames = games
-    .filter(g => 
-      (g.home_team_id === teamId || g.away_team_id === teamId) &&
-      g.id !== gameId &&
-      g.date < currentGame.date &&
-      g.home_score !== null &&
-      g.away_score !== null
+    .filter(
+      (g) =>
+        (g.home_team_id === teamId || g.away_team_id === teamId) &&
+        g.id !== gameId &&
+        g.date < currentGame.date &&
+        g.home_score !== null &&
+        g.away_score !== null,
     )
     .sort((a, b) => a.date.localeCompare(b.date));
 
@@ -100,7 +102,7 @@ export function calculateStrengthOfSchedule(
       recentOpponentWinRate5: 0.5,
       recentOpponentWinRate10: 0.5,
       recentOpponentStrength5: 0.5,
-      recentOpponentStrength10: 0.5
+      recentOpponentStrength10: 0.5,
     };
   }
 
@@ -118,29 +120,36 @@ export function calculateStrengthOfSchedule(
   }
 
   // Overall SOS metrics
-  const opponentWinRate = opponentMetrics.reduce((sum, m) => sum + m.winRate, 0) / opponentMetrics.length;
-  const opponentAvgMargin = opponentMetrics.reduce((sum, m) => sum + m.avgMargin, 0) / opponentMetrics.length;
-  const opponentStrengthRating = opponentMetrics.reduce((sum, m) => sum + m.strengthRating, 0) / opponentMetrics.length;
+  const opponentWinRate =
+    opponentMetrics.reduce((sum, m) => sum + m.winRate, 0) / opponentMetrics.length;
+  const opponentAvgMargin =
+    opponentMetrics.reduce((sum, m) => sum + m.avgMargin, 0) / opponentMetrics.length;
+  const opponentStrengthRating =
+    opponentMetrics.reduce((sum, m) => sum + m.strengthRating, 0) / opponentMetrics.length;
 
   // Recent SOS metrics (last 5 and 10 games)
   const recent5 = opponentMetrics.slice(-5);
   const recent10 = opponentMetrics.slice(-10);
 
-  const recentOpponentWinRate5 = recent5.length > 0 
-    ? recent5.reduce((sum, m) => sum + m.winRate, 0) / recent5.length 
-    : opponentWinRate;
+  const recentOpponentWinRate5 =
+    recent5.length > 0
+      ? recent5.reduce((sum, m) => sum + m.winRate, 0) / recent5.length
+      : opponentWinRate;
 
-  const recentOpponentWinRate10 = recent10.length > 0 
-    ? recent10.reduce((sum, m) => sum + m.winRate, 0) / recent10.length 
-    : opponentWinRate;
+  const recentOpponentWinRate10 =
+    recent10.length > 0
+      ? recent10.reduce((sum, m) => sum + m.winRate, 0) / recent10.length
+      : opponentWinRate;
 
-  const recentOpponentStrength5 = recent5.length > 0 
-    ? recent5.reduce((sum, m) => sum + m.strengthRating, 0) / recent5.length 
-    : opponentStrengthRating;
+  const recentOpponentStrength5 =
+    recent5.length > 0
+      ? recent5.reduce((sum, m) => sum + m.strengthRating, 0) / recent5.length
+      : opponentStrengthRating;
 
-  const recentOpponentStrength10 = recent10.length > 0 
-    ? recent10.reduce((sum, m) => sum + m.strengthRating, 0) / recent10.length 
-    : opponentStrengthRating;
+  const recentOpponentStrength10 =
+    recent10.length > 0
+      ? recent10.reduce((sum, m) => sum + m.strengthRating, 0) / recent10.length
+      : opponentStrengthRating;
 
   return {
     opponentWinRate,
@@ -149,7 +158,7 @@ export function calculateStrengthOfSchedule(
     recentOpponentWinRate5,
     recentOpponentWinRate10,
     recentOpponentStrength5,
-    recentOpponentStrength10
+    recentOpponentStrength10,
   };
 }
 
@@ -159,12 +168,12 @@ export function calculateStrengthOfSchedule(
 export function getStrengthOfScheduleFeatures(): string[] {
   return [
     'opponentWinRate',
-    'opponentAvgMargin', 
+    'opponentAvgMargin',
     'opponentStrengthRating',
     'recentOpponentWinRate5',
     'recentOpponentWinRate10',
     'recentOpponentStrength5',
-    'recentOpponentStrength10'
+    'recentOpponentStrength10',
   ];
 }
 
@@ -176,7 +185,7 @@ export function calculateSOSDifferential(
   awayId: string,
   gameId: string,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): Record<string, number> {
   const homeSOS = calculateStrengthOfSchedule(homeId, gameId, games, db);
   const awaySOS = calculateStrengthOfSchedule(awayId, gameId, games, db);
@@ -196,6 +205,6 @@ export function calculateSOSDifferential(
     sosWinRateDifferential: homeSOS.opponentWinRate - awaySOS.opponentWinRate,
     sosStrengthDifferential: homeSOS.opponentStrengthRating - awaySOS.opponentStrengthRating,
     sosRecentStrengthDiff5: homeSOS.recentOpponentStrength5 - awaySOS.recentOpponentStrength5,
-    sosRecentStrengthDiff10: homeSOS.recentOpponentStrength10 - awaySOS.recentOpponentStrength10
+    sosRecentStrengthDiff10: homeSOS.recentOpponentStrength10 - awaySOS.recentOpponentStrength10,
   };
 }

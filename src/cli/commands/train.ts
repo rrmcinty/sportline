@@ -8,10 +8,7 @@ import { DatabaseQueries } from '../../lib/db/queries.js';
 import { loadFeatureConfig } from '../../lib/features/featureConfig.js';
 import { extractFeaturesForDataset } from '../../lib/features/featureEngineering.js';
 import { trainModel } from '../../lib/model/trainer.js';
-import {
-  saveModel,
-  generateModelFilename,
-} from '../../lib/model/modelStorage.js';
+import { saveModel, generateModelFilename } from '../../lib/model/modelStorage.js';
 import {
   generateRecommendations,
   runBacktestGrid,
@@ -19,8 +16,14 @@ import {
   generateProbabilityBuckets,
   printBacktestSummary,
 } from '../../lib/backtest/backtester.js';
-import { calculateCoefficientImportance, calculatePermutationImportance } from '../../lib/model/trainer.js';
-import { saveHistoricalData, clearHistoricalDataCache } from '../../lib/analysis/historicalDataManager.js';
+import {
+  calculateCoefficientImportance,
+  calculatePermutationImportance,
+} from '../../lib/model/trainer.js';
+import {
+  saveHistoricalData,
+  clearHistoricalDataCache,
+} from '../../lib/analysis/historicalDataManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,30 +45,30 @@ export async function train(options: TrainOptions): Promise<void> {
   // Note: Config file is in src/, not dist/, so we need to navigate correctly
   // Map sports to their sport categories
   const sportToCategory: Record<string, string> = {
-    'ncaam': 'basketball',
-    'nba': 'basketball',
-    'nhl': 'hockey',
-    'nfl': 'football',
-    'cfb': 'football'
+    ncaam: 'basketball',
+    nba: 'basketball',
+    nhl: 'hockey',
+    nfl: 'football',
+    cfb: 'football',
   };
-  
+
   const sportCategory = sportToCategory[options.sport] || 'basketball';
   const market = options.market || 'moneyline';
-  
+
   // Determine config file path based on market
   let defaultConfigPath: string;
   if (market === 'moneyline') {
     defaultConfigPath = path.join(
       process.cwd(),
-      `src/train/${sportCategory}/${options.sport}/featuresConfig.json`
+      `src/train/${sportCategory}/${options.sport}/featuresConfig.json`,
     );
   } else {
     defaultConfigPath = path.join(
       process.cwd(),
-      `src/train/${sportCategory}/${options.sport}/featuresConfig_${market}.json`
+      `src/train/${sportCategory}/${options.sport}/featuresConfig_${market}.json`,
     );
   }
-  
+
   const configPath = options.config || defaultConfigPath;
 
   console.log(`\n[1/7] Loading configuration from ${configPath}...`);
@@ -90,11 +93,7 @@ export async function train(options: TrainOptions): Promise<void> {
 
   // Step 3: Extract features
   console.log('\n[3/7] Extracting features...');
-  const { dataset, featureMeans, skipStats } = extractFeaturesForDataset(
-    games,
-    db,
-    config
-  );
+  const { dataset, featureMeans, skipStats } = extractFeaturesForDataset(games, db, config);
 
   console.log(`✓ Extracted features for ${dataset.length} games`);
   if (IS_VERBOSE) {
@@ -118,17 +117,17 @@ export async function train(options: TrainOptions): Promise<void> {
   const recommendations = generateRecommendations(
     dataset,
     trainingResult.probabilities.test,
-    splitIdx
+    splitIdx,
   );
   console.log(`✓ Generated ${recommendations.length} test predictions`);
 
   // Step 6: Run backtest to find optimal thresholds
   console.log('\n[6/7] Running backtest to optimize thresholds...');
-  
+
   const testData = dataset.slice(splitIdx);
   if (IS_VERBOSE) {
     // Debug: Check dataset odds
-    const testWithOdds = testData.filter(d => d.odds && d.odds.length > 0);
+    const testWithOdds = testData.filter((d) => d.odds && d.odds.length > 0);
     console.log(`  Test games with odds in dataset: ${testWithOdds.length}/${testData.length}`);
 
     // Debug: Log sample game from dataset
@@ -139,16 +138,16 @@ export async function train(options: TrainOptions): Promise<void> {
 
     // Debug: Check how many recommendations have non-null odds
     const recsWithOdds = recommendations.filter(
-      r => r.odds_home !== null && r.odds_away !== null
+      (r) => r.odds_home !== null && r.odds_away !== null,
     );
     console.log(`  Recommendations with odds: ${recsWithOdds.length}/${recommendations.length}`);
   }
-  
+
   // Use wider threshold ranges to ensure we find something
   const backtestResults = runBacktestGrid(
     recommendations,
     [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08],
-    [0.0, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03]
+    [0.0, 0.005, 0.01, 0.015, 0.02, 0.025, 0.03],
   );
   console.log(`✓ Tested ${backtestResults.length} threshold combinations`);
 
@@ -181,7 +180,9 @@ export async function train(options: TrainOptions): Promise<void> {
   const buckets = generateProbabilityBuckets(recommendations);
   console.log('\nProbability Calibration:');
   console.log('Bucket | Count | Accuracy | Avg EV  | ROI      | Home Bets | Away Bets | Strategy');
-  console.log('-------+-------+----------+---------+----------+-----------+-----------+-----------');
+  console.log(
+    '-------+-------+----------+---------+----------+-----------+-----------+-----------',
+  );
   for (const bucket of buckets) {
     // Determine strategy based on home/away split
     let strategy = '';
@@ -202,83 +203,88 @@ export async function train(options: TrainOptions): Promise<void> {
         `${(bucket.roi * 100).toFixed(1).padStart(7)}% | ` +
         `${bucket.home_bet_count.toString().padStart(9)} | ` +
         `${bucket.away_bet_count.toString().padStart(9)} | ` +
-        `${strategy.padEnd(9)}`
+        `${strategy.padEnd(9)}`,
     );
   }
 
   // Save historical data for this sport
   console.log('\n[HISTORICAL] Saving historical ROI data...');
-  const calibrationBuckets = buckets.map(bucket => ({
+  const calibrationBuckets = buckets.map((bucket) => ({
     bucket: bucket.bucket,
     count: bucket.count,
     accuracy: bucket.accuracy, // Keep as decimal (0.556 = 55.6%)
     avgEV: bucket.avg_ev, // Keep as decimal
-    roi: bucket.roi // Keep as decimal (0.0556 = 5.56% ROI)
+    roi: bucket.roi, // Keep as decimal (0.0556 = 5.56% ROI)
   }));
-  
+
   saveHistoricalData(
     options.sport,
     calibrationBuckets,
     trainingResult.metrics.testAccuracy, // Keep as decimal
     bestResult.roi, // Keep as decimal
     bestResult.total_bets,
-    config.market
+    config.market,
   );
-  
+
   // Clear cache so new data is loaded on next access
   clearHistoricalDataCache();
 
   // Step 7: Save model
   console.log('\n[7/7] Saving model...');
-  const modelsDir = path.join(
-    process.cwd(),
-    `src/train/${sportCategory}/${options.sport}/models`
-  );
+  const modelsDir = path.join(process.cwd(), `src/train/${sportCategory}/${options.sport}/models`);
   const modelFilename = generateModelFilename(config.sport, config.market);
   const modelPath = path.join(modelsDir, modelFilename);
 
-  saveModel(
-    trainingResult,
-    config,
-    featureMeans,
-    optimalThresholds,
-    backtestMetrics,
-    modelPath
-  );
+  saveModel(trainingResult, config, featureMeans, optimalThresholds, backtestMetrics, modelPath);
 
   // Feature Importance Analysis
   console.log('\n🔍 Feature Importance Analysis:');
-  const coeffImportance = calculateCoefficientImportance(trainingResult, trainingResult.featureKeys);
+  const coeffImportance = calculateCoefficientImportance(
+    trainingResult,
+    trainingResult.featureKeys,
+  );
 
   console.log('\n📊 Top 20 Most Important Features (Coefficient-based):');
   coeffImportance.slice(0, 20).forEach((item, i) => {
     const direction = item.coefficient >= 0 ? '📈' : '📉';
-    console.log(`${(i + 1).toString().padStart(2)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)} | ${direction}`);
+    console.log(
+      `${(i + 1).toString().padStart(2)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)} | ${direction}`,
+    );
   });
 
   console.log('\n🗑️  Bottom 10 Least Important Features:');
   coeffImportance.slice(-10).forEach((item, i) => {
     const rank = coeffImportance.length - 10 + i + 1;
-    console.log(`${rank.toString().padStart(3)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)}`);
+    console.log(
+      `${rank.toString().padStart(3)}. ${item.feature.padEnd(25)} | ${item.importance.toFixed(4)}`,
+    );
   });
 
   // Recommendations
-  const uselessFeatures = coeffImportance.filter(item => item.importance < 0.001);
-  const lowImportanceFeatures = coeffImportance.filter(item => item.importance < 0.01);
+  const uselessFeatures = coeffImportance.filter((item) => item.importance < 0.001);
+  const lowImportanceFeatures = coeffImportance.filter((item) => item.importance < 0.01);
 
   console.log(`\n💡 Recommendations:`);
-  console.log(`  - ${uselessFeatures.length} features have importance < 0.001 (consider disabling)`);
+  console.log(
+    `  - ${uselessFeatures.length} features have importance < 0.001 (consider disabling)`,
+  );
   console.log(`  - ${lowImportanceFeatures.length} features have importance < 0.01 (review these)`);
-  console.log(`  - Top feature: ${coeffImportance[0].feature} (${coeffImportance[0].importance.toFixed(4)})`);
+  console.log(
+    `  - Top feature: ${coeffImportance[0].feature} (${coeffImportance[0].importance.toFixed(4)})`,
+  );
 
   console.log(`\n🗑️ Features to Consider Disabling (< 0.001 importance):`);
   uselessFeatures.forEach((item, i) => {
-    console.log(`${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`);
+    console.log(
+      `${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`,
+    );
   });
 
   console.log(`\n⚠️  Features to Review (< 0.01 importance):`);
   lowImportanceFeatures.forEach((item, i) => {
-    console.log(`${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`);
+    console.log(
+      `${(i + 1).toString().padStart(3)}. ${item.feature.padEnd(30)} | ${item.importance.toFixed(6)}`,
+    );
   });
 
   // Save run metadata to database
@@ -289,7 +295,7 @@ export async function train(options: TrainOptions): Promise<void> {
     config.seasons[config.seasons.length - 1],
     JSON.stringify(config),
     JSON.stringify(backtestMetrics),
-    modelPath
+    modelPath,
   );
 
   // Close database connection

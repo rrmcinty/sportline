@@ -19,11 +19,13 @@ export class L2RegularizedLogisticRegression {
   private numSteps: number;
   private lambda: number; // L2 regularization strength
 
-  constructor(options: {
-    numSteps?: number;
-    learningRate?: number;
-    lambda?: number;
-  } = {}) {
+  constructor(
+    options: {
+      numSteps?: number;
+      learningRate?: number;
+      lambda?: number;
+    } = {},
+  ) {
     this.numSteps = options.numSteps ?? 1000;
     this.learningRate = options.learningRate ?? 0.01;
     this.lambda = options.lambda ?? 0.1; // Default regularization
@@ -43,7 +45,7 @@ export class L2RegularizedLogisticRegression {
    * Predict probabilities for input matrix
    */
   predict(X: number[][]): number[] {
-    return X.map(row => {
+    return X.map((row) => {
       const z = row.reduce((sum, x, i) => sum + x * this.theta[i], 0);
       return this.sigmoid(z);
     });
@@ -55,17 +57,19 @@ export class L2RegularizedLogisticRegression {
   train(X: number[][], y: number[]): void {
     const n = X.length;
     const nFeatures = X[0].length;
-    
+
     // Initialize weights to small random values
-    this.theta = Array(nFeatures).fill(0).map(() => (Math.random() - 0.5) * 0.01);
-    
+    this.theta = Array(nFeatures)
+      .fill(0)
+      .map(() => (Math.random() - 0.5) * 0.01);
+
     let prevLoss = Infinity;
     const lossHistory: number[] = [];
-    
+
     for (let step = 0; step < this.numSteps; step++) {
       // Forward pass: compute predictions
       const predictions = this.predict(X);
-      
+
       // Compute loss: cross-entropy + L2 penalty
       let loss = 0;
       for (let i = 0; i < n; i++) {
@@ -73,48 +77,52 @@ export class L2RegularizedLogisticRegression {
         loss -= y[i] * Math.log(p) + (1 - y[i]) * Math.log(1 - p);
       }
       loss /= n;
-      
+
       // Add L2 penalty (don't regularize bias if we had one)
       const l2Penalty = this.lambda * this.theta.reduce((sum, t) => sum + t * t, 0);
       loss += l2Penalty;
-      
+
       lossHistory.push(loss);
-      
+
       // Early stopping if loss plateaus
       if (step > 100 && Math.abs(prevLoss - loss) < 1e-7) {
         console.log(`[L2LogReg] Early stopping at step ${step}, loss: ${loss.toFixed(6)}`);
         break;
       }
       prevLoss = loss;
-      
+
       // Compute gradients
       const gradients = new Array(nFeatures).fill(0);
-      
+
       for (let i = 0; i < n; i++) {
         const error = predictions[i] - y[i];
         for (let j = 0; j < nFeatures; j++) {
           gradients[j] += error * X[i][j];
         }
       }
-      
+
       // Average gradients and add L2 penalty gradient
       for (let j = 0; j < nFeatures; j++) {
         gradients[j] = gradients[j] / n + 2 * this.lambda * this.theta[j];
       }
-      
+
       // Update weights
       for (let j = 0; j < nFeatures; j++) {
         this.theta[j] -= this.learningRate * gradients[j];
       }
-      
+
       // Log progress periodically
       if (step % 200 === 0 || step === this.numSteps - 1) {
         const maxTheta = Math.max(...this.theta.map(Math.abs));
-        console.log(`[L2LogReg] Step ${step}: loss=${loss.toFixed(6)}, maxTheta=${maxTheta.toFixed(4)}`);
+        console.log(
+          `[L2LogReg] Step ${step}: loss=${loss.toFixed(6)}, maxTheta=${maxTheta.toFixed(4)}`,
+        );
       }
     }
-    
-    console.log(`[L2LogReg] Training complete. Final theta range: [${Math.min(...this.theta).toFixed(4)}, ${Math.max(...this.theta).toFixed(4)}]`);
+
+    console.log(
+      `[L2LogReg] Training complete. Final theta range: [${Math.min(...this.theta).toFixed(4)}, ${Math.max(...this.theta).toFixed(4)}]`,
+    );
   }
 }
 
@@ -157,17 +165,17 @@ export interface TrainingResult {
 function calculateColumnMeans(X: number[][]): number[] {
   const numFeatures = X[0].length;
   const means: number[] = new Array(numFeatures).fill(0);
-  
+
   for (const row of X) {
     for (let j = 0; j < numFeatures; j++) {
       means[j] += row[j];
     }
   }
-  
+
   for (let j = 0; j < numFeatures; j++) {
     means[j] /= X.length;
   }
-  
+
   return means;
 }
 
@@ -177,20 +185,20 @@ function calculateColumnMeans(X: number[][]): number[] {
 function calculateColumnStds(X: number[][], means: number[]): number[] {
   const numFeatures = X[0].length;
   const stds: number[] = new Array(numFeatures).fill(0);
-  
+
   for (const row of X) {
     for (let j = 0; j < numFeatures; j++) {
       const diff = row[j] - means[j];
       stds[j] += diff * diff;
     }
   }
-  
+
   for (let j = 0; j < numFeatures; j++) {
     stds[j] = Math.sqrt(stds[j] / X.length);
     // Prevent division by zero
     if (stds[j] === 0) stds[j] = 1;
   }
-  
+
   return stds;
 }
 
@@ -198,9 +206,7 @@ function calculateColumnStds(X: number[][], means: number[]): number[] {
  * Standardize features: (x - mean) / std
  */
 function standardizeFeatures(X: number[][], means: number[], stds: number[]): number[][] {
-  return X.map(row => 
-    row.map((val, j) => (val - means[j]) / stds[j])
-  );
+  return X.map((row) => row.map((val, j) => (val - means[j]) / stds[j]));
 }
 
 /**
@@ -234,7 +240,7 @@ export function trainLogisticRegression(
   y_train: number[],
   X_test: number[][],
   y_test: number[],
-  lambda: number = 0.1 // L2 regularization strength
+  lambda: number = 0.1, // L2 regularization strength
 ): {
   model: L2RegularizedLogisticRegression;
   y_pred_train: number[];
@@ -243,14 +249,14 @@ export function trainLogisticRegression(
   y_prob_test: number[];
 } {
   console.log(`[Trainer] Using L2 regularization with lambda=${lambda}`);
-  
+
   // Use our custom L2-regularized logistic regression
   const logreg = new L2RegularizedLogisticRegression({
-    numSteps: 2000,     // More steps for convergence
-    learningRate: 0.1,  // Higher learning rate with regularization
-    lambda: lambda      // Regularization strength
+    numSteps: 2000, // More steps for convergence
+    learningRate: 0.1, // Higher learning rate with regularization
+    lambda: lambda, // Regularization strength
   });
-  
+
   logreg.train(X_train, y_train);
 
   const y_prob_train = logreg.predict(X_train);
@@ -275,7 +281,7 @@ export function trainRandomForest(
   y_train: number[],
   X_test: number[][],
   y_test: number[],
-  nFeatures: number
+  nFeatures: number,
 ): {
   model: RFClassifier;
   y_pred_train: number[];
@@ -311,10 +317,7 @@ export function trainRandomForest(
 /**
  * Estimate probabilities from random forest by voting
  */
-function estimateRandomForestProbabilities(
-  rf: RFClassifier,
-  X: number[][]
-): number[] {
+function estimateRandomForestProbabilities(rf: RFClassifier, X: number[][]): number[] {
   const nSamples = X.length;
 
   if (Array.isArray(rf.estimators) && rf.estimators.length > 0) {
@@ -342,7 +345,7 @@ function estimateRandomForestProbabilities(
 export function trainModel(
   dataset: GameFeatures[],
   config: FeatureConfig,
-  splitRatio: number = 0.8
+  splitRatio: number = 0.8,
 ): TrainingResult {
   const isVerbose = process.env.SPORTLINE_VERBOSE === '1';
 
@@ -357,9 +360,7 @@ export function trainModel(
   const featureKeys = Object.keys(filtered[0].features);
 
   // Build feature matrix X and target vector y
-  const X: number[][] = filtered.map((row) =>
-    featureKeys.map((k) => row.features[k])
-  );
+  const X: number[][] = filtered.map((row) => featureKeys.map((k) => row.features[k]));
   const y = filtered.map((row) => row.target!);
 
   // Split into train/test
@@ -371,7 +372,7 @@ export function trainModel(
 
   if (isVerbose) {
     console.log(
-      `[Trainer] Training with ${X_train.length} samples, testing with ${X_test.length} samples`
+      `[Trainer] Training with ${X_train.length} samples, testing with ${X_test.length} samples`,
     );
     console.log(`[Trainer] Features: ${featureKeys.length}`);
   }
@@ -382,7 +383,7 @@ export function trainModel(
   }
   const featureMeans = calculateColumnMeans(X_train);
   const featureStds = calculateColumnStds(X_train, featureMeans);
-  
+
   // Standardize features
   if (isVerbose) {
     console.log('[Trainer] Standardizing features...');
@@ -407,7 +408,7 @@ export function trainModel(
       y_train,
       X_test_scaled,
       y_test,
-      featureKeys.length
+      featureKeys.length,
     );
     model = result.model;
     y_pred_train = result.y_pred_train;
@@ -526,7 +527,7 @@ export function trainModel(
  */
 export function calculateCoefficientImportance(
   trainingResult: TrainingResult,
-  featureKeys: string[]
+  featureKeys: string[],
 ): Array<{ feature: string; importance: number; coefficient: number }> {
   if (trainingResult.modelType === 'ensemble') {
     // For ensemble (multiple logistic regressions), average importance across trees
@@ -536,16 +537,16 @@ export function calculateCoefficientImportance(
     const featureImportance: Record<string, { total: number; count: number }> = {};
 
     // Initialize
-    featureKeys.forEach(key => {
+    featureKeys.forEach((key) => {
       featureImportance[key] = { total: 0, count: 0 };
     });
 
     // Average importance across simulated trees (same seeds as training)
     for (let treeIdx = 0; treeIdx < nEstimators; treeIdx++) {
       const seed = (rfParams.seed || 42) + treeIdx;
-      const theta = Array(featureKeys.length).fill(0).map((_, i) =>
-        (Math.sin(seed + i) * 0.1) + (Math.random() - 0.5) * 0.01
-      );
+      const theta = Array(featureKeys.length)
+        .fill(0)
+        .map((_, i) => Math.sin(seed + i) * 0.1 + (Math.random() - 0.5) * 0.01);
 
       featureKeys.forEach((key, i) => {
         const importance = Math.abs(theta[i]);
@@ -554,12 +555,13 @@ export function calculateCoefficientImportance(
       });
     }
 
-    return featureKeys.map(key => ({
-      feature: key,
-      importance: featureImportance[key].total / featureImportance[key].count,
-      coefficient: featureImportance[key].total / featureImportance[key].count // Average coefficient
-    })).sort((a, b) => b.importance - a.importance);
-
+    return featureKeys
+      .map((key) => ({
+        feature: key,
+        importance: featureImportance[key].total / featureImportance[key].count,
+        coefficient: featureImportance[key].total / featureImportance[key].count, // Average coefficient
+      }))
+      .sort((a, b) => b.importance - a.importance);
   } else if (trainingResult.modelType === 'logistic_regression') {
     // Direct coefficient access for logistic regression
     const rawModel = trainingResult.model as any;
@@ -582,11 +584,13 @@ export function calculateCoefficientImportance(
       return [];
     }
 
-    return featureKeys.map((key, i) => ({
-      feature: key,
-      importance: Math.abs(theta[i] || 0),
-      coefficient: theta[i] || 0
-    })).sort((a, b) => b.importance - a.importance);
+    return featureKeys
+      .map((key, i) => ({
+        feature: key,
+        importance: Math.abs(theta[i] || 0),
+        coefficient: theta[i] || 0,
+      }))
+      .sort((a, b) => b.importance - a.importance);
   }
 
   return [];
@@ -599,19 +603,19 @@ export function calculatePermutationImportance(
   trainingResult: TrainingResult,
   testData: Array<{ features: Record<string, number>; target: number }>,
   featureKeys: string[],
-  nSamples: number = 50 // Smaller sample for speed
+  nSamples: number = 50, // Smaller sample for speed
 ): Array<{ feature: string; importance: number }> {
   // Use a subset of test data for speed
   const sampleData = testData.slice(0, Math.min(nSamples, testData.length));
 
   // Calculate baseline accuracy
-  const baselinePredictions = sampleData.map(game => {
+  const baselinePredictions = sampleData.map((game) => {
     const prediction = predictFeatures(trainingResult, game.features, trainingResult.featureKeys);
     return prediction.prob_home > 0.5 ? 1 : 0;
   });
   const baselineAccuracy = calculateAccuracy(
-    sampleData.map(g => g.target),
-    baselinePredictions
+    sampleData.map((g) => g.target),
+    baselinePredictions,
   );
 
   console.log(`[PermutationImportance] Baseline accuracy: ${(baselineAccuracy * 100).toFixed(2)}%`);
@@ -623,23 +627,23 @@ export function calculatePermutationImportance(
 
   for (const feature of featuresToTest) {
     // Create shuffled version of this feature
-    const shuffledValues = shuffleArray(sampleData.map(g => g.features[feature]));
+    const shuffledValues = shuffleArray(sampleData.map((g) => g.features[feature]));
     const shuffledData = sampleData.map((game, i) => ({
       ...game,
       features: {
         ...game.features,
-        [feature]: shuffledValues[i]
-      }
+        [feature]: shuffledValues[i],
+      },
     }));
 
     // Calculate accuracy with shuffled feature
-    const shuffledPredictions = shuffledData.map(game => {
+    const shuffledPredictions = shuffledData.map((game) => {
       const prediction = predictFeatures(trainingResult, game.features, trainingResult.featureKeys);
       return prediction.prob_home > 0.5 ? 1 : 0;
     });
     const shuffledAccuracy = calculateAccuracy(
-      shuffledData.map(g => g.target),
-      shuffledPredictions
+      shuffledData.map((g) => g.target),
+      shuffledPredictions,
     );
 
     // Importance = baseline accuracy - shuffled accuracy
@@ -656,7 +660,7 @@ export function calculatePermutationImportance(
 function predictFeatures(
   trainingResult: TrainingResult,
   features: Record<string, number>,
-  featureKeys: string[]
+  featureKeys: string[],
 ): { prob_home: number } {
   // Simplified prediction for importance analysis
   if (trainingResult.modelType === 'logistic_regression') {
@@ -693,9 +697,9 @@ function predictFeatures(
 
     for (let i = 0; i < nEstimators; i++) {
       const seed = (rfParams.seed || 42) + i;
-      const theta = Array(featureKeys.length).fill(0).map((_, j) =>
-        (Math.sin(seed + j) * 0.1) + (Math.random() - 0.5) * 0.01
-      );
+      const theta = Array(featureKeys.length)
+        .fill(0)
+        .map((_, j) => Math.sin(seed + j) * 0.1 + (Math.random() - 0.5) * 0.01);
 
       let z = 0;
       featureKeys.forEach((key, j) => {

@@ -14,7 +14,7 @@ export function optimizeThresholdsMultiObjective(
   minBets: number = 20,
   roiWeight: number = 0.7,
   winRateWeight: number = 0.2,
-  sampleSizeWeight: number = 0.1
+  sampleSizeWeight: number = 0.1,
 ): { min_edge: number; min_ev: number; score: number } {
   // Filter results with sufficient bets
   const validResults = backtestResults.filter((r) => r.total_bets >= minBets);
@@ -35,9 +35,7 @@ export function optimizeThresholdsMultiObjective(
     const sampleSizeScore = maxBets > 0 ? r.total_bets / maxBets : 0;
 
     const compositeScore =
-      roiWeight * roiScore +
-      winRateWeight * winRateScore +
-      sampleSizeWeight * sampleSizeScore;
+      roiWeight * roiScore + winRateWeight * winRateScore + sampleSizeWeight * sampleSizeScore;
 
     return {
       ...r,
@@ -62,7 +60,7 @@ export function optimizeThresholdsMultiObjective(
  */
 export function optimizeForExpectedProfit(
   backtestResults: BacktestResult[],
-  minBets: number = 20
+  minBets: number = 20,
 ): { min_edge: number; min_ev: number } {
   const validResults = backtestResults.filter((r) => r.total_bets >= minBets);
 
@@ -93,7 +91,7 @@ export function optimizeForExpectedProfit(
  */
 export function optimizeKellyCriterion(
   backtestResults: BacktestResult[],
-  minBets: number = 20
+  minBets: number = 20,
 ): { min_edge: number; min_ev: number } {
   const validResults = backtestResults.filter((r) => r.total_bets >= minBets);
 
@@ -122,7 +120,7 @@ export function optimizeKellyCriterion(
  */
 export function getThresholdRecommendations(
   backtestResults: BacktestResult[],
-  minBets: number = 20
+  minBets: number = 20,
 ): {
   bestROI: { min_edge: number; min_ev: number };
   bestExpectedProfit: { min_edge: number; min_ev: number };
@@ -130,21 +128,14 @@ export function getThresholdRecommendations(
   recommended: { min_edge: number; min_ev: number };
 } {
   // Try different optimization strategies
-  const bestROI = backtestResults
-    .filter((r) => r.total_bets >= minBets)
-    .sort((a, b) => b.roi - a.roi)[0] || null;
+  const bestROI =
+    backtestResults.filter((r) => r.total_bets >= minBets).sort((a, b) => b.roi - a.roi)[0] || null;
 
-  const bestExpectedProfit = optimizeForExpectedProfit(
-    backtestResults,
-    minBets
-  );
+  const bestExpectedProfit = optimizeForExpectedProfit(backtestResults, minBets);
   const bestKelly = optimizeKellyCriterion(backtestResults, minBets);
 
   // Use multi-objective as recommended default
-  const multiObjective = optimizeThresholdsMultiObjective(
-    backtestResults,
-    minBets
-  );
+  const multiObjective = optimizeThresholdsMultiObjective(backtestResults, minBets);
 
   return {
     bestROI: bestROI

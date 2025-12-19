@@ -7,15 +7,12 @@ import type { Game, GameFeatures, OddsData, FeatureConfig } from '../db/types.js
 import { DatabaseQueries } from '../db/queries.js';
 import { getMarketImpliedProb } from '../odds/evCalculator.js';
 import { getEnabledRollingFeatures, isFeatureEnabled } from './featureConfig.js';
-import { 
-  calculateAdvancedStats, 
+import {
+  calculateAdvancedStats,
   computeOffensiveDefensiveRatings,
-  getAdvancedFeatures
+  getAdvancedFeatures,
 } from './sportFeatureFactory.js';
-import { 
-  calculateSOSDifferential,
-  getStrengthOfScheduleFeatures
-} from './strengthOfSchedule.js';
+import { calculateSOSDifferential, getStrengthOfScheduleFeatures } from './strengthOfSchedule.js';
 
 /**
  * Generate exponential recency weights for a given window size
@@ -45,20 +42,28 @@ export function weightedAverage(values: number[], weights: number[]): number {
  * Calculate form indicators from game history
  */
 export function calculateFormIndicators(
-  teamGames: Array<{ id: string; date: string; home_team_id: string; away_team_id: string; home_score: number; away_score: number }>,
+  teamGames: Array<{
+    id: string;
+    date: string;
+    home_team_id: string;
+    away_team_id: string;
+    home_score: number;
+    away_score: number;
+  }>,
   teamId: string,
-  currentGameId: string
+  currentGameId: string,
 ): Record<string, number> {
   const formStats: Record<string, number> = {};
 
   // Sort games by date (most recent first)
   const sortedGames = teamGames
-    .filter(g => g.id !== currentGameId) // Exclude current game
+    .filter((g) => g.id !== currentGameId) // Exclude current game
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Calculate win streak
   let winStreak = 0;
-  for (const game of sortedGames.slice(0, 20)) { // Check last 20 games
+  for (const game of sortedGames.slice(0, 20)) {
+    // Check last 20 games
     const isHome = game.home_team_id === teamId;
     const teamScore = isHome ? game.home_score : game.away_score;
     const oppScore = isHome ? game.away_score : game.home_score;
@@ -75,7 +80,7 @@ export function calculateFormIndicators(
   // Calculate recent form (last 5 games win percentage)
   const recentGames = sortedGames.slice(0, 5);
   if (recentGames.length > 0) {
-    const recentWins = recentGames.filter(game => {
+    const recentWins = recentGames.filter((game) => {
       const isHome = game.home_team_id === teamId;
       const teamScore = isHome ? game.home_score : game.away_score;
       const oppScore = isHome ? game.away_score : game.home_score;
@@ -87,10 +92,13 @@ export function calculateFormIndicators(
   // Calculate rest days (days since last game)
   if (sortedGames.length > 0) {
     const lastGameDate = new Date(sortedGames[0].date);
-    const currentGame = teamGames.find(g => g.id === currentGameId);
+    const currentGame = teamGames.find((g) => g.id === currentGameId);
     if (currentGame) {
       const currentGameDate = new Date(currentGame.date);
-      const restDays = Math.max(0, Math.floor((currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24)));
+      const restDays = Math.max(
+        0,
+        Math.floor((currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24)),
+      );
       formStats.restDays = Math.min(restDays, 7); // Cap at 7 days
     }
   }
@@ -98,10 +106,12 @@ export function calculateFormIndicators(
   // Calculate back-to-back indicator
   if (sortedGames.length > 0) {
     const lastGameDate = new Date(sortedGames[0].date);
-    const currentGame = teamGames.find(g => g.id === currentGameId);
+    const currentGame = teamGames.find((g) => g.id === currentGameId);
     if (currentGame) {
       const currentGameDate = new Date(currentGame.date);
-      const daysSinceLastGame = Math.floor((currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceLastGame = Math.floor(
+        (currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
       formStats.backToBack = daysSinceLastGame === 1 ? 1 : 0;
     }
   }
@@ -114,7 +124,7 @@ export function calculateFormIndicators(
  */
 export function calculateSimpleFormIndicators(
   rollingStats: Record<string, Record<string, number>>,
-  latestGameId: string
+  latestGameId: string,
 ): Record<string, number> {
   const formStats: Record<string, number> = {};
 
@@ -135,7 +145,7 @@ export function calculateSimpleFormIndicators(
  */
 export function computeWinStreak(teamId: string, gameId: string, games: Game[]): number {
   const sortedGames = games
-    .filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id !== gameId)
+    .filter((g) => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id !== gameId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   let streak = 0;
@@ -165,29 +175,37 @@ export function computeWinStreak(teamId: string, gameId: string, games: Game[]):
  */
 export function computeRestDays(teamId: string, gameId: string, games: Game[]): number {
   const sortedGames = games
-    .filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id !== gameId)
+    .filter((g) => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id !== gameId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   if (sortedGames.length === 0) return 7; // Default for teams with no recent games
 
-  const currentGame = games.find(g => g.id === gameId);
+  const currentGame = games.find((g) => g.id === gameId);
   if (!currentGame) return 7;
 
   const lastGameDate = new Date(sortedGames[0].date);
   const currentGameDate = new Date(currentGame.date);
 
-  const daysDiff = Math.floor((currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24));
+  const daysDiff = Math.floor(
+    (currentGameDate.getTime() - lastGameDate.getTime()) / (1000 * 60 * 60 * 24),
+  );
   return Math.max(0, daysDiff);
 }
 
 /**
  * Compute head-to-head record between two teams
  */
-export function computeHeadToHead(homeId: string, awayId: string, gameId: string, games: Game[]): { wins: number; games: number } {
-  const h2hGames = games.filter(g =>
-    g.id !== gameId &&
-    ((g.home_team_id === homeId && g.away_team_id === awayId) ||
-     (g.home_team_id === awayId && g.away_team_id === homeId))
+export function computeHeadToHead(
+  homeId: string,
+  awayId: string,
+  gameId: string,
+  games: Game[],
+): { wins: number; games: number } {
+  const h2hGames = games.filter(
+    (g) =>
+      g.id !== gameId &&
+      ((g.home_team_id === homeId && g.away_team_id === awayId) ||
+        (g.home_team_id === awayId && g.away_team_id === homeId)),
   );
 
   let homeWins = 0;
@@ -206,11 +224,11 @@ export function computeHeadToHead(homeId: string, awayId: string, gameId: string
   }
 
   // Only count games with valid scores for the total count
-  const validGames = h2hGames.filter(g => g.home_score !== null && g.away_score !== null);
-  
+  const validGames = h2hGames.filter((g) => g.home_score !== null && g.away_score !== null);
+
   return {
     wins: homeWins,
-    games: validGames.length
+    games: validGames.length,
   };
 }
 
@@ -226,7 +244,7 @@ export function computeRollingAverages(
   windows: number[],
   enabledFeatures: string[],
   useExponentialRecency: boolean,
-  recencyDecay: number
+  recencyDecay: number,
 ): Record<string, Record<string, number>> {
   // Returns: { game_id: { stat_window: value } }
   const result: Record<string, Record<string, number>> = {};
@@ -238,9 +256,7 @@ export function computeRollingAverages(
     for (const stat of enabledFeatures) {
       for (const w of windows) {
         const prevGames = gameOrder.slice(Math.max(0, i - w), i);
-        const vals = prevGames
-          .map((g) => statsByGame[g]?.[stat])
-          .filter((v) => v !== undefined);
+        const vals = prevGames.map((g) => statsByGame[g]?.[stat]).filter((v) => v !== undefined);
 
         let avg = 0;
         if (vals.length) {
@@ -267,13 +283,10 @@ export function computeWinRate(
   teamId: string,
   gameId: string,
   window: number,
-  games: Game[]
+  games: Game[],
 ): number {
   const gamesForTeam = games
-    .filter(
-      (g) =>
-        (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId
-    )
+    .filter((g) => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-window);
 
@@ -299,13 +312,10 @@ export function computeAvgMargin(
   teamId: string,
   gameId: string,
   window: number,
-  games: Game[]
+  games: Game[],
 ): number {
   const gamesForTeam = games
-    .filter(
-      (g) =>
-        (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId
-    )
+    .filter((g) => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-window);
 
@@ -315,9 +325,7 @@ export function computeAvgMargin(
   for (const g of gamesForTeam) {
     const isHome = g.home_team_id === teamId;
     if (g.home_score == null || g.away_score == null) continue;
-    marginSum += isHome
-      ? g.home_score - g.away_score
-      : g.away_score - g.home_score;
+    marginSum += isHome ? g.home_score - g.away_score : g.away_score - g.home_score;
   }
 
   return marginSum / gamesForTeam.length;
@@ -326,16 +334,9 @@ export function computeAvgMargin(
 /**
  * Compute recent form (win rate in last 3 games)
  */
-export function computeRecentForm(
-  teamId: string,
-  gameId: string,
-  games: Game[]
-): number {
+export function computeRecentForm(teamId: string, gameId: string, games: Game[]): number {
   const gamesForTeam = games
-    .filter(
-      (g) =>
-        (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId
-    )
+    .filter((g) => (g.home_team_id === teamId || g.away_team_id === teamId) && g.id < gameId)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-3); // Last 3 games
 
@@ -362,7 +363,7 @@ export function computeFixedFeatures(
   games: Game[],
   oddsArr: OddsData[],
   db: DatabaseQueries,
-  sport?: string
+  sport?: string,
 ): Record<string, number> {
   const marketImpliedProbVal = getMarketImpliedProb(oddsArr);
 
@@ -429,7 +430,7 @@ export function computeFixedFeatures(
 export function extractFeaturesForDataset(
   games: Game[],
   db: DatabaseQueries,
-  config: FeatureConfig
+  config: FeatureConfig,
 ): {
   dataset: GameFeatures[];
   featureMeans: Record<string, number>;
@@ -439,24 +440,21 @@ export function extractFeaturesForDataset(
   const useExponentialRecency = config.recency_weighting?.enabled ?? true;
   const recencyDecay = config.recency_weighting?.decay ?? 0.7;
 
-
   // Step 1: Extract and pivot game_stats for all games/teams
   const gameStatsMap = db.getGameStatsForSeasons(
     config.sport,
     config.seasons,
-    enabledRollingFeatures
+    enabledRollingFeatures,
   );
 
   // Step 2: Compute rolling averages for each team
-  const teamRollingStats: Record<
-    string,
-    Record<string, Record<string, number>>
-  > = {};
-
+  const teamRollingStats: Record<string, Record<string, Record<string, number>>> = {};
 
   // Get sport-specific advanced features that should be included in rolling calculations
   const advancedFeatures = getAdvancedFeatures(config.sport);
-  const enabledAdvancedFeatures = advancedFeatures.filter(feature => isFeatureEnabled(config, feature));
+  const enabledAdvancedFeatures = advancedFeatures.filter((feature) =>
+    isFeatureEnabled(config, feature),
+  );
 
   for (const [teamId, teamGames] of gameStatsMap.entries()) {
     const gameIds = Array.from(teamGames.keys()).sort();
@@ -482,7 +480,7 @@ export function extractFeaturesForDataset(
       config.rolling_windows,
       allRollingFeatures,
       useExponentialRecency,
-      recencyDecay
+      recencyDecay,
     );
   }
 
@@ -591,7 +589,7 @@ export function extractFeaturesForDataset(
       games,
       oddsArr,
       db,
-      config.sport
+      config.sport,
     );
 
     // Set home advantage
@@ -614,7 +612,7 @@ export function extractFeaturesForDataset(
       if (config.market === 'spread') {
         // For spread betting: 1 if home team covers spread, 0 if away team covers
         // Find the spread from odds data
-        const spreadOdds = oddsArr.find(odds => odds.line !== null);
+        const spreadOdds = oddsArr.find((odds) => odds.line !== null);
         if (spreadOdds && spreadOdds.line !== null) {
           const spread = spreadOdds.line; // Positive means home team is favored by this amount
           const homeMargin = game.home_score - game.away_score;
@@ -650,8 +648,7 @@ export function extractFeaturesForDataset(
 
   for (const gameFeatures of dataset) {
     for (const [key, value] of Object.entries(gameFeatures.features)) {
-      if (value === null || value === undefined ||
-          (key === 'marketImpliedProb' && value === 0)) {
+      if (value === null || value === undefined || (key === 'marketImpliedProb' && value === 0)) {
         // Use training set mean for imputation
         const imputedValue = featureMeans[key] ?? (key === 'marketImpliedProb' ? 0.5 : 0);
         gameFeatures.features[key] = imputedValue;
@@ -660,7 +657,9 @@ export function extractFeaturesForDataset(
     }
   }
 
-  console.log(`[FeatureEngineering] Imputed ${imputedCount} missing values across ${dataset.length} games`);
+  console.log(
+    `[FeatureEngineering] Imputed ${imputedCount} missing values across ${dataset.length} games`,
+  );
 
   return {
     dataset,
@@ -677,7 +676,7 @@ export function extractFeaturesForGame(
   db: DatabaseQueries,
   config: FeatureConfig,
   featureMeans: Record<string, number>,
-  allGames: Game[]
+  allGames: Game[],
 ): Record<string, number> | null {
   const enabledRollingFeatures = getEnabledRollingFeatures(config);
   const useExponentialRecency = config.recency_weighting?.enabled ?? true;
@@ -689,12 +688,10 @@ export function extractFeaturesForGame(
 
   // Get game stats for home and away teams
   const homeGames = allGames.filter(
-    (g) =>
-      (g.home_team_id === homeId || g.away_team_id === homeId) && g.id < gid
+    (g) => (g.home_team_id === homeId || g.away_team_id === homeId) && g.id < gid,
   );
   const awayGames = allGames.filter(
-    (g) =>
-      (g.home_team_id === awayId || g.away_team_id === awayId) && g.id < gid
+    (g) => (g.home_team_id === awayId || g.away_team_id === awayId) && g.id < gid,
   );
 
   // Build stats map for home team
@@ -728,7 +725,7 @@ export function extractFeaturesForGame(
     config.rolling_windows,
     enabledRollingFeatures,
     useExponentialRecency,
-    recencyDecay
+    recencyDecay,
   );
 
   const awayRolling = computeRollingAverages(
@@ -737,9 +734,8 @@ export function extractFeaturesForGame(
     config.rolling_windows,
     enabledRollingFeatures,
     useExponentialRecency,
-    recencyDecay
+    recencyDecay,
   );
-
 
   // Get most recent rolling stats (or use all if not enough games)
   const homeLatestGameId = homeGameIds.length > 0 ? homeGameIds[homeGameIds.length - 1] : null;
@@ -755,19 +751,20 @@ export function extractFeaturesForGame(
 
       // Use rolling stats if available, otherwise use training means
       if (homeLatestGameId && homeRolling[homeLatestGameId]) {
-        features[homeKey] = homeRolling[homeLatestGameId][`${stat}_avg_${w}`] ?? featureMeans[homeKey] ?? 0;
+        features[homeKey] =
+          homeRolling[homeLatestGameId][`${stat}_avg_${w}`] ?? featureMeans[homeKey] ?? 0;
       } else {
         features[homeKey] = featureMeans[homeKey] ?? 0;
       }
 
       if (awayLatestGameId && awayRolling[awayLatestGameId]) {
-        features[awayKey] = awayRolling[awayLatestGameId][`${stat}_avg_${w}`] ?? featureMeans[awayKey] ?? 0;
+        features[awayKey] =
+          awayRolling[awayLatestGameId][`${stat}_avg_${w}`] ?? featureMeans[awayKey] ?? 0;
       } else {
         features[awayKey] = featureMeans[awayKey] ?? 0;
       }
     }
   }
-
 
   // Add fixed features if enabled
   const oddsArr = db.getOddsByMarket(gid, config.market, config.allowed_providers);
@@ -778,7 +775,7 @@ export function extractFeaturesForGame(
     allGames,
     oddsArr,
     db,
-    config.sport
+    config.sport,
   );
 
   fixedFeatureValues.homeAdvantage =
@@ -787,8 +784,7 @@ export function extractFeaturesForGame(
   for (const [key, value] of Object.entries(fixedFeatureValues)) {
     if (isFeatureEnabled(config, key)) {
       // Apply same imputation logic as training
-      if (value === null || value === undefined ||
-          (key === 'marketImpliedProb' && value === 0)) {
+      if (value === null || value === undefined || (key === 'marketImpliedProb' && value === 0)) {
         features[key] = featureMeans[key] ?? (key === 'marketImpliedProb' ? 0.5 : 0);
       } else {
         features[key] = value;
@@ -798,4 +794,3 @@ export function extractFeaturesForGame(
 
   return features;
 }
-

@@ -15,12 +15,17 @@ import {
   formatOdds,
   formatPercentage,
 } from '../../lib/odds/evCalculator.js';
-import type { FeatureConfig, Recommendation, GameFeatures, TodaysGame } from '../../lib/db/types.js';
+import type {
+  FeatureConfig,
+  Recommendation,
+  GameFeatures,
+  TodaysGame,
+} from '../../lib/db/types.js';
 
-import { 
-  getHistoricalContext, 
+import {
+  getHistoricalContext,
   formatHistoricalContext,
-  getShortHistoricalInsight 
+  getShortHistoricalInsight,
 } from '../../lib/analysis/historicalContext.js';
 
 /**
@@ -30,10 +35,10 @@ import {
 function calculateBetQualityScore(ev: number, context: any): number {
   // Base score from EV (0-100 scale)
   const evScore = Math.max(0, Math.min(100, ev * 100));
-  
+
   // Historical ROI bonus/penalty based on actual ROI and recommendation
   let roiMultiplier = 1.0;
-  
+
   // Use the overall recommendation from historical context
   if (context.overallRecommendation === 'STRONG_BET') {
     roiMultiplier = 3.0; // Triple weight for strong bets
@@ -44,24 +49,26 @@ function calculateBetQualityScore(ev: number, context: any): number {
   } else if (context.overallRecommendation === 'AVOID') {
     roiMultiplier = 0.1; // Heavy penalty for avoid bets
   }
-  
+
   // Additional penalty for very negative ROI
-  if (context.oddsRangeROI < -0.4) { // Less than -40% ROI
+  if (context.oddsRangeROI < -0.4) {
+    // Less than -40% ROI
     roiMultiplier *= 0.1;
-  } else if (context.oddsRangeROI < -0.2) { // Less than -20% ROI
+  } else if (context.oddsRangeROI < -0.2) {
+    // Less than -20% ROI
     roiMultiplier *= 0.3;
   }
-  
+
   // Bonus for positive ROI
   if (context.oddsRangeROI > 0) {
     roiMultiplier *= 2.0;
   }
-  
+
   // Additional penalty for high risk
   if (context.riskLevel === 'HIGH') {
     roiMultiplier *= 0.5;
   }
-  
+
   return evScore * roiMultiplier;
 }
 
@@ -73,7 +80,11 @@ const IS_VERBOSE = process.env.SPORTLINE_VERBOSE === '1';
 /**
  * Analyze a specific game by ID
  */
-async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db: DatabaseQueries): Promise<void> {
+async function analyzeSpecificGame(
+  gameId: string,
+  options: RecommendOptions,
+  db: DatabaseQueries,
+): Promise<void> {
   console.log(chalk.yellow(`🔍 Analyzing Game: ${gameId}\n`));
 
   // Get the specific game
@@ -84,11 +95,11 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
   }
 
   console.log(chalk.cyan.bold(`${game.sport.toUpperCase()} Game Analysis`));
-  
+
   // Get team details
   const homeTeam = db.getTeam(game.home_team_id, game.sport);
   const awayTeam = db.getTeam(game.away_team_id, game.sport);
-  
+
   if (!homeTeam || !awayTeam) {
     console.error(chalk.red('❌ Could not load team information'));
     return;
@@ -104,9 +115,7 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
   console.log('');
 
   // Determine markets to analyze
-  const marketsToProcess = options.market === 'all' 
-    ? ['moneyline', 'spread'] 
-    : [options.market];
+  const marketsToProcess = options.market === 'all' ? ['moneyline', 'spread'] : [options.market];
 
   for (const market of marketsToProcess) {
     console.log(chalk.green.bold(`\n📊 ${market.toUpperCase()} ANALYSIS\n`));
@@ -114,17 +123,17 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
     try {
       // Load model for this sport/market
       const sportToCategory: Record<string, string> = {
-        'ncaam': 'basketball',
-        'nba': 'basketball', 
-        'nhl': 'hockey',
-        'nfl': 'football',
-        'cfb': 'football'
+        ncaam: 'basketball',
+        nba: 'basketball',
+        nhl: 'hockey',
+        nfl: 'football',
+        cfb: 'football',
       };
-      
+
       const sportCategory = sportToCategory[game.sport] || 'basketball';
       const modelsDir = path.join(process.cwd(), `src/train/${sportCategory}/${game.sport}/models`);
       const modelPath = findLatestModel(game.sport, market, modelsDir);
-      
+
       if (!modelPath) {
         console.log(chalk.yellow(`⚠️  No trained model found for ${game.sport} ${market}`));
         continue;
@@ -132,12 +141,18 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
 
       const model = loadModel(modelPath);
       console.log(chalk.gray(`🤖 Using model: ${path.basename(modelPath)}`));
-      console.log(chalk.gray(`📈 Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(1)}%`));
-      
+      console.log(
+        chalk.gray(`📈 Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(1)}%`),
+      );
+
       // Color code ROI - green for positive, red for negative
       const roiColor = model.backtestMetrics.roi > 0 ? chalk.green : chalk.red;
       const roiSign = model.backtestMetrics.roi > 0 ? '+' : '';
-      console.log(chalk.gray(`💰 Model historical ROI: ${roiColor(`${roiSign}${(model.backtestMetrics.roi * 100).toFixed(1)}%`)} ${chalk.gray('(all past recommendations)')}\n`));
+      console.log(
+        chalk.gray(
+          `💰 Model historical ROI: ${roiColor(`${roiSign}${(model.backtestMetrics.roi * 100).toFixed(1)}%`)} ${chalk.gray('(all past recommendations)')}\n`,
+        ),
+      );
 
       // Extract features for this game
       const config = {
@@ -150,7 +165,7 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
         allowed_providers: ['draftkings', 'fanduel', 'betmgm'],
         recency_weighting: model.recencyWeighting,
         min_edge: model.thresholds.min_edge,
-        min_ev: model.thresholds.min_ev
+        min_ev: model.thresholds.min_ev,
       } as FeatureConfig;
 
       // Get all games for feature extraction
@@ -164,51 +179,84 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
       // Generate prediction
       const prediction = predict(features, model);
       console.log(chalk.magenta.bold(`🎯 Model Prediction:`));
-      
+
       // Color code based on confidence - higher probability gets green, lower gets red
-      const homeColor = prediction.prob_home > 0.55 ? chalk.green.bold : 
-                       prediction.prob_home > 0.45 ? chalk.yellow.bold : chalk.red.bold;
-      const awayColor = prediction.prob_away > 0.55 ? chalk.green.bold : 
-                       prediction.prob_away > 0.45 ? chalk.yellow.bold : chalk.red.bold;
-      
-      console.log(`   🏠 ${homeTeam.display_name || homeTeam.name}: ${homeColor(formatPercentage(prediction.prob_home))}`);
-      console.log(`   ✈️  ${awayTeam.display_name || awayTeam.name}: ${awayColor(formatPercentage(prediction.prob_away))}`);
-      
+      const homeColor =
+        prediction.prob_home > 0.55
+          ? chalk.green.bold
+          : prediction.prob_home > 0.45
+            ? chalk.yellow.bold
+            : chalk.red.bold;
+      const awayColor =
+        prediction.prob_away > 0.55
+          ? chalk.green.bold
+          : prediction.prob_away > 0.45
+            ? chalk.yellow.bold
+            : chalk.red.bold;
+
+      console.log(
+        `   🏠 ${homeTeam.display_name || homeTeam.name}: ${homeColor(formatPercentage(prediction.prob_home))}`,
+      );
+      console.log(
+        `   ✈️  ${awayTeam.display_name || awayTeam.name}: ${awayColor(formatPercentage(prediction.prob_away))}`,
+      );
+
       // Show model's favorite
-      const favorite = prediction.prob_home > prediction.prob_away ? 
-        { team: homeTeam.display_name || homeTeam.name, prob: prediction.prob_home, icon: '🏠' } :
-        { team: awayTeam.display_name || awayTeam.name, prob: prediction.prob_away, icon: '✈️' };
-      
+      const favorite =
+        prediction.prob_home > prediction.prob_away
+          ? { team: homeTeam.display_name || homeTeam.name, prob: prediction.prob_home, icon: '🏠' }
+          : {
+              team: awayTeam.display_name || awayTeam.name,
+              prob: prediction.prob_away,
+              icon: '✈️',
+            };
+
       const confidence = favorite.prob > 0.65 ? 'High' : favorite.prob > 0.55 ? 'Medium' : 'Low';
-      const confidenceColor = favorite.prob > 0.65 ? chalk.green : favorite.prob > 0.55 ? chalk.yellow : chalk.red;
-      
-      console.log(chalk.blue(`   📊 Model favors: ${favorite.icon} ${chalk.bold(favorite.team)} (${confidenceColor(confidence)} confidence)`));
+      const confidenceColor =
+        favorite.prob > 0.65 ? chalk.green : favorite.prob > 0.55 ? chalk.yellow : chalk.red;
+
+      console.log(
+        chalk.blue(
+          `   📊 Model favors: ${favorite.icon} ${chalk.bold(favorite.team)} (${confidenceColor(confidence)} confidence)`,
+        ),
+      );
 
       // Get odds and calculate metrics
       const odds = db.getOdds(game.id, market, ['draftkings', 'fanduel', 'betmgm']);
-      
+
       if (odds.length === 0) {
         console.log(chalk.yellow('\n⚠️  No odds available for this market'));
         continue;
       }
 
       console.log(chalk.cyan.bold(`\n💰 Betting Analysis:`));
-      
+
       for (const odd of odds) {
         console.log(chalk.blue.bold(`\n📊 ${odd.provider.toUpperCase()}:`));
-        
+
         if (market === 'moneyline') {
           // Calculate metrics for both sides
-          const metrics = calculateBettingMetrics(prediction.prob_home, odd.price_home, odd.price_away);
-          
+          const metrics = calculateBettingMetrics(
+            prediction.prob_home,
+            odd.price_home,
+            odd.price_away,
+          );
+
           // Home team analysis
           if (odd.price_home && metrics.ev_home !== null) {
-            const evColor = metrics.ev_home > 0.05 ? chalk.green.bold : 
-                           metrics.ev_home > 0.02 ? chalk.yellow.bold : 
-                           metrics.ev_home > 0 ? chalk.white : chalk.red;
-            
+            const evColor =
+              metrics.ev_home > 0.05
+                ? chalk.green.bold
+                : metrics.ev_home > 0.02
+                  ? chalk.yellow.bold
+                  : metrics.ev_home > 0
+                    ? chalk.white
+                    : chalk.red;
+
             console.log(`   🏠 ${chalk.bold(homeTeam.display_name || homeTeam.name)}:`);
-            console.log(`      Odds: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))} | Edge: ${evColor(formatPercentage(metrics.edge_home || 0))}`);
+            console.log(
+              `      Odds: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))} | Edge: ${evColor(formatPercentage(metrics.edge_home || 0))}`,
+            );
 
             if (metrics.ev_home > 0) {
               console.log(chalk.yellow(`      ⚠️  Marginal value`));
@@ -216,15 +264,22 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
               console.log(chalk.red(`      ❌ No value`));
             }
           }
-          
-          // Away team analysis  
+
+          // Away team analysis
           if (odd.price_away && metrics.ev_away !== null) {
-            const evColor = metrics.ev_away > 0.05 ? chalk.green.bold : 
-                           metrics.ev_away > 0.02 ? chalk.yellow.bold : 
-                           metrics.ev_away > 0 ? chalk.white : chalk.red;
-            
+            const evColor =
+              metrics.ev_away > 0.05
+                ? chalk.green.bold
+                : metrics.ev_away > 0.02
+                  ? chalk.yellow.bold
+                  : metrics.ev_away > 0
+                    ? chalk.white
+                    : chalk.red;
+
             console.log(`   ✈️  ${chalk.bold(awayTeam.display_name || awayTeam.name)}:`);
-            console.log(`      Odds: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))} | Edge: ${evColor(formatPercentage(metrics.edge_away || 0))}`);
+            console.log(
+              `      Odds: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))} | Edge: ${evColor(formatPercentage(metrics.edge_away || 0))}`,
+            );
 
             if (metrics.ev_away > 0) {
               console.log(chalk.yellow(`      ⚠️  Marginal value`));
@@ -234,26 +289,44 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
           }
         } else if (market === 'spread') {
           // Spread betting analysis
-          const metrics = calculateBettingMetrics(prediction.prob_home, odd.price_home, odd.price_away);
-          
+          const metrics = calculateBettingMetrics(
+            prediction.prob_home,
+            odd.price_home,
+            odd.price_away,
+          );
+
           console.log(`   ${chalk.magenta.bold(`Spread: ${odd.line}`)}`);
-          
+
           if (odd.price_home && metrics.ev_home !== null) {
-            const evColor = metrics.ev_home > 0.05 ? chalk.green.bold : 
-                           metrics.ev_home > 0.02 ? chalk.yellow.bold : 
-                           metrics.ev_home > 0 ? chalk.white : chalk.red;
-            
+            const evColor =
+              metrics.ev_home > 0.05
+                ? chalk.green.bold
+                : metrics.ev_home > 0.02
+                  ? chalk.yellow.bold
+                  : metrics.ev_home > 0
+                    ? chalk.white
+                    : chalk.red;
+
             const homeSpread = odd.line || 0;
-            console.log(`   🏠 ${chalk.bold(homeTeam.display_name || homeTeam.name)} ${chalk.gray(`(${homeSpread > 0 ? '+' : ''}${homeSpread})`)}: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))}`);
+            console.log(
+              `   🏠 ${chalk.bold(homeTeam.display_name || homeTeam.name)} ${chalk.gray(`(${homeSpread > 0 ? '+' : ''}${homeSpread})`)}: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))}`,
+            );
           }
-          
+
           if (odd.price_away && metrics.ev_away !== null) {
-            const evColor = metrics.ev_away > 0.05 ? chalk.green.bold : 
-                           metrics.ev_away > 0.02 ? chalk.yellow.bold : 
-                           metrics.ev_away > 0 ? chalk.white : chalk.red;
-            
+            const evColor =
+              metrics.ev_away > 0.05
+                ? chalk.green.bold
+                : metrics.ev_away > 0.02
+                  ? chalk.yellow.bold
+                  : metrics.ev_away > 0
+                    ? chalk.white
+                    : chalk.red;
+
             const awaySpread = odd.line ? -odd.line : 0;
-            console.log(`   ✈️  ${chalk.bold(awayTeam.display_name || awayTeam.name)} ${chalk.gray(`(${awaySpread > 0 ? '+' : ''}${awaySpread})`)}: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))}`);
+            console.log(
+              `   ✈️  ${chalk.bold(awayTeam.display_name || awayTeam.name)} ${chalk.gray(`(${awaySpread > 0 ? '+' : ''}${awaySpread})`)}: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))}`,
+            );
           }
         }
       }
@@ -275,13 +348,12 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
         actual: null,
         provider: odds[0]?.provider || '',
         line: odds[0]?.line || null,
-        date: game.date
+        date: game.date,
       } as Recommendation;
 
       console.log(chalk.blue.bold(`\n📈 Historical Context:`));
       const insight = getShortHistoricalInsight(dummyRecommendation, undefined, game.sport, market);
       console.log(`   ${insight}`);
-
     } catch (error) {
       console.error(chalk.red(`❌ Error analyzing ${market}:`), error);
     }
@@ -300,27 +372,28 @@ interface RecommendOptions {
 async function getRecommendationsForSport(
   sport: string,
   options: RecommendOptions,
-  db: DatabaseQueries
-): Promise<{ recommendations: Recommendation[], gameFeatures: GameFeatures[], games: TodaysGame[] }> {
+  db: DatabaseQueries,
+): Promise<{
+  recommendations: Recommendation[];
+  gameFeatures: GameFeatures[];
+  games: TodaysGame[];
+}> {
   if (IS_VERBOSE) {
     console.log(`\n[${sport.toUpperCase()}] Starting recommendation generation...`);
     console.log(`[${sport.toUpperCase()}] Loading trained model...`);
   }
-  
+
   // Map sports to their sport categories
   const sportToCategory: Record<string, string> = {
-    'ncaam': 'basketball',
-    'nba': 'basketball', 
-    'nhl': 'hockey',
-    'nfl': 'football',
-    'cfb': 'football'
+    ncaam: 'basketball',
+    nba: 'basketball',
+    nhl: 'hockey',
+    nfl: 'football',
+    cfb: 'football',
   };
-  
+
   const sportCategory = sportToCategory[sport] || 'basketball';
-  const modelsDir = path.join(
-    process.cwd(),
-    `src/train/${sportCategory}/${sport}/models`
-  );
+  const modelsDir = path.join(process.cwd(), `src/train/${sportCategory}/${sport}/models`);
 
   const modelPath = findLatestModel(sport, options.market, modelsDir);
 
@@ -339,7 +412,7 @@ async function getRecommendationsForSport(
   }
   const configPath = path.join(
     process.cwd(),
-    `src/train/${sportCategory}/${sport}/featuresConfig.json`
+    `src/train/${sportCategory}/${sport}/featuresConfig.json`,
   );
   const config = loadFeatureConfig(configPath);
 
@@ -347,11 +420,15 @@ async function getRecommendationsForSport(
   if (IS_VERBOSE) {
     console.log(`[${sport.toUpperCase()}] Querying games from database...`);
   }
-  const targetDate = options.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
+  const targetDate =
+    options.date ||
+    `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
   const todaysGames = db.getTodaysGames(sport, targetDate, options.market);
 
   if (IS_VERBOSE) {
-    console.log(`✓ Found ${todaysGames.length} ${sport.toUpperCase()} scheduled games for ${targetDate}`);
+    console.log(
+      `✓ Found ${todaysGames.length} ${sport.toUpperCase()} scheduled games for ${targetDate}`,
+    );
   }
 
   if (todaysGames.length === 0) {
@@ -387,13 +464,7 @@ async function getRecommendationsForSport(
       }
 
       // Extract features for this game
-      const features = extractFeaturesForGame(
-        game,
-        db,
-        config,
-        model.featureMeans,
-        allGames
-      );
+      const features = extractFeaturesForGame(game, db, config, model.featureMeans, allGames);
 
       if (!features) {
         stats.skippedNoFeatures++;
@@ -401,8 +472,11 @@ async function getRecommendationsForSport(
       }
 
       // Debug: Check for problematic games
-      const isDebugGame = (game.home_team_name.includes('North Alabama') && game.away_team_name.includes('Alabama A&M')) ||
-                         (game.away_team_name.includes('North Alabama') && game.home_team_name.includes('Alabama A&M'));
+      const isDebugGame =
+        (game.home_team_name.includes('North Alabama') &&
+          game.away_team_name.includes('Alabama A&M')) ||
+        (game.away_team_name.includes('North Alabama') &&
+          game.home_team_name.includes('Alabama A&M'));
       const debug = isDebugGame;
 
       if (debug) {
@@ -421,12 +495,16 @@ async function getRecommendationsForSport(
 
       if (debug || prediction.prob_home === 0 || prediction.prob_away === 0) {
         console.log(`\n🐛 DEBUG: ${game.home_team_name} vs ${game.away_team_name}`);
-        console.log(`Prediction: prob_home=${prediction.prob_home}, prob_away=${prediction.prob_away}`);
+        console.log(
+          `Prediction: prob_home=${prediction.prob_home}, prob_away=${prediction.prob_away}`,
+        );
         if (!debug) {
           console.log('Raw features (showing first 10):');
-          Object.entries(features).slice(0, 10).forEach(([key, value]) => {
-            console.log(`  ${key}: ${value}`);
-          });
+          Object.entries(features)
+            .slice(0, 10)
+            .forEach(([key, value]) => {
+              console.log(`  ${key}: ${value}`);
+            });
         }
       }
 
@@ -447,7 +525,7 @@ async function getRecommendationsForSport(
       const metrics = calculateBettingMetrics(
         prediction.prob_home,
         odds.price_home,
-        odds.price_away
+        odds.price_away,
       );
 
       // Create recommendation with proper structure
@@ -467,7 +545,7 @@ async function getRecommendationsForSport(
         recommended_side: null, // Will be set below
         actual: null,
         provider: odds.provider || 'Unknown',
-        line: odds.line
+        line: odds.line,
       };
 
       // Determine recommended side based on higher EV (no thresholds)
@@ -492,7 +570,7 @@ async function getRecommendationsForSport(
         home_team: game.home_team_id,
         away_team: game.away_team_id,
         features,
-        odds: game.odds.map(o => ({
+        odds: game.odds.map((o) => ({
           provider: o.provider || 'Unknown',
           market: 'moneyline',
           line: null,
@@ -502,11 +580,11 @@ async function getRecommendationsForSport(
           price_away: o.price_away,
           price_over: null,
           price_under: null,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         })),
-        target: null // Unknown for future games
+        target: null, // Unknown for future games
       };
-      
+
       gameFeatures.push(gameFeature);
 
       // Include all games with predictions (no threshold filtering)
@@ -538,8 +616,12 @@ async function getRecommendationsForSport(
     console.log(`  - Skipped (feature extraction returned null): ${stats.skippedNoFeatures}`);
     console.log(`  - Skipped (no odds rows for this market/date): ${stats.skippedNoOddsRows}`);
     console.log(`  - Skipped (odds missing price_home/price_away): ${stats.skippedMissingPrices}`);
-    console.log(`  - Skipped (could not choose recommended side): ${stats.skippedNoRecommendedSide}`);
-    console.log(`  - Note: sportline date filtering uses DATE(DATETIME(g.date, '-5 hours')) when querying games.`);
+    console.log(
+      `  - Skipped (could not choose recommended side): ${stats.skippedNoRecommendedSide}`,
+    );
+    console.log(
+      `  - Note: sportline date filtering uses DATE(DATETIME(g.date, '-5 hours')) when querying games.`,
+    );
   }
 
   return { recommendations, gameFeatures, games: todaysGames };
@@ -560,14 +642,20 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   // Determine which sports to process
   const sportsToProcess = options.sport ? [options.sport] : ['ncaam', 'nba', 'nhl', 'nfl', 'cfb'];
-  
+
   // Determine which markets to process - if market is 'all', process all available markets
-  const marketsToProcess = options.market === 'all' 
-    ? ['moneyline', 'spread'] // Add 'total' when implemented
-    : [options.market];
+  const marketsToProcess =
+    options.market === 'all'
+      ? ['moneyline', 'spread'] // Add 'total' when implemented
+      : [options.market];
 
   // Collect all recommendations from all sports and markets
-  const allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation, game?: TodaysGame}> = [];
+  const allRecommendations: Array<{
+    sport: string;
+    market: string;
+    recommendation: Recommendation;
+    game?: TodaysGame;
+  }> = [];
   const allGameFeatures: GameFeatures[] = [];
   let totalGamesFound = 0;
 
@@ -576,17 +664,21 @@ export async function recommend(options: RecommendOptions): Promise<void> {
       try {
         // Create market-specific options
         const marketOptions = { ...options, market };
-        const { recommendations, gameFeatures, games } = await getRecommendationsForSport(sport, marketOptions, db);
+        const { recommendations, gameFeatures, games } = await getRecommendationsForSport(
+          sport,
+          marketOptions,
+          db,
+        );
 
         // Add sport and market identifiers to each recommendation
-        recommendations.forEach(rec => {
+        recommendations.forEach((rec) => {
           // Find the corresponding game for result checking
-          const correspondingGame = games.find(g => g.id === rec.game_id);
-          allRecommendations.push({ 
-            sport: sport.toUpperCase(), 
+          const correspondingGame = games.find((g) => g.id === rec.game_id);
+          allRecommendations.push({
+            sport: sport.toUpperCase(),
             market: market.toUpperCase(),
             recommendation: rec,
-            game: correspondingGame
+            game: correspondingGame,
           });
         });
 
@@ -594,7 +686,9 @@ export async function recommend(options: RecommendOptions): Promise<void> {
         allGameFeatures.push(...gameFeatures);
 
         if (recommendations.length > 0) {
-          console.log(`✓ Found ${recommendations.length} ${sport.toUpperCase()} ${market} recommendations`);
+          console.log(
+            `✓ Found ${recommendations.length} ${sport.toUpperCase()} ${market} recommendations`,
+          );
         }
 
         totalGamesFound += recommendations.length;
@@ -613,25 +707,38 @@ export async function recommend(options: RecommendOptions): Promise<void> {
   // Sort all recommendations by historical ROI (best ROI first)
   allRecommendations.sort((a, b) => {
     // Get historical context for ROI comparison
-    const contextA = getHistoricalContext(a.recommendation, undefined, a.sport.toLowerCase(), a.market.toLowerCase());
-    const contextB = getHistoricalContext(b.recommendation, undefined, b.sport.toLowerCase(), b.market.toLowerCase());
-    
+    const contextA = getHistoricalContext(
+      a.recommendation,
+      undefined,
+      a.sport.toLowerCase(),
+      a.market.toLowerCase(),
+    );
+    const contextB = getHistoricalContext(
+      b.recommendation,
+      undefined,
+      b.sport.toLowerCase(),
+      b.market.toLowerCase(),
+    );
+
     // Primary sort: Historical ROI (higher is better)
     const roiA = contextA.oddsRangeROI || -1; // Default to -100% if no ROI data
     const roiB = contextB.oddsRangeROI || -1;
-    
-    if (Math.abs(roiA - roiB) > 0.01) { // If ROI difference is significant (>1%)
+
+    if (Math.abs(roiA - roiB) > 0.01) {
+      // If ROI difference is significant (>1%)
       return roiB - roiA; // Higher ROI first
     }
-    
+
     // Secondary sort: EV (if ROI is similar)
-    const evA = a.recommendation.recommended_side === 'home'
-      ? a.recommendation.ev_home!
-      : a.recommendation.ev_away!;
-    const evB = b.recommendation.recommended_side === 'home'
-      ? b.recommendation.ev_home!
-      : b.recommendation.ev_away!;
-    
+    const evA =
+      a.recommendation.recommended_side === 'home'
+        ? a.recommendation.ev_home!
+        : a.recommendation.ev_away!;
+    const evB =
+      b.recommendation.recommended_side === 'home'
+        ? b.recommendation.ev_home!
+        : b.recommendation.ev_away!;
+
     return evB - evA;
   });
 
@@ -643,8 +750,8 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 function checkBetResult(
   recommendation: Recommendation,
   game: TodaysGame,
-  market: string
-): { result: 'WIN' | 'LOSS' | 'PUSH' | 'PENDING', score?: string } {
+  market: string,
+): { result: 'WIN' | 'LOSS' | 'PUSH' | 'PENDING'; score?: string } {
   const status = (game.status || '').toLowerCase();
   const isFinal = status === 'post' || status === 'final' || status === 'completed';
 
@@ -659,10 +766,11 @@ function checkBetResult(
   if (market.toLowerCase() === 'moneyline') {
     // Moneyline: simple win/loss
     const homeWon = game.home_score > game.away_score;
-    const betWon = (recommendedSide === 'home' && homeWon) || (recommendedSide === 'away' && !homeWon);
-    return { 
+    const betWon =
+      (recommendedSide === 'home' && homeWon) || (recommendedSide === 'away' && !homeWon);
+    return {
       result: betWon ? 'WIN' : 'LOSS',
-      score 
+      score,
     };
   } else if (market.toLowerCase() === 'spread') {
     // Spread: check if team covered the spread
@@ -672,22 +780,22 @@ function checkBetResult(
 
     const spread = recommendation.line;
     const homeMargin = game.home_score - game.away_score;
-    
+
     if (recommendedSide === 'home') {
       // Home team recommended, check if they covered
       const betWon = homeMargin > spread;
       const isPush = homeMargin === spread;
-      return { 
-        result: isPush ? 'PUSH' : (betWon ? 'WIN' : 'LOSS'),
-        score 
+      return {
+        result: isPush ? 'PUSH' : betWon ? 'WIN' : 'LOSS',
+        score,
       };
     } else {
       // Away team recommended, check if they covered
       const betWon = homeMargin < spread;
       const isPush = homeMargin === spread;
-      return { 
-        result: isPush ? 'PUSH' : (betWon ? 'WIN' : 'LOSS'),
-        score 
+      return {
+        result: isPush ? 'PUSH' : betWon ? 'WIN' : 'LOSS',
+        score,
       };
     }
   }
@@ -697,8 +805,13 @@ function checkBetResult(
 
 // Helper function to display unified recommendations across all sports and markets
 function displayUnifiedRecommendations(
-  allRecommendations: Array<{sport: string, market: string, recommendation: Recommendation, game?: TodaysGame}>,
-  options: RecommendOptions
+  allRecommendations: Array<{
+    sport: string;
+    market: string;
+    recommendation: Recommendation;
+    game?: TodaysGame;
+  }>,
+  options: RecommendOptions,
 ): void {
   const formatOddsTimestamp = (ts?: string | null): string => {
     if (!ts) return 'N/A';
@@ -722,11 +835,15 @@ function displayUnifiedRecommendations(
     day: 'numeric',
   });
 
-  const sportsList = [...new Set(allRecommendations.map(r => r.sport))].join(' & ');
-  const marketsList = [...new Set(allRecommendations.map(r => r.market))].join(' & ');
+  const sportsList = [...new Set(allRecommendations.map((r) => r.sport))].join(' & ');
+  const marketsList = [...new Set(allRecommendations.map((r) => r.market))].join(' & ');
   console.log(chalk.cyan.bold(`\n🎯 All Sports Betting Recommendations - ${dateStr}\n`));
   if (IS_VERBOSE) {
-    console.log(chalk.gray(`Sports: ${sportsList} | Markets: ${marketsList} | Total Recommendations: ${allRecommendations.length}`));
+    console.log(
+      chalk.gray(
+        `Sports: ${sportsList} | Markets: ${marketsList} | Total Recommendations: ${allRecommendations.length}`,
+      ),
+    );
   }
 
   // Main recommendations table
@@ -744,21 +861,28 @@ function displayUnifiedRecommendations(
 
     const matchup = `${rec.away_team} @ ${rec.home_team}`;
     const pick = rec.recommended_side === 'home' ? rec.home_team : rec.away_team;
-    const prob = rec.recommended_side === 'home'
-      ? formatPercentage(rec.model_prob_home, 1)
-      : formatPercentage(rec.model_prob_away, 1);
-    const odds = rec.recommended_side === 'home'
-      ? formatOdds(rec.odds_home!)
-      : formatOdds(rec.odds_away!);
-    const ev = rec.recommended_side === 'home'
-      ? formatPercentage(rec.ev_home!, 1)
-      : formatPercentage(rec.ev_away!, 1);
-    const edge = rec.recommended_side === 'home'
-      ? formatPercentage(rec.edge_home!, 1)
-      : formatPercentage(rec.edge_away!, 1);
+    const prob =
+      rec.recommended_side === 'home'
+        ? formatPercentage(rec.model_prob_home, 1)
+        : formatPercentage(rec.model_prob_away, 1);
+    const odds =
+      rec.recommended_side === 'home' ? formatOdds(rec.odds_home!) : formatOdds(rec.odds_away!);
+    const ev =
+      rec.recommended_side === 'home'
+        ? formatPercentage(rec.ev_home!, 1)
+        : formatPercentage(rec.ev_away!, 1);
+    const edge =
+      rec.recommended_side === 'home'
+        ? formatPercentage(rec.edge_home!, 1)
+        : formatPercentage(rec.edge_away!, 1);
 
     // Get historical context for this recommendation using the specific market
-    const historicalInsight = getShortHistoricalInsight(rec, undefined, sport.toLowerCase(), market.toLowerCase());
+    const historicalInsight = getShortHistoricalInsight(
+      rec,
+      undefined,
+      sport.toLowerCase(),
+      market.toLowerCase(),
+    );
 
     // Check bet result if game is completed
     let resultDisplay = 'PENDING';
@@ -804,9 +928,12 @@ function displayUnifiedRecommendations(
     }
 
     const rank = chalk.yellow.bold(`#${(i + 1).toString()}`);
-    const meta = chalk.white(`${sport} ${market}${lineDisplay !== 'N/A' ? ` ${lineDisplay}` : ''} · ${gameTime}`);
+    const meta = chalk.white(
+      `${sport} ${market}${lineDisplay !== 'N/A' ? ` ${lineDisplay}` : ''} · ${gameTime}`,
+    );
 
-    const pickLabel = rec.recommended_side === 'home' ? chalk.green.bold(pick) : chalk.red.bold(pick);
+    const pickLabel =
+      rec.recommended_side === 'home' ? chalk.green.bold(pick) : chalk.red.bold(pick);
     const modelLine = `${chalk.blue(`Prob ${prob}`)}  ${chalk.cyan(`EV ${ev}`)}  ${chalk.green(`Edge ${edge}`)}`;
     const oddsLine = `${chalk.magenta(`Odds ${odds}`)}  ${chalk.gray(`${rec.provider || 'Unknown'} · ${oddsTimeDisplay}`)}`;
 
@@ -828,7 +955,11 @@ function displayUnifiedRecommendations(
 }
 
 // Helper function to display recommendations for a specific sport (kept for backward compatibility)
-function displayRecommendations(sport: string, recommendations: Recommendation[], options: RecommendOptions): void {
+function displayRecommendations(
+  sport: string,
+  recommendations: Recommendation[],
+  options: RecommendOptions,
+): void {
   if (recommendations.length === 0) return;
 
   const formatOddsTimestamp = (ts?: string | null): string => {
@@ -853,13 +984,21 @@ function displayRecommendations(sport: string, recommendations: Recommendation[]
     day: 'numeric',
   });
 
-  console.log(chalk.cyan.bold(`\n🏀 ${sport.toUpperCase()} Betting Recommendations - ${dateStr}\n`));
+  console.log(
+    chalk.cyan.bold(`\n🏀 ${sport.toUpperCase()} Betting Recommendations - ${dateStr}\n`),
+  );
 
   // Main recommendations table
   console.log(chalk.cyan.bold('\n🎯 Top Recommendations\n'));
 
-  console.log(`${chalk.bold('Rank')} | ${chalk.white.bold('Time')}  | ${chalk.gray.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Book')}      | ${chalk.gray.bold('Odds Time')}`);
-  console.log(chalk.gray('-----+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------+---------------'));
+  console.log(
+    `${chalk.bold('Rank')} | ${chalk.white.bold('Time')}  | ${chalk.gray.bold('Matchup')}                        | ${chalk.white.bold('Pick')}                | ${chalk.blue.bold('Prob')} | ${chalk.magenta.bold('Odds')}  | ${chalk.cyan.bold('EV')}    | ${chalk.green.bold('Edge')}  | ${chalk.gray.bold('Book')}      | ${chalk.gray.bold('Odds Time')}`,
+  );
+  console.log(
+    chalk.gray(
+      '-----+-------+--------------------------------+---------------------+------+-------+-------+-------+-----------+---------------',
+    ),
+  );
 
   for (let i = 0; i < recommendations.length; i++) {
     const rec = recommendations[i];
@@ -870,27 +1009,28 @@ function displayRecommendations(sport: string, recommendations: Recommendation[]
 
     const matchup = `${rec.away_team} @ ${rec.home_team}`;
     const pick = rec.recommended_side === 'home' ? rec.home_team : rec.away_team;
-    const prob = rec.recommended_side === 'home'
-      ? formatPercentage(rec.model_prob_home, 1)
-      : formatPercentage(rec.model_prob_away, 1);
-    const odds = rec.recommended_side === 'home'
-      ? formatOdds(rec.odds_home!)
-      : formatOdds(rec.odds_away!);
-    const ev = rec.recommended_side === 'home'
-      ? formatPercentage(rec.ev_home!, 1)
-      : formatPercentage(rec.ev_away!, 1);
-    const edge = rec.recommended_side === 'home'
-      ? formatPercentage(rec.edge_home!, 1)
-      : formatPercentage(rec.edge_away!, 1);
+    const prob =
+      rec.recommended_side === 'home'
+        ? formatPercentage(rec.model_prob_home, 1)
+        : formatPercentage(rec.model_prob_away, 1);
+    const odds =
+      rec.recommended_side === 'home' ? formatOdds(rec.odds_home!) : formatOdds(rec.odds_away!);
+    const ev =
+      rec.recommended_side === 'home'
+        ? formatPercentage(rec.ev_home!, 1)
+        : formatPercentage(rec.ev_away!, 1);
+    const edge =
+      rec.recommended_side === 'home'
+        ? formatPercentage(rec.edge_home!, 1)
+        : formatPercentage(rec.edge_away!, 1);
 
     const oddsTimeDisplay = formatOddsTimestamp(null);
 
     const rank = chalk.yellow((i + 1).toString().padStart(4));
     const time = chalk.white(gameTime.padStart(5));
     const matchupDisplay = chalk.gray(matchup.padEnd(30));
-    const pickDisplay = rec.recommended_side === 'home'
-      ? chalk.green(pick.padEnd(19))
-      : chalk.red(pick.padEnd(19));
+    const pickDisplay =
+      rec.recommended_side === 'home' ? chalk.green(pick.padEnd(19)) : chalk.red(pick.padEnd(19));
     const probDisplay = chalk.blue(prob.padStart(4));
     const oddsDisplay = chalk.magenta(odds.padStart(5));
     const evDisplay = chalk.cyan(ev.padStart(5));
@@ -899,7 +1039,9 @@ function displayRecommendations(sport: string, recommendations: Recommendation[]
 
     const oddsTimeDisplayFormatted = chalk.gray(oddsTimeDisplay.padEnd(13));
 
-    console.log(`${rank} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${providerDisplay} | ${oddsTimeDisplayFormatted}`);
+    console.log(
+      `${rank} | ${time} | ${matchupDisplay} | ${pickDisplay} | ${probDisplay} | ${oddsDisplay} | ${evDisplay} | ${edgeDisplay} | ${providerDisplay} | ${oddsTimeDisplayFormatted}`,
+    );
   }
 
   console.log('');

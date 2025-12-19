@@ -5,41 +5,41 @@
 
 import type { Game } from '../db/types.js';
 import { DatabaseQueries } from '../db/queries.js';
-import { 
-  calculateBasketballAdvancedStats, 
+import {
+  calculateBasketballAdvancedStats,
   computeBasketballOffensiveDefensiveRatings,
   getBasketballAdvancedFeatures,
-  calculateNBAAdvancedSituationalFeatures
+  calculateNBAAdvancedSituationalFeatures,
 } from './basketball/basketballFeatures.js';
-import { 
-  calculateHockeyAdvancedStats, 
+import {
+  calculateHockeyAdvancedStats,
   computeHockeyOffensiveDefensiveRatings,
-  getHockeyAdvancedFeatures
+  getHockeyAdvancedFeatures,
 } from './hockey/hockeyFeatures.js';
-import { 
-  calculateFootballAdvancedStats, 
+import {
+  calculateFootballAdvancedStats,
   computeFootballOffensiveDefensiveRatings,
-  getFootballAdvancedFeatures
+  getFootballAdvancedFeatures,
 } from './football/footballFeatures.js';
 
 // Sport category mapping
 const SPORT_CATEGORIES: Record<string, string> = {
-  'ncaam': 'basketball',
-  'nba': 'basketball',
-  'nhl': 'hockey',
-  'nfl': 'football',
-  'cfb': 'football'
+  ncaam: 'basketball',
+  nba: 'basketball',
+  nhl: 'hockey',
+  nfl: 'football',
+  cfb: 'football',
 };
 
 /**
  * Calculate sport-specific advanced stats
  */
 export function calculateAdvancedStats(
-  sport: string, 
-  stats: Record<string, number>
+  sport: string,
+  stats: Record<string, number>,
 ): Record<string, number> {
   const sportCategory = SPORT_CATEGORIES[sport] || 'basketball';
-  
+
   switch (sportCategory) {
     case 'basketball':
       return calculateBasketballAdvancedStats(stats);
@@ -61,10 +61,10 @@ export function computeOffensiveDefensiveRatings(
   awayId: string,
   gameId: string,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): { homeORtg: number; homeDRtg: number; awayORtg: number; awayDRtg: number } {
   const sportCategory = SPORT_CATEGORIES[sport] || 'basketball';
-  
+
   switch (sportCategory) {
     case 'basketball':
       return computeBasketballOffensiveDefensiveRatings(homeId, awayId, gameId, games, db);
@@ -85,10 +85,10 @@ export function calculateSituationalFeatures(
   teamId: string,
   gameDate: Date,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): Record<string, number> {
   const sportCategory = SPORT_CATEGORIES[sport] || 'basketball';
-  
+
   switch (sportCategory) {
     case 'basketball':
       return calculateNBAAdvancedSituationalFeatures(teamId, gameDate, games, db);
@@ -108,7 +108,7 @@ export function calculateSituationalFeatures(
  */
 export function getAdvancedFeatures(sport: string): string[] {
   const sportCategory = SPORT_CATEGORIES[sport] || 'basketball';
-  
+
   switch (sportCategory) {
     case 'basketball':
       return getBasketballAdvancedFeatures();

@@ -32,7 +32,7 @@ export async function update(options: UpdateOptions): Promise<void> {
   // Run the update script as a child process
   const child = spawn('node', [updateScriptPath, daysBack, daysForward], {
     stdio: 'inherit',
-    cwd: process.cwd()
+    cwd: process.cwd(),
   });
 
   return new Promise((resolve, reject) => {

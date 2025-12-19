@@ -3,14 +3,7 @@
  */
 
 import Database from 'better-sqlite3';
-import type {
-  Game,
-  Team,
-  Odds,
-  GameStats,
-  TodaysGame,
-  OddsData,
-} from './types.js';
+import type { Game, Team, Odds, GameStats, TodaysGame, OddsData } from './types.js';
 
 export class DatabaseQueries {
   private db: Database.Database;
@@ -41,7 +34,7 @@ export class DatabaseQueries {
       WHERE g.sport = ?
         AND DATE(DATETIME(g.date, '-5 hours')) = DATE(?)
       ORDER BY g.date ASC
-    `
+    `,
       )
       .all(sport, targetDate) as any[];
 
@@ -66,7 +59,7 @@ export class DatabaseQueries {
       SELECT * FROM games
       WHERE sport = ? AND season IN (${placeholders})
       ORDER BY date ASC
-    `
+    `,
       )
       .all(sport, ...seasons) as Game[];
   }
@@ -79,10 +72,12 @@ export class DatabaseQueries {
     if (typeof metricValue === 'number') {
       return metricValue;
     }
-    
+
     // Handle efficiency fractions (e.g., "3-12" for third down efficiency)
-    if ((metricName === 'thirdDownEff' || metricName === 'fourthDownEff') && 
-        metricValue.includes('-')) {
+    if (
+      (metricName === 'thirdDownEff' || metricName === 'fourthDownEff') &&
+      metricValue.includes('-')
+    ) {
       const parts = metricValue.split('-');
       if (parts.length === 2) {
         const made = parseFloat(parts[0]);
@@ -93,7 +88,7 @@ export class DatabaseQueries {
       }
       return 0; // Default for invalid formats
     }
-    
+
     // Handle regular numeric values
     const numValue = Number(metricValue);
     return isNaN(numValue) ? 0 : numValue;
@@ -109,7 +104,7 @@ export class DatabaseQueries {
       SELECT metric_name, metric_value
       FROM game_stats
       WHERE game_id = ? AND team_id = ?
-    `
+    `,
       )
       .all(gameId, teamId) as GameStats[];
 
@@ -126,7 +121,7 @@ export class DatabaseQueries {
   getGameStatsForSeasons(
     sport: string,
     seasons: number[],
-    metricNames: string[]
+    metricNames: string[],
   ): Map<string, Map<string, Record<string, number>>> {
     const seasonPlaceholders = seasons.map(() => '?').join(',');
     const metricPlaceholders = metricNames.map(() => '?').join(',');
@@ -140,7 +135,7 @@ export class DatabaseQueries {
         AND season IN (${seasonPlaceholders})
         AND metric_name IN (${metricPlaceholders})
       ORDER BY team_id, game_id
-    `
+    `,
       )
       .all(sport, ...seasons, ...metricNames) as GameStats[];
 
@@ -166,11 +161,7 @@ export class DatabaseQueries {
   /**
    * Get odds for a game
    */
-  getOdds(
-    gameId: string,
-    market: string,
-    providers?: string[]
-  ): Odds[] {
+  getOdds(gameId: string, market: string, providers?: string[]): Odds[] {
     let query = `
       SELECT * FROM odds
       WHERE game_id = ? AND market = ?
@@ -193,7 +184,7 @@ export class DatabaseQueries {
    */
   getOddsByMarket(gameId: string, market: string, allowedProviders: string[]): OddsData[] {
     let oddsRows: any[] = [];
-    
+
     if (allowedProviders && allowedProviders.length > 0) {
       oddsRows = this.db
         .prepare(
@@ -204,7 +195,7 @@ export class DatabaseQueries {
           AND market = ?
           AND provider IN (${allowedProviders.map(() => '?').join(',')})
         ORDER BY timestamp DESC
-      `
+      `,
         )
         .all(gameId, market, ...allowedProviders) as any[];
     }
@@ -218,7 +209,7 @@ export class DatabaseQueries {
         FROM odds
         WHERE game_id = ? AND market = ?
         ORDER BY timestamp DESC
-      `
+      `,
         )
         .all(gameId, market) as any[];
     }
@@ -242,7 +233,7 @@ export class DatabaseQueries {
    */
   getMoneylineOdds(gameId: string, allowedProviders: string[]): OddsData[] {
     let oddsRows: any[] = [];
-    
+
     if (allowedProviders && allowedProviders.length > 0) {
       oddsRows = this.db
         .prepare(
@@ -255,7 +246,7 @@ export class DatabaseQueries {
           AND price_home IS NOT NULL 
           AND price_away IS NOT NULL
         ORDER BY timestamp DESC
-      `
+      `,
         )
         .all(gameId, ...allowedProviders) as any[];
     }
@@ -272,7 +263,7 @@ export class DatabaseQueries {
           AND price_home IS NOT NULL 
           AND price_away IS NOT NULL
         ORDER BY timestamp DESC
-      `
+      `,
         )
         .all(gameId) as any[];
     }
@@ -303,11 +294,7 @@ export class DatabaseQueries {
       );
     } else {
       // Fallback for backward compatibility - but this can cause cross-sport issues
-      return (
-        (this.db
-          .prepare('SELECT * FROM teams WHERE id = ?')
-          .get(teamId) as Team) || null
-      );
+      return (this.db.prepare('SELECT * FROM teams WHERE id = ?').get(teamId) as Team) || null;
     }
   }
 
@@ -323,10 +310,10 @@ export class DatabaseQueries {
         FROM game_stats
         WHERE sport = ?
         ORDER BY metric_name ASC
-      `
+      `,
       )
       .all(sport) as { metric_name: string }[];
-    return rows.map(row => row.metric_name);
+    return rows.map((row) => row.metric_name);
   }
 
   /**
@@ -340,11 +327,7 @@ export class DatabaseQueries {
   /**
    * Get games for a specific team (for rolling stats)
    */
-  getTeamGames(
-    teamId: string,
-    sport: string,
-    beforeGameId?: string
-  ): Game[] {
+  getTeamGames(teamId: string, sport: string, beforeGameId?: string): Game[] {
     let query = `
       SELECT * FROM games
       WHERE sport = ? AND (home_team_id = ? OR away_team_id = ?)
@@ -370,7 +353,7 @@ export class DatabaseQueries {
     season: number,
     configJson: string,
     metricsJson: string | null,
-    artifactsPath: string | null
+    artifactsPath: string | null,
   ): void {
     const startedAt = new Date().toISOString();
     const finishedAt = new Date().toISOString();
@@ -380,18 +363,9 @@ export class DatabaseQueries {
         `
       INSERT INTO model_runs (run_id, sport, season, config_json, started_at, finished_at, metrics_json, artifacts_path)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `
+    `,
       )
-      .run(
-        runId,
-        sport,
-        season,
-        configJson,
-        startedAt,
-        finishedAt,
-        metricsJson,
-        artifactsPath
-      );
+      .run(runId, sport, season, configJson, startedAt, finishedAt, metricsJson, artifactsPath);
   }
 
   /**
@@ -406,7 +380,7 @@ export class DatabaseQueries {
         WHERE date >= ? AND date <= ?
           AND (home_score IS NULL OR away_score IS NULL)
         ORDER BY date ASC, sport ASC
-        `
+        `,
       )
       .all(today, endDate) as Game[];
   }
@@ -421,7 +395,7 @@ export class DatabaseQueries {
         SELECT * FROM odds
         WHERE game_id = ?
         ORDER BY market ASC, provider ASC, timestamp DESC
-        `
+        `,
       )
       .all(gameId) as Odds[];
   }
@@ -430,11 +404,7 @@ export class DatabaseQueries {
    * Get a specific game by ID
    */
   getGameById(gameId: string): Game | null {
-    return (
-      (this.db
-        .prepare('SELECT * FROM games WHERE id = ?')
-        .get(gameId) as Game) || null
-    );
+    return (this.db.prepare('SELECT * FROM games WHERE id = ?').get(gameId) as Game) || null;
   }
 
   /**

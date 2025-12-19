@@ -8,7 +8,12 @@
     "sportline": "dist/cli/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json}\" \"scripts/**/*.{ts,tsx,js,jsx,json}\" \".vscode/*.json\" \"*.json\"",
+    "check": "npm run format:check && npm run lint && tsc",
+    "build": "npm run check",
     "db:init": "sqlite3 data/sportline.db < src/db/schema.sql",
     "db:list:tables": "sqlite3 data/sportline.db \".tables\"",
     "db:schema": "sqlite3 data/sportline.db \".schema\"",
@@ -43,8 +48,7 @@
     "import:nhl:full": "for y in 2020 2021 2022 2023 2024 2025 2025; do if [ -d \"data/nhl/$y\" ]; then echo \"Importing NHL season $y\"; npm run import:sports:db -- nhl $y; fi; done",
     "import:nfl:full": "for y in 2019 2020 2021 2022 2023 2024 2025 2025; do if [ -d \"data/nfl/$y\" ]; then echo \"Importing NFL season $y\"; npm run import:sports:db -- nfl $y; fi; done",
     "import:cfb:full": "for y in 2020 2021 2022 2023 2024 2025 2025; do if [ -d \"data/cfb/$y\" ]; then echo \"Importing CFB season $y\"; npm run import:sports:db -- cfb $y; fi; done",
-    "update": "npm run build && node dist/cli/index.js update",
-    "format": "prettier --write \"src/**/*.ts\""
+    "update": "npm run build && node dist/cli/index.js update"
   },
   "keywords": [
     "ncaam",
@@ -66,11 +70,16 @@
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.10.4",
     "@vitest/ui": "^1.1.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^9.1.2",
+    "globals": "^15.15.0",
     "prettier": "^3.7.4",
     "typescript": "^5.3.3",
+    "typescript-eslint": "^8.50.0",
     "vitest": "^1.1.0"
   }
 }

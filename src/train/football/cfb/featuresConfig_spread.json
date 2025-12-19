@@ -1,80 +1,69 @@
 {
-    "sport": "cfb",
-    "model": "logistic_regression",
-    "market": "spread",
-    "seasons": [
-        2022,
-        2023,
-        2024,
-        2025
-    ],
-    "features": {
-        "completionAttempts": false,
-        "firstDowns": true,
-        "fourthDownEff": true,
-        "fumblesLost": true,
-        "interceptions": true,
-        "netPassingYards": true,
-        "passingYardsPerGame": false,
-        "passingYardsPerGameAllowed": false,
-        "possessionTime": false,
-        "rushingAttempts": true,
-        "rushingYards": true,
-        "rushingYardsPerGame": false,
-        "rushingYardsPerGameAllowed": false,
-        "thirdDownEff": true,
-        "totalPenaltiesYards": false,
-        "totalPointsPerGame": false,
-        "totalPointsPerGameAllowed": false,
-        "totalYards": true,
-        "turnovers": true,
-        "yardsPerGame": false,
-        "yardsPerGameAllowed": false,
-        "yardsPerPass": false,
-        "yardsPerRushAttempt": true,
-        "homeAdvantage": true,
-        "marketImpliedProb": true,
-        
-        "scoreDifferential": false,
-        "yardsPerPlayDifferential": false,
-        "turnoverDifferential": false,
-        "passingYardsPerAttemptDifferential": false,
-        "rushingYardsPerAttemptDifferential": false,
-        "thirdDownConversionRateDifferential": false,
-        "redZoneEfficiencyDifferential": false,
-        "sacksDifferential": false,
-        "penaltyYardsDifferential": false,
-        "timeOfPossessionDifferential": false,
-        "homeRecentScoreDiff5": false,
-        "awayRecentScoreDiff5": false,
-        "homeRecentYardsPerPlayDiff5": false,
-        "awayRecentYardsPerPlayDiff5": false,
-        "homeOpponentStrengthRating": false,
-        "awayOpponentStrengthRating": false,
-        "homeRecentOpponentStrength5": false,
-        "awayRecentOpponentStrength5": false
-    },
-    "rolling_windows": [
-        5
-    ],
-    "allowed_providers": [
-        "draftkings",
-        "fanduel",
-        "betmgm"
-    ],
-    "recency_weighting": {
-        "enabled": true,
-        "decay": 0.8
-    },
-    "regularization": {
-        "lambda": 0.4,
-        "temperature": 1.0
-    },
-    "calibration": {
-        "method": "temperature",
-        "temperature": 1.0
-    },
-    "min_edge": 0.02,
-    "min_ev": 0.03,
-    "max_ev": 0.08
+  "sport": "cfb",
+  "model": "logistic_regression",
+  "market": "spread",
+  "seasons": [2022, 2023, 2024, 2025],
+  "features": {
+    "completionAttempts": false,
+    "firstDowns": true,
+    "fourthDownEff": true,
+    "fumblesLost": true,
+    "interceptions": true,
+    "netPassingYards": true,
+    "passingYardsPerGame": false,
+    "passingYardsPerGameAllowed": false,
+    "possessionTime": false,
+    "rushingAttempts": true,
+    "rushingYards": true,
+    "rushingYardsPerGame": false,
+    "rushingYardsPerGameAllowed": false,
+    "thirdDownEff": true,
+    "totalPenaltiesYards": false,
+    "totalPointsPerGame": false,
+    "totalPointsPerGameAllowed": false,
+    "totalYards": true,
+    "turnovers": true,
+    "yardsPerGame": false,
+    "yardsPerGameAllowed": false,
+    "yardsPerPass": false,
+    "yardsPerRushAttempt": true,
+    "homeAdvantage": true,
+    "marketImpliedProb": true,
+
+    "scoreDifferential": false,
+    "yardsPerPlayDifferential": false,
+    "turnoverDifferential": false,
+    "passingYardsPerAttemptDifferential": false,
+    "rushingYardsPerAttemptDifferential": false,
+    "thirdDownConversionRateDifferential": false,
+    "redZoneEfficiencyDifferential": false,
+    "sacksDifferential": false,
+    "penaltyYardsDifferential": false,
+    "timeOfPossessionDifferential": false,
+    "homeRecentScoreDiff5": false,
+    "awayRecentScoreDiff5": false,
+    "homeRecentYardsPerPlayDiff5": false,
+    "awayRecentYardsPerPlayDiff5": false,
+    "homeOpponentStrengthRating": false,
+    "awayOpponentStrengthRating": false,
+    "homeRecentOpponentStrength5": false,
+    "awayRecentOpponentStrength5": false
+  },
+  "rolling_windows": [5],
+  "allowed_providers": ["draftkings", "fanduel", "betmgm"],
+  "recency_weighting": {
+    "enabled": true,
+    "decay": 0.8
+  },
+  "regularization": {
+    "lambda": 0.4,
+    "temperature": 1.0
+  },
+  "calibration": {
+    "method": "temperature",
+    "temperature": 1.0
+  },
+  "min_edge": 0.02,
+  "min_ev": 0.03,
+  "max_ev": 0.08
 }

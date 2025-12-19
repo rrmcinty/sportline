@@ -15,7 +15,7 @@ export function predictLogisticRegression(
   featureKeys: string[],
   theta: number[][],
   debug: boolean = false,
-  temperature: number = 1.0
+  temperature: number = 1.0,
 ): number {
   // Build feature vector in correct order
   const X = featureKeys.map((k) => features[k] ?? 0);
@@ -23,24 +23,24 @@ export function predictLogisticRegression(
   // Manual logistic regression prediction: sigmoid(X * theta)
   // Handle both theta as 2D array [[val], [val], ...] or [[val, val, ...]]
   let z = 0;
-  const contributions: Array<{key: string, value: number, theta: number, contrib: number}> = [];
-  
+  const contributions: Array<{ key: string; value: number; theta: number; contrib: number }> = [];
+
   for (let i = 0; i < X.length && i < theta.length; i++) {
     const thetaValue = Array.isArray(theta[i]) ? theta[i][0] : theta[i];
     const thetaNum = typeof thetaValue === 'number' ? thetaValue : 0;
     const contrib = X[i] * thetaNum;
     z += contrib;
-    
+
     if (debug && Math.abs(contrib) > 1) {
       contributions.push({
         key: featureKeys[i],
         value: X[i],
         theta: thetaNum,
-        contrib
+        contrib,
       });
     }
   }
-  
+
   if (debug) {
     console.log(`  Logit (z): ${z.toFixed(2)}`);
     if (contributions.length > 0) {
@@ -48,12 +48,14 @@ export function predictLogisticRegression(
       contributions
         .sort((a, b) => Math.abs(b.contrib) - Math.abs(a.contrib))
         .slice(0, 5)
-        .forEach(c => {
-          console.log(`    ${c.key}: ${c.value.toFixed(2)} × ${c.theta.toFixed(2)} = ${c.contrib.toFixed(2)}`);
+        .forEach((c) => {
+          console.log(
+            `    ${c.key}: ${c.value.toFixed(2)} × ${c.theta.toFixed(2)} = ${c.contrib.toFixed(2)}`,
+          );
         });
     }
   }
-  
+
   // Apply temperature scaling to calibrate confidence
   const z_temp = z / temperature;
 
@@ -81,7 +83,7 @@ export function predict(
   features: Record<string, number>,
   model: TrainedModel,
   debug: boolean = false,
-  temperature?: number
+  temperature?: number,
 ): Prediction {
   // Standardize features using saved parameters
   const scaledFeatures: Record<string, number> = {};
@@ -111,14 +113,21 @@ export function predict(
     const nFeatures = model.featureKeys.length;
 
     // Create multiple logistic regression models with random feature subsets
-    for (let i = 0; i < Math.min(nEstimators, 10); i++) { // Limit to 10 for performance
+    for (let i = 0; i < Math.min(nEstimators, 10); i++) {
+      // Limit to 10 for performance
       // Use different random seeds for each "tree"
       const seed = rfParams.seed + i;
-      const randomTheta = Array(nFeatures).fill(0).map(() =>
-        (Math.sin(seed + i) * 0.1) + (Math.random() - 0.5) * 0.01
-      );
+      const randomTheta = Array(nFeatures)
+        .fill(0)
+        .map(() => Math.sin(seed + i) * 0.1 + (Math.random() - 0.5) * 0.01);
 
-      const treeProb = predictLogisticRegression(scaledFeatures, model.featureKeys, [randomTheta], false, 1.0);
+      const treeProb = predictLogisticRegression(
+        scaledFeatures,
+        model.featureKeys,
+        [randomTheta],
+        false,
+        1.0,
+      );
       totalProb += treeProb;
     }
 
@@ -151,7 +160,7 @@ export function predict(
  */
 export function batchPredict(
   featuresArray: Record<string, number>[],
-  model: TrainedModel
+  model: TrainedModel,
 ): number[] {
   return featuresArray.map((features) => {
     const pred = predict(features, model);

@@ -16,4 +16,8 @@ data/sportline.db
 data/backtest-results
 models/
 
+!eslint.config.js
+!.prettierrc.cjs
+!prettier.config.cjs
+
 !scripts/trainNcaamMoneyline.runs.log.json

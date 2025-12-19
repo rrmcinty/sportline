@@ -16,9 +16,9 @@ import {
   printBacktestSummary,
 } from '../../lib/backtest/backtester.js';
 import { getThresholdRecommendations } from '../../lib/backtest/thresholdOptimizer.js';
-import { 
-  analyzeProfitableBets, 
-  printProfitabilityAnalysis 
+import {
+  analyzeProfitableBets,
+  printProfitabilityAnalysis,
 } from '../../lib/backtest/profitabilityAnalyzer.js';
 import type { BacktestResult } from '../../lib/db/types.js';
 
@@ -36,22 +36,19 @@ export async function backtest(options: BacktestOptions): Promise<void> {
 
   // Step 1: Load existing trained model
   const sportToCategory: Record<string, string> = {
-    'ncaam': 'basketball',
-    'nba': 'basketball',
-    'nhl': 'hockey',
-    'nfl': 'football',
-    'cfb': 'football'
+    ncaam: 'basketball',
+    nba: 'basketball',
+    nhl: 'hockey',
+    nfl: 'football',
+    cfb: 'football',
   };
-  
+
   const sportCategory = sportToCategory[options.sport] || 'basketball';
   const market = options.market || 'moneyline';
-  
+
   console.log('[1/4] Loading existing trained model...');
-  const modelsDir = path.join(
-    process.cwd(),
-    `src/train/${sportCategory}/${options.sport}/models`
-  );
-  
+  const modelsDir = path.join(process.cwd(), `src/train/${sportCategory}/${options.sport}/models`);
+
   const modelPath = findLatestModel(options.sport, market, modelsDir);
   if (!modelPath) {
     console.error(`❌ No trained model found for ${options.sport} ${market}`);
@@ -59,7 +56,7 @@ export async function backtest(options: BacktestOptions): Promise<void> {
     console.error(`   Run 'sportline train --sport ${options.sport}' first`);
     process.exit(1);
   }
-  
+
   const model = loadModel(modelPath);
   console.log(`✓ Loaded model: ${path.basename(modelPath)}`);
   console.log(`✓ Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(2)}%`);
@@ -83,7 +80,7 @@ export async function backtest(options: BacktestOptions): Promise<void> {
       allowed_providers: ['draftkings', 'fanduel', 'betmgm'], // Default
       recency_weighting: model.recencyWeighting,
       min_edge: model.thresholds.min_edge,
-      min_ev: model.thresholds.min_ev
+      min_ev: model.thresholds.min_ev,
     };
   }
   console.log(`✓ Config loaded for ${config.sport} ${config.market}`);
@@ -103,33 +100,26 @@ export async function backtest(options: BacktestOptions): Promise<void> {
 
   // Step 4: Generate predictions using loaded model
   console.log('\n[4/4] Generating predictions for backtesting...');
-  
+
   // Use the same train/test split as original training (80/20)
   const splitIdx = Math.floor(0.8 * dataset.length);
   const testDataset = dataset.slice(splitIdx);
-  
+
   // Generate predictions using the loaded model
   const testProbabilities = batchPredict(
-    testDataset.map(d => d.features),
-    model
+    testDataset.map((d) => d.features),
+    model,
   );
-  
-  const recommendations = generateRecommendations(
-    dataset,
-    testProbabilities,
-    splitIdx
-  );
-  
+
+  const recommendations = generateRecommendations(dataset, testProbabilities, splitIdx);
+
   console.log(`✓ Generated ${recommendations.length} recommendations for backtesting`);
 
   // Step 5: Run comprehensive backtest analysis
   console.log('\n========== Comprehensive Backtest Analysis ==========\n');
 
   // Test a wider range of thresholds
-  const edgeRange = [
-    0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07,
-    0.08,
-  ];
+  const edgeRange = [0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.08];
   const evRange = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04];
 
   const backtestResults = runBacktestGrid(recommendations, edgeRange, evRange);
@@ -144,16 +134,16 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   console.log('Strategy                | Min Edge | Min EV | Notes');
   console.log('------------------------+----------+--------+---------------------------');
   console.log(
-    `Best ROI                | ${(thresholdRecs.bestROI.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.bestROI.min_ev * 100).toFixed(1).padStart(5)}% | Maximize return`
+    `Best ROI                | ${(thresholdRecs.bestROI.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.bestROI.min_ev * 100).toFixed(1).padStart(5)}% | Maximize return`,
   );
   console.log(
-    `Best Expected Profit    | ${(thresholdRecs.bestExpectedProfit.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.bestExpectedProfit.min_ev * 100).toFixed(1).padStart(5)}% | Maximize profit per bet`
+    `Best Expected Profit    | ${(thresholdRecs.bestExpectedProfit.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.bestExpectedProfit.min_ev * 100).toFixed(1).padStart(5)}% | Maximize profit per bet`,
   );
   console.log(
-    `Kelly Criterion         | ${(thresholdRecs.bestKelly.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.bestKelly.min_ev * 100).toFixed(1).padStart(5)}% | Balance growth and risk`
+    `Kelly Criterion         | ${(thresholdRecs.bestKelly.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.bestKelly.min_ev * 100).toFixed(1).padStart(5)}% | Balance growth and risk`,
   );
   console.log(
-    `Recommended (Default)   | ${(thresholdRecs.recommended.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.recommended.min_ev * 100).toFixed(1).padStart(5)}% | Multi-objective optimized`
+    `Recommended (Default)   | ${(thresholdRecs.recommended.min_edge * 100).toFixed(1).padStart(7)}% | ${(thresholdRecs.recommended.min_ev * 100).toFixed(1).padStart(5)}% | Multi-objective optimized`,
   );
   console.log('===============================================\n');
 
@@ -174,11 +164,9 @@ export async function backtest(options: BacktestOptions): Promise<void> {
     }
   }
 
+  console.log('Bucket | Count | Accuracy | Avg EV  | ROI      | Home Bets | Away Bets | Strategy');
   console.log(
-    'Bucket | Count | Accuracy | Avg EV  | ROI      | Home Bets | Away Bets | Strategy'
-  );
-  console.log(
-    '-------+-------+----------+---------+----------+-----------+-----------+-----------'
+    '-------+-------+----------+---------+----------+-----------+-----------+-----------',
   );
 
   for (const bucket of buckets) {
@@ -189,8 +177,7 @@ export async function backtest(options: BacktestOptions): Promise<void> {
         `${(bucket.roi * 100).toFixed(1).padStart(7)}% | ` +
         `${bucket.home_bet_count.toString().padStart(9)} | ` +
         `${bucket.away_bet_count.toString().padStart(9)} | ` +
-        `${getStrategyLabel(bucket).padEnd(9)}`
-
+        `${getStrategyLabel(bucket).padEnd(9)}`,
     );
   }
 
@@ -198,36 +185,30 @@ export async function backtest(options: BacktestOptions): Promise<void> {
 
   // Step 6: Analyze profitable bet characteristics
   console.log('\n========== Profitable Bet Analysis ==========\n');
-  
+
   // Use the recommended thresholds for profitability analysis
   const recommendedEdge = thresholdRecs.recommended.min_edge;
   const recommendedEV = thresholdRecs.recommended.min_ev;
-  
+
   const profitabilityAnalysis = analyzeProfitableBets(
     recommendations,
     dataset,
     recommendedEdge,
     recommendedEV,
-    100 // $100 unit size
+    100, // $100 unit size
   );
-  
+
   printProfitabilityAnalysis(profitabilityAnalysis);
 
   // Calculate overall metrics
   const totalGames = recommendations.length;
-  const gamesWithActuals = recommendations.filter(
-    (r) => r.actual !== null
-  ).length;
+  const gamesWithActuals = recommendations.filter((r) => r.actual !== null).length;
 
   console.log('\n========== Overall Model Performance ==========\n');
   console.log(`Total test games: ${totalGames}`);
   console.log(`Games with actuals: ${gamesWithActuals}`);
-  console.log(
-    `Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(2)}%`
-  );
-  console.log(
-    `Model ROI: ${(model.backtestMetrics.roi * 100).toFixed(2)}%`
-  );
+  console.log(`Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(2)}%`);
+  console.log(`Model ROI: ${(model.backtestMetrics.roi * 100).toFixed(2)}%`);
   console.log(`Model trained: ${model.trainedAt}`);
 
   // Find best result for display
@@ -240,22 +221,16 @@ export async function backtest(options: BacktestOptions): Promise<void> {
     console.log(`  ROI: ${(bestByROI.roi * 100).toFixed(2)}%`);
     console.log(`  Total bets: ${bestByROI.total_bets}`);
     console.log(`  Win rate: ${(bestByROI.win_rate * 100).toFixed(2)}%`);
-    console.log(
-      `  Total profit (per $100 units): $${bestByROI.total_profit.toFixed(2)}`
-    );
+    console.log(`  Total profit (per $100 units): $${bestByROI.total_profit.toFixed(2)}`);
   }
 
   console.log('\n===============================================\n');
 
   console.log('\n💡 Insights:\n');
-  console.log(
-    '1. Higher thresholds = fewer bets but potentially higher ROI'
-  );
+  console.log('1. Higher thresholds = fewer bets but potentially higher ROI');
   console.log('2. Check calibration buckets to see where model is accurate');
   console.log('3. Use recommended thresholds for production');
   console.log('4. Consider Kelly Criterion for optimal bet sizing\n');
 
-  console.log(
-    '✅ Backtest complete! Use these insights to optimize your strategy.\n'
-  );
+  console.log('✅ Backtest complete! Use these insights to optimize your strategy.\n');
 }

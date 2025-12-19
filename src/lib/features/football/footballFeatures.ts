@@ -6,12 +6,12 @@
 import type { Game } from '../../db/types.js';
 import { DatabaseQueries } from '../../db/queries.js';
 
-
-
 /**
  * Calculate football-specific advanced statistical features
  */
-export function calculateFootballAdvancedStats(stats: Record<string, number>): Record<string, number> {
+export function calculateFootballAdvancedStats(
+  stats: Record<string, number>,
+): Record<string, number> {
   const advancedStats: Record<string, number> = {};
 
   // Get raw stats with fallbacks
@@ -127,10 +127,10 @@ export function computeFootballOffensiveDefensiveRatings(
   awayId: string,
   gameId: string,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): { homeORtg: number; homeDRtg: number; awayORtg: number; awayDRtg: number } {
   // Get game scores
-  const game = games.find(g => g.id === gameId);
+  const game = games.find((g) => g.id === gameId);
   if (!game || game.home_score === null || game.away_score === null) {
     return { homeORtg: 21.0, homeDRtg: 21.0, awayORtg: 21.0, awayDRtg: 21.0 }; // Default NFL average ~21 points per game
   }
@@ -144,7 +144,7 @@ export function computeFootballOffensiveDefensiveRatings(
 
   // For football, we use points per game as the primary offensive rating
   // and points allowed per game as defensive rating
-  
+
   // Offensive Rating = Points scored
   const homeORtg = homePoints;
   const awayORtg = awayPoints;
@@ -157,14 +157,16 @@ export function computeFootballOffensiveDefensiveRatings(
     homeORtg: Math.max(0, Math.min(70, homeORtg)), // Clamp to reasonable range (0-70 points)
     homeDRtg: Math.max(0, Math.min(70, homeDRtg)),
     awayORtg: Math.max(0, Math.min(70, awayORtg)),
-    awayDRtg: Math.max(0, Math.min(70, awayDRtg))
+    awayDRtg: Math.max(0, Math.min(70, awayDRtg)),
   };
 }
 
 /**
  * Calculate football-specific defensive metrics
  */
-export function calculateFootballDefensiveMetrics(stats: Record<string, number>): Record<string, number> {
+export function calculateFootballDefensiveMetrics(
+  stats: Record<string, number>,
+): Record<string, number> {
   const defensiveStats: Record<string, number> = {};
 
   const yardsAllowed = stats.yardsPerGameAllowed || 0;
@@ -181,7 +183,7 @@ export function calculateFootballDefensiveMetrics(stats: Record<string, number>)
   // Passing defense
   defensiveStats.passingDefense = -passingYardsAllowed;
 
-  // Rushing defense  
+  // Rushing defense
   defensiveStats.rushingDefense = -rushingYardsAllowed;
 
   // Scoring defense
@@ -199,12 +201,14 @@ export function calculateFootballDefensiveMetrics(stats: Record<string, number>)
 /**
  * Calculate football-specific special teams metrics
  */
-export function calculateFootballSpecialTeamsMetrics(stats: Record<string, number>): Record<string, number> {
+export function calculateFootballSpecialTeamsMetrics(
+  stats: Record<string, number>,
+): Record<string, number> {
   const specialTeamsStats: Record<string, number> = {};
 
   // Note: We don't have detailed special teams stats in our current data
   // This is a placeholder for when we add field goal %, punt return yards, etc.
-  
+
   return specialTeamsStats;
 }
 
@@ -233,6 +237,6 @@ export function getFootballAdvancedFeatures(): string[] {
     'rushingDefense',
     'scoringDefense',
     'defensivePlaymaking',
-    'passRush'
+    'passRush',
   ];
 }

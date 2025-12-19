@@ -9,7 +9,9 @@ import { DatabaseQueries } from '../../db/queries.js';
 /**
  * Calculate basketball-specific advanced statistical features
  */
-export function calculateBasketballAdvancedStats(stats: Record<string, number>): Record<string, number> {
+export function calculateBasketballAdvancedStats(
+  stats: Record<string, number>,
+): Record<string, number> {
   const advancedStats: Record<string, number> = {};
 
   // Get raw stats with fallbacks
@@ -86,10 +88,10 @@ export function computeBasketballOffensiveDefensiveRatings(
   awayId: string,
   gameId: string,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): { homeORtg: number; homeDRtg: number; awayORtg: number; awayDRtg: number } {
   // Get game scores
-  const game = games.find(g => g.id === gameId);
+  const game = games.find((g) => g.id === gameId);
   if (!game || game.home_score === null || game.away_score === null) {
     return { homeORtg: 100, homeDRtg: 100, awayORtg: 100, awayDRtg: 100 }; // Default values
   }
@@ -117,35 +119,37 @@ export function computeBasketballOffensiveDefensiveRatings(
     homeORtg: Math.max(50, Math.min(150, homeORtg)), // Clamp to reasonable range
     homeDRtg: Math.max(50, Math.min(150, homeDRtg)),
     awayORtg: Math.max(50, Math.min(150, awayORtg)),
-    awayDRtg: Math.max(50, Math.min(150, awayDRtg))
+    awayDRtg: Math.max(50, Math.min(150, awayDRtg)),
   };
 }
 
 /**
  * Calculate basketball-specific defensive metrics
  */
-export function calculateBasketballDefensiveMetrics(stats: Record<string, number>): Record<string, number> {
+export function calculateBasketballDefensiveMetrics(
+  stats: Record<string, number>,
+): Record<string, number> {
   const defensiveStats: Record<string, number> = {};
 
   // Field goal suppression (opponent FG%)
   const oppFgm = stats.opponentFieldGoalsMade || 0;
   const oppFga = stats.opponentFieldGoalsAttempted || 0;
   if (oppFga > 0) {
-    defensiveStats.fgSuppression = 1 - (oppFgm / oppFga); // Higher is better defense
+    defensiveStats.fgSuppression = 1 - oppFgm / oppFga; // Higher is better defense
   }
 
   // Three-point suppression
   const opp3pm = stats.opponentThreePointFieldGoalsMade || 0;
   const opp3pa = stats.opponentThreePointFieldGoalsAttempted || 0;
   if (opp3pa > 0) {
-    defensiveStats.threePtSuppression = 1 - (opp3pm / opp3pa);
+    defensiveStats.threePtSuppression = 1 - opp3pm / opp3pa;
   }
 
   // Scoring suppression (points allowed per possession)
   const oppPoints = stats.opponentPoints || 0;
   const oppPossessions = calculateBasketballPossessions(stats);
   if (oppPossessions > 0) {
-    defensiveStats.scoringSuppression = 100 - ((oppPoints / oppPossessions) * 100); // Higher is better
+    defensiveStats.scoringSuppression = 100 - (oppPoints / oppPossessions) * 100; // Higher is better
   }
 
   // Turnover induction rate
@@ -164,14 +168,16 @@ export function calculateNBAAdvancedSituationalFeatures(
   teamId: string,
   gameDate: Date,
   games: Game[],
-  db: DatabaseQueries
+  db: DatabaseQueries,
 ): Record<string, number> {
   const situationalFeatures: Record<string, number> = {};
 
   // Get recent games for this team (last 10 games)
   const recentGames = games
-    .filter(g => (g.home_team_id === teamId || g.away_team_id === teamId) && 
-                 new Date(g.date) < gameDate)
+    .filter(
+      (g) =>
+        (g.home_team_id === teamId || g.away_team_id === teamId) && new Date(g.date) < gameDate,
+    )
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 10);
 
@@ -182,7 +188,9 @@ export function calculateNBAAdvancedSituationalFeatures(
   // 1. Rest/Fatigue Analysis
   const lastGame = recentGames[0];
   if (lastGame) {
-    const daysSinceLastGame = Math.floor((gameDate.getTime() - new Date(lastGame.date).getTime()) / (1000 * 60 * 60 * 24));
+    const daysSinceLastGame = Math.floor(
+      (gameDate.getTime() - new Date(lastGame.date).getTime()) / (1000 * 60 * 60 * 24),
+    );
     situationalFeatures.daysSinceLastGame = daysSinceLastGame;
     situationalFeatures.isBackToBack = daysSinceLastGame === 1 ? 1 : 0;
     situationalFeatures.isWellRested = daysSinceLastGame >= 3 ? 1 : 0;
@@ -196,15 +204,15 @@ export function calculateNBAAdvancedSituationalFeatures(
     let clutchGames = 0; // Games decided by 5 points or less
     let blowouts = 0; // Games decided by 15+ points
 
-    last5Games.forEach(game => {
+    last5Games.forEach((game) => {
       const isHome = game.home_team_id === teamId;
       const teamScore = isHome ? game.home_score : game.away_score;
       const oppScore = isHome ? game.away_score : game.home_score;
-      
+
       if (teamScore !== null && oppScore !== null) {
         const margin = teamScore - oppScore;
         totalMargin += margin;
-        
+
         if (margin > 0) wins++;
         if (Math.abs(margin) <= 5) clutchGames++;
         if (Math.abs(margin) >= 15) blowouts++;
@@ -220,15 +228,15 @@ export function calculateNBAAdvancedSituationalFeatures(
   // 3. Home/Away Streak Analysis
   let homeStreak = 0;
   let awayStreak = 0;
-  
+
   for (const game of recentGames) {
     const isHome = game.home_team_id === teamId;
     const teamScore = isHome ? game.home_score : game.away_score;
     const oppScore = isHome ? game.away_score : game.home_score;
-    
+
     if (teamScore !== null && oppScore !== null) {
       const won = teamScore > oppScore;
-      
+
       if (isHome) {
         if (won) homeStreak++;
         else break;
@@ -238,7 +246,7 @@ export function calculateNBAAdvancedSituationalFeatures(
       }
     }
   }
-  
+
   situationalFeatures.homeWinStreak = homeStreak;
   situationalFeatures.awayWinStreak = awayStreak;
 
@@ -249,15 +257,15 @@ export function calculateNBAAdvancedSituationalFeatures(
     let totalDefRating = 0;
     let validGames = 0;
 
-    last5Games.forEach(game => {
+    last5Games.forEach((game) => {
       const isHome = game.home_team_id === teamId;
       const teamStats = db.getGameStats(game.id, teamId);
-      
+
       if (teamStats && Object.keys(teamStats).length > 0) {
         const pace = calculateBasketballPossessions(teamStats);
         const teamScore = isHome ? game.home_score : game.away_score;
         const oppScore = isHome ? game.away_score : game.home_score;
-        
+
         if (pace > 0 && teamScore !== null && oppScore !== null) {
           totalPace += pace;
           totalOffRating += (teamScore / pace) * 100;
@@ -275,7 +283,7 @@ export function calculateNBAAdvancedSituationalFeatures(
   }
 
   // 5. Clutch Time Performance (4th quarter/OT performance in close games)
-  const clutchGames = recentGames.filter(game => {
+  const clutchGames = recentGames.filter((game) => {
     const isHome = game.home_team_id === teamId;
     const teamScore = isHome ? game.home_score : game.away_score;
     const oppScore = isHome ? game.away_score : game.home_score;
@@ -284,7 +292,7 @@ export function calculateNBAAdvancedSituationalFeatures(
 
   if (clutchGames.length >= 2) {
     let clutchWins = 0;
-    clutchGames.forEach(game => {
+    clutchGames.forEach((game) => {
       const isHome = game.home_team_id === teamId;
       const teamScore = isHome ? game.home_score : game.away_score;
       const oppScore = isHome ? game.away_score : game.home_score;
@@ -304,7 +312,7 @@ export function calculateNBAAdvancedSituationalFeatures(
 export function getBasketballAdvancedFeatures(): string[] {
   return [
     'effectiveFgPct',
-    'trueShootingPct', 
+    'trueShootingPct',
     'assistRatio',
     'turnoverRatio',
     'offensiveReboundPct',
@@ -327,6 +335,6 @@ export function getBasketballAdvancedFeatures(): string[] {
     'recentPace',
     'recentOffRating',
     'recentDefRating',
-    'clutchWinPct'
+    'clutchWinPct',
   ];
 }

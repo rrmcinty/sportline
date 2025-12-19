@@ -18,7 +18,7 @@ describe('Multi-Sport Buckets Command', () => {
   describe('Command Creation', () => {
     it('should create a command with correct name and description', () => {
       const command = createMultiSportBucketsCommand();
-      
+
       expect(command.name()).toBe('multi-sport-buckets');
       expect(command.description()).toBe('Analyze profitable buckets across all optimized sports');
     });
@@ -27,16 +27,16 @@ describe('Multi-Sport Buckets Command', () => {
   describe('Multi-Sport Analysis', () => {
     it('should execute without errors', async () => {
       const command = createMultiSportBucketsCommand();
-      
+
       await expect(command.parseAsync(['node', 'test'])).resolves.not.toThrow();
     });
 
     it('should analyze all sports', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should include all major sports
       expect(allOutput).toContain('NFL');
       expect(allOutput).toContain('NBA');
@@ -47,9 +47,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should identify NFL as best performer', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // NFL should be identified as having profitable buckets
       expect(allOutput).toMatch(/NFL.*50-60%.*37\.6%/);
       expect(allOutput).toMatch(/NFL.*90-100%.*100\.0%/);
@@ -59,9 +59,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should calculate combined scores correctly', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should show combined scores for each bucket
       expect(allOutput).toContain('Combined:');
       expect(allOutput).toContain('NFL');
@@ -73,12 +73,12 @@ describe('Multi-Sport Buckets Command', () => {
     it('should identify profitable buckets', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should have a profitable buckets section
       expect(allOutput).toContain('PROFITABLE BUCKETS ANALYSIS');
-      
+
       // NFL buckets should be profitable
       expect(allOutput).toMatch(/NFL.*\+37\.6%/);
       expect(allOutput).toMatch(/NFL.*\+100\.0%/);
@@ -87,9 +87,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should calculate annual profit projections', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should show annual profit calculations
       expect(allOutput).toContain('annual profit');
       expect(allOutput).toContain('/year');
@@ -99,12 +99,12 @@ describe('Multi-Sport Buckets Command', () => {
     it('should provide confidence levels and recommendations', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should assign confidence levels
       expect(allOutput).toMatch(/Confidence Level: (HIGH|MEDIUM|LOW)/);
-      
+
       // Should provide recommendations
       expect(allOutput).toMatch(/Recommendation: (STRONG_BET|MODERATE_BET|AVOID)/);
     });
@@ -114,9 +114,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should identify near break-even opportunities', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should have near break-even section
       expect(allOutput).toContain('BEST NEAR-BREAK-EVEN OPPORTUNITIES');
       expect(allOutput).toContain('odds shopping');
@@ -125,9 +125,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should calculate odds improvement needed', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should show how much better odds are needed
       expect(allOutput).toMatch(/Need \d+\.\d+% better odds/);
       expect(allOutput).toContain('to reach +3% ROI');
@@ -136,14 +136,14 @@ describe('Multi-Sport Buckets Command', () => {
     it('should filter for reasonable volume requirements', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Near break-even should only include buckets with >= 10 bets per year
-      const nearBreakEvenLines = allOutput.split('\n').filter(line => 
-        line.includes('Need') && line.includes('better odds')
-      );
-      
+      const nearBreakEvenLines = allOutput
+        .split('\n')
+        .filter((line) => line.includes('Need') && line.includes('better odds'));
+
       // Should have some near break-even opportunities
       expect(nearBreakEvenLines.length).toBeGreaterThan(0);
     });
@@ -153,16 +153,23 @@ describe('Multi-Sport Buckets Command', () => {
     it('should have consistent sport bucket data', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Each sport bucket should have consistent format
-      const bucketLines = allOutput.split('\n').filter(line => 
-        line.includes('Confidence') && (line.includes('NFL') || line.includes('NBA') || line.includes('NCAAM') || line.includes('NHL'))
-      );
-      
+      const bucketLines = allOutput
+        .split('\n')
+        .filter(
+          (line) =>
+            line.includes('Confidence') &&
+            (line.includes('NFL') ||
+              line.includes('NBA') ||
+              line.includes('NCAAM') ||
+              line.includes('NHL')),
+        );
+
       expect(bucketLines.length).toBeGreaterThan(3);
-      
+
       // Just check that we have the basic structure
       expect(allOutput).toContain('NFL');
       expect(allOutput).toContain('NBA');
@@ -174,14 +181,14 @@ describe('Multi-Sport Buckets Command', () => {
     it('should correctly calculate volume and ROI scores', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Volume scores should be based on game count
       // ROI scores should be based on positive ROI
       expect(allOutput).toMatch(/Volume Score: \d+\/100/);
       expect(allOutput).toMatch(/ROI Score: \d+\/100/);
-      
+
       // NFL profitable buckets should exist
       expect(allOutput).toContain('NFL');
       expect(allOutput).toContain('+37.6%'); // NFL 50-60% ROI
@@ -191,9 +198,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should handle edge cases in calculations', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should not crash on division by zero or negative values
       // Should handle buckets with 0 ROI or 0 games
       expect(allOutput).toContain('Combined Score:'); // Basic completion check
@@ -204,9 +211,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should prioritize NFL correctly', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Final recommendations should focus on NFL
       expect(allOutput).toContain('FOCUS ON NFL');
       expect(allOutput).toContain('Two profitable buckets');
@@ -215,9 +222,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should recommend odds shopping for near break-even sports', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should recommend odds shopping for NBA/NCAAM
       expect(allOutput).toContain('ODDS SHOP NBA/NCAAM');
       expect(allOutput).toContain('Near break-even with high volume');
@@ -226,9 +233,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should advise avoiding NHL', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should recommend avoiding NHL
       expect(allOutput).toContain('AVOID NHL');
       expect(allOutput).toContain('Still unprofitable');
@@ -237,9 +244,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should suggest combining strategies', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should suggest combining profitable and near break-even
       expect(allOutput).toContain('COMBINE STRATEGIES');
       expect(allOutput).toContain('profitable + near-break-even');
@@ -248,9 +255,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should emphasize performance monitoring', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Should recommend tracking actual vs historical performance
       expect(allOutput).toContain('MONITOR PERFORMANCE');
       expect(allOutput).toContain('Track actual results');
@@ -261,9 +268,9 @@ describe('Multi-Sport Buckets Command', () => {
     it('should have accurate ROI calculations', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // NFL 50-60% bucket: 22 games, 81.8% win rate, 37.6% ROI
       // This should be mathematically consistent
       expect(allOutput).toContain('NFL');
@@ -271,7 +278,7 @@ describe('Multi-Sport Buckets Command', () => {
       expect(allOutput).toContain('22');
       expect(allOutput).toContain('81.8%');
       expect(allOutput).toContain('37.6%');
-      
+
       // NFL 90-100% bucket: 2 games, 50% win rate, 100% ROI
       // 50% win rate with 100% ROI suggests very favorable odds
       expect(allOutput).toContain('NFL');
@@ -284,14 +291,14 @@ describe('Multi-Sport Buckets Command', () => {
     it('should calculate estimated bets per year correctly', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // NFL uses 3 seasons, so 22 games = ~7 per year
       expect(allOutput).toContain('NFL');
       expect(allOutput).toContain('50-60%');
       expect(allOutput).toContain('~7/year');
-      
+
       // NBA uses 8 seasons, so 368 games = ~46 per year
       expect(allOutput).toMatch(/NBA.*60-70%.*~46\/year/);
     });
@@ -299,15 +306,15 @@ describe('Multi-Sport Buckets Command', () => {
     it('should have consistent combined score calculations', async () => {
       const command = createMultiSportBucketsCommand();
       await command.parseAsync(['node', 'test']);
-      
-      const allOutput = mockConsoleLog.mock.calls.map(call => call[0]).join('\n');
-      
+
+      const allOutput = mockConsoleLog.mock.calls.map((call) => call[0]).join('\n');
+
       // Combined score = (volume score * 0.6) + (ROI score * 0.4)
       // Profitable buckets should have higher combined scores than unprofitable ones
       expect(allOutput).toContain('Combined:');
       expect(allOutput).toContain('ROI:');
       expect(allOutput).toContain('Volume Score:');
-      
+
       // Extract and verify that profitable buckets have higher combined scores
       expect(allOutput).toContain('+100.0%'); // Profitable NFL bucket
       expect(allOutput).toContain('+37.6%'); // Profitable NFL bucket

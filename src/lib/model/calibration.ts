@@ -42,7 +42,10 @@ export class IsotonicRegression {
       }
 
       // Calculate empirical probability for this bin
-      const binProb = binSamples.length > 0 ? binSamples.reduce((a, b) => a + b, 0) / binSamples.length : threshold;
+      const binProb =
+        binSamples.length > 0
+          ? binSamples.reduce((a, b) => a + b, 0) / binSamples.length
+          : threshold;
       this.values.push(Math.max(0, Math.min(1, binProb))); // Clamp to [0,1]
     }
 
@@ -62,7 +65,7 @@ export class IsotonicRegression {
       return probabilities; // Not fitted, return unchanged
     }
 
-    return probabilities.map(prob => {
+    return probabilities.map((prob) => {
       // Clamp probability to [0,1]
       const clampedProb = Math.max(0, Math.min(1, prob));
 
@@ -88,7 +91,7 @@ export class IsotonicRegression {
   serialize(): { thresholds: number[]; values: number[] } {
     return {
       thresholds: this.thresholds,
-      values: this.values
+      values: this.values,
     };
   }
 
@@ -164,7 +167,7 @@ export class BetaCalibration {
    * Apply beta calibration
    */
   calibrate(probabilities: number[]): number[] {
-    return probabilities.map(prob => this.betaCdf(prob, this.a, this.b));
+    return probabilities.map((prob) => this.betaCdf(prob, this.a, this.b));
   }
 
   /**
@@ -186,7 +189,9 @@ export class BetaCalibration {
 /**
  * Factory function to create calibrator based on method
  */
-export function createCalibrator(method: 'temperature' | 'beta' | 'isotonic'): IsotonicRegression | BetaCalibration | null {
+export function createCalibrator(
+  method: 'temperature' | 'beta' | 'isotonic',
+): IsotonicRegression | BetaCalibration | null {
   switch (method) {
     case 'isotonic':
       return new IsotonicRegression();
@@ -204,7 +209,7 @@ export function createCalibrator(method: 'temperature' | 'beta' | 'isotonic'): I
  */
 export function applyCalibration(
   probabilities: number[],
-  calibrationModel: CalibrationModel | undefined
+  calibrationModel: CalibrationModel | undefined,
 ): number[] {
   if (!calibrationModel) {
     return probabilities;
@@ -215,7 +220,7 @@ export function applyCalibration(
       if (calibrationModel.temperature !== undefined && calibrationModel.temperature !== 1.0) {
         const temp = calibrationModel.temperature;
         // Temperature scaling: p' = 1 / (1 + exp(-logit(p) / T))
-        return probabilities.map(p => {
+        return probabilities.map((p) => {
           if (p <= 0 || p >= 1) return p;
           const logit = Math.log(p / (1 - p));
           const scaledLogit = logit / temp;
@@ -236,7 +241,7 @@ export function applyCalibration(
       if (calibrationModel.isotonicThresholds && calibrationModel.isotonicValues) {
         const calibrator = IsotonicRegression.deserialize({
           thresholds: calibrationModel.isotonicThresholds,
-          values: calibrationModel.isotonicValues
+          values: calibrationModel.isotonicValues,
         });
         return calibrator.calibrate(probabilities);
       }
