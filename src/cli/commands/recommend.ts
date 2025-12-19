@@ -12,10 +12,8 @@ import { extractFeaturesForGame } from '../../lib/features/featureEngineering.js
 import { loadFeatureConfig } from '../../lib/features/featureConfig.js';
 import {
   calculateBettingMetrics,
-  calculateKellyBetSize,
   formatOdds,
   formatPercentage,
-  formatCurrency,
 } from '../../lib/odds/evCalculator.js';
 import type { FeatureConfig, Recommendation, GameFeatures, TodaysGame } from '../../lib/db/types.js';
 
@@ -209,11 +207,8 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
             
             console.log(`   🏠 ${chalk.bold(homeTeam.display_name || homeTeam.name)}:`);
             console.log(`      Odds: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))} | Edge: ${evColor(formatPercentage(metrics.edge_home || 0))}`);
-            
-            if (metrics.ev_home > 0.02) { // 2% EV threshold
-              const kellySize = calculateKellyBetSize(prediction.prob_home, odd.price_home, 1000);
-              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
-            } else if (metrics.ev_home > 0) {
+
+            if (metrics.ev_home > 0) {
               console.log(chalk.yellow(`      ⚠️  Marginal value`));
             } else {
               console.log(chalk.red(`      ❌ No value`));
@@ -228,11 +223,8 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
             
             console.log(`   ✈️  ${chalk.bold(awayTeam.display_name || awayTeam.name)}:`);
             console.log(`      Odds: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))} | Edge: ${evColor(formatPercentage(metrics.edge_away || 0))}`);
-            
-            if (metrics.ev_away > 0.02) { // 2% EV threshold
-              const kellySize = calculateKellyBetSize(prediction.prob_away, odd.price_away, 1000);
-              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
-            } else if (metrics.ev_away > 0) {
+
+            if (metrics.ev_away > 0) {
               console.log(chalk.yellow(`      ⚠️  Marginal value`));
             } else {
               console.log(chalk.red(`      ❌ No value`));
@@ -251,11 +243,6 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
             
             const homeSpread = odd.line || 0;
             console.log(`   🏠 ${chalk.bold(homeTeam.display_name || homeTeam.name)} ${chalk.gray(`(${homeSpread > 0 ? '+' : ''}${homeSpread})`)}: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))}`);
-            
-            if (metrics.ev_home > 0.02) {
-              const kellySize = calculateKellyBetSize(prediction.prob_home, odd.price_home, 1000);
-              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
-            }
           }
           
           if (odd.price_away && metrics.ev_away !== null) {
@@ -265,11 +252,6 @@ async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db
             
             const awaySpread = odd.line ? -odd.line : 0;
             console.log(`   ✈️  ${chalk.bold(awayTeam.display_name || awayTeam.name)} ${chalk.gray(`(${awaySpread > 0 ? '+' : ''}${awaySpread})`)}: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))}`);
-            
-            if (metrics.ev_away > 0.02) {
-              const kellySize = calculateKellyBetSize(prediction.prob_away, odd.price_away, 1000);
-              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
-            }
           }
         }
       }
@@ -310,8 +292,6 @@ interface RecommendOptions {
   date?: string;
   market: string;
   minBets: string;
-  bankroll?: string;
-  dailyBudget?: string;
 }
 
 // Helper function to get recommendations for a specific sport
@@ -832,83 +812,8 @@ function displayUnifiedRecommendations(
 
   // Removed duplicate detailed historical context section - info is already in the main table
 
-  // Kelly Criterion section
-  const bankroll = options.bankroll ? parseFloat(options.bankroll) : null;
-  const dailyBudget = options.dailyBudget ? parseFloat(options.dailyBudget) : null;
-
-  if (bankroll || dailyBudget) {
-    const kellyBets = allRecommendations.map(({ sport, market, recommendation: rec }) => ({
-      sport,
-      market,
-      matchup: `${rec.away_team.substring(0, 15)} @ ${rec.home_team.substring(0, 15)}`,
-      betSize: calculateKellyBetSize(
-        rec.recommended_side === 'home' ? rec.model_prob_home : rec.model_prob_away,
-        rec.recommended_side === 'home' ? rec.odds_home! : rec.odds_away!,
-        bankroll || 1000
-      ),
-      betPct: ((calculateKellyBetSize(
-        rec.recommended_side === 'home' ? rec.model_prob_home : rec.model_prob_away,
-        rec.recommended_side === 'home' ? rec.odds_home! : rec.odds_away!,
-        bankroll || 1000
-      ) / (bankroll || 1000)) * 100),
-      scaledBet: undefined as number | undefined,
-      scaledPct: undefined as number | undefined,
-    }));
-
-    if (dailyBudget) {
-      // Scale bets to fit daily budget proportionally
-      const totalKelly = kellyBets.reduce((sum, kelly) => sum + kelly.betSize, 0);
-      if (totalKelly > 0) {
-        const scaleFactor = dailyBudget / totalKelly;
-        kellyBets.forEach(kelly => {
-          kelly.scaledBet = kelly.betSize * scaleFactor;
-          kelly.scaledPct = (kelly.scaledBet / dailyBudget) * 100;
-        });
-      }
-
-      console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Daily Budget: ${formatCurrency(dailyBudget)})\n`));
-
-      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Matchup')}                | ${chalk.blue.bold('Raw Kelly Bet')} | ${chalk.green.bold('Scaled Bet')}`);
-      console.log(chalk.gray('-----+-------+--------+---------------------------+---------------+-----------------'));
-
-      for (let i = 0; i < kellyBets.length; i++) {
-        const kelly = kellyBets[i];
-        const rank = chalk.yellow((i + 1).toString().padStart(4));
-        const sportDisplay = chalk.bold(kelly.sport.padEnd(5));
-        const marketDisplay = chalk.gray(kelly.market.padEnd(6));
-        const matchup = kelly.matchup.padEnd(25);
-        const kellyDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
-        const scaledDisplay = `${formatCurrency(kelly.scaledBet!)} (${kelly.scaledPct!.toFixed(1)}%)`;
-
-        console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${matchup} | ${chalk.blue(kellyDisplay)} | ${chalk.green(scaledDisplay)}`);
-      }
-
-      const totalScaled = kellyBets.reduce((sum, kelly) => sum + (kelly.scaledBet || 0), 0);
-      console.log(chalk.gray(`\nTotal: ${formatCurrency(totalScaled)} (exactly matches your budget)`));
-    } else {
-      // Regular bankroll display
-      console.log(chalk.cyan.bold(`\n💰 Kelly Criterion Bet Sizing (Bankroll: ${formatCurrency(bankroll!)})\n`));
-
-      console.log(`${chalk.yellow.bold('Rank')} | ${chalk.bold('Sport')} | ${chalk.gray.bold('Market')} | ${chalk.gray.bold('Matchup')}                | ${chalk.green.bold('Recommended Bet')}`);
-      console.log(chalk.gray('-----+-------+--------+---------------------------+-----------------'));
-
-      for (let i = 0; i < kellyBets.length; i++) {
-        const kelly = kellyBets[i];
-        const rank = chalk.yellow((i + 1).toString().padStart(4));
-        const sportDisplay = chalk.bold(kelly.sport.padEnd(5));
-        const marketDisplay = chalk.gray(kelly.market.padEnd(6));
-        const matchup = kelly.matchup.padEnd(25);
-        const betDisplay = `${formatCurrency(kelly.betSize)} (${kelly.betPct.toFixed(1)}%)`;
-
-        console.log(`${rank} | ${sportDisplay} | ${marketDisplay} | ${matchup} | ${chalk.green(betDisplay)}`);
-      }
-    }
-    console.log('');
-  }
-
   console.log(chalk.blue.bold('💡 Tips:'));
   console.log(chalk.gray('   - These are recommendations, not guarantees'));
-  console.log(chalk.gray('   - Kelly sizing optimizes long-term growth'));
   console.log(chalk.gray('   - Always gamble responsibly\n'));
 }
 

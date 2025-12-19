@@ -48,10 +48,6 @@ program
   .option('--date <date>', 'Date to recommend for (YYYY-MM-DD, default: today)')
   .option('--market <market>', 'Market to recommend (moneyline, spread, total, all)', 'all')
   .option('--min-bets <number>', 'Minimum number of recommendations to show', '3')
-  .option('--bankroll <amount>', 'Bankroll amount for Kelly Criterion sizing', '1000')
-  .option('--daily-budget <amount>', 'Fixed daily budget to allocate across bets using Kelly ratios')
-
-
   .action(async (options) => {
     try {
       await recommend(options);

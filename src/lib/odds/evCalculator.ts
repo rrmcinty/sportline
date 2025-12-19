@@ -114,33 +114,6 @@ export function calculateBettingMetrics(
 }
 
 /**
- * Calculate Kelly Criterion bet size
- * @param probability - Predicted probability of winning
- * @param odds - American odds
- * @param bankroll - Total bankroll
- * @param kellyFraction - Fraction of Kelly to use (e.g., 0.25 for quarter Kelly)
- * @returns Recommended bet size
- */
-export function calculateKellyBetSize(
-  probability: number,
-  odds: number,
-  bankroll: number,
-  kellyFraction: number = 0.25
-): number {
-  const decimalOdds = americanToDecimal(odds);
-  const q = 1 - probability;
-  const b = decimalOdds - 1; // Net odds (profit)
-
-  // Kelly formula: f* = (bp - q) / b
-  const kellyPct = (b * probability - q) / b;
-
-  // Apply Kelly fraction and ensure non-negative
-  const adjustedKelly = Math.max(0, kellyPct * kellyFraction);
-
-  return adjustedKelly * bankroll;
-}
-
-/**
  * Determine recommended side based on EV and edge thresholds
  */
 export function getRecommendedSide(
@@ -194,11 +167,4 @@ export function formatOdds(odds: number): string {
  */
 export function formatPercentage(value: number, decimals: number = 1): string {
   return `${(value * 100).toFixed(decimals)}%`;
-}
-
-/**
- * Format currency for display
- */
-export function formatCurrency(value: number, decimals: number = 2): string {
-  return `$${value.toFixed(decimals)}`;
 }
