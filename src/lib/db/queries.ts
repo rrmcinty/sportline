@@ -312,6 +312,24 @@ export class DatabaseQueries {
   }
 
   /**
+   * Get all unique metric names for game stats for a given sport.
+   * This is a diagnostic function to help understand available data.
+   */
+  getAvailableGameStatsMetrics(sport: string): string[] {
+    const rows = this.db
+      .prepare(
+        `
+        SELECT DISTINCT metric_name
+        FROM game_stats
+        WHERE sport = ?
+        ORDER BY metric_name ASC
+      `
+      )
+      .all(sport) as { metric_name: string }[];
+    return rows.map(row => row.metric_name);
+  }
+
+  /**
    * Get team name (display name or regular name)
    */
   getTeamName(teamId: string, sport?: string): string {
