@@ -15,6 +15,7 @@ dist/
 data/sportline.db
 data/backtest-results
 models/
+coverage/
 
 !eslint.config.js
 !.prettierrc.cjs
