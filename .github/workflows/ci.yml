@@ -23,3 +23,6 @@ jobs:
 
       - name: Run full check (format + lint + tsc)
         run: npm run check
+
+      - name: Run tests
+        run: npm run test
