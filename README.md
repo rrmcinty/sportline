@@ -25,6 +25,7 @@ npm ci
 ## Build + run the CLI
 
 ```bash
+# `build` runs `check` (format:check + lint + tsc) and emits `dist/`
 npm run build
 
 # Run the CLI from dist
@@ -89,6 +90,16 @@ After you’ve ingested/imported enough history:
 ```bash
 npm run build
 node dist/cli/index.js train --help
+```
+
+Examples:
+
+```bash
+# update odds / data (command options live under --help)
+npm run update:odds
+
+# generic CLI entrypoint
+node dist/cli/index.js recommend --help
 ```
 
 Other CLI commands live under `src/cli/commands/*` (backtest, analyze, recommend, update, etc.).
