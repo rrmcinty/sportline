@@ -44,6 +44,7 @@ program
   .command('recommend')
   .description("Get betting recommendations for today's games")
   .option('--sport <sport>', 'Sport to recommend (ncaam, nba, nfl, etc.) - if not specified, shows all sports')
+  .option('--game <id>', 'Specific game ID to analyze (from sportline find)')
   .option('--date <date>', 'Date to recommend for (YYYY-MM-DD, default: today)')
   .option('--market <market>', 'Market to recommend (moneyline, spread, total, all)', 'all')
   .option('--min-bets <number>', 'Minimum number of recommendations to show', '3')

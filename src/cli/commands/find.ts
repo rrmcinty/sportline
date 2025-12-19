@@ -124,6 +124,7 @@ export async function find(options: FindOptions): Promise<void> {
 
       console.log(chalk.cyan.bold(`${game.sport.toUpperCase()} | ${dateStr} ${timeStr}`));
       console.log(`${awayDisplay} @ ${homeDisplay}`);
+      console.log(chalk.gray(`🆔 Game ID: ${game.id}`));
       
       if (game.venue) {
         console.log(chalk.gray(`📍 ${game.venue}`));

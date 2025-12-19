@@ -409,6 +409,17 @@ export class DatabaseQueries {
   }
 
   /**
+   * Get a specific game by ID
+   */
+  getGameById(gameId: string): Game | null {
+    return (
+      (this.db
+        .prepare('SELECT * FROM games WHERE id = ?')
+        .get(gameId) as Game) || null
+    );
+  }
+
+  /**
    * Close database connection
    */
   close(): void {

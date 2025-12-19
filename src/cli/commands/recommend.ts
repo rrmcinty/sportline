@@ -70,8 +70,243 @@ function calculateBetQualityScore(ev: number, context: any): number {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * Analyze a specific game by ID
+ */
+async function analyzeSpecificGame(gameId: string, options: RecommendOptions, db: DatabaseQueries): Promise<void> {
+  console.log(chalk.yellow(`🔍 Analyzing Game: ${gameId}\n`));
+
+  // Get the specific game
+  const game = db.getGameById(gameId);
+  if (!game) {
+    console.error(chalk.red(`❌ Game not found: ${gameId}`));
+    return;
+  }
+
+  console.log(chalk.cyan.bold(`${game.sport.toUpperCase()} Game Analysis`));
+  
+  // Get team details
+  const homeTeam = db.getTeam(game.home_team_id, game.sport);
+  const awayTeam = db.getTeam(game.away_team_id, game.sport);
+  
+  if (!homeTeam || !awayTeam) {
+    console.error(chalk.red('❌ Could not load team information'));
+    return;
+  }
+
+  const gameDate = new Date(game.date);
+  console.log(`📅 ${gameDate.toLocaleDateString()} ${gameDate.toLocaleTimeString()}`);
+  console.log(`🏠 ${homeTeam.display_name || homeTeam.name}`);
+  console.log(`✈️  ${awayTeam.display_name || awayTeam.name}`);
+  if (game.venue) {
+    console.log(`📍 ${game.venue}`);
+  }
+  console.log('');
+
+  // Determine markets to analyze
+  const marketsToProcess = options.market === 'all' 
+    ? ['moneyline', 'spread'] 
+    : [options.market];
+
+  for (const market of marketsToProcess) {
+    console.log(chalk.green.bold(`\n📊 ${market.toUpperCase()} ANALYSIS\n`));
+
+    try {
+      // Load model for this sport/market
+      const sportToCategory: Record<string, string> = {
+        'ncaam': 'basketball',
+        'nba': 'basketball', 
+        'nhl': 'hockey',
+        'nfl': 'football',
+        'cfb': 'football'
+      };
+      
+      const sportCategory = sportToCategory[game.sport] || 'basketball';
+      const modelsDir = path.join(process.cwd(), `src/train/${sportCategory}/${game.sport}/models`);
+      const modelPath = findLatestModel(game.sport, market, modelsDir);
+      
+      if (!modelPath) {
+        console.log(chalk.yellow(`⚠️  No trained model found for ${game.sport} ${market}`));
+        continue;
+      }
+
+      const model = loadModel(modelPath);
+      console.log(chalk.gray(`🤖 Using model: ${path.basename(modelPath)}`));
+      console.log(chalk.gray(`📈 Model accuracy: ${(model.backtestMetrics.accuracy * 100).toFixed(1)}%`));
+      
+      // Color code ROI - green for positive, red for negative
+      const roiColor = model.backtestMetrics.roi > 0 ? chalk.green : chalk.red;
+      const roiSign = model.backtestMetrics.roi > 0 ? '+' : '';
+      console.log(chalk.gray(`💰 Model historical ROI: ${roiColor(`${roiSign}${(model.backtestMetrics.roi * 100).toFixed(1)}%`)} ${chalk.gray('(all past recommendations)')}\n`));
+
+      // Extract features for this game
+      const config = {
+        sport: model.sport,
+        model: model.modelType,
+        market: model.market,
+        seasons: model.seasons,
+        features: model.features,
+        rolling_windows: model.rollingWindows,
+        allowed_providers: ['draftkings', 'fanduel', 'betmgm'],
+        recency_weighting: model.recencyWeighting,
+        min_edge: model.thresholds.min_edge,
+        min_ev: model.thresholds.min_ev
+      } as FeatureConfig;
+
+      // Get all games for feature extraction
+      const allGames = db.getHistoricalGames(game.sport, model.seasons);
+      const features = extractFeaturesForGame(game, db, config, model.featureMeans, allGames);
+      if (!features) {
+        console.log(chalk.red('❌ Could not extract features for this game'));
+        continue;
+      }
+
+      // Generate prediction
+      const prediction = predict(features, model);
+      console.log(chalk.magenta.bold(`🎯 Model Prediction:`));
+      
+      // Color code based on confidence - higher probability gets green, lower gets red
+      const homeColor = prediction.prob_home > 0.55 ? chalk.green.bold : 
+                       prediction.prob_home > 0.45 ? chalk.yellow.bold : chalk.red.bold;
+      const awayColor = prediction.prob_away > 0.55 ? chalk.green.bold : 
+                       prediction.prob_away > 0.45 ? chalk.yellow.bold : chalk.red.bold;
+      
+      console.log(`   🏠 ${homeTeam.display_name || homeTeam.name}: ${homeColor(formatPercentage(prediction.prob_home))}`);
+      console.log(`   ✈️  ${awayTeam.display_name || awayTeam.name}: ${awayColor(formatPercentage(prediction.prob_away))}`);
+      
+      // Show model's favorite
+      const favorite = prediction.prob_home > prediction.prob_away ? 
+        { team: homeTeam.display_name || homeTeam.name, prob: prediction.prob_home, icon: '🏠' } :
+        { team: awayTeam.display_name || awayTeam.name, prob: prediction.prob_away, icon: '✈️' };
+      
+      const confidence = favorite.prob > 0.65 ? 'High' : favorite.prob > 0.55 ? 'Medium' : 'Low';
+      const confidenceColor = favorite.prob > 0.65 ? chalk.green : favorite.prob > 0.55 ? chalk.yellow : chalk.red;
+      
+      console.log(chalk.blue(`   📊 Model favors: ${favorite.icon} ${chalk.bold(favorite.team)} (${confidenceColor(confidence)} confidence)`));
+
+      // Get odds and calculate metrics
+      const odds = db.getOdds(game.id, market, ['draftkings', 'fanduel', 'betmgm']);
+      
+      if (odds.length === 0) {
+        console.log(chalk.yellow('\n⚠️  No odds available for this market'));
+        continue;
+      }
+
+      console.log(chalk.cyan.bold(`\n💰 Betting Analysis:`));
+      
+      for (const odd of odds) {
+        console.log(chalk.blue.bold(`\n📊 ${odd.provider.toUpperCase()}:`));
+        
+        if (market === 'moneyline') {
+          // Calculate metrics for both sides
+          const metrics = calculateBettingMetrics(prediction.prob_home, odd.price_home, odd.price_away);
+          
+          // Home team analysis
+          if (odd.price_home && metrics.ev_home !== null) {
+            const evColor = metrics.ev_home > 0.05 ? chalk.green.bold : 
+                           metrics.ev_home > 0.02 ? chalk.yellow.bold : 
+                           metrics.ev_home > 0 ? chalk.white : chalk.red;
+            
+            console.log(`   🏠 ${chalk.bold(homeTeam.display_name || homeTeam.name)}:`);
+            console.log(`      Odds: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))} | Edge: ${evColor(formatPercentage(metrics.edge_home || 0))}`);
+            
+            if (metrics.ev_home > 0.02) { // 2% EV threshold
+              const kellySize = calculateKellyBetSize(prediction.prob_home, odd.price_home, 1000);
+              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
+            } else if (metrics.ev_home > 0) {
+              console.log(chalk.yellow(`      ⚠️  Marginal value`));
+            } else {
+              console.log(chalk.red(`      ❌ No value`));
+            }
+          }
+          
+          // Away team analysis  
+          if (odd.price_away && metrics.ev_away !== null) {
+            const evColor = metrics.ev_away > 0.05 ? chalk.green.bold : 
+                           metrics.ev_away > 0.02 ? chalk.yellow.bold : 
+                           metrics.ev_away > 0 ? chalk.white : chalk.red;
+            
+            console.log(`   ✈️  ${chalk.bold(awayTeam.display_name || awayTeam.name)}:`);
+            console.log(`      Odds: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))} | Edge: ${evColor(formatPercentage(metrics.edge_away || 0))}`);
+            
+            if (metrics.ev_away > 0.02) { // 2% EV threshold
+              const kellySize = calculateKellyBetSize(prediction.prob_away, odd.price_away, 1000);
+              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
+            } else if (metrics.ev_away > 0) {
+              console.log(chalk.yellow(`      ⚠️  Marginal value`));
+            } else {
+              console.log(chalk.red(`      ❌ No value`));
+            }
+          }
+        } else if (market === 'spread') {
+          // Spread betting analysis
+          const metrics = calculateBettingMetrics(prediction.prob_home, odd.price_home, odd.price_away);
+          
+          console.log(`   ${chalk.magenta.bold(`Spread: ${odd.line}`)}`);
+          
+          if (odd.price_home && metrics.ev_home !== null) {
+            const evColor = metrics.ev_home > 0.05 ? chalk.green.bold : 
+                           metrics.ev_home > 0.02 ? chalk.yellow.bold : 
+                           metrics.ev_home > 0 ? chalk.white : chalk.red;
+            
+            const homeSpread = odd.line || 0;
+            console.log(`   🏠 ${chalk.bold(homeTeam.display_name || homeTeam.name)} ${chalk.gray(`(${homeSpread > 0 ? '+' : ''}${homeSpread})`)}: ${chalk.cyan(formatOdds(odd.price_home))} | EV: ${evColor(formatPercentage(metrics.ev_home))}`);
+            
+            if (metrics.ev_home > 0.02) {
+              const kellySize = calculateKellyBetSize(prediction.prob_home, odd.price_home, 1000);
+              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
+            }
+          }
+          
+          if (odd.price_away && metrics.ev_away !== null) {
+            const evColor = metrics.ev_away > 0.05 ? chalk.green.bold : 
+                           metrics.ev_away > 0.02 ? chalk.yellow.bold : 
+                           metrics.ev_away > 0 ? chalk.white : chalk.red;
+            
+            const awaySpread = odd.line ? -odd.line : 0;
+            console.log(`   ✈️  ${chalk.bold(awayTeam.display_name || awayTeam.name)} ${chalk.gray(`(${awaySpread > 0 ? '+' : ''}${awaySpread})`)}: ${chalk.cyan(formatOdds(odd.price_away))} | EV: ${evColor(formatPercentage(metrics.ev_away))}`);
+            
+            if (metrics.ev_away > 0.02) {
+              const kellySize = calculateKellyBetSize(prediction.prob_away, odd.price_away, 1000);
+              console.log(chalk.green.bold(`      ✅ RECOMMENDED BET | Kelly: ${formatCurrency(kellySize)}`));
+            }
+          }
+        }
+      }
+
+      // Historical context
+      const dummyRecommendation = {
+        game_id: game.id,
+        home_team: homeTeam.display_name || homeTeam.name,
+        away_team: awayTeam.display_name || awayTeam.name,
+        model_prob_home: prediction.prob_home,
+        model_prob_away: prediction.prob_away,
+        odds_home: odds[0]?.price_home || null,
+        odds_away: odds[0]?.price_away || null,
+        ev_home: null,
+        ev_away: null,
+        edge_home: null,
+        edge_away: null,
+        recommended_side: null,
+        actual: null,
+        provider: odds[0]?.provider || '',
+        line: odds[0]?.line || null,
+        date: game.date
+      } as Recommendation;
+
+      console.log(chalk.blue.bold(`\n📈 Historical Context:`));
+      const insight = getShortHistoricalInsight(dummyRecommendation, undefined, game.sport, market);
+      console.log(`   ${insight}`);
+
+    } catch (error) {
+      console.error(chalk.red(`❌ Error analyzing ${market}:`), error);
+    }
+  }
+}
+
 interface RecommendOptions {
   sport?: string;
+  game?: string;
   date?: string;
   market: string;
   minBets: string;
@@ -284,6 +519,13 @@ export async function recommend(options: RecommendOptions): Promise<void> {
 
   const dbPath = path.join(process.cwd(), 'data', 'sportline.db');
   const db = new DatabaseQueries(dbPath);
+
+  // Handle specific game analysis
+  if (options.game) {
+    await analyzeSpecificGame(options.game, options, db);
+    db.close();
+    return;
+  }
 
   // Determine which sports to process
   const sportsToProcess = options.sport ? [options.sport] : ['ncaam', 'nba', 'nhl', 'nfl', 'cfb'];
