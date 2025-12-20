@@ -4,8 +4,9 @@
  */
 
 import type { Game, GameFeatures, OddsData, FeatureConfig } from '../db/types.js';
-import { DatabaseQueries } from '../db/queries.js';
-import { getMarketImpliedProb } from '../odds/evCalculator.js';
+import type { DatabaseQueries } from '../db/queries.js';
+import { americanToImpliedProb } from '../odds/evCalculator.js';
+import { gradeSpreadBet } from '../odds/spreadGrading.js';
 import { getEnabledRollingFeatures, isFeatureEnabled } from './featureConfig.js';
 import {
   calculateAdvancedStats,
@@ -356,6 +357,40 @@ export function computeRecentForm(teamId: string, gameId: string, games: Game[])
   return wins / gamesForTeam.length;
 }
 
+export function computeMarketImpliedProbFromOddsArr(oddsArr: OddsData[]): number | null {
+  if (!oddsArr.length) return null;
+
+  const providerPriority = ['draftkings', 'fanduel', 'betmgm'];
+
+  const normalized = oddsArr.map((o) => ({
+    odds: o,
+    provider: (o.provider || '').toLowerCase(),
+  }));
+
+  const byPriority = normalized
+    .slice()
+    .sort((a, b) => {
+      const aIdx = providerPriority.indexOf(a.provider);
+      const bIdx = providerPriority.indexOf(b.provider);
+
+      const aRank = aIdx === -1 ? Number.POSITIVE_INFINITY : aIdx;
+      const bRank = bIdx === -1 ? Number.POSITIVE_INFINITY : bIdx;
+
+      if (aRank !== bRank) return aRank - bRank;
+      return a.provider.localeCompare(b.provider);
+    })
+    .map((x) => x.odds);
+
+  for (const odds of byPriority) {
+    if (odds.price_home == null || odds.price_away == null) continue;
+    const probHome = americanToImpliedProb(odds.price_home);
+    const probAway = americanToImpliedProb(odds.price_away);
+    return probHome / (probHome + probAway);
+  }
+
+  return null;
+}
+
 /**
  * Compute all fixed features for a game
  */
@@ -368,7 +403,7 @@ export function computeFixedFeatures(
   db: DatabaseQueries,
   sport?: string,
 ): Record<string, number> {
-  const marketImpliedProbVal = getMarketImpliedProb(oddsArr);
+  const marketImpliedProbVal = computeMarketImpliedProbFromOddsArr(oddsArr);
 
   const features: Record<string, number> = {
     homeWinRate5: computeWinRate(homeId, gameId, 5, games),
@@ -460,7 +495,7 @@ export function extractFeaturesForDataset(
   );
 
   for (const [teamId, teamGames] of gameStatsMap.entries()) {
-    const gameIds = Array.from(teamGames.keys()).sort();
+    const gameIds = (Array.from(teamGames.keys()) as string[]).sort();
     const statsByGame: Record<string, Record<string, number>> = {};
 
     for (const [gameId, stats] of teamGames.entries()) {
@@ -615,12 +650,16 @@ export function extractFeaturesForDataset(
       if (config.market === 'spread') {
         // For spread betting: 1 if home team covers spread, 0 if away team covers
         // Find the spread from odds data
-        const spreadOdds = oddsArr.find((odds) => odds.line !== null);
+        const spreadOdds = oddsArr.find((odds: OddsData) => odds.line !== null);
         if (spreadOdds && spreadOdds.line !== null) {
-          const spread = spreadOdds.line; // Positive means home team is favored by this amount
-          const homeMargin = game.home_score - game.away_score;
-          // Home team covers if their actual margin beats the spread
-          target = homeMargin > spread ? 1 : 0;
+          const result = gradeSpreadBet({
+            homeScore: game.home_score,
+            awayScore: game.away_score,
+            homeLine: spreadOdds.line,
+            side: 'home',
+          });
+
+          target = result === 'PUSH' ? null : result === 'WIN' ? 1 : 0;
         } else {
           // No spread data available, skip this game
           target = null;

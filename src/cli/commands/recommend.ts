@@ -7,13 +7,15 @@ import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import { DatabaseQueries } from '../../lib/db/queries.js';
 import { loadModel, findLatestModel } from '../../lib/model/modelStorage.js';
-import { predict } from '../../lib/model/predictor.js';
+import { gradeSpreadBet } from '../../lib/odds/spreadGrading.js';
 import { extractFeaturesForGame } from '../../lib/features/featureEngineering.js';
 import { loadFeatureConfig } from '../../lib/features/featureConfig.js';
+import { predict } from '../../lib/model/predictor.js';
 import {
   calculateBettingMetrics,
   formatOdds,
   formatPercentage,
+  getRecommendedSide,
 } from '../../lib/odds/evCalculator.js';
 import type {
   FeatureConfig,
@@ -76,6 +78,51 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const IS_VERBOSE = process.env.SPORTLINE_VERBOSE === '1';
+
+function selectDeterministicOddsRow(
+  oddsArr: Array<{
+    provider?: string | null;
+    price_home: number | null;
+    price_away: number | null;
+    line: number | null;
+  }>,
+): (typeof oddsArr)[number] | null {
+  if (!oddsArr.length) return null;
+
+  const providerPriority = ['draftkings', 'fanduel', 'betmgm'];
+
+  const normalized = oddsArr.map((o) => ({
+    odds: o,
+    provider: (o.provider || '').toLowerCase(),
+  }));
+
+  const byPriority = normalized
+    .slice()
+    .sort((a, b) => {
+      const aIdx = providerPriority.indexOf(a.provider);
+      const bIdx = providerPriority.indexOf(b.provider);
+      const aRank = aIdx === -1 ? Number.POSITIVE_INFINITY : aIdx;
+      const bRank = bIdx === -1 ? Number.POSITIVE_INFINITY : bIdx;
+      if (aRank !== bRank) return aRank - bRank;
+      return a.provider.localeCompare(b.provider);
+    })
+    .map((x) => x.odds);
+
+  for (const odds of byPriority) {
+    if (odds.price_home == null || odds.price_away == null) continue;
+    return odds;
+  }
+
+  return null;
+}
+
+function passesJuiceGate(betOdds: number, betEdge: number): boolean {
+  const MAX_VIG_PRICE = -115;
+  const EDGE_REQUIRED_IF_VIGGY = 0.04;
+
+  if (betOdds <= MAX_VIG_PRICE && betEdge < EDGE_REQUIRED_IF_VIGGY) return false;
+  return true;
+}
 
 /**
  * Analyze a specific game by ID
@@ -410,11 +457,18 @@ async function getRecommendationsForSport(
   if (IS_VERBOSE) {
     console.log(`[${sport.toUpperCase()}] Loading configuration...`);
   }
-  const configPath = path.join(
-    process.cwd(),
-    `src/train/${sportCategory}/${sport}/featuresConfig.json`,
-  );
+  const market = options.market || 'moneyline';
+  const configPath =
+    market === 'moneyline'
+      ? path.join(process.cwd(), `src/train/${sportCategory}/${sport}/featuresConfig.json`)
+      : path.join(
+          process.cwd(),
+          `src/train/${sportCategory}/${sport}/featuresConfig_${market}.json`,
+        );
   const config = loadFeatureConfig(configPath);
+
+  const minEV = (config as any).min_ev ?? model.thresholds.min_ev;
+  const minEdge = (config as any).min_edge ?? model.thresholds.min_edge;
 
   // Step 3: Query today's games
   if (IS_VERBOSE) {
@@ -508,8 +562,8 @@ async function getRecommendationsForSport(
         }
       }
 
-      // Get odds
-      const odds = game.odds.length > 0 ? game.odds[0] : null;
+      // Get odds (deterministic provider selection)
+      const odds = game.odds.length > 0 ? selectDeterministicOddsRow(game.odds) : null;
 
       if (!odds) {
         stats.skippedNoOddsRows++;
@@ -548,16 +602,24 @@ async function getRecommendationsForSport(
         line: odds.line,
       };
 
-      // Determine recommended side based on higher EV (no thresholds)
-      let recommendedSide: 'home' | 'away' | null = null;
+      // Determine recommended side based on thresholds
+      let recommendedSide: 'home' | 'away' | null = getRecommendedSide(
+        metrics.ev_home,
+        metrics.ev_away,
+        metrics.edge_home,
+        metrics.edge_away,
+        minEV,
+        minEdge,
+      );
 
-      if (metrics.ev_home !== null && metrics.ev_away !== null) {
-        // Pick the side with higher EV
-        recommendedSide = metrics.ev_home > metrics.ev_away ? 'home' : 'away';
-      } else if (metrics.ev_home !== null) {
-        recommendedSide = 'home';
-      } else if (metrics.ev_away !== null) {
-        recommendedSide = 'away';
+      if (recommendedSide) {
+        const betOdds =
+          recommendedSide === 'home' ? recommendation.odds_home : recommendation.odds_away;
+        const betEdge =
+          recommendedSide === 'home' ? recommendation.edge_home : recommendation.edge_away;
+        if (betOdds === null || betEdge === null || !passesJuiceGate(betOdds, betEdge)) {
+          recommendedSide = null;
+        }
       }
 
       recommendation.recommended_side = recommendedSide;
@@ -572,8 +634,8 @@ async function getRecommendationsForSport(
         features,
         odds: game.odds.map((o) => ({
           provider: o.provider || 'Unknown',
-          market: 'moneyline',
-          line: null,
+          market: options.market || 'moneyline',
+          line: o.line,
           home: o.price_home,
           away: o.price_away,
           price_home: o.price_home,
@@ -587,7 +649,7 @@ async function getRecommendationsForSport(
 
       gameFeatures.push(gameFeature);
 
-      // Include all games with predictions (no threshold filtering)
+      // Include all games that pass thresholds
       if (recommendedSide) {
         recommendations.push(recommendation);
       } else {
@@ -778,26 +840,18 @@ function checkBetResult(
       return { result: 'PENDING', score };
     }
 
-    const spread = recommendation.line;
-    const homeMargin = game.home_score - game.away_score;
-
-    if (recommendedSide === 'home') {
-      // Home team recommended, check if they covered
-      const betWon = homeMargin > spread;
-      const isPush = homeMargin === spread;
-      return {
-        result: isPush ? 'PUSH' : betWon ? 'WIN' : 'LOSS',
-        score,
-      };
-    } else {
-      // Away team recommended, check if they covered
-      const betWon = homeMargin < spread;
-      const isPush = homeMargin === spread;
-      return {
-        result: isPush ? 'PUSH' : betWon ? 'WIN' : 'LOSS',
-        score,
-      };
+    if (recommendedSide === null) {
+      return { result: 'PENDING', score };
     }
+
+    const result = gradeSpreadBet({
+      homeScore: game.home_score,
+      awayScore: game.away_score,
+      homeLine: recommendation.line,
+      side: recommendedSide,
+    });
+
+    return { result, score };
   }
 
   return { result: 'PENDING', score };

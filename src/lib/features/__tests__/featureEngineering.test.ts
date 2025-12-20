@@ -8,10 +8,71 @@ import {
   computeRollingAverages,
   computeWinRate,
   computeAvgMargin,
+  computeMarketImpliedProbFromOddsArr,
 } from '../featureEngineering.js';
-import type { Game } from '../../db/types.js';
+import type { Game, OddsData } from '../../db/types.js';
 
 describe('Feature Engineering', () => {
+  describe('computeMarketImpliedProbFromOddsArr', () => {
+    it('should be deterministic and prefer DraftKings when present', () => {
+      const dk: OddsData = {
+        provider: 'draftkings',
+        market: 'moneyline',
+        line: null,
+        home: -120,
+        away: 110,
+        price_home: -120,
+        price_away: 110,
+        price_over: null,
+        price_under: null,
+        timestamp: '2025-01-01T00:00:00Z',
+      };
+
+      const fd: OddsData = {
+        provider: 'fanduel',
+        market: 'moneyline',
+        line: null,
+        home: -105,
+        away: -105,
+        price_home: -105,
+        price_away: -105,
+        price_over: null,
+        price_under: null,
+        timestamp: '2025-01-01T00:00:00Z',
+      };
+
+      const mgm: OddsData = {
+        provider: 'betmgm',
+        market: 'moneyline',
+        line: null,
+        home: -130,
+        away: 115,
+        price_home: -130,
+        price_away: 115,
+        price_over: null,
+        price_under: null,
+        timestamp: '2025-01-01T00:00:00Z',
+      };
+
+      const a = computeMarketImpliedProbFromOddsArr([fd, mgm, dk]);
+      const b = computeMarketImpliedProbFromOddsArr([dk, fd, mgm]);
+      const c = computeMarketImpliedProbFromOddsArr([mgm, dk, fd]);
+
+      expect(a).not.toBeNull();
+      expect(b).not.toBeNull();
+      expect(c).not.toBeNull();
+
+      expect(a!).toBeCloseTo(b!, 12);
+      expect(a!).toBeCloseTo(c!, 12);
+
+      // DK: home=-120, away=+110 =>
+      // impliedHome=120/(120+100)=0.54545
+      // impliedAway=100/(110+100)=0.47619
+      // normalized=0.54545/(0.54545+0.47619)=0.53390
+      expect(a!).toBeCloseTo(0.5339, 4);
+    });
+  });
+
   describe('getExponentialWeights', () => {
     it('should generate correct exponential weights', () => {
       const weights = getExponentialWeights(3, 0.7);

@@ -1,95 +1,88 @@
 {
   "sport": "cfb",
   "market": "spread",
-  "lastUpdated": "2025-12-19T04:22:17.747Z",
-  "modelAccuracy": 0.601010101010101,
-  "overallROI": 0.5550943641236866,
-  "totalBets": 129,
+  "lastUpdated": "2025-12-20T03:34:34.331Z",
+  "modelAccuracy": 0.5820512820512821,
+  "overallROI": 0.08095369109435609,
+  "totalBets": 204,
   "oddsRanges": {
     "heavy_favorite": {
-      "roi": -0.19444905635876314,
-      "winRate": 0.10601010101010101,
-      "sampleSize": 12,
+      "roi": -0.19919046308905644,
+      "winRate": 0.10582051282051283,
+      "sampleSize": 20,
       "avgEV": 0,
       "description": "Heavy Favorites (-200+)"
     },
     "favorite": {
-      "roi": -0.09444905635876313,
-      "winRate": 0.05601010101010101,
-      "sampleSize": 19,
+      "roi": -0.09919046308905645,
+      "winRate": 0.05582051282051283,
+      "sampleSize": 30,
       "avgEV": 0,
       "description": "Favorites (-150 to -200)"
     },
     "slight_favorite": {
-      "roi": 0.005550943641236867,
-      "winRate": 0.00601010101010101,
-      "sampleSize": 32,
+      "roi": 0.0008095369109435608,
+      "winRate": 0.005820512820512821,
+      "sampleSize": 51,
       "avgEV": 0,
       "description": "Slight Favorites (-110 to -150)"
     },
     "toss_up": {
-      "roi": 0.10555094364123688,
-      "winRate": 0.00601010101010101,
-      "sampleSize": 25,
+      "roi": 0.10080953691094356,
+      "winRate": 0.005820512820512821,
+      "sampleSize": 40,
       "avgEV": 0,
       "description": "Toss-ups (-110 to +110)"
     },
     "slight_underdog": {
-      "roi": 0.005550943641236867,
+      "roi": 0.0008095369109435608,
       "winRate": 0.3,
-      "sampleSize": 19,
+      "sampleSize": 30,
       "avgEV": 0,
       "description": "Slight Underdogs (+110 to +150)"
     },
     "underdog": {
-      "roi": -0.09444905635876313,
+      "roi": -0.09919046308905645,
       "winRate": 0.25,
-      "sampleSize": 12,
+      "sampleSize": 20,
       "avgEV": 0,
       "description": "Underdogs (+150 to +200)"
     },
     "heavy_underdog": {
-      "roi": -0.19444905635876314,
+      "roi": -0.19919046308905644,
       "winRate": 0.2,
-      "sampleSize": 6,
+      "sampleSize": 10,
       "avgEV": 0,
       "description": "Heavy Underdogs (+200+)"
     }
   },
   "modelConfidenceBuckets": {
-    "20-30": {
-      "roi": -0.04545454545454547,
-      "winRate": 0.5,
-      "sampleSize": 2,
-      "avgEV": -0.4440127541296416,
-      "description": "20-30% Home Team Win Probability"
-    },
     "30-40": {
-      "roi": 0.0847559546577779,
-      "winRate": 0.5405405405405406,
-      "sampleSize": 37,
-      "avgEV": -0.09818969955315728,
+      "roi": -0.3598104793756967,
+      "winRate": 0.6923076923076923,
+      "sampleSize": 13,
+      "avgEV": -0.15462291887991467,
       "description": "30-40% Home Team Win Probability"
     },
     "40-50": {
-      "roi": 0.3123812869275091,
-      "winRate": 0.5838150289017341,
-      "sampleSize": 173,
-      "avgEV": 0.401097926276732,
+      "roi": 0.09157432373846643,
+      "winRate": 0.46153846153846156,
+      "sampleSize": 169,
+      "avgEV": 0.5388023588093408,
       "description": "40-50% Home Team Win Probability"
     },
     "50-60": {
-      "roi": 0.3623938079967614,
-      "winRate": 0.5096774193548387,
-      "sampleSize": 155,
-      "avgEV": 0.4904193786304129,
+      "roi": 0.09447317139016743,
+      "winRate": 0.46568627450980393,
+      "sampleSize": 204,
+      "avgEV": 0.38541988076855044,
       "description": "50-60% Home Team Win Probability"
     },
     "60-70": {
-      "roi": 0.4315582062864671,
-      "winRate": 0.6551724137931034,
-      "sampleSize": 29,
-      "avgEV": 1.1266653558418016,
+      "roi": 1.2297101449275363,
+      "winRate": 0.75,
+      "sampleSize": 4,
+      "avgEV": 0.03654629820655342,
       "description": "60-70% Home Team Win Probability"
     }
   }

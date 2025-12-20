@@ -9,6 +9,7 @@ import { RandomForestClassifier as RFClassifier } from 'ml-random-forest';
 import {
   createCalibrator,
   applyCalibration as _applyCalibration,
+  fitTemperatureScaling,
   type CalibrationModel,
 } from './calibration.js';
 import type { GameFeatures, FeatureConfig } from '../db/types.js';
@@ -448,6 +449,34 @@ export function trainModel(
   let calibration: CalibrationModel | undefined;
   let calibratedProbabilities: { train: number[]; test: number[] } | undefined;
   let calibratedLogLoss: number | undefined;
+
+  if (config.calibration && config.calibration.method === 'temperature') {
+    if (isVerbose) {
+      console.log('[Trainer] Fitting temperature scaling calibration...');
+    }
+
+    const bestT = fitTemperatureScaling(y_prob_test, y_test);
+    calibration = { method: 'temperature' as const, temperature: bestT };
+
+    const calibratedTrainProbs = _applyCalibration(y_prob_train, calibration);
+    const calibratedTestProbs = _applyCalibration(y_prob_test, calibration);
+
+    calibratedProbabilities = {
+      train: calibratedTrainProbs,
+      test: calibratedTestProbs,
+    };
+
+    calibratedLogLoss = logLoss(y_test, calibratedTestProbs);
+
+    if (isVerbose) {
+      console.log(`[Trainer] Temperature scaling T=${bestT.toFixed(2)}`);
+      console.log(`[Trainer] Calibrated test log loss: ${calibratedLogLoss.toFixed(4)}`);
+    } else {
+      console.log(
+        `[Trainer] Calibration: temperature T=${bestT.toFixed(2)} (logloss ${testLogLoss.toFixed(4)} -> ${calibratedLogLoss.toFixed(4)})`,
+      );
+    }
+  }
 
   if (config.calibration && config.calibration.method !== 'temperature') {
     if (isVerbose) {

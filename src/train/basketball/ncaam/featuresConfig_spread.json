@@ -2,7 +2,16 @@
   "sport": "ncaam",
   "model": "logistic_regression",
   "market": "spread",
-  "seasons": [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026],
+  "seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
   "features": {
     "fieldGoalsMade": false,
     "fieldGoalsAttempted": false,
@@ -75,8 +84,13 @@
     "sosRecentStrengthDiff5": true,
     "sosRecentStrengthDiff10": false
   },
-  "rolling_windows": [5],
-  "allowed_providers": ["ESPN BET", "ESPN Bet - Live Odds"],
+  "rolling_windows": [
+    5
+  ],
+  "allowed_providers": [
+    "ESPN BET",
+    "ESPN Bet - Live Odds"
+  ],
   "recency_weighting": {
     "enabled": true,
     "decay": 0.95
@@ -86,8 +100,7 @@
     "temperature": 1.3
   },
   "calibration": {
-    "method": "temperature",
-    "temperature": 1.3
+    "method": "temperature"
   },
   "min_edge": 0.02,
   "min_ev": 0.01,

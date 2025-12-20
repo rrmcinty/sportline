@@ -20,7 +20,7 @@ import {
   analyzeProfitableBets,
   printProfitabilityAnalysis,
 } from '../../lib/backtest/profitabilityAnalyzer.js';
-import type { BacktestResult as _BacktestResult } from '../../lib/db/types.js';
+import type { Recommendation } from '../../lib/db/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -182,6 +182,116 @@ export async function backtest(options: BacktestOptions): Promise<void> {
   }
 
   console.log('======================================================\n');
+
+  // EV bucket analysis (does predicted EV correlate with realized ROI?)
+  console.log('\n========== EV Bucket ROI Sanity Check ==========');
+
+  function passesJuiceGate(betOdds: number, betEdge: number): boolean {
+    const MAX_VIG_PRICE = -115;
+    const EDGE_REQUIRED_IF_VIGGY = 0.04;
+    if (betOdds <= MAX_VIG_PRICE && betEdge < EDGE_REQUIRED_IF_VIGGY) return false;
+    return true;
+  }
+
+  function getBetForRec(rec: Recommendation): {
+    side: 'home' | 'away';
+    odds: number;
+    edge: number;
+    ev: number;
+  } | null {
+    // Match the positive-EV best-side logic used in bucket calculations
+    if (
+      rec.ev_home !== null &&
+      rec.odds_home !== null &&
+      rec.edge_home !== null &&
+      rec.ev_home > 0
+    ) {
+      if (rec.ev_away === null || rec.ev_home > rec.ev_away) {
+        if (!passesJuiceGate(rec.odds_home, rec.edge_home)) return null;
+        return { side: 'home', odds: rec.odds_home, edge: rec.edge_home, ev: rec.ev_home };
+      }
+    }
+    if (
+      rec.ev_away !== null &&
+      rec.odds_away !== null &&
+      rec.edge_away !== null &&
+      rec.ev_away > 0
+    ) {
+      if (!passesJuiceGate(rec.odds_away, rec.edge_away)) return null;
+      return { side: 'away', odds: rec.odds_away, edge: rec.edge_away, ev: rec.ev_away };
+    }
+    return null;
+  }
+
+  const evBuckets: Array<{ label: string; lower: number; upper: number }> = [
+    { label: '<0', lower: Number.NEGATIVE_INFINITY, upper: 0 },
+    { label: '0-1', lower: 0, upper: 0.01 },
+    { label: '1-2', lower: 0.01, upper: 0.02 },
+    { label: '2-5', lower: 0.02, upper: 0.05 },
+    { label: '5+', lower: 0.05, upper: Number.POSITIVE_INFINITY },
+  ];
+
+  type EVBucketRow = {
+    label: string;
+    bets: number;
+    roi: number;
+    winRate: number;
+    avgEV: number;
+  };
+
+  const evRows: EVBucketRow[] = [];
+
+  for (const b of evBuckets) {
+    let bets = 0;
+    let wins = 0;
+    let totalProfit = 0;
+    let totalStaked = 0;
+    let evSum = 0;
+
+    for (const rec of recommendations) {
+      if (rec.actual === null) continue;
+      const bet = getBetForRec(rec);
+      if (!bet) continue;
+      if (!(bet.ev >= b.lower && bet.ev < b.upper)) continue;
+
+      bets++;
+      totalStaked += 100;
+      evSum += bet.ev;
+
+      const won =
+        (bet.side === 'home' && rec.actual === 1) || (bet.side === 'away' && rec.actual === 0);
+
+      if (won) {
+        wins++;
+        const profit = bet.odds > 0 ? bet.odds : (100 / Math.abs(bet.odds)) * 100;
+        totalProfit += profit;
+      } else {
+        totalProfit -= 100;
+      }
+    }
+
+    if (bets === 0) continue;
+    evRows.push({
+      label: b.label,
+      bets,
+      roi: totalStaked > 0 ? totalProfit / totalStaked : 0,
+      winRate: bets > 0 ? wins / bets : 0,
+      avgEV: bets > 0 ? evSum / bets : 0,
+    });
+  }
+
+  console.log('EV Bucket | Bets | Avg EV  | Win Rate | ROI');
+  console.log('----------+------+---------+----------+----------');
+  for (const r of evRows) {
+    console.log(
+      `${r.label.padEnd(8)} | ${r.bets.toString().padStart(4)} | ${(r.avgEV * 100)
+        .toFixed(2)
+        .padStart(6)}% | ${(r.winRate * 100).toFixed(1).padStart(7)}% | ${(r.roi * 100)
+        .toFixed(2)
+        .padStart(7)}%`,
+    );
+  }
+  console.log('===============================================\n');
 
   // Step 6: Analyze profitable bet characteristics
   console.log('\n========== Profitable Bet Analysis ==========\n');

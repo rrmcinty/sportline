@@ -14,6 +14,7 @@ import {
   runBacktestGrid,
   findOptimalThresholds,
   generateProbabilityBuckets,
+  generateEdgeBuckets,
   printBacktestSummary,
 } from '../../lib/backtest/backtester.js';
 import {
@@ -114,9 +115,13 @@ export async function train(options: TrainOptions): Promise<void> {
   // Step 5: Generate recommendations from test set
   console.log('\n[5/7] Generating recommendations for backtesting...');
   const splitIdx = Math.floor(0.8 * dataset.length);
+
+  const probsForBacktest =
+    trainingResult.calibratedProbabilities?.test ?? trainingResult.probabilities.test;
+
   const recommendations = generateRecommendations(
     dataset,
-    trainingResult.probabilities.test,
+    probsForBacktest,
     splitIdx,
   );
   console.log(`✓ Generated ${recommendations.length} test predictions`);
@@ -198,18 +203,21 @@ export async function train(options: TrainOptions): Promise<void> {
 
     console.log(
       `${bucket.bucket.padEnd(6)} | ${bucket.count.toString().padStart(5)} | ` +
-        `${(bucket.accuracy * 100).toFixed(1).padStart(7)}% | ` +
-        `${(bucket.avg_ev * 100).toFixed(2).padStart(6)}% | ` +
-        `${(bucket.roi * 100).toFixed(1).padStart(7)}% | ` +
-        `${bucket.home_bet_count.toString().padStart(9)} | ` +
-        `${bucket.away_bet_count.toString().padStart(9)} | ` +
-        `${strategy.padEnd(9)}`,
+      `${(bucket.accuracy * 100).toFixed(1).padStart(7)}% | ` +
+      `${(bucket.avg_ev * 100).toFixed(2).padStart(6)}% | ` +
+      `${(bucket.roi * 100).toFixed(1).padStart(7)}% | ` +
+      `${bucket.home_bet_count.toString().padStart(9)} | ` +
+      `${bucket.away_bet_count.toString().padStart(9)} | ` +
+      `${strategy.padEnd(9)}`,
     );
   }
 
   // Save historical data for this sport
   console.log('\n[HISTORICAL] Saving historical ROI data...');
-  const calibrationBuckets = buckets.map((bucket) => ({
+  const historicalBucketsForSave =
+    config.market === 'spread' ? generateEdgeBuckets(recommendations) : buckets;
+
+  const calibrationBuckets = historicalBucketsForSave.map((bucket) => ({
     bucket: bucket.bucket,
     count: bucket.count,
     accuracy: bucket.accuracy, // Keep as decimal (0.556 = 55.6%)

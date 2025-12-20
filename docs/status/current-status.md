@@ -1,6 +1,69 @@
 # Current Project Status
 
-**Last Updated:** December 14, 2025 (Latest: Kelly Criterion + Daily Budget + Timezone Fixes)
+**Last Updated:** December 20, 2025 (Latest: Spread ROI reliability + calibration + deterministic odds)
+
+## 🤖 AI Handoff (What to do next)
+
+### Goal
+Maximize **ROI for spread betting** (initial focus: NHL spread) by making EV/edge trustworthy, betting less when edge is unclear, and scaling only when edge is reliable.
+
+### What was implemented (Dec 2025)
+- **Deterministic odds selection** (reduces randomness in market baseline)
+  - Uses provider priority: DraftKings → FanDuel → BetMGM (else stable provider sort)
+  - Implemented in:
+    - `src/lib/features/featureEngineering.ts` (market implied probability)
+    - `src/lib/backtest/backtester.ts` and `src/cli/commands/recommend.ts` (odds row selection)
+- **Correct spread grading**
+  - Uses `gradeSpreadBet` helper to avoid side/line mismatch.
+  - Tests added/expanded in `src/lib/odds/__tests__/spreadGrading.test.ts`.
+- **Juice gate** (reduce vig bleed)
+  - Skip bets with odds `<= -115` unless `edge >= 0.04`.
+  - Applied in `backtester` + `recommend`.
+- **Historical ROI buckets for spread now use edge buckets**
+  - Spread markets use edge-bucket ROI lookup for the “GOOD/AVOID (% ROI)” badge.
+  - Implemented in:
+    - `src/lib/backtest/backtester.ts` (`generateEdgeBuckets`)
+    - `src/cli/commands/train.ts` (spread saves edge buckets)
+    - `src/lib/analysis/historicalContext.ts` (spread bucket lookup)
+- **Temperature scaling calibration**
+  - Fitted during training and stored in `model.calibration`.
+  - Predictions apply calibration in `src/lib/model/predictor.ts`.
+  - Trainer prints a single non-verbose line:
+    - `Calibration: temperature T=... (logloss a -> b)`
+- **EV-bucket realized ROI report**
+  - `sportline backtest` prints realized ROI by predicted EV bucket.
+  - This is the primary sanity check: EV should correlate with realized ROI.
+
+### Current production thresholds
+- **NHL spread** is set to stricter “Option B” thresholds in:
+  - `src/train/hockey/nhl/featuresConfig_spread.json`
+  - `min_edge = 0.07`, `min_ev = 0.02`
+
+### How to reproduce / evaluate
+Important: `sportline` runs from `dist/` (`package.json` bin points to `dist/cli/index.js`).
+
+1. `npm run build`
+2. Train + backtest:
+   - `sportline train --sport nhl --market spread`
+   - `sportline backtest --sport nhl --market spread`
+3. Inspect:
+   - **EV Bucket ROI Sanity Check** table (should improve with EV; for NHL it became monotonic)
+   - Threshold grid results (avoid decisions from tiny bet counts)
+4. Recommend:
+   - `sportline recommend --sport nhl --market spread`
+   - Confirm output volume is reduced and bets skew toward higher EV/edge.
+
+### Known open issue / next step (important)
+- **NCAAM spread EV buckets were not monotonic** (high-EV bucket was negative). Root cause was likely **train/backtest mismatch** when calibration is enabled:
+  - `backtest` uses calibrated probs via `predict()` on the saved model.
+  - `train` previously optimized thresholds / saved historical data using uncalibrated probs.
+  - Fix applied: `src/cli/commands/train.ts` now uses `trainingResult.calibratedProbabilities?.test` (fallback to raw) when generating backtest recommendations.
+  - Next action: rebuild, rerun `sportline train --sport ncaam --market spread`, then rerun backtest and check EV buckets again.
+
+### Interpretation of ROI shown in recommend output
+- The “GOOD/AVOID (X% ROI)” badge is **historical realized ROI from saved bucket data** in:
+  - `src/data/historical/<sport>-<market>-historical-roi.json`
+- It is **context**, not a guarantee for a single bet. Always consider bucket sample size.
 
 ## ✅ What's Working
 

@@ -76,14 +76,37 @@ export function getHistoricalContext(
   let confidenceData;
 
   if (sportHistoricalData) {
-    // Use sport-specific data - skip odds ranges since they were fake
-    // For model confidence, find the best matching bucket
-    const modelProb = recommendation.model_prob_home;
-    const confidenceBucketLower = Math.floor(modelProb * 10) * 10; // e.g., 0.56 -> 50
-    const confidenceBucketUpper = confidenceBucketLower + 10;
-    const bucketKey = `${confidenceBucketLower}-${confidenceBucketUpper}`;
+    if (market === 'spread') {
+      const betEdge =
+        recommendation.recommended_side === 'home'
+          ? recommendation.edge_home
+          : recommendation.recommended_side === 'away'
+            ? recommendation.edge_away
+            : null;
 
-    confidenceData = sportHistoricalData.modelConfidenceBuckets[bucketKey];
+      let bucketKey: string | null = null;
+      if (betEdge !== null) {
+        const pct = betEdge * 100;
+        if (pct < 1) bucketKey = '0-1';
+        else if (pct < 2) bucketKey = '1-2';
+        else if (pct < 3) bucketKey = '2-3';
+        else if (pct < 5) bucketKey = '3-5';
+        else bucketKey = '5-100';
+      }
+
+      confidenceData = bucketKey
+        ? sportHistoricalData.modelConfidenceBuckets[bucketKey]
+        : undefined;
+    } else {
+      // Use sport-specific data - skip odds ranges since they were fake
+      // For model confidence, find the best matching bucket
+      const modelProb = recommendation.model_prob_home;
+      const confidenceBucketLower = Math.floor(modelProb * 10) * 10; // e.g., 0.56 -> 50
+      const confidenceBucketUpper = confidenceBucketLower + 10;
+      const bucketKey = `${confidenceBucketLower}-${confidenceBucketUpper}`;
+
+      confidenceData = sportHistoricalData.modelConfidenceBuckets[bucketKey];
+    }
 
     // Fallback if specific bucket not found, try broader ranges or default
     if (!confidenceData && Object.keys(sportHistoricalData.modelConfidenceBuckets).length > 0) {
@@ -91,6 +114,19 @@ export function getHistoricalContext(
       const matchingBucketKey = Object.keys(sportHistoricalData.modelConfidenceBuckets).find(
         (key) => {
           const [lower, upper] = key.split('-').map(Number);
+          if (market === 'spread') {
+            const betEdge =
+              recommendation.recommended_side === 'home'
+                ? recommendation.edge_home
+                : recommendation.recommended_side === 'away'
+                  ? recommendation.edge_away
+                  : null;
+            if (betEdge === null) return false;
+            const pct = betEdge * 100;
+            return pct >= lower && pct < upper;
+          }
+
+          const modelProb = recommendation.model_prob_home;
           return modelProb * 100 >= lower && modelProb * 100 < upper;
         },
       );

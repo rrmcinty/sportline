@@ -11,6 +11,44 @@ export interface CalibrationModel {
   isotonicValues?: number[];
 }
 
+function logLossBinary(labels: number[], probs: number[]): number {
+  if (labels.length === 0 || labels.length !== probs.length) return Number.POSITIVE_INFINITY;
+  let loss = 0;
+  for (let i = 0; i < labels.length; i++) {
+    const y = labels[i];
+    const p = Math.max(1e-15, Math.min(1 - 1e-15, probs[i]));
+    loss -= y * Math.log(p) + (1 - y) * Math.log(1 - p);
+  }
+  return loss / labels.length;
+}
+
+export function fitTemperatureScaling(
+  probabilities: number[],
+  labels: number[],
+  search: { minT?: number; maxT?: number; step?: number } = {},
+): number {
+  const minT = search.minT ?? 0.5;
+  const maxT = search.maxT ?? 3.0;
+  const step = search.step ?? 0.05;
+
+  let bestT = 1.0;
+  let bestLoss = logLossBinary(
+    labels,
+    applyCalibration(probabilities, { method: 'temperature', temperature: 1.0 }),
+  );
+
+  for (let t = minT; t <= maxT + 1e-9; t += step) {
+    const calibrated = applyCalibration(probabilities, { method: 'temperature', temperature: t });
+    const loss = logLossBinary(labels, calibrated);
+    if (loss < bestLoss) {
+      bestLoss = loss;
+      bestT = t;
+    }
+  }
+
+  return bestT;
+}
+
 /**
  * Isotonic Regression for probability calibration
  * Fits a non-decreasing piecewise constant function to calibrate probabilities

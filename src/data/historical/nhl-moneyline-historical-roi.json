@@ -1,35 +1,35 @@
 {
   "sport": "nhl",
   "market": "moneyline",
-  "lastUpdated": "2025-12-19T02:27:10.052Z",
-  "modelAccuracy": 0.8046875,
+  "lastUpdated": "2025-12-20T03:23:22.147Z",
+  "modelAccuracy": 0.8035714285714286,
   "overallROI": -0.1305120973226152,
   "totalBets": 320,
   "oddsRanges": {
     "heavy_favorite": {
       "roi": -0.20130512097322617,
-      "winRate": 0.108046875,
+      "winRate": 0.10803571428571429,
       "sampleSize": 32,
       "avgEV": 0,
       "description": "Heavy Favorites (-200+)"
     },
     "favorite": {
       "roi": -0.10130512097322615,
-      "winRate": 0.058046875000000005,
+      "winRate": 0.05803571428571429,
       "sampleSize": 48,
       "avgEV": 0,
       "description": "Favorites (-150 to -200)"
     },
     "slight_favorite": {
       "roi": -0.0013051209732261521,
-      "winRate": 0.008046875,
+      "winRate": 0.008035714285714287,
       "sampleSize": 80,
       "avgEV": 0,
       "description": "Slight Favorites (-110 to -150)"
     },
     "toss_up": {
       "roi": 0.09869487902677386,
-      "winRate": 0.008046875,
+      "winRate": 0.008035714285714287,
       "sampleSize": 64,
       "avgEV": 0,
       "description": "Toss-ups (-110 to +110)"
@@ -61,70 +61,70 @@
       "roi": 0,
       "winRate": 0.3333333333333333,
       "sampleSize": 3,
-      "avgEV": 0.10784591986011101,
+      "avgEV": 0.10915560582634838,
       "description": "0-10% Home Team Win Probability"
     },
     "10-20": {
       "roi": -0.20026321787895454,
       "winRate": 0.5440414507772021,
       "sampleSize": 193,
-      "avgEV": -0.2226325489781284,
+      "avgEV": -0.2215714304479675,
       "description": "10-20% Home Team Win Probability"
     },
     "20-30": {
       "roi": -0.08333333333333329,
       "winRate": 0.5,
       "sampleSize": 4,
-      "avgEV": 0.2587188206552079,
+      "avgEV": 0.2601296883934451,
       "description": "20-30% Home Team Win Probability"
     },
     "30-40": {
       "roi": -0.18856208627375673,
       "winRate": 0.46938775510204084,
       "sampleSize": 49,
-      "avgEV": 1.7689199114060081,
+      "avgEV": 1.768859139596585,
       "description": "30-40% Home Team Win Probability"
     },
     "40-50": {
       "roi": -0.24857030943987465,
-      "winRate": 0.5238095238095238,
-      "sampleSize": 105,
-      "avgEV": 1.8887417859921334,
+      "winRate": 0.5288461538461539,
+      "sampleSize": 104,
+      "avgEV": 1.7677881655468701,
       "description": "40-50% Home Team Win Probability"
     },
     "50-60": {
       "roi": -0.2572780582696677,
-      "winRate": 0.4444444444444444,
-      "sampleSize": 171,
-      "avgEV": 2.9369135931541446,
+      "winRate": 0.4418604651162791,
+      "sampleSize": 172,
+      "avgEV": 3.005090208187465,
       "description": "50-60% Home Team Win Probability"
     },
     "60-70": {
       "roi": 0.23076323366908924,
       "winRate": 0.5411764705882353,
       "sampleSize": 85,
-      "avgEV": 2.16384832346398,
+      "avgEV": 2.1644917681276414,
       "description": "60-70% Home Team Win Probability"
     },
     "70-80": {
       "roi": -0.23296605355428887,
       "winRate": 0.4411764705882353,
       "sampleSize": 34,
-      "avgEV": 0.692444046071131,
+      "avgEV": 0.6925496119424718,
       "description": "70-80% Home Team Win Probability"
     },
     "80-90": {
       "roi": -0.07824303457457552,
       "winRate": 0.484,
       "sampleSize": 250,
-      "avgEV": 4.092583149984351,
+      "avgEV": 4.091946982648241,
       "description": "80-90% Home Team Win Probability"
     },
     "90-100": {
       "roi": 0,
       "winRate": 0.5,
       "sampleSize": 2,
-      "avgEV": 3.9925110818891985,
+      "avgEV": 3.9930733407542554,
       "description": "90-100% Home Team Win Probability"
     }
   }
