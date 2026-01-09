@@ -1,9 +1,0 @@
-{
-  "kiroAgent.configureMCP": "Disabled",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "eslint.validate": ["javascript", "typescript"],
-  "eslint.useFlatConfig": true
-}

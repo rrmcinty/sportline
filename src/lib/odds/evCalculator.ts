@@ -123,7 +123,14 @@ export function getRecommendedSide(
   edge_away: number | null,
   minEV: number,
   minEdge: number,
+  maxEV?: number,
 ): 'home' | 'away' | null {
+  // Filter out bets above max_ev threshold
+  if (maxEV !== undefined) {
+    if (ev_home !== null && ev_home > maxEV) ev_home = null;
+    if (ev_away !== null && ev_away > maxEV) ev_away = null;
+  }
+
   if (ev_home !== null && ev_home > minEV && edge_home !== null && edge_home > minEdge) {
     // Check if home is better than away
     if (ev_away === null || edge_away === null || ev_home > ev_away) {

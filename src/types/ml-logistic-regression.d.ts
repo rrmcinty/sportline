@@ -1,7 +1,25 @@
+/**
+ * Type definitions for ml-logistic-regression
+ */
+
 declare module 'ml-logistic-regression' {
-  export default class LogisticRegression {
-    constructor(options?: unknown);
-    train(X: unknown, y: unknown): void;
-    predict(X: unknown): unknown;
+  import { Matrix } from 'ml-matrix';
+
+  interface LogisticRegressionOptions {
+    numSteps?: number;
+    learningRate?: number;
   }
+
+  interface Classifier {
+    theta: Matrix;
+  }
+
+  class LogisticRegression {
+    classifiers?: Classifier[];
+    constructor(options?: LogisticRegressionOptions);
+    train(X: Matrix, y: Matrix): void;
+    predict(X: Matrix): number[];
+  }
+
+  export default LogisticRegression;
 }

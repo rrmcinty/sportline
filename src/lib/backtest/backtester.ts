@@ -10,6 +10,51 @@ import type {
 } from '../db/types.js';
 import { calculateBettingMetrics } from '../odds/evCalculator.js';
 
+function selectDeterministicOddsRow(
+  oddsArr: Array<{
+    provider?: string | null;
+    price_home?: number | null;
+    price_away?: number | null;
+    line?: number | null;
+  }>,
+): (typeof oddsArr)[number] | null {
+  if (!oddsArr || oddsArr.length === 0) return null;
+
+  const providerPriority = ['draftkings', 'fanduel', 'betmgm'];
+
+  const normalized = oddsArr.map((o) => ({
+    odds: o,
+    provider: (o.provider || '').toLowerCase(),
+  }));
+
+  const byPriority = normalized
+    .slice()
+    .sort((a, b) => {
+      const aIdx = providerPriority.indexOf(a.provider);
+      const bIdx = providerPriority.indexOf(b.provider);
+      const aRank = aIdx === -1 ? Number.POSITIVE_INFINITY : aIdx;
+      const bRank = bIdx === -1 ? Number.POSITIVE_INFINITY : bIdx;
+      if (aRank !== bRank) return aRank - bRank;
+      return a.provider.localeCompare(b.provider);
+    })
+    .map((x) => x.odds);
+
+  for (const odds of byPriority) {
+    if (odds.price_home == null || odds.price_away == null) continue;
+    return odds;
+  }
+
+  return null;
+}
+
+function passesJuiceGate(betOdds: number, betEdge: number): boolean {
+  const MAX_VIG_PRICE = -115;
+  const EDGE_REQUIRED_IF_VIGGY = 0.04;
+
+  if (betOdds <= MAX_VIG_PRICE && betEdge < EDGE_REQUIRED_IF_VIGGY) return false;
+  return true;
+}
+
 /**
  * Generate recommendations from test set predictions
  */
@@ -17,6 +62,7 @@ export function generateRecommendations(
   fullDataset: GameFeatures[],
   predictions: number[],
   splitIdx: number,
+  flipPredictions: boolean = false,
 ): Recommendation[] {
   const recommendations: Recommendation[] = [];
 
@@ -27,18 +73,21 @@ export function generateRecommendations(
     if (!row) continue;
 
     const oddsArr = row.odds;
-    const odds = oddsArr && oddsArr.length > 0 ? oddsArr[0] : null;
+    const odds = oddsArr && oddsArr.length > 0 ? selectDeterministicOddsRow(oddsArr) : null;
 
     // Don't skip if no odds - just set them to null
     // if (!odds) continue;
 
-    const model_prob_home = predictions[i];
+    let model_prob_home = predictions[i];
+    if (flipPredictions) {
+      model_prob_home = 1 - model_prob_home;
+    }
     const model_prob_away = 1 - model_prob_home;
 
     const metrics = calculateBettingMetrics(
       model_prob_home,
-      odds?.home ?? null,
-      odds?.away ?? null,
+      odds?.price_home ?? null,
+      odds?.price_away ?? null,
     );
 
     recommendations.push({
@@ -48,8 +97,8 @@ export function generateRecommendations(
       away_team: row.away_team,
       model_prob_home,
       model_prob_away,
-      odds_home: odds?.home ?? null,
-      odds_away: odds?.away ?? null,
+      odds_home: odds?.price_home ?? null,
+      odds_away: odds?.price_away ?? null,
       ev_home: metrics.ev_home,
       ev_away: metrics.ev_away,
       edge_home: metrics.edge_home,
@@ -72,6 +121,7 @@ export function runBacktestForThreshold(
   minEdge: number,
   minEV: number,
   unitSize: number = 100,
+  maxEV?: number,
 ): BacktestResult {
   let totalBets = 0;
   let totalStaked = 0;
@@ -83,6 +133,7 @@ export function runBacktestForThreshold(
   for (const rec of recommendations) {
     let betSide: 'home' | 'away' | null = null;
     let betOdds: number | null = null;
+    let betEdge: number | null = null;
 
     // Determine if we should bet
     if (
@@ -91,10 +142,13 @@ export function runBacktestForThreshold(
       rec.edge_home !== null &&
       rec.edge_home > minEdge
     ) {
-      if (rec.ev_away === null || rec.edge_away === null || rec.ev_home > rec.ev_away) {
+      // Filter out bets above max_ev threshold
+      if (maxEV !== undefined && rec.ev_home > maxEV) {
+        // Skip this bet - EV too high
+      } else if (rec.ev_away === null || rec.edge_away === null || rec.ev_home > rec.ev_away) {
         betSide = 'home';
         const _betEV = rec.ev_home;
-        const _betEdge = rec.edge_home;
+        betEdge = rec.edge_home;
         betOdds = rec.odds_home;
       }
     }
@@ -106,16 +160,23 @@ export function runBacktestForThreshold(
       rec.edge_away !== null &&
       rec.edge_away > minEdge
     ) {
-      betSide = 'away';
-      const _betEV = rec.ev_away;
-      const _betEdge = rec.edge_away;
-      betOdds = rec.odds_away;
+      // Filter out bets above max_ev threshold
+      if (maxEV !== undefined && rec.ev_away > maxEV) {
+        // Skip this bet - EV too high
+      } else {
+        betSide = 'away';
+        const _betEV = rec.ev_away;
+        betEdge = rec.edge_away;
+        betOdds = rec.odds_away;
+      }
     }
 
-    if (!betSide || betOdds === null || rec.actual === null) continue;
+    if (!betSide || betOdds === null || rec.actual === null || betEdge === null) continue;
 
     // Filter out extreme odds that are likely data errors (> +/-500)
     if (Math.abs(betOdds) > 500) continue;
+
+    if (!passesJuiceGate(betOdds, betEdge)) continue;
 
     // Place bet
     totalBets++;
@@ -177,12 +238,13 @@ export function runBacktestGrid(
   recommendations: Recommendation[],
   edgeRange: number[] = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08],
   evRange: number[] = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03],
+  maxEV?: number,
 ): BacktestResult[] {
   const results: BacktestResult[] = [];
 
   for (const minEdge of edgeRange) {
     for (const minEV of evRange) {
-      const result = runBacktestForThreshold(recommendations, minEdge, minEV);
+      const result = runBacktestForThreshold(recommendations, minEdge, minEV, 100, maxEV);
       results.push(result);
     }
   }
@@ -192,17 +254,51 @@ export function runBacktestGrid(
 
 /**
  * Find optimal thresholds based on ROI
+ * Only considers positive ROI results, falls back to config thresholds if all ROI is negative
  */
 export function findOptimalThresholds(
   backtestResults: BacktestResult[],
   minBets: number = 20,
+  configThresholds?: { min_edge?: number; min_ev?: number },
 ): { min_edge: number; min_ev: number } {
   // Filter results with sufficient bets
-  const validResults = backtestResults.filter((r) => r.total_bets >= minBets);
+  let validResults = backtestResults.filter((r) => r.total_bets >= minBets);
 
   if (validResults.length === 0) {
     console.warn('[Backtester] No threshold combinations met minimum bet requirement');
+    // Fall back to config or default
+    if (configThresholds?.min_edge !== undefined && configThresholds?.min_ev !== undefined) {
+      console.warn(
+        `[Backtester] Using config thresholds: edge=${(configThresholds.min_edge * 100).toFixed(1)}%, ev=${(configThresholds.min_ev * 100).toFixed(1)}%`,
+      );
+      return {
+        min_edge: configThresholds.min_edge,
+        min_ev: configThresholds.min_ev,
+      };
+    }
     return { min_edge: 0.03, min_ev: 0.01 }; // Default fallback
+  }
+
+  // Only consider results with positive ROI
+  const positiveROIResults = validResults.filter((r) => r.roi > 0);
+
+  if (positiveROIResults.length > 0) {
+    // Use positive ROI results if available
+    validResults = positiveROIResults;
+  } else {
+    // If no positive ROI, warn and fall back to config or best negative ROI
+    console.warn('[Backtester] ⚠️  No threshold combinations with positive ROI found!');
+    if (configThresholds?.min_edge !== undefined && configThresholds?.min_ev !== undefined) {
+      console.warn(
+        `[Backtester] Using config thresholds: edge=${(configThresholds.min_edge * 100).toFixed(1)}%, ev=${(configThresholds.min_ev * 100).toFixed(1)}%`,
+      );
+      return {
+        min_edge: configThresholds.min_edge,
+        min_ev: configThresholds.min_ev,
+      };
+    }
+    // If no config provided, still use best negative ROI but warn about it
+    console.warn('[Backtester] ⚠️  All thresholds have negative ROI - using least negative');
   }
 
   // Sort by ROI descending
@@ -268,12 +364,14 @@ export function generateProbabilityBuckets(
       // Determine which side to bet on (same logic as runBacktestForThreshold)
       let betSide: 'home' | 'away' | null = null;
       let betOdds: number | null = null;
+      let betEdge: number | null = null;
 
       // Check home side
       if (rec.ev_home !== null && rec.odds_home !== null && rec.ev_home > 0) {
         if (rec.ev_away === null || rec.ev_home > rec.ev_away) {
           betSide = 'home';
           betOdds = rec.odds_home;
+          betEdge = rec.edge_home;
         }
       }
 
@@ -281,12 +379,15 @@ export function generateProbabilityBuckets(
       if (!betSide && rec.ev_away !== null && rec.odds_away !== null && rec.ev_away > 0) {
         betSide = 'away';
         betOdds = rec.odds_away;
+        betEdge = rec.edge_away;
       }
 
       // Skip if no positive EV bet or extreme odds
-      if (!betSide || betOdds === null || Math.abs(betOdds) > 500) {
+      if (!betSide || betOdds === null || betEdge === null || Math.abs(betOdds) > 500) {
         continue;
       }
+
+      if (!passesJuiceGate(betOdds, betEdge)) continue;
 
       // Track home/away bet counts
       if (betSide === 'home') {
@@ -320,6 +421,136 @@ export function generateProbabilityBuckets(
 
     buckets.push({
       bucket: label,
+      count: inBucket.length,
+      accuracy,
+      avg_ev,
+      avg_edge,
+      win_count,
+      loss_count,
+      total_profit: totalProfit,
+      roi,
+      home_bet_count: homeBetCount,
+      away_bet_count: awayBetCount,
+      home_bet_percentage: homeBetPercentage,
+      away_bet_percentage: awayBetPercentage,
+    });
+  }
+
+  return buckets;
+}
+
+export function generateEdgeBuckets(
+  recommendations: Recommendation[],
+  edges: Array<{ lower: number; upper: number; label: string }> = [
+    { lower: 0.0, upper: 0.01, label: '0-1' },
+    { lower: 0.01, upper: 0.02, label: '1-2' },
+    { lower: 0.02, upper: 0.03, label: '2-3' },
+    { lower: 0.03, upper: 0.05, label: '3-5' },
+    { lower: 0.05, upper: 1.0, label: '5-100' },
+  ],
+): ProbabilityBucket[] {
+  const buckets: ProbabilityBucket[] = [];
+
+  for (const edgeBucket of edges) {
+    const inBucket: Recommendation[] = [];
+
+    for (const rec of recommendations) {
+      if (rec.actual === null) continue;
+
+      // Determine which side we would bet for bucket assignment (positive EV, best side)
+      let betSide: 'home' | 'away' | null = null;
+      let betOdds: number | null = null;
+      let betEdge: number | null = null;
+      let betEV: number | null = null;
+
+      if (rec.ev_home !== null && rec.odds_home !== null && rec.ev_home > 0) {
+        if (rec.ev_away === null || rec.ev_home > rec.ev_away) {
+          betSide = 'home';
+          betOdds = rec.odds_home;
+          betEdge = rec.edge_home;
+          betEV = rec.ev_home;
+        }
+      }
+
+      if (!betSide && rec.ev_away !== null && rec.odds_away !== null && rec.ev_away > 0) {
+        betSide = 'away';
+        betOdds = rec.odds_away;
+        betEdge = rec.edge_away;
+        betEV = rec.ev_away;
+      }
+
+      if (!betSide || betOdds === null || betEdge === null || betEV === null) continue;
+      if (Math.abs(betOdds) > 500) continue;
+      if (!passesJuiceGate(betOdds, betEdge)) continue;
+
+      if (betEdge >= edgeBucket.lower && betEdge < edgeBucket.upper) {
+        inBucket.push(rec);
+      }
+    }
+
+    if (inBucket.length === 0) continue;
+
+    // Accuracy as home-win rate for this slice (kept for continuity)
+    const win_count = inBucket.filter((r) => r.actual === 1).length;
+    const loss_count = inBucket.filter((r) => r.actual === 0).length;
+    const accuracy = win_count / inBucket.length;
+
+    // avg ev/edge (home perspective) for continuity with existing type
+    const avg_ev = inBucket.reduce((sum, r) => sum + (r.ev_home ?? 0), 0) / inBucket.length;
+    const avg_edge = inBucket.reduce((sum, r) => sum + (r.edge_home ?? 0), 0) / inBucket.length;
+
+    let totalProfit = 0;
+    let totalStaked = 0;
+    let homeBetCount = 0;
+    let awayBetCount = 0;
+
+    for (const rec of inBucket) {
+      if (rec.actual === null) continue;
+
+      let betSide: 'home' | 'away' | null = null;
+      let betOdds: number | null = null;
+      let betEdge: number | null = null;
+
+      if (rec.ev_home !== null && rec.odds_home !== null && rec.ev_home > 0) {
+        if (rec.ev_away === null || rec.ev_home > rec.ev_away) {
+          betSide = 'home';
+          betOdds = rec.odds_home;
+          betEdge = rec.edge_home;
+        }
+      }
+
+      if (!betSide && rec.ev_away !== null && rec.odds_away !== null && rec.ev_away > 0) {
+        betSide = 'away';
+        betOdds = rec.odds_away;
+        betEdge = rec.edge_away;
+      }
+
+      if (!betSide || betOdds === null || betEdge === null || Math.abs(betOdds) > 500) continue;
+      if (!passesJuiceGate(betOdds, betEdge)) continue;
+
+      if (betSide === 'home') homeBetCount++;
+      else awayBetCount++;
+
+      totalStaked += 100;
+
+      const won =
+        (betSide === 'home' && rec.actual === 1) || (betSide === 'away' && rec.actual === 0);
+
+      if (won) {
+        const profit = betOdds > 0 ? betOdds : (100 / Math.abs(betOdds)) * 100;
+        totalProfit += profit;
+      } else {
+        totalProfit -= 100;
+      }
+    }
+
+    const roi = totalStaked > 0 ? totalProfit / totalStaked : 0;
+    const totalBets = homeBetCount + awayBetCount;
+    const homeBetPercentage = totalBets > 0 ? homeBetCount / totalBets : 0;
+    const awayBetPercentage = totalBets > 0 ? awayBetCount / totalBets : 0;
+
+    buckets.push({
+      bucket: edgeBucket.label,
       count: inBucket.length,
       accuracy,
       avg_ev,
