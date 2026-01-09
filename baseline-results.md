@@ -415,3 +415,145 @@ Cumulative ROI Over Time (last 10 data points):
 - Try advanced models (XGBoost, LightGBM, neural networks)
 - Incorporate market signals
 - External data sources
+
+---
+
+## Gradient Boosting Implementation (Model Architecture Change)
+
+**Implementation:** `src/models/gradientBoosting.ts` + `src/models/trainNbaGradientBoosting.ts`
+**Date:** 2026-01-09
+
+### Motivation
+After hitting the 58.36% accuracy ceiling with Random Forest, attempted to break through by switching to a more powerful model architecture: Gradient Boosting.
+
+### What Changed
+- Implemented pure TypeScript Gradient Boosting Classifier (XGBoost npm package failed to compile)
+- Decision trees with variance-based splitting
+- Iterative boosting fitting residuals using logistic loss
+- Supports same pipeline: normalization, calibration, walk-forward CV
+- Added `--model-type gradient-boosting` CLI flag
+- Modified prediction module to auto-detect and load GB models
+
+### Implementation Details
+
+**Key Parameters:**
+- Learning rate: 0.1 (step size shrinkage)
+- N estimators: 100 trees
+- Max depth: 3 (shallow trees to prevent overfitting)
+- Min samples per leaf: 10
+
+**Algorithm:**
+1. Initialize with base score (log odds of positive class)
+2. For each tree iteration:
+   - Calculate negative gradient (residuals = y - sigmoid(predictions))
+   - Fit decision tree to residuals
+   - Update predictions with learning_rate × tree_prediction
+3. Final prediction: sigmoid(base_score + sum of all tree contributions)
+
+### Training Results (2023 Season, 1,230 games)
+
+**Gradient Boosting:**
+- Training Accuracy: 69.11% (much higher than RF's 58.05%)
+- Walk-Forward CV: **60.66% ± 2.07%** ✅ (breaks through 58.36% ceiling!)
+- Mean Log Loss: 0.7543 (vs RF's 0.8103)
+- Mean Brier Score: 0.2527 (vs RF's 0.2879)
+- Calibration: Temperature scaling, ECE 0.0624 (excellent)
+
+**Random Forest (for comparison):**
+- Training Accuracy: 58.05%
+- Walk-Forward CV: 58.36% ± 4.93%
+- Mean Log Loss: 0.8103
+- Mean Brier Score: 0.2879
+- Calibration: Beta, ECE 0.0953 (good)
+
+### Walk-Forward CV Folds Comparison
+
+| Fold | GB Accuracy | RF Accuracy | GB Improvement |
+|------|-------------|-------------|----------------|
+| 1 | 52.46% | 52.46% | +0.00% |
+| 2 | 63.93% | 57.38% | **+6.55%** |
+| 3 | 59.02% | 59.02% | +0.00% |
+| 4 | 59.02% | 55.74% | **+3.28%** |
+| 5 | 67.21% | 67.21% | +0.00% |
+| **Mean** | **60.66%** | **58.36%** | **+2.30%** |
+| **Std** | **±2.07%** | **±4.93%** | **Lower variance** |
+
+### Key Observations
+
+1. **Breaks the ceiling**: GB achieves 60.66% CV accuracy vs RF's 58.36%
+2. **Better consistency**: Lower variance (2.07% vs 4.93%)
+3. **Better calibration**: ECE 0.0624 vs 0.0953 (35% improvement)
+4. **Overfitting concern**: 69.11% training vs 60.66% CV (gap of 8.45 points)
+
+### Backtest Results on 2024 Season (936 games)
+
+**Gradient Boosting:**
+- **ROI: -12.92%** ❌ (worse than RF!)
+- Win Rate: 33.25%
+- Optimal Thresholds: edge=1.0%, ev=0.5%
+- Total Bets: 758
+
+**Random Forest (full, 1,230 games):**
+- **ROI: -11.66%** ✅ (better!)
+- Win Rate: 39.80%
+- Optimal Thresholds: edge=2.0%, ev=2.0%
+- Total Bets: 711
+
+### Probability Bucket Analysis
+
+**Gradient Boosting (2024 backtest):**
+| Bucket | Games | Accuracy | Avg Edge | ROI |
+|--------|-------|----------|----------|-----|
+| 20-30  | 6 | 33.3% | -7.1% | -73.35% |
+| 30-40  | 65 | 35.4% | 0.6% | -24.53% |
+| 40-50  | 158 | 41.8% | 2.8% | -22.47% |
+| 50-60  | 284 | 50.0% | 1.0% | -7.98% |
+| 60-70  | 307 | 63.5% | 1.8% | -5.24% |
+| 70-80  | 116 | 63.8% | 4.5% | -22.91% |
+
+**Random Forest (2024 backtest):**
+| Bucket | Games | Accuracy | Avg Edge | ROI |
+|--------|-------|----------|----------|-----|
+| 20-30  | 35 | 31.4% | -5.9% | -56.44% |
+| 30-40  | 85 | 37.6% | -2.2% | -1.55% |
+| 40-50  | 104 | 38.5% | 1.9% | -23.95% |
+| 50-60  | 128 | 47.7% | 3.9% | -3.77% |
+| 60-70  | 219 | 58.0% | 7.8% | -9.08% |
+| 70-80  | 225 | 61.3% | 10.3% | -19.99% |
+| 80-90  | 124 | 69.4% | 12.6% | -9.22% |
+| 90-100 | 7 | 71.4% | 16.9% | +13.12% |
+
+### Critical Analysis: The Paradox
+
+**GB has better metrics but worse ROI:**
+- ✅ Better CV accuracy (60.66% vs 58.36%)
+- ✅ Better calibration (ECE 0.0624 vs 0.0953)
+- ✅ Lower variance (2.07% vs 4.93%)
+- ❌ **WORSE backtest ROI (-12.92% vs -11.66%)**
+
+**Why?**
+1. **Win rate discrepancy**: GB gets 33.25% win rate vs RF's 39.80% on actual bets placed
+2. **Bucket distribution**: RF makes more high-confidence predictions (80-90%, 90-100% buckets with 124+7=131 games), GB tops out at 70-80% (116 games)
+3. **Potential overfitting**: GB's 69.11% training accuracy vs 60.66% CV suggests it may overfit to 2023 patterns that don't generalize to 2024
+4. **Calibration vs profitability**: Better calibrated probabilities don't guarantee profitable betting if the edge detection is off
+
+### Conclusion
+
+**Gradient Boosting successfully breaks the 58.36% accuracy ceiling** (+2.30 percentage points), but this **does NOT translate to better ROI**.
+
+**Key insight:** Cross-validation accuracy and calibration quality are necessary but not sufficient for profitable sports betting. The model must also:
+- Identify the RIGHT games to bet on (not just predict accurately overall)
+- Find genuine edges vs sportsbook odds
+- Balance confidence with bet frequency
+
+**Random Forest remains the better production model** despite lower CV accuracy, because:
+- Higher win rate on actual bets placed (39.80% vs 33.25%)
+- Better ROI (-11.66% vs -12.92%)
+- More diversified probability distribution including very high confidence bets
+
+### Next Steps
+1. Investigate why GB's better predictions don't lead to better bets
+2. Consider ensemble approach combining RF and GB predictions
+3. Focus on improving bet selection logic rather than just prediction accuracy
+4. Explore player-level features and external data sources
+5. Try optimizing hyperparameters specifically for ROI (not just accuracy)

@@ -9,6 +9,10 @@ import {
   trainNcaamMoneylineModel,
   type NcaamTrainingConfig,
 } from '../../models/trainNcaamMoneyline.js';
+import {
+  trainGradientBoostingModel,
+  type GradientBoostingOptions,
+} from '../../models/trainNbaGradientBoosting.js';
 import path from 'path';
 
 export function trainCommand(): Command {
@@ -48,6 +52,13 @@ export function trainCommand(): Command {
       'Sampling method: "recent" or "random" (default: recent)',
       'recent',
     )
+    .option(
+      '--model-type <type>',
+      'Model architecture: "random-forest" or "gradient-boosting" (default: random-forest)',
+      'random-forest',
+    )
+    .option('--learning-rate <rate>', 'Learning rate for gradient boosting (default: 0.1)', '0.1')
+    .option('--gb-max-depth <depth>', 'Max depth for gradient boosting trees (default: 3)', '3')
     .action(
       (
         sport: string,
@@ -66,6 +77,9 @@ export function trainCommand(): Command {
           quick?: boolean;
           sampleSize?: string;
           sampleMethod?: string;
+          modelType?: string;
+          learningRate?: string;
+          gbMaxDepth?: string;
         },
       ) => {
         const supportedSports = ['nba', 'ncaam'];
@@ -116,6 +130,9 @@ export function trainCommand(): Command {
           console.log(`Sample size: ${options.sampleSize} games`);
           console.log(`Sample method: ${options.sampleMethod}`);
         }
+        if (options.modelType) {
+          console.log(`Model architecture: ${options.modelType}`);
+        }
 
         try {
           let modelPath: string;
@@ -128,77 +145,117 @@ export function trainCommand(): Command {
               );
             }
 
-            const nbaOptions: NbaTrainingOptions = {
-              useWalkForward: options.walkForward,
-              analyzeFeatures: options.analyzeFeatures,
-              calibrate: options.calibrate !== undefined, // Enable if flag is present
-            };
+            // Check model type
+            const modelType = options.modelType || 'random-forest';
+            if (!['random-forest', 'gradient-boosting'].includes(modelType)) {
+              console.error(
+                'Error: Invalid model type. Use "random-forest" or "gradient-boosting"',
+              );
+              process.exit(1);
+            }
 
-            // Parse quick mode if provided
-            if (options.quick) {
-              const sampleSize = parseInt(options.sampleSize || '200', 10);
-              const method = options.sampleMethod as 'recent' | 'random';
-
-              if (!['recent', 'random'].includes(method)) {
-                console.error('Error: Invalid sample method. Use "recent" or "random"');
-                process.exit(1);
-              }
-
-              if (isNaN(sampleSize) || sampleSize < 1) {
-                console.error(`Error: Invalid sample size: ${options.sampleSize}`);
-                process.exit(1);
-              }
-
-              nbaOptions.quickMode = {
-                enabled: true,
-                sampleSize,
-                method,
+            // Handle gradient boosting separately
+            if (modelType === 'gradient-boosting') {
+              const gbOptions: GradientBoostingOptions = {
+                learningRate: parseFloat(options.learningRate || '0.1'),
+                nEstimators: 100,
+                maxDepth: parseInt(options.gbMaxDepth || '3', 10),
+                minSamplesLeaf: 10,
+                useWalkForward: options.walkForward,
+                calibrate: options.calibrate !== undefined,
               };
-            }
 
-            // Parse hyperparameter tuning if provided
-            if (options.tune) {
-              const method = options.tune as 'grid' | 'random';
-              if (!['grid', 'random'].includes(method)) {
-                console.error('Error: Invalid tuning method. Use "grid" or "random"');
-                process.exit(1);
+              if (options.quick) {
+                const sampleSize = parseInt(options.sampleSize || '200', 10);
+                const method = options.sampleMethod as 'recent' | 'random';
+
+                if (!['recent', 'random'].includes(method)) {
+                  console.error('Error: Invalid sample method. Use "recent" or "random"');
+                  process.exit(1);
+                }
+
+                gbOptions.quickMode = {
+                  enabled: true,
+                  sampleSize,
+                  method,
+                };
               }
 
-              nbaOptions.tune = {
-                method,
-                nIter: parseInt(options.tuneIter || '10', 10),
+              modelPath = trainGradientBoostingModel(seasons[0], options.output, gbOptions);
+            } else {
+              // Random Forest (default)
+              const nbaOptions: NbaTrainingOptions = {
+                useWalkForward: options.walkForward,
+                analyzeFeatures: options.analyzeFeatures,
+                calibrate: options.calibrate !== undefined,
               };
+
+              // Parse quick mode if provided
+              if (options.quick) {
+                const sampleSize = parseInt(options.sampleSize || '200', 10);
+                const method = options.sampleMethod as 'recent' | 'random';
+
+                if (!['recent', 'random'].includes(method)) {
+                  console.error('Error: Invalid sample method. Use "recent" or "random"');
+                  process.exit(1);
+                }
+
+                if (isNaN(sampleSize) || sampleSize < 1) {
+                  console.error(`Error: Invalid sample size: ${options.sampleSize}`);
+                  process.exit(1);
+                }
+
+                nbaOptions.quickMode = {
+                  enabled: true,
+                  sampleSize,
+                  method,
+                };
+              }
+
+              // Parse hyperparameter tuning if provided
+              if (options.tune) {
+                const method = options.tune as 'grid' | 'random';
+                if (!['grid', 'random'].includes(method)) {
+                  console.error('Error: Invalid tuning method. Use "grid" or "random"');
+                  process.exit(1);
+                }
+
+                nbaOptions.tune = {
+                  method,
+                  nIter: parseInt(options.tuneIter || '10', 10),
+                };
+              }
+
+              // Parse feature selection if provided
+              if (options.selectFeatures) {
+                const parts = options.selectFeatures.split(':');
+                if (parts.length !== 2) {
+                  console.error(
+                    'Error: Invalid feature selection format. Use "method:value" (e.g., "top_k:30")',
+                  );
+                  process.exit(1);
+                }
+
+                const method = parts[0] as 'top_k' | 'threshold' | 'correlation';
+                const value = parseFloat(parts[1]);
+
+                if (!['top_k', 'threshold', 'correlation'].includes(method)) {
+                  console.error(
+                    'Error: Invalid feature selection method. Use "top_k", "threshold", or "correlation"',
+                  );
+                  process.exit(1);
+                }
+
+                if (isNaN(value)) {
+                  console.error(`Error: Invalid feature selection value: ${parts[1]}`);
+                  process.exit(1);
+                }
+
+                nbaOptions.selectFeatures = { method, value };
+              }
+
+              modelPath = trainModel(seasons[0], options.output, nbaOptions);
             }
-
-            // Parse feature selection if provided
-            if (options.selectFeatures) {
-              const parts = options.selectFeatures.split(':');
-              if (parts.length !== 2) {
-                console.error(
-                  'Error: Invalid feature selection format. Use "method:value" (e.g., "top_k:30")',
-                );
-                process.exit(1);
-              }
-
-              const method = parts[0] as 'top_k' | 'threshold' | 'correlation';
-              const value = parseFloat(parts[1]);
-
-              if (!['top_k', 'threshold', 'correlation'].includes(method)) {
-                console.error(
-                  'Error: Invalid feature selection method. Use "top_k", "threshold", or "correlation"',
-                );
-                process.exit(1);
-              }
-
-              if (isNaN(value)) {
-                console.error(`Error: Invalid feature selection value: ${parts[1]}`);
-                process.exit(1);
-              }
-
-              nbaOptions.selectFeatures = { method, value };
-            }
-
-            modelPath = trainModel(seasons[0], options.output, nbaOptions);
           } else if (sport === 'ncaam') {
             // NCAAM training (supports multi-season + calibration)
             if (options.calibrate || options.validationSeason) {
