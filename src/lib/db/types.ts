@@ -102,3 +102,37 @@ export interface FeatureConfig {
   enabled: boolean;
   parameters?: Record<string, unknown>;
 }
+
+export interface EnhancedBacktestMetrics {
+  // Core metrics (from BacktestResult)
+  roi: number;
+  win_rate: number;
+  total_bets: number;
+  total_profit: number;
+
+  // Calibration
+  ece: number; // Expected Calibration Error
+
+  // Risk metrics
+  max_drawdown: number; // Maximum drawdown (%)
+  max_drawdown_duration: number; // Longest drawdown period (days)
+  sharpe_ratio: number; // Risk-adjusted return
+  sortino_ratio: number; // Downside risk-adjusted return
+
+  // Time series
+  cumulative_roi_over_time: Array<{
+    date: string;
+    cumulative_roi: number;
+    cumulative_profit: number;
+    bet_count: number;
+  }>;
+
+  // ROI by confidence bucket
+  roi_by_confidence: Array<{
+    bucket: string; // e.g., "50-60%"
+    bets: number;
+    roi: number;
+    win_rate: number;
+    avg_prob: number;
+  }>;
+}

@@ -3,7 +3,7 @@
  */
 
 import { Command } from 'commander';
-import { trainModel } from '../../models/trainNbaMoneyline.js';
+import { trainModel, type NbaTrainingOptions } from '../../models/trainNbaMoneyline.js';
 import {
   trainNcaamModel,
   trainNcaamMoneylineModel,
@@ -25,10 +25,28 @@ export function trainCommand(): Command {
     .option('-o, --output <path>', 'Output path for trained model')
     .option('--cv', 'Enable cross-validation (recommended for model evaluation)', false)
     .option('--cv-folds <n>', 'Number of CV folds', '5')
-    .option('--calibrate <method>', 'Calibration method: temperature, isotonic, or beta')
+    .option('--walk-forward', 'Use walk-forward (time-series) cross-validation (NBA only)', false)
+    .option('--analyze-features', 'Analyze feature importance (NBA only)', false)
+    .option(
+      '--select-features <method:value>',
+      'Feature selection (e.g., "top_k:30", "correlation:0.9")',
+    )
+    .option(
+      '--calibrate [method]',
+      'Enable probability calibration (NBA: auto-select, NCAAM: specify method)',
+    )
     .option(
       '--validation-season <year>',
       'Season to use for calibration (if not provided, uses 20% holdout)',
+    )
+    .option('--tune [method]', 'Hyperparameter tuning method: "grid" or "random" (NBA only)')
+    .option('--tune-iter <n>', 'Number of iterations for random search (default: 10)', '10')
+    .option('--quick', 'Quick testing mode (fast training on subset of data)', false)
+    .option('--sample-size <n>', 'Number of games to use in quick mode (default: 200)', '200')
+    .option(
+      '--sample-method <method>',
+      'Sampling method: "recent" or "random" (default: recent)',
+      'recent',
     )
     .action(
       (
@@ -38,8 +56,16 @@ export function trainCommand(): Command {
           output?: string;
           cv?: boolean;
           cvFolds?: string;
+          walkForward?: boolean;
+          analyzeFeatures?: boolean;
+          selectFeatures?: string;
           calibrate?: string;
           validationSeason?: string;
+          tune?: string;
+          tuneIter?: string;
+          quick?: boolean;
+          sampleSize?: string;
+          sampleMethod?: string;
         },
       ) => {
         const supportedSports = ['nba', 'ncaam'];
@@ -64,11 +90,31 @@ export function trainCommand(): Command {
         if (options.cv) {
           console.log(`Cross-validation: ${options.cvFolds} folds`);
         }
+        if (options.walkForward) {
+          console.log(`Walk-forward CV: enabled`);
+        }
+        if (options.analyzeFeatures) {
+          console.log(`Feature analysis: enabled`);
+        }
+        if (options.selectFeatures) {
+          console.log(`Feature selection: ${options.selectFeatures}`);
+        }
         if (options.calibrate) {
           console.log(`Calibration: ${options.calibrate}`);
           if (options.validationSeason) {
             console.log(`Validation season: ${options.validationSeason}`);
           }
+        }
+        if (options.tune) {
+          console.log(`Hyperparameter tuning: ${options.tune}`);
+          if (options.tune === 'random') {
+            console.log(`Random search iterations: ${options.tuneIter}`);
+          }
+        }
+        if (options.quick) {
+          console.log(`Quick mode: enabled`);
+          console.log(`Sample size: ${options.sampleSize} games`);
+          console.log(`Sample method: ${options.sampleMethod}`);
         }
 
         try {
@@ -81,7 +127,78 @@ export function trainCommand(): Command {
                 'Warning: NBA training only supports single season. Using first season.',
               );
             }
-            modelPath = trainModel(seasons[0], options.output);
+
+            const nbaOptions: NbaTrainingOptions = {
+              useWalkForward: options.walkForward,
+              analyzeFeatures: options.analyzeFeatures,
+              calibrate: options.calibrate !== undefined, // Enable if flag is present
+            };
+
+            // Parse quick mode if provided
+            if (options.quick) {
+              const sampleSize = parseInt(options.sampleSize || '200', 10);
+              const method = options.sampleMethod as 'recent' | 'random';
+
+              if (!['recent', 'random'].includes(method)) {
+                console.error('Error: Invalid sample method. Use "recent" or "random"');
+                process.exit(1);
+              }
+
+              if (isNaN(sampleSize) || sampleSize < 1) {
+                console.error(`Error: Invalid sample size: ${options.sampleSize}`);
+                process.exit(1);
+              }
+
+              nbaOptions.quickMode = {
+                enabled: true,
+                sampleSize,
+                method,
+              };
+            }
+
+            // Parse hyperparameter tuning if provided
+            if (options.tune) {
+              const method = options.tune as 'grid' | 'random';
+              if (!['grid', 'random'].includes(method)) {
+                console.error('Error: Invalid tuning method. Use "grid" or "random"');
+                process.exit(1);
+              }
+
+              nbaOptions.tune = {
+                method,
+                nIter: parseInt(options.tuneIter || '10', 10),
+              };
+            }
+
+            // Parse feature selection if provided
+            if (options.selectFeatures) {
+              const parts = options.selectFeatures.split(':');
+              if (parts.length !== 2) {
+                console.error(
+                  'Error: Invalid feature selection format. Use "method:value" (e.g., "top_k:30")',
+                );
+                process.exit(1);
+              }
+
+              const method = parts[0] as 'top_k' | 'threshold' | 'correlation';
+              const value = parseFloat(parts[1]);
+
+              if (!['top_k', 'threshold', 'correlation'].includes(method)) {
+                console.error(
+                  'Error: Invalid feature selection method. Use "top_k", "threshold", or "correlation"',
+                );
+                process.exit(1);
+              }
+
+              if (isNaN(value)) {
+                console.error(`Error: Invalid feature selection value: ${parts[1]}`);
+                process.exit(1);
+              }
+
+              nbaOptions.selectFeatures = { method, value };
+            }
+
+            modelPath = trainModel(seasons[0], options.output, nbaOptions);
           } else if (sport === 'ncaam') {
             // NCAAM training (supports multi-season + calibration)
             if (options.calibrate || options.validationSeason) {

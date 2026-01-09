@@ -54,6 +54,7 @@ export function fitTemperatureScaling(
 /**
  * Isotonic Regression for probability calibration
  * Fits a non-decreasing piecewise constant function to calibrate probabilities
+ * Uses the PAVA (Pool Adjacent Violators Algorithm) for proper isotonic regression
  */
 export class IsotonicRegression {
   private thresholds: number[] = [];
@@ -61,44 +62,91 @@ export class IsotonicRegression {
 
   /**
    * Fit isotonic regression on training probabilities and labels
-   * Uses a simplified bin-based approach
+   * Uses PAVA (Pool Adjacent Violators Algorithm)
    */
   fit(probabilities: number[], labels: number[]): void {
-    // Create bins and calculate empirical probabilities for each bin
-    const nBins = 10;
-    this.thresholds = [];
-    this.values = [];
-
-    for (let i = 0; i <= nBins; i++) {
-      const threshold = i / nBins;
-      this.thresholds.push(threshold);
-
-      // Find all samples in this bin (±5% range)
-      const binSamples = [];
-      for (let j = 0; j < probabilities.length; j++) {
-        if (probabilities[j] >= threshold - 0.05 && probabilities[j] < threshold + 0.05) {
-          binSamples.push(labels[j]);
-        }
-      }
-
-      // Calculate empirical probability for this bin
-      const binProb =
-        binSamples.length > 0
-          ? binSamples.reduce((a, b) => a + b, 0) / binSamples.length
-          : threshold;
-      this.values.push(Math.max(0, Math.min(1, binProb))); // Clamp to [0,1]
+    if (probabilities.length === 0 || probabilities.length !== labels.length) {
+      throw new Error('Invalid input: probabilities and labels must have same non-zero length');
     }
 
-    // Ensure monotonicity by enforcing non-decreasing values
-    for (let i = 1; i < this.values.length; i++) {
-      if (this.values[i] < this.values[i - 1]) {
-        this.values[i] = this.values[i - 1];
+    // Sort by probabilities, keeping track of labels
+    const sorted = probabilities
+      .map((prob, i) => ({ prob, label: labels[i] }))
+      .sort((a, b) => a.prob - b.prob);
+
+    // Initialize with individual points
+    const points: Array<{ prob: number; label: number; weight: number }> = sorted.map((s) => ({
+      prob: s.prob,
+      label: s.label,
+      weight: 1,
+    }));
+
+    // PAVA: Pool adjacent violators
+    let i = 0;
+    while (i < points.length - 1) {
+      // Check if current point violates monotonicity with next point
+      const currentAvg = this.weightedAverage(points, i, i);
+      const nextAvg = this.weightedAverage(points, i + 1, i + 1);
+
+      if (currentAvg > nextAvg) {
+        // Pool these adjacent points
+        const pooledLabel = this.weightedAverage(points, i, i + 1);
+        const pooledWeight = points[i].weight + points[i + 1].weight;
+        const pooledProb =
+          (points[i].prob * points[i].weight + points[i + 1].prob * points[i + 1].weight) /
+          pooledWeight;
+
+        // Replace both points with pooled point
+        points[i] = {
+          prob: pooledProb,
+          label: pooledLabel,
+          weight: pooledWeight,
+        };
+        points.splice(i + 1, 1);
+
+        // Step back to check if pooling created a new violation
+        if (i > 0) i--;
+      } else {
+        i++;
       }
+    }
+
+    // Extract thresholds and values from pooled points
+    this.thresholds = points.map((p) => p.prob);
+    this.values = points.map((p) => p.label);
+
+    // Add boundary points for interpolation
+    if (this.thresholds[0] > 0) {
+      this.thresholds.unshift(0);
+      this.values.unshift(this.values[0]);
+    }
+    if (this.thresholds[this.thresholds.length - 1] < 1) {
+      this.thresholds.push(1);
+      this.values.push(this.values[this.values.length - 1]);
     }
   }
 
   /**
-   * Apply calibration to new probabilities
+   * Calculate weighted average of labels in a range
+   */
+  private weightedAverage(
+    points: Array<{ prob: number; label: number; weight: number }>,
+    start: number,
+    end: number,
+  ): number {
+    let sumWeightedLabels = 0;
+    let sumWeights = 0;
+
+    for (let i = start; i <= end; i++) {
+      sumWeightedLabels += points[i].label * points[i].weight;
+      sumWeights += points[i].weight;
+    }
+
+    return sumWeights > 0 ? sumWeightedLabels / sumWeights : 0;
+  }
+
+  /**
+   * Apply calibration to new probabilities using linear interpolation
    */
   calibrate(probabilities: number[]): number[] {
     if (this.thresholds.length === 0) {
@@ -109,19 +157,36 @@ export class IsotonicRegression {
       // Clamp probability to [0,1]
       const clampedProb = Math.max(0, Math.min(1, prob));
 
-      // Find the closest bin
-      let bestIndex = 0;
-      let bestDistance = Math.abs(clampedProb - this.thresholds[0]);
-
-      for (let i = 1; i < this.thresholds.length; i++) {
-        const distance = Math.abs(clampedProb - this.thresholds[i]);
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestIndex = i;
+      // Find the interval containing this probability
+      let leftIdx = 0;
+      for (let i = 0; i < this.thresholds.length - 1; i++) {
+        if (clampedProb >= this.thresholds[i] && clampedProb <= this.thresholds[i + 1]) {
+          leftIdx = i;
+          break;
         }
       }
 
-      return this.values[bestIndex];
+      // Handle edge cases
+      if (clampedProb <= this.thresholds[0]) {
+        return this.values[0];
+      }
+      if (clampedProb >= this.thresholds[this.thresholds.length - 1]) {
+        return this.values[this.values.length - 1];
+      }
+
+      // Linear interpolation between the two points
+      const rightIdx = leftIdx + 1;
+      const x0 = this.thresholds[leftIdx];
+      const x1 = this.thresholds[rightIdx];
+      const y0 = this.values[leftIdx];
+      const y1 = this.values[rightIdx];
+
+      if (x1 === x0) {
+        return y0; // Avoid division by zero
+      }
+
+      const t = (clampedProb - x0) / (x1 - x0);
+      return y0 + t * (y1 - y0);
     });
   }
 
@@ -242,6 +307,197 @@ export function createCalibrator(
     default:
       return null;
   }
+}
+
+/**
+ * Calculate Expected Calibration Error (ECE)
+ * Lower is better. Measures how well predicted probabilities match actual frequencies.
+ *
+ * @param probabilities Predicted probabilities
+ * @param labels True labels (0 or 1)
+ * @param nBins Number of bins to use (default: 10)
+ * @returns ECE value (0 = perfect calibration, 1 = worst)
+ */
+export function calculateECE(
+  probabilities: number[],
+  labels: number[],
+  nBins: number = 10,
+): number {
+  if (probabilities.length !== labels.length || probabilities.length === 0) {
+    return 1.0;
+  }
+
+  // Create bins
+  const binEdges = Array.from({ length: nBins + 1 }, (_, i) => i / nBins);
+  const binCounts = new Array(nBins).fill(0);
+  const binCorrect = new Array(nBins).fill(0);
+  const binConfidence = new Array(nBins).fill(0);
+
+  // Assign predictions to bins
+  for (let i = 0; i < probabilities.length; i++) {
+    const prob = Math.max(0, Math.min(1, probabilities[i]));
+    const label = labels[i];
+
+    // Find bin
+    let binIdx = Math.floor(prob * nBins);
+    if (binIdx >= nBins) binIdx = nBins - 1;
+
+    binCounts[binIdx]++;
+    binConfidence[binIdx] += prob;
+    if (label === 1) {
+      binCorrect[binIdx]++;
+    }
+  }
+
+  // Calculate ECE
+  let ece = 0;
+  const totalSamples = probabilities.length;
+
+  for (let i = 0; i < nBins; i++) {
+    if (binCounts[i] > 0) {
+      const avgConfidence = binConfidence[i] / binCounts[i];
+      const accuracy = binCorrect[i] / binCounts[i];
+      const weight = binCounts[i] / totalSamples;
+      ece += weight * Math.abs(avgConfidence - accuracy);
+    }
+  }
+
+  return ece;
+}
+
+/**
+ * Generate reliability diagram data for visualization
+ */
+export function generateReliabilityDiagram(
+  probabilities: number[],
+  labels: number[],
+  nBins: number = 10,
+): Array<{ binCenter: number; meanPredicted: number; actualFrequency: number; count: number }> {
+  const binEdges = Array.from({ length: nBins + 1 }, (_, i) => i / nBins);
+  const bins: Array<{ predictions: number[]; labels: number[] }> = Array.from(
+    { length: nBins },
+    () => ({ predictions: [], labels: [] }),
+  );
+
+  // Assign to bins
+  for (let i = 0; i < probabilities.length; i++) {
+    const prob = Math.max(0, Math.min(1, probabilities[i]));
+    let binIdx = Math.floor(prob * nBins);
+    if (binIdx >= nBins) binIdx = nBins - 1;
+
+    bins[binIdx].predictions.push(prob);
+    bins[binIdx].labels.push(labels[i]);
+  }
+
+  // Calculate statistics for each bin
+  return bins.map((bin, i) => {
+    const binCenter = (binEdges[i] + binEdges[i + 1]) / 2;
+    if (bin.predictions.length === 0) {
+      return {
+        binCenter,
+        meanPredicted: binCenter,
+        actualFrequency: 0,
+        count: 0,
+      };
+    }
+
+    const meanPredicted = bin.predictions.reduce((a, b) => a + b, 0) / bin.predictions.length;
+    const actualFrequency = bin.labels.reduce((a, b) => a + b, 0) / bin.labels.length;
+
+    return {
+      binCenter,
+      meanPredicted,
+      actualFrequency,
+      count: bin.predictions.length,
+    };
+  });
+}
+
+/**
+ * Auto-select best calibration method by comparing ECE on validation set
+ */
+export function selectBestCalibration(
+  trainProbs: number[],
+  trainLabels: number[],
+  valProbs: number[],
+  valLabels: number[],
+): CalibrationModel {
+  console.log('\n=== Auto-Selecting Calibration Method ===\n');
+
+  // Calculate baseline ECE (no calibration)
+  const baselineECE = calculateECE(valProbs, valLabels);
+  console.log(`Baseline ECE (no calibration): ${baselineECE.toFixed(4)}`);
+
+  let bestMethod: 'temperature' | 'isotonic' | 'beta' = 'temperature';
+  let bestECE = baselineECE;
+  let bestModel: CalibrationModel = { method: 'temperature', temperature: 1.0 };
+
+  // Try temperature scaling
+  const temperature = fitTemperatureScaling(trainProbs, trainLabels);
+  const tempModel: CalibrationModel = { method: 'temperature', temperature };
+  const tempCalibratedVal = applyCalibration(valProbs, tempModel);
+  const tempECE = calculateECE(tempCalibratedVal, valLabels);
+  console.log(`Temperature scaling (T=${temperature.toFixed(2)}): ECE = ${tempECE.toFixed(4)}`);
+
+  if (tempECE < bestECE) {
+    bestMethod = 'temperature';
+    bestECE = tempECE;
+    bestModel = tempModel;
+  }
+
+  // Try isotonic regression
+  try {
+    const isotonic = new IsotonicRegression();
+    isotonic.fit(trainProbs, trainLabels);
+    const isotonicSerialized = isotonic.serialize();
+    const isoModel: CalibrationModel = {
+      method: 'isotonic',
+      isotonicThresholds: isotonicSerialized.thresholds,
+      isotonicValues: isotonicSerialized.values,
+    };
+    const isoCalibratedVal = applyCalibration(valProbs, isoModel);
+    const isoECE = calculateECE(isoCalibratedVal, valLabels);
+    console.log(`Isotonic regression (PAVA): ECE = ${isoECE.toFixed(4)}`);
+
+    if (isoECE < bestECE) {
+      bestMethod = 'isotonic';
+      bestECE = isoECE;
+      bestModel = isoModel;
+    }
+  } catch (error) {
+    console.log(`Isotonic regression failed: ${error}`);
+  }
+
+  // Try beta calibration
+  try {
+    const beta = new BetaCalibration();
+    beta.fit(trainProbs, trainLabels);
+    const betaParams = beta.getParams();
+    const betaModel: CalibrationModel = {
+      method: 'beta',
+      betaParams,
+    };
+    const betaCalibratedVal = applyCalibration(valProbs, betaModel);
+    const betaECE = calculateECE(betaCalibratedVal, valLabels);
+    console.log(
+      `Beta calibration (a=${betaParams.a.toFixed(2)}, b=${betaParams.b.toFixed(2)}): ECE = ${betaECE.toFixed(4)}`,
+    );
+
+    if (betaECE < bestECE) {
+      bestMethod = 'beta';
+      bestECE = betaECE;
+      bestModel = betaModel;
+    }
+  } catch (error) {
+    console.log(`Beta calibration failed: ${error}`);
+  }
+
+  console.log(`\n✓ Best method: ${bestMethod} (ECE = ${bestECE.toFixed(4)})`);
+  console.log(
+    `  Improvement: ${(((baselineECE - bestECE) / baselineECE) * 100).toFixed(1)}% reduction in ECE\n`,
+  );
+
+  return bestModel;
 }
 
 /**
