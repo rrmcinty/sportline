@@ -375,9 +375,33 @@ async function updateRecentGames(daysBack: number = 1, daysForward: number = 7) 
   db.close();
 }
 
-// Parse command line arguments
-const daysBack = process.argv[2] ? parseInt(process.argv[2]) : 1;
-const daysForward = process.argv[3] ? parseInt(process.argv[3]) : 7;
+// Parse command line arguments (supports both positional and named flags)
+function parseArgs() {
+  let daysBack = 1;
+  let daysForward = 7;
+
+  // Check for named flags first
+  const daysBackIdx = process.argv.indexOf('--days-back');
+  const daysForwardIdx = process.argv.indexOf('--days-forward');
+
+  if (daysBackIdx !== -1 && process.argv[daysBackIdx + 1]) {
+    daysBack = parseInt(process.argv[daysBackIdx + 1]) || 1;
+  } else if (process.argv[2] && !process.argv[2].startsWith('--')) {
+    // Fallback to positional argument
+    daysBack = parseInt(process.argv[2]) || 1;
+  }
+
+  if (daysForwardIdx !== -1 && process.argv[daysForwardIdx + 1]) {
+    daysForward = parseInt(process.argv[daysForwardIdx + 1]) || 7;
+  } else if (process.argv[3] && !process.argv[3].startsWith('--')) {
+    // Fallback to positional argument
+    daysForward = parseInt(process.argv[3]) || 7;
+  }
+
+  return { daysBack, daysForward };
+}
+
+const { daysBack, daysForward } = parseArgs();
 
 updateRecentGames(daysBack, daysForward).catch((error) => {
   console.error('Error:', error);

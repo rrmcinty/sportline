@@ -19,10 +19,12 @@ export function findValueBets(
   modelData: TrainedModel,
   options: {
     minEdge?: number;
+    minProb?: number;
     market?: string;
   } = {},
 ): ValueBet[] {
   const minEdge = options.minEdge ?? 0.03; // Default 3% edge
+  const minProb = options.minProb ?? 0.5; // Default 50% probability
   const market = options.market ?? 'moneyline';
   const sport = modelData.sport || 'nba'; // Get sport from model metadata
 
@@ -64,7 +66,8 @@ export function findValueBets(
         const impliedProb = americanToImpliedProb(odds.price_home);
         const edge = homeWinProb - impliedProb;
 
-        if (edge >= minEdge) {
+        // Filter by minimum probability AND minimum edge
+        if (homeWinProb >= minProb && edge >= minEdge) {
           const ev = calculateEV(homeWinProb, odds.price_home);
           valueBets.push({
             gameId: game.id,
@@ -90,7 +93,8 @@ export function findValueBets(
         const impliedProb = americanToImpliedProb(odds.price_away);
         const edge = awayWinProb - impliedProb;
 
-        if (edge >= minEdge) {
+        // Filter by minimum probability AND minimum edge
+        if (awayWinProb >= minProb && edge >= minEdge) {
           const ev = calculateEV(awayWinProb, odds.price_away);
           valueBets.push({
             gameId: game.id,
@@ -128,6 +132,7 @@ export function generateRecommendations(
   modelPath: string,
   options: {
     minEdge?: number;
+    minProb?: number;
     market?: string;
   } = {},
 ): ValueBet[] {
