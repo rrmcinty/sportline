@@ -15,5 +15,10 @@
     "sourceMap": true
   },
   "include": ["src/**/*", "scripts/**/*"],
-  "exclude": ["node_modules", "src/train/basketball/ncaam/trainNcaamMoneyline.ts", "src/lib/**/*"]
+  "exclude": [
+    "node_modules",
+    "src/train/basketball/ncaam/trainNcaamMoneyline.ts",
+    "src/lib/features/featureEngineering.ts",
+    "src/lib/features/basketball/basketballFeatures.ts"
+  ]
 }

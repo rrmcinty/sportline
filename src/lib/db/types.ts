@@ -7,7 +7,24 @@ import type { GameRow, OddsRow, GameFeatures as ModelGameFeatures } from '../../
 
 // Re-export types from models
 export type { GameRow, OddsRow };
-export type GameFeatures = ModelGameFeatures;
+
+// Extended GameFeatures for backtesting (includes game metadata and odds)
+// Note: This shadows the ModelGameFeatures import for backtesting purposes
+export interface GameFeatures {
+  game_id: string;
+  date: string;
+  season: number;
+  home_team: string;
+  away_team: string;
+  odds: Array<{
+    provider?: string | null;
+    price_home?: number | null;
+    price_away?: number | null;
+    line?: number | null;
+  }>;
+  target: number; // 1 for home win, 0 for away win
+  features: ModelGameFeatures; // Nested model features
+}
 
 // Alias for Game type
 export type Game = GameRow;
@@ -32,32 +49,52 @@ export interface TeamRow {
 }
 
 export interface Recommendation {
-  gameId: string;
-  predictedProbability: number;
-  edge: number;
-  ev: number;
-  odds: number;
-  side: 'home' | 'away';
+  game_id: string;
+  date: string;
+  home_team: string;
+  away_team: string;
+  model_prob_home: number;
+  model_prob_away: number;
+  odds_home: number | null;
+  odds_away: number | null;
+  ev_home: number | null;
+  ev_away: number | null;
+  edge_home: number | null;
+  edge_away: number | null;
+  recommended_side: 'home' | 'away' | null;
+  actual: number | null; // 1 for home win, 0 for away win
+  provider: string;
+  line: number | null;
 }
 
 export interface BacktestResult {
-  totalBets: number;
+  threshold_edge: number;
+  threshold_ev: number;
+  total_bets: number;
+  total_staked: number;
+  total_profit: number;
+  roi: number;
+  win_rate: number;
   wins: number;
   losses: number;
-  winRate: number;
-  roi: number;
-  totalProfit: number;
-  avgEdge: number;
+  avg_odds: number;
+  sharpe_ratio: number | null;
 }
 
 export interface ProbabilityBucket {
-  min: number;
-  max: number;
-  bets: number;
-  wins: number;
-  winRate: number;
-  avgPredicted: number;
-  calibrationError: number;
+  bucket: string; // e.g., "50-60"
+  count: number;
+  accuracy: number;
+  avg_ev: number;
+  avg_edge: number;
+  win_count: number;
+  loss_count: number;
+  total_profit: number;
+  roi: number;
+  home_bet_count: number;
+  away_bet_count: number;
+  home_bet_percentage: number;
+  away_bet_percentage: number;
 }
 
 export interface FeatureConfig {
