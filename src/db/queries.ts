@@ -102,7 +102,7 @@ export function getCompletedNbaGames(
 export function getUpcomingGames(db: Database.Database, sport: string): GameRow[] {
   return getGames(db, sport, {
     status: ['scheduled', 'pre'],
-    afterDate: new Date().toISOString().split('T')[0],
+    afterDate: new Date().toISOString(), // Full timestamp, not just date
   });
 }
 
