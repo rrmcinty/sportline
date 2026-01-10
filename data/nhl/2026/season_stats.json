@@ -1,6 +1,6 @@
 [
 {
-  "teamId": "3",
+  "teamId": "25",
   "stats": {
     "categories": [
       {
@@ -10,17 +10,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 33
+            "value": 44
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 706461
+            "value": 943645
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21407.909090909092
+            "value": 21446.477272727272
           },
           {
             "name": "plusMinus",
@@ -33,17 +33,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 13254
+            "value": 16670
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 16
+            "value": 20
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 13
+            "value": 21
           }
         ]
       },
@@ -54,22 +54,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 82
+            "value": 143
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 125
+            "value": 242
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 970
+            "value": 1180
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 979
+            "value": 1365
           },
           {
             "name": "gameWinningGoals",
@@ -78,32 +78,428 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 207
+            "value": 385
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 15
+            "value": 24
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 29
+            "value": 44
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 5
+            "value": 6
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 4
+            "value": 9
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 974
+            "value": 1342
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 11
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 7
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 63.636
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 10.656
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 46.365
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 3.705
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 1112
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.88
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 163
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1275
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 3
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 9
+          },
+          {
+            "name": "shootoutShotsAgainst",
+            "abbreviation": "SOSA",
+            "value": 11
+          },
+          {
+            "name": "shootoutSavePct",
+            "abbreviation": "SOSPCT",
+            "value": 0.818
+          }
+        ]
+      },
+      {
+        "name": "penalties",
+        "abbreviation": "p",
+        "stats": [
+          {
+            "name": "penaltyMinutes",
+            "abbreviation": "PIM",
+            "value": 457
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "1",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "games",
+            "abbreviation": "GP",
+            "value": 44
+          },
+          {
+            "name": "timeOnIce",
+            "abbreviation": "TOI",
+            "value": 938881
+          },
+          {
+            "name": "timeOnIcePerGame",
+            "abbreviation": "TOI/G",
+            "value": 21338.204545454544
+          },
+          {
+            "name": "plusMinus",
+            "abbreviation": "+/-"
+          },
+          {
+            "name": "production",
+            "abbreviation": "PROD"
+          },
+          {
+            "name": "shifts",
+            "abbreviation": "SHFT",
+            "value": 16312
+          },
+          {
+            "name": "losses",
+            "abbreviation": "L",
+            "value": 19
+          },
+          {
+            "name": "wins",
+            "abbreviation": "WINS",
+            "value": 23
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "goals",
+            "abbreviation": "G",
+            "value": 139
+          },
+          {
+            "name": "assists",
+            "abbreviation": "A",
+            "value": 238
+          },
+          {
+            "name": "faceoffsWon",
+            "abbreviation": "FW",
+            "value": 1346
+          },
+          {
+            "name": "faceoffsLost",
+            "abbreviation": "FL",
+            "value": 1234
+          },
+          {
+            "name": "gameWinningGoals",
+            "abbreviation": "GWG"
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 377
+          },
+          {
+            "name": "powerPlayGoals",
+            "abbreviation": "PPG",
+            "value": 33
+          },
+          {
+            "name": "powerPlayAssists",
+            "abbreviation": "PPA",
+            "value": 66
+          },
+          {
+            "name": "shortHandedGoals",
+            "abbreviation": "SHG",
+            "value": 1
+          },
+          {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 1
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1200
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 9
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 1
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 11.111
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 11.583
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 52.171
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 3.25
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 1176
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.896
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 143
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1319
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 2
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 9
+          },
+          {
+            "name": "shootoutShotsAgainst",
+            "abbreviation": "SOSA",
+            "value": 10
+          },
+          {
+            "name": "shootoutSavePct",
+            "abbreviation": "SOSPCT",
+            "value": 0.9
+          }
+        ]
+      },
+      {
+        "name": "penalties",
+        "abbreviation": "p",
+        "stats": [
+          {
+            "name": "penaltyMinutes",
+            "abbreviation": "PIM",
+            "value": 611
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "3",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "games",
+            "abbreviation": "GP",
+            "value": 44
+          },
+          {
+            "name": "timeOnIce",
+            "abbreviation": "TOI",
+            "value": 941628
+          },
+          {
+            "name": "timeOnIcePerGame",
+            "abbreviation": "TOI/G",
+            "value": 21400.636363636364
+          },
+          {
+            "name": "plusMinus",
+            "abbreviation": "+/-"
+          },
+          {
+            "name": "production",
+            "abbreviation": "PROD"
+          },
+          {
+            "name": "shifts",
+            "abbreviation": "SHFT",
+            "value": 17706
+          },
+          {
+            "name": "losses",
+            "abbreviation": "L",
+            "value": 22
+          },
+          {
+            "name": "wins",
+            "abbreviation": "WINS",
+            "value": 18
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "goals",
+            "abbreviation": "G",
+            "value": 112
+          },
+          {
+            "name": "assists",
+            "abbreviation": "A",
+            "value": 174
+          },
+          {
+            "name": "faceoffsWon",
+            "abbreviation": "FW",
+            "value": 1278
+          },
+          {
+            "name": "faceoffsLost",
+            "abbreviation": "FL",
+            "value": 1292
+          },
+          {
+            "name": "gameWinningGoals",
+            "abbreviation": "GWG"
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 286
+          },
+          {
+            "name": "powerPlayGoals",
+            "abbreviation": "PPG",
+            "value": 19
+          },
+          {
+            "name": "powerPlayAssists",
+            "abbreviation": "PPA",
+            "value": 35
+          },
+          {
+            "name": "shortHandedGoals",
+            "abbreviation": "SHG",
+            "value": 6
+          },
+          {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 5
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1296
           },
           {
             "name": "shootoutAttempts",
@@ -123,12 +519,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 8.419
+            "value": 8.642
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 49.769
+            "value": 49.728
           }
         ]
       },
@@ -139,27 +535,27 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.879
+            "value": 3
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 837
+            "value": 1138
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.904
+            "value": 0.902
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 95
+            "value": 132
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 932
+            "value": 1270
           },
           {
             "name": "overtimeLosses",
@@ -190,7 +586,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 409
+            "value": 569
           }
         ]
       }
@@ -208,17 +604,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 44
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 690269
+            "value": 948024
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21570.90625
+            "value": 21546
           },
           {
             "name": "plusMinus",
@@ -231,17 +627,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12167
+            "value": 16653
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 9
+            "value": 14
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 21
+            "value": 27
           }
         ]
       },
@@ -252,22 +648,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 104
+            "value": 148
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 166
+            "value": 239
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 1001
+            "value": 1384
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 1009
+            "value": 1387
           },
           {
             "name": "gameWinningGoals",
@@ -276,32 +672,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 270
+            "value": 387
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 15
+            "value": 26
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 27
+            "value": 48
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 4
+            "value": 5
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 4
+            "value": 5
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 1057
+            "value": 1415
           },
           {
             "name": "shootoutAttempts",
@@ -321,12 +717,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 9.839
+            "value": 10.459
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 49.801
+            "value": 49.946
           }
         ]
       },
@@ -337,32 +733,32 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.781
+            "value": 2.977
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 685
+            "value": 952
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.893
+            "value": 0.887
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 89
+            "value": 131
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 774
+            "value": 1082
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shootoutSaves",
@@ -388,7 +784,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 247
+            "value": 331
           }
         ]
       }
@@ -406,17 +802,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 42
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 684389
+            "value": 899041
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21387.15625
+            "value": 21405.738095238095
           },
           {
             "name": "plusMinus",
@@ -429,17 +825,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12403
+            "value": 16147
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 14
+            "value": 15
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 14
+            "value": 23
           }
         ]
       },
@@ -450,22 +846,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 96
+            "value": 132
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 169
+            "value": 228
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 810
+            "value": 1073
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 1039
+            "value": 1327
           },
           {
             "name": "gameWinningGoals",
@@ -474,453 +870,57 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 265
+            "value": 360
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 20
+            "value": 23
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 40
+            "value": 43
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 3
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 907
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 9
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 4
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 44.444
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 10.584
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 43.807
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 3.406
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 845
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.897
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 109
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 954
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 4
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
-            "value": 7
-          },
-          {
-            "name": "shootoutShotsAgainst",
-            "abbreviation": "SOSA",
-            "value": 9
-          },
-          {
-            "name": "shootoutSavePct",
-            "abbreviation": "SOSPCT",
-            "value": 0.778
-          }
-        ]
-      },
-      {
-        "name": "penalties",
-        "abbreviation": "p",
-        "stats": [
-          {
-            "name": "penaltyMinutes",
-            "abbreviation": "PIM",
-            "value": 319
-          }
-        ]
-      }
-    ]
-  }
-},
-{
-  "teamId": "1",
-  "stats": {
-    "categories": [
-      {
-        "name": "general",
-        "abbreviation": "gen",
-        "stats": [
-          {
-            "name": "games",
-            "abbreviation": "GP",
-            "value": 33
-          },
-          {
-            "name": "timeOnIce",
-            "abbreviation": "TOI",
-            "value": 704045
-          },
-          {
-            "name": "timeOnIcePerGame",
-            "abbreviation": "TOI/G",
-            "value": 21334.696969696968
-          },
-          {
-            "name": "plusMinus",
-            "abbreviation": "+/-"
-          },
-          {
-            "name": "production",
-            "abbreviation": "PROD"
-          },
-          {
-            "name": "shifts",
-            "abbreviation": "SHFT",
-            "value": 12259
-          },
-          {
-            "name": "losses",
-            "abbreviation": "L",
-            "value": 14
-          },
-          {
-            "name": "wins",
-            "abbreviation": "WINS",
-            "value": 19
-          }
-        ]
-      },
-      {
-        "name": "offensive",
-        "abbreviation": "off",
-        "stats": [
-          {
-            "name": "goals",
-            "abbreviation": "G",
-            "value": 107
-          },
-          {
-            "name": "assists",
-            "abbreviation": "A",
-            "value": 180
-          },
-          {
-            "name": "faceoffsWon",
-            "abbreviation": "FW",
-            "value": 1001
-          },
-          {
-            "name": "faceoffsLost",
-            "abbreviation": "FL",
-            "value": 937
-          },
-          {
-            "name": "gameWinningGoals",
-            "abbreviation": "GWG"
-          },
-          {
-            "name": "points",
-            "abbreviation": "PTS",
-            "value": 287
-          },
-          {
-            "name": "powerPlayGoals",
-            "abbreviation": "PPG",
-            "value": 24
-          },
-          {
-            "name": "powerPlayAssists",
-            "abbreviation": "PPA",
-            "value": 48
-          },
-          {
-            "name": "shortHandedGoals",
-            "abbreviation": "SHG",
-            "value": 1
-          },
-          {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 1
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 894
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 2
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 1
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 50
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 11.969
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 51.651
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 3.182
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 908
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.901
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 105
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 1013
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 0
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
-            "value": 3
-          },
-          {
-            "name": "shootoutShotsAgainst",
-            "abbreviation": "SOSA",
-            "value": 3
-          },
-          {
-            "name": "shootoutSavePct",
-            "abbreviation": "SOSPCT",
-            "value": 1
-          }
-        ]
-      },
-      {
-        "name": "penalties",
-        "abbreviation": "p",
-        "stats": [
-          {
-            "name": "penaltyMinutes",
-            "abbreviation": "PIM",
-            "value": 398
-          }
-        ]
-      }
-    ]
-  }
-},
-{
-  "teamId": "25",
-  "stats": {
-    "categories": [
-      {
-        "name": "general",
-        "abbreviation": "gen",
-        "stats": [
-          {
-            "name": "games",
-            "abbreviation": "GP",
-            "value": 33
-          },
-          {
-            "name": "timeOnIce",
-            "abbreviation": "TOI",
-            "value": 708683
-          },
-          {
-            "name": "timeOnIcePerGame",
-            "abbreviation": "TOI/G",
-            "value": 21475.242424242424
-          },
-          {
-            "name": "plusMinus",
-            "abbreviation": "+/-"
-          },
-          {
-            "name": "production",
-            "abbreviation": "PROD"
-          },
-          {
-            "name": "shifts",
-            "abbreviation": "SHFT",
-            "value": 12597
-          },
-          {
-            "name": "losses",
-            "abbreviation": "L",
-            "value": 12
-          },
-          {
-            "name": "wins",
-            "abbreviation": "WINS",
-            "value": 20
-          }
-        ]
-      },
-      {
-        "name": "offensive",
-        "abbreviation": "off",
-        "stats": [
-          {
-            "name": "goals",
-            "abbreviation": "G",
-            "value": 114
-          },
-          {
-            "name": "assists",
-            "abbreviation": "A",
-            "value": 196
-          },
-          {
-            "name": "faceoffsWon",
-            "abbreviation": "FW",
-            "value": 875
-          },
-          {
-            "name": "faceoffsLost",
-            "abbreviation": "FL",
-            "value": 1031
-          },
-          {
-            "name": "gameWinningGoals",
-            "abbreviation": "GWG"
-          },
-          {
-            "name": "points",
-            "abbreviation": "PTS",
-            "value": 310
-          },
-          {
-            "name": "powerPlayGoals",
-            "abbreviation": "PPG",
-            "value": 20
-          },
-          {
-            "name": "powerPlayAssists",
-            "abbreviation": "PPA",
-            "value": 37
-          },
-          {
-            "name": "shortHandedGoals",
-            "abbreviation": "SHG",
             "value": 6
           },
           {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 9
-          },
-          {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 1021
+            "value": 1190
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 11
+            "value": 14
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 7
+            "value": 6
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 63.636
+            "value": 42.857
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.166
+            "value": 11.092
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 45.908
+            "value": 44.708
           }
         ]
       },
@@ -931,47 +931,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.273
+            "value": 3.119
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 858
+            "value": 1111
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.894
+            "value": 0.904
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 108
+            "value": 131
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 966
+            "value": 1242
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 1
+            "value": 4
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 9
+            "value": 11
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 11
+            "value": 14
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.818
+            "value": 0.786
           }
         ]
       },
@@ -982,7 +982,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 316
+            "value": 369
           }
         ]
       }
@@ -1000,17 +1000,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 44
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 684345
+            "value": 943612
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21385.78125
+            "value": 21445.727272727272
           },
           {
             "name": "plusMinus",
@@ -1023,17 +1023,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11824
+            "value": 16388
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 13
+            "value": 19
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 13
+            "value": 18
           }
         ]
       },
@@ -1044,22 +1044,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 91
+            "value": 124
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 151
+            "value": 208
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 840
+            "value": 1145
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 961
+            "value": 1291
           },
           {
             "name": "gameWinningGoals",
@@ -1068,57 +1068,57 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 242
+            "value": 332
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 20
+            "value": 29
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 39
+            "value": 57
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 818
+            "value": 1112
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 8
+            "value": 21
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 1
+            "value": 6
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 12.5
+            "value": 28.571
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.125
+            "value": 11.151
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 46.641
+            "value": 47.003
           }
         ]
       },
@@ -1129,47 +1129,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3
+            "value": 3.159
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 873
+            "value": 1162
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.903
+            "value": 0.896
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 96
+            "value": 139
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 969
+            "value": 1301
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 6
+            "value": 7
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 5
+            "value": 13
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 8
+            "value": 20
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.625
+            "value": 0.65
           }
         ]
       },
@@ -1180,7 +1180,205 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 355
+            "value": 458
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "17",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "games",
+            "abbreviation": "GP",
+            "value": 43
+          },
+          {
+            "name": "timeOnIce",
+            "abbreviation": "TOI",
+            "value": 923030
+          },
+          {
+            "name": "timeOnIcePerGame",
+            "abbreviation": "TOI/G",
+            "value": 21465.81395348837
+          },
+          {
+            "name": "plusMinus",
+            "abbreviation": "+/-"
+          },
+          {
+            "name": "production",
+            "abbreviation": "PROD"
+          },
+          {
+            "name": "shifts",
+            "abbreviation": "SHFT",
+            "value": 15937
+          },
+          {
+            "name": "losses",
+            "abbreviation": "L",
+            "value": 4
+          },
+          {
+            "name": "wins",
+            "abbreviation": "WINS",
+            "value": 32
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "goals",
+            "abbreviation": "G",
+            "value": 174
+          },
+          {
+            "name": "assists",
+            "abbreviation": "A",
+            "value": 308
+          },
+          {
+            "name": "faceoffsWon",
+            "abbreviation": "FW",
+            "value": 1349
+          },
+          {
+            "name": "faceoffsLost",
+            "abbreviation": "FL",
+            "value": 1271
+          },
+          {
+            "name": "gameWinningGoals",
+            "abbreviation": "GWG"
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 482
+          },
+          {
+            "name": "powerPlayGoals",
+            "abbreviation": "PPG",
+            "value": 25
+          },
+          {
+            "name": "powerPlayAssists",
+            "abbreviation": "PPA",
+            "value": 49
+          },
+          {
+            "name": "shortHandedGoals",
+            "abbreviation": "SHG",
+            "value": 1
+          },
+          {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 0
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1481
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 16
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 4
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 25
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 11.749
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 51.489
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 2.209
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 1060
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.919
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 95
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1155
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 7
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 9
+          },
+          {
+            "name": "shootoutShotsAgainst",
+            "abbreviation": "SOSA",
+            "value": 16
+          },
+          {
+            "name": "shootoutSavePct",
+            "abbreviation": "SOSPCT",
+            "value": 0.563
+          }
+        ]
+      },
+      {
+        "name": "penalties",
+        "abbreviation": "p",
+        "stats": [
+          {
+            "name": "penaltyMinutes",
+            "abbreviation": "PIM",
+            "value": 309
           }
         ]
       }
@@ -1198,17 +1396,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 691816
+            "value": 926497
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21619.25
+            "value": 21546.441860465115
           },
           {
             "name": "plusMinus",
@@ -1221,17 +1419,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11373
+            "value": 15165
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 13
+            "value": 18
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 13
+            "value": 18
           }
         ]
       },
@@ -1242,22 +1440,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 92
+            "value": 128
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 161
+            "value": 225
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 940
+            "value": 1299
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 934
+            "value": 1238
           },
           {
             "name": "gameWinningGoals",
@@ -1266,22 +1464,22 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 253
+            "value": 353
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 15
+            "value": 19
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 30
+            "value": 38
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
@@ -1291,7 +1489,7 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 972
+            "value": 1298
           },
           {
             "name": "shootoutAttempts",
@@ -1311,12 +1509,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 9.465
+            "value": 9.861
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 50.16
+            "value": 51.202
           }
         ]
       },
@@ -1327,32 +1525,32 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.469
+            "value": 3.395
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 890
+            "value": 1187
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.894
+            "value": 0.897
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 111
+            "value": 146
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 1001
+            "value": 1333
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 6
+            "value": 7
           },
           {
             "name": "shootoutSaves",
@@ -1378,205 +1576,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 263
-          }
-        ]
-      }
-    ]
-  }
-},
-{
-  "teamId": "17",
-  "stats": {
-    "categories": [
-      {
-        "name": "general",
-        "abbreviation": "gen",
-        "stats": [
-          {
-            "name": "games",
-            "abbreviation": "GP",
-            "value": 32
-          },
-          {
-            "name": "timeOnIce",
-            "abbreviation": "TOI",
-            "value": 687828
-          },
-          {
-            "name": "timeOnIcePerGame",
-            "abbreviation": "TOI/G",
-            "value": 21494.625
-          },
-          {
-            "name": "plusMinus",
-            "abbreviation": "+/-"
-          },
-          {
-            "name": "production",
-            "abbreviation": "PROD"
-          },
-          {
-            "name": "shifts",
-            "abbreviation": "SHFT",
-            "value": 11891
-          },
-          {
-            "name": "losses",
-            "abbreviation": "L",
-            "value": 2
-          },
-          {
-            "name": "wins",
-            "abbreviation": "WINS",
-            "value": 23
-          }
-        ]
-      },
-      {
-        "name": "offensive",
-        "abbreviation": "off",
-        "stats": [
-          {
-            "name": "goals",
-            "abbreviation": "G",
-            "value": 128
-          },
-          {
-            "name": "assists",
-            "abbreviation": "A",
-            "value": 223
-          },
-          {
-            "name": "faceoffsWon",
-            "abbreviation": "FW",
-            "value": 984
-          },
-          {
-            "name": "faceoffsLost",
-            "abbreviation": "FL",
-            "value": 964
-          },
-          {
-            "name": "gameWinningGoals",
-            "abbreviation": "GWG"
-          },
-          {
-            "name": "points",
-            "abbreviation": "PTS",
-            "value": 351
-          },
-          {
-            "name": "powerPlayGoals",
-            "abbreviation": "PPG",
-            "value": 17
-          },
-          {
-            "name": "powerPlayAssists",
-            "abbreviation": "PPA",
-            "value": 33
-          },
-          {
-            "name": "shortHandedGoals",
-            "abbreviation": "SHG",
-            "value": 1
-          },
-          {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 0
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 1111
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 12
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 2
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 16.667
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 11.521
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 50.513
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 2.188
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 789
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.92
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 70
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 859
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 7
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
-            "value": 6
-          },
-          {
-            "name": "shootoutShotsAgainst",
-            "abbreviation": "SOSA",
-            "value": 12
-          },
-          {
-            "name": "shootoutSavePct",
-            "abbreviation": "SOSPCT",
-            "value": 0.5
-          }
-        ]
-      },
-      {
-        "name": "penalties",
-        "abbreviation": "p",
-        "stats": [
-          {
-            "name": "penaltyMinutes",
-            "abbreviation": "PIM",
-            "value": 220
+            "value": 358
           }
         ]
       }
@@ -1594,17 +1594,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 34
+            "value": 44
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 729682
+            "value": 944331
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21461.235294117647
+            "value": 21462.06818181818
           },
           {
             "name": "plusMinus",
@@ -1617,17 +1617,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12162
+            "value": 15671
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 7
+            "value": 10
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 22
+            "value": 26
           }
         ]
       },
@@ -1638,22 +1638,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 112
+            "value": 150
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 204
+            "value": 265
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 979
+            "value": 1241
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 889
+            "value": 1151
           },
           {
             "name": "gameWinningGoals",
@@ -1662,57 +1662,57 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 316
+            "value": 415
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 33
+            "value": 39
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 66
+            "value": 76
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 1
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 2
+            "value": 4
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 854
+            "value": 1124
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 16
+            "value": 20
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 6
+            "value": 7
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 37.5
+            "value": 35
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 13.115
+            "value": 13.345
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 52.409
+            "value": 51.881
           }
         ]
       },
@@ -1723,47 +1723,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.588
+            "value": 2.75
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 857
+            "value": 1109
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.913
+            "value": 0.906
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 88
+            "value": 121
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 945
+            "value": 1230
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 5
+            "value": 8
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 11
+            "value": 13
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 16
+            "value": 20
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.688
+            "value": 0.65
           }
         ]
       },
@@ -1774,7 +1774,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 313
+            "value": 388
           }
         ]
       }
@@ -1792,17 +1792,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 33
+            "value": 45
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 708858
+            "value": 966552
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21480.545454545456
+            "value": 21478.933333333334
           },
           {
             "name": "plusMinus",
@@ -1815,17 +1815,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12567
+            "value": 17144
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 12
+            "value": 15
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 18
+            "value": 26
           }
         ]
       },
@@ -1836,22 +1836,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 102
+            "value": 139
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 172
+            "value": 229
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 994
+            "value": 1320
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 920
+            "value": 1263
           },
           {
             "name": "gameWinningGoals",
@@ -1860,32 +1860,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 274
+            "value": 368
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 23
+            "value": 35
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 46
+            "value": 69
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 0
+            "value": 1
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 0
+            "value": 1
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 980
+            "value": 1282
           },
           {
             "name": "shootoutAttempts",
@@ -1905,12 +1905,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.408
+            "value": 10.842
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 51.933
+            "value": 51.103
           }
         ]
       },
@@ -1921,32 +1921,32 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.242
+            "value": 3.111
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 806
+            "value": 1112
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.888
+            "value": 0.894
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 107
+            "value": 140
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 913
+            "value": 1252
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 3
+            "value": 4
           },
           {
             "name": "shootoutSaves",
@@ -1972,7 +1972,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 305
+            "value": 373
           }
         ]
       }
@@ -1990,17 +1990,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 33
+            "value": 44
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 708638
+            "value": 942238
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21473.878787878788
+            "value": 21414.5
           },
           {
             "name": "plusMinus",
@@ -2013,17 +2013,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11637
+            "value": 15557
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 12
+            "value": 16
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 15
+            "value": 22
           }
         ]
       },
@@ -2034,22 +2034,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 110
+            "value": 149
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 186
+            "value": 254
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 920
+            "value": 1228
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 818
+            "value": 1108
           },
           {
             "name": "gameWinningGoals",
@@ -2058,32 +2058,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 296
+            "value": 403
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 26
+            "value": 41
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 51
+            "value": 81
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 3
+            "value": 4
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 4
+            "value": 6
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 949
+            "value": 1273
           },
           {
             "name": "shootoutAttempts",
@@ -2103,12 +2103,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.591
+            "value": 11.705
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 52.934
+            "value": 52.568
           }
         ]
       },
@@ -2119,27 +2119,27 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.394
+            "value": 3.318
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 767
+            "value": 1050
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.879
+            "value": 0.884
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 112
+            "value": 146
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 879
+            "value": 1196
           },
           {
             "name": "overtimeLosses",
@@ -2170,7 +2170,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 257
+            "value": 436
           }
         ]
       }
@@ -2188,17 +2188,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 683483
+            "value": 918302
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21358.84375
+            "value": 21355.86046511628
           },
           {
             "name": "plusMinus",
@@ -2211,17 +2211,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12166
+            "value": 16368
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 13
+            "value": 18
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 17
+            "value": 22
           }
         ]
       },
@@ -2232,22 +2232,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 102
+            "value": 130
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 175
+            "value": 221
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 875
+            "value": 1195
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 987
+            "value": 1322
           },
           {
             "name": "gameWinningGoals",
@@ -2256,17 +2256,17 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 277
+            "value": 351
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 21
+            "value": 28
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 38
+            "value": 52
           },
           {
             "name": "shortHandedGoals",
@@ -2281,7 +2281,7 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 933
+            "value": 1260
           },
           {
             "name": "shootoutAttempts",
@@ -2301,12 +2301,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.932
+            "value": 10.317
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 46.992
+            "value": 47.477
           }
         ]
       },
@@ -2317,32 +2317,32 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.125
+            "value": 3.233
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 751
+            "value": 993
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.893
+            "value": 0.889
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 100
+            "value": 139
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 851
+            "value": 1131
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shootoutSaves",
@@ -2368,7 +2368,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 307
+            "value": 451
           }
         ]
       }
@@ -2386,17 +2386,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 690655
+            "value": 925973
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21582.96875
+            "value": 21534.25581395349
           },
           {
             "name": "plusMinus",
@@ -2409,17 +2409,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11421
+            "value": 15178
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 9
+            "value": 15
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 14
+            "value": 18
           }
         ]
       },
@@ -2430,22 +2430,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 83
+            "value": 113
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 140
+            "value": 188
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 910
+            "value": 1225
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 929
+            "value": 1249
           },
           {
             "name": "gameWinningGoals",
@@ -2454,306 +2454,108 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 223
+            "value": 301
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 14
+            "value": 20
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 26
+            "value": 38
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 6
-          },
-          {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 9
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 905
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 24
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 5
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 20.833
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 9.171
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 49.483
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 2.531
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 772
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.909
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 81
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 853
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 9
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
-            "value": 14
-          },
-          {
-            "name": "shootoutShotsAgainst",
-            "abbreviation": "SOSA",
-            "value": 24
-          },
-          {
-            "name": "shootoutSavePct",
-            "abbreviation": "SOSPCT",
-            "value": 0.583
-          }
-        ]
-      },
-      {
-        "name": "penalties",
-        "abbreviation": "p",
-        "stats": [
-          {
-            "name": "penaltyMinutes",
-            "abbreviation": "PIM",
-            "value": 247
-          }
-        ]
-      }
-    ]
-  }
-},
-{
-  "teamId": "10",
-  "stats": {
-    "categories": [
-      {
-        "name": "general",
-        "abbreviation": "gen",
-        "stats": [
-          {
-            "name": "games",
-            "abbreviation": "GP",
-            "value": 32
-          },
-          {
-            "name": "timeOnIce",
-            "abbreviation": "TOI",
-            "value": 687116
-          },
-          {
-            "name": "timeOnIcePerGame",
-            "abbreviation": "TOI/G",
-            "value": 21472.375
-          },
-          {
-            "name": "plusMinus",
-            "abbreviation": "+/-"
-          },
-          {
-            "name": "production",
-            "abbreviation": "PROD"
-          },
-          {
-            "name": "shifts",
-            "abbreviation": "SHFT",
-            "value": 11183
-          },
-          {
-            "name": "losses",
-            "abbreviation": "L",
-            "value": 11
-          },
-          {
-            "name": "wins",
-            "abbreviation": "WINS",
-            "value": 17
-          }
-        ]
-      },
-      {
-        "name": "offensive",
-        "abbreviation": "off",
-        "stats": [
-          {
-            "name": "goals",
-            "abbreviation": "G",
-            "value": 103
-          },
-          {
-            "name": "assists",
-            "abbreviation": "A",
-            "value": 181
-          },
-          {
-            "name": "faceoffsWon",
-            "abbreviation": "FW",
-            "value": 862
-          },
-          {
-            "name": "faceoffsLost",
-            "abbreviation": "FL",
-            "value": 866
-          },
-          {
-            "name": "gameWinningGoals",
-            "abbreviation": "GWG"
-          },
-          {
-            "name": "points",
-            "abbreviation": "PTS",
-            "value": 284
-          },
-          {
-            "name": "powerPlayGoals",
-            "abbreviation": "PPG",
-            "value": 24
-          },
-          {
-            "name": "powerPlayAssists",
-            "abbreviation": "PPA",
-            "value": 48
-          },
-          {
-            "name": "shortHandedGoals",
-            "abbreviation": "SHG",
-            "value": 2
-          },
-          {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 1
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 808
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 11
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 4
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 36.364
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 12.748
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 49.884
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 3.469
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 774
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.879
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 111
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 885
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 4
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
             "value": 7
           },
           {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 10
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1211
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 28
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 7
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 25
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 9.331
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 49.515
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 2.721
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 1041
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.904
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 117
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1158
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 10
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 17
+          },
+          {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 11
+            "value": 28
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.636
+            "value": 0.607
           }
         ]
       },
@@ -2764,7 +2566,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 347
+            "value": 354
           }
         ]
       }
@@ -2782,17 +2584,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 33
+            "value": 45
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 713515
+            "value": 973104
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21621.666666666668
+            "value": 21624.533333333333
           },
           {
             "name": "plusMinus",
@@ -2805,403 +2607,7 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11206
-          },
-          {
-            "name": "losses",
-            "abbreviation": "L",
-            "value": 9
-          },
-          {
-            "name": "wins",
-            "abbreviation": "WINS",
-            "value": 19
-          }
-        ]
-      },
-      {
-        "name": "offensive",
-        "abbreviation": "off",
-        "stats": [
-          {
-            "name": "goals",
-            "abbreviation": "G",
-            "value": 96
-          },
-          {
-            "name": "assists",
-            "abbreviation": "A",
-            "value": 165
-          },
-          {
-            "name": "faceoffsWon",
-            "abbreviation": "FW",
-            "value": 893
-          },
-          {
-            "name": "faceoffsLost",
-            "abbreviation": "FL",
-            "value": 1009
-          },
-          {
-            "name": "gameWinningGoals",
-            "abbreviation": "GWG"
-          },
-          {
-            "name": "points",
-            "abbreviation": "PTS",
-            "value": 261
-          },
-          {
-            "name": "powerPlayGoals",
-            "abbreviation": "PPG",
-            "value": 26
-          },
-          {
-            "name": "powerPlayAssists",
-            "abbreviation": "PPA",
-            "value": 51
-          },
-          {
-            "name": "shortHandedGoals",
-            "abbreviation": "SHG",
-            "value": 2
-          },
-          {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 1
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 926
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 14
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 6
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 42.857
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 10.367
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 46.951
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 2.606
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 901
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.919
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 86
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 987
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 5
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
-            "value": 10
-          },
-          {
-            "name": "shootoutShotsAgainst",
-            "abbreviation": "SOSA",
-            "value": 14
-          },
-          {
-            "name": "shootoutSavePct",
-            "abbreviation": "SOSPCT",
-            "value": 0.714
-          }
-        ]
-      },
-      {
-        "name": "penalties",
-        "abbreviation": "p",
-        "stats": [
-          {
-            "name": "penaltyMinutes",
-            "abbreviation": "PIM",
-            "value": 227
-          }
-        ]
-      }
-    ]
-  }
-},
-{
-  "teamId": "11",
-  "stats": {
-    "categories": [
-      {
-        "name": "general",
-        "abbreviation": "gen",
-        "stats": [
-          {
-            "name": "games",
-            "abbreviation": "GP",
-            "value": 33
-          },
-          {
-            "name": "timeOnIce",
-            "abbreviation": "TOI",
-            "value": 707640
-          },
-          {
-            "name": "timeOnIcePerGame",
-            "abbreviation": "TOI/G",
-            "value": 21443.636363636364
-          },
-          {
-            "name": "plusMinus",
-            "abbreviation": "+/-"
-          },
-          {
-            "name": "production",
-            "abbreviation": "PROD"
-          },
-          {
-            "name": "shifts",
-            "abbreviation": "SHFT",
-            "value": 12135
-          },
-          {
-            "name": "losses",
-            "abbreviation": "L",
-            "value": 14
-          },
-          {
-            "name": "wins",
-            "abbreviation": "WINS",
-            "value": 18
-          }
-        ]
-      },
-      {
-        "name": "offensive",
-        "abbreviation": "off",
-        "stats": [
-          {
-            "name": "goals",
-            "abbreviation": "G",
-            "value": 95
-          },
-          {
-            "name": "assists",
-            "abbreviation": "A",
-            "value": 156
-          },
-          {
-            "name": "faceoffsWon",
-            "abbreviation": "FW",
-            "value": 927
-          },
-          {
-            "name": "faceoffsLost",
-            "abbreviation": "FL",
-            "value": 918
-          },
-          {
-            "name": "gameWinningGoals",
-            "abbreviation": "GWG"
-          },
-          {
-            "name": "points",
-            "abbreviation": "PTS",
-            "value": 251
-          },
-          {
-            "name": "powerPlayGoals",
-            "abbreviation": "PPG",
-            "value": 18
-          },
-          {
-            "name": "powerPlayAssists",
-            "abbreviation": "PPA",
-            "value": 35
-          },
-          {
-            "name": "shortHandedGoals",
-            "abbreviation": "SHG",
-            "value": 4
-          },
-          {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 3
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 968
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 6
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 4
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 66.667
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 9.814
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 50.244
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 3.121
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 833
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.894
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 103
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 935
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 1
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
-            "value": 5
-          },
-          {
-            "name": "shootoutShotsAgainst",
-            "abbreviation": "SOSA",
-            "value": 6
-          },
-          {
-            "name": "shootoutSavePct",
-            "abbreviation": "SOSPCT",
-            "value": 0.833
-          }
-        ]
-      },
-      {
-        "name": "penalties",
-        "abbreviation": "p",
-        "stats": [
-          {
-            "name": "penaltyMinutes",
-            "abbreviation": "PIM",
-            "value": 263
-          }
-        ]
-      }
-    ]
-  }
-},
-{
-  "teamId": "12",
-  "stats": {
-    "categories": [
-      {
-        "name": "general",
-        "abbreviation": "gen",
-        "stats": [
-          {
-            "name": "games",
-            "abbreviation": "GP",
-            "value": 33
-          },
-          {
-            "name": "timeOnIce",
-            "abbreviation": "TOI",
-            "value": 710527
-          },
-          {
-            "name": "timeOnIcePerGame",
-            "abbreviation": "TOI/G",
-            "value": 21531.121212121212
-          },
-          {
-            "name": "plusMinus",
-            "abbreviation": "+/-"
-          },
-          {
-            "name": "production",
-            "abbreviation": "PROD"
-          },
-          {
-            "name": "shifts",
-            "abbreviation": "SHFT",
-            "value": 12418
+            "value": 15125
           },
           {
             "name": "losses",
@@ -3211,7 +2617,7 @@
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 19
+            "value": 26
           }
         ]
       },
@@ -3222,22 +2628,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 97
+            "value": 140
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 162
+            "value": 242
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 946
+            "value": 1208
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 888
+            "value": 1382
           },
           {
             "name": "gameWinningGoals",
@@ -3246,57 +2652,57 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 259
+            "value": 382
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 18
+            "value": 33
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 36
+            "value": 64
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 5
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 4
+            "value": 2
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 953
+            "value": 1284
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 9
+            "value": 20
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 3
+            "value": 7
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 33.333
+            "value": 35
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.178
+            "value": 10.903
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 51.581
+            "value": 46.641
           }
         ]
       },
@@ -3307,47 +2713,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.727
+            "value": 2.622
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 846
+            "value": 1221
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.91
+            "value": 0.918
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 90
+            "value": 118
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 936
+            "value": 1339
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 3
+            "value": 8
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 4
+            "value": 13
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 8
+            "value": 21
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.5
+            "value": 0.619
           }
         ]
       },
@@ -3358,7 +2764,205 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 299
+            "value": 292
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "10",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "games",
+            "abbreviation": "GP",
+            "value": 44
+          },
+          {
+            "name": "timeOnIce",
+            "abbreviation": "TOI",
+            "value": 946277
+          },
+          {
+            "name": "timeOnIcePerGame",
+            "abbreviation": "TOI/G",
+            "value": 21506.295454545456
+          },
+          {
+            "name": "plusMinus",
+            "abbreviation": "+/-"
+          },
+          {
+            "name": "production",
+            "abbreviation": "PROD"
+          },
+          {
+            "name": "shifts",
+            "abbreviation": "SHFT",
+            "value": 15475
+          },
+          {
+            "name": "losses",
+            "abbreviation": "L",
+            "value": 13
+          },
+          {
+            "name": "wins",
+            "abbreviation": "WINS",
+            "value": 25
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "goals",
+            "abbreviation": "G",
+            "value": 149
+          },
+          {
+            "name": "assists",
+            "abbreviation": "A",
+            "value": 255
+          },
+          {
+            "name": "faceoffsWon",
+            "abbreviation": "FW",
+            "value": 1187
+          },
+          {
+            "name": "faceoffsLost",
+            "abbreviation": "FL",
+            "value": 1207
+          },
+          {
+            "name": "gameWinningGoals",
+            "abbreviation": "GWG"
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 404
+          },
+          {
+            "name": "powerPlayGoals",
+            "abbreviation": "PPG",
+            "value": 29
+          },
+          {
+            "name": "powerPlayAssists",
+            "abbreviation": "PPA",
+            "value": 58
+          },
+          {
+            "name": "shortHandedGoals",
+            "abbreviation": "SHG",
+            "value": 3
+          },
+          {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 2
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1137
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 14
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 5
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 35.714
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 13.105
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 49.582
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 3.182
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 1049
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.886
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 140
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1189
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 6
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 8
+          },
+          {
+            "name": "shootoutShotsAgainst",
+            "abbreviation": "SOSA",
+            "value": 14
+          },
+          {
+            "name": "shootoutSavePct",
+            "abbreviation": "SOSPCT",
+            "value": 0.571
+          }
+        ]
+      },
+      {
+        "name": "penalties",
+        "abbreviation": "p",
+        "stats": [
+          {
+            "name": "penaltyMinutes",
+            "abbreviation": "PIM",
+            "value": 466
           }
         ]
       }
@@ -3376,17 +2980,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 685898
+            "value": 921287
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21434.3125
+            "value": 21425.279069767443
           },
           {
             "name": "plusMinus",
@@ -3399,17 +3003,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11873
+            "value": 15919
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 15
+            "value": 19
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 13
+            "value": 20
           }
         ]
       },
@@ -3420,22 +3024,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 90
+            "value": 119
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 157
+            "value": 207
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 1006
+            "value": 1318
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 893
+            "value": 1217
           },
           {
             "name": "gameWinningGoals",
@@ -3444,32 +3048,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 247
+            "value": 326
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 18
+            "value": 25
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 36
+            "value": 50
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 1
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 1
+            "value": 4
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 892
+            "value": 1204
           },
           {
             "name": "shootoutAttempts",
@@ -3489,12 +3093,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.09
+            "value": 9.884
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 52.975
+            "value": 51.992
           }
         ]
       },
@@ -3505,27 +3109,27 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.469
+            "value": 3.326
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 804
+            "value": 1082
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.888
+            "value": 0.892
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 111
+            "value": 143
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 915
+            "value": 1225
           },
           {
             "name": "overtimeLosses",
@@ -3535,17 +3139,17 @@
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 9
+            "value": 12
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 12
+            "value": 15
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.75
+            "value": 0.8
           }
         ]
       },
@@ -3556,7 +3160,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 288
+            "value": 376
           }
         ]
       }
@@ -3574,17 +3178,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 34
+            "value": 45
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 730094
+            "value": 967257
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21473.352941176472
+            "value": 21494.6
           },
           {
             "name": "plusMinus",
@@ -3597,17 +3201,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12994
+            "value": 17169
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 14
+            "value": 19
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 16
+            "value": 20
           }
         ]
       },
@@ -3618,22 +3222,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 88
+            "value": 116
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 153
+            "value": 201
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 1010
+            "value": 1329
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 847
+            "value": 1137
           },
           {
             "name": "gameWinningGoals",
@@ -3642,22 +3246,22 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 241
+            "value": 317
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 15
+            "value": 24
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 30
+            "value": 48
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
@@ -3667,32 +3271,32 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 896
+            "value": 1163
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 2
+            "value": 4
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 66.667
+            "value": 80
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 9.821
+            "value": 9.974
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 54.389
+            "value": 53.893
           }
         ]
       },
@@ -3703,47 +3307,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.706
+            "value": 2.778
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 871
+            "value": 1152
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.914
+            "value": 0.913
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 92
+            "value": 125
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 963
+            "value": 1277
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 4
+            "value": 6
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 2
+            "value": 4
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.667
+            "value": 0.8
           }
         ]
       },
@@ -3754,7 +3358,205 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 246
+            "value": 336
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "11",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "games",
+            "abbreviation": "GP",
+            "value": 44
+          },
+          {
+            "name": "timeOnIce",
+            "abbreviation": "TOI",
+            "value": 944839
+          },
+          {
+            "name": "timeOnIcePerGame",
+            "abbreviation": "TOI/G",
+            "value": 21473.613636363636
+          },
+          {
+            "name": "plusMinus",
+            "abbreviation": "+/-"
+          },
+          {
+            "name": "production",
+            "abbreviation": "PROD"
+          },
+          {
+            "name": "shifts",
+            "abbreviation": "SHFT",
+            "value": 16177
+          },
+          {
+            "name": "losses",
+            "abbreviation": "L",
+            "value": 20
+          },
+          {
+            "name": "wins",
+            "abbreviation": "WINS",
+            "value": 22
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "goals",
+            "abbreviation": "G",
+            "value": 112
+          },
+          {
+            "name": "assists",
+            "abbreviation": "A",
+            "value": 184
+          },
+          {
+            "name": "faceoffsWon",
+            "abbreviation": "FW",
+            "value": 1233
+          },
+          {
+            "name": "faceoffsLost",
+            "abbreviation": "FL",
+            "value": 1223
+          },
+          {
+            "name": "gameWinningGoals",
+            "abbreviation": "GWG"
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 296
+          },
+          {
+            "name": "powerPlayGoals",
+            "abbreviation": "PPG",
+            "value": 23
+          },
+          {
+            "name": "powerPlayAssists",
+            "abbreviation": "PPA",
+            "value": 45
+          },
+          {
+            "name": "shortHandedGoals",
+            "abbreviation": "SHG",
+            "value": 4
+          },
+          {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 3
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1318
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 9
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 5
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 55.556
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 8.498
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 50.204
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 3.114
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 1130
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.896
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 137
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1266
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 2
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 8
+          },
+          {
+            "name": "shootoutShotsAgainst",
+            "abbreviation": "SOSA",
+            "value": 9
+          },
+          {
+            "name": "shootoutSavePct",
+            "abbreviation": "SOSPCT",
+            "value": 0.889
+          }
+        ]
+      },
+      {
+        "name": "penalties",
+        "abbreviation": "p",
+        "stats": [
+          {
+            "name": "penaltyMinutes",
+            "abbreviation": "PIM",
+            "value": 321
           }
         ]
       }
@@ -3772,17 +3574,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 688538
+            "value": 921662
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21516.8125
+            "value": 21434
           },
           {
             "name": "plusMinus",
@@ -3795,17 +3597,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 13279
+            "value": 17748
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 13
+            "value": 18
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 15
+            "value": 20
           }
         ]
       },
@@ -3816,22 +3618,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 98
+            "value": 136
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 176
+            "value": 244
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 1022
+            "value": 1368
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 786
+            "value": 1095
           },
           {
             "name": "gameWinningGoals",
@@ -3840,32 +3642,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 274
+            "value": 380
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 26
+            "value": 34
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 52
+            "value": 67
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 1
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 883
+            "value": 1222
           },
           {
             "name": "shootoutAttempts",
@@ -3885,12 +3687,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.099
+            "value": 11.129
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 56.527
+            "value": 55.542
           }
         ]
       },
@@ -3901,32 +3703,32 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.25
+            "value": 3.372
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 715
+            "value": 951
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.878
+            "value": 0.872
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 104
+            "value": 145
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 819
+            "value": 1096
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 4
+            "value": 5
           },
           {
             "name": "shootoutSaves",
@@ -3952,7 +3754,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 275
+            "value": 461
           }
         ]
       }
@@ -3960,7 +3762,7 @@
   }
 },
 {
-  "teamId": "15",
+  "teamId": "12",
   "stats": {
     "categories": [
       {
@@ -3970,17 +3772,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 31
+            "value": 44
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 671576
+            "value": 949040
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21663.74193548387
+            "value": 21569.090909090908
           },
           {
             "name": "plusMinus",
@@ -3993,17 +3795,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12060
+            "value": 16444
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 9
+            "value": 15
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 16
+            "value": 24
           }
         ]
       },
@@ -4014,22 +3816,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 87
+            "value": 126
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 156
+            "value": 207
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 823
+            "value": 1241
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 866
+            "value": 1196
           },
           {
             "name": "gameWinningGoals",
@@ -4038,57 +3840,57 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 243
+            "value": 333
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 14
+            "value": 21
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 28
+            "value": 42
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 0
+            "value": 5
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 0
+            "value": 4
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 774
+            "value": 1229
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 17
+            "value": 19
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 6
+            "value": 5
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 35.294
+            "value": 26.316
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.24
+            "value": 10.252
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 48.727
+            "value": 50.923
           }
         ]
       },
@@ -4099,47 +3901,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.774
+            "value": 2.659
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 716
+            "value": 1129
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.896
+            "value": 0.912
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 86
+            "value": 117
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 802
+            "value": 1246
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 6
+            "value": 5
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 15
+            "value": 10
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 19
+            "value": 16
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.789
+            "value": 0.625
           }
         ]
       },
@@ -4150,7 +3952,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 313
+            "value": 380
           }
         ]
       }
@@ -4168,17 +3970,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 31
+            "value": 42
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 667726
+            "value": 904337
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21539.548387096773
+            "value": 21531.833333333332
           },
           {
             "name": "plusMinus",
@@ -4191,17 +3993,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11136
+            "value": 14916
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 8
+            "value": 12
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 14
+            "value": 21
           }
         ]
       },
@@ -4212,22 +4014,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 99
+            "value": 138
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 170
+            "value": 240
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 836
+            "value": 1132
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 825
+            "value": 1125
           },
           {
             "name": "gameWinningGoals",
@@ -4236,17 +4038,17 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 269
+            "value": 378
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 27
+            "value": 34
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 53
+            "value": 66
           },
           {
             "name": "shortHandedGoals",
@@ -4261,32 +4063,32 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 880
+            "value": 1215
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 14
+            "value": 17
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 21.429
+            "value": 29.412
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.25
+            "value": 11.358
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 50.331
+            "value": 50.155
           }
         ]
       },
@@ -4297,27 +4099,27 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.935
+            "value": 3.024
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 805
+            "value": 1039
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.899
+            "value": 0.895
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 91
+            "value": 127
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 896
+            "value": 1166
           },
           {
             "name": "overtimeLosses",
@@ -4327,17 +4129,17 @@
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 4
+            "value": 6
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 13
+            "value": 16
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.308
+            "value": 0.375
           }
         ]
       },
@@ -4348,7 +4150,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 261
+            "value": 324
           }
         ]
       }
@@ -4366,17 +4168,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 33
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 707915
+            "value": 922806
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21451.969696969696
+            "value": 21460.60465116279
           },
           {
             "name": "plusMinus",
@@ -4389,17 +4191,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11711
+            "value": 15231
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 14
+            "value": 18
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 16
+            "value": 22
           }
         ]
       },
@@ -4410,22 +4212,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 95
+            "value": 134
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 170
+            "value": 229
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 865
+            "value": 1159
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 966
+            "value": 1273
           },
           {
             "name": "gameWinningGoals",
@@ -4434,17 +4236,17 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 265
+            "value": 363
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 22
+            "value": 29
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 42
+            "value": 55
           },
           {
             "name": "shortHandedGoals",
@@ -4459,32 +4261,32 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 804
+            "value": 1089
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 7
+            "value": 10
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 1
+            "value": 3
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 14.286
+            "value": 30
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.816
+            "value": 12.305
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 47.242
+            "value": 47.656
           }
         ]
       },
@@ -4495,27 +4297,27 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.303
+            "value": 3.488
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 935
+            "value": 1192
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.901
+            "value": 0.894
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 109
+            "value": 150
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 1044
+            "value": 1342
           },
           {
             "name": "overtimeLosses",
@@ -4525,17 +4327,17 @@
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 6
+            "value": 8
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 7
+            "value": 9
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.857
+            "value": 0.889
           }
         ]
       },
@@ -4546,7 +4348,205 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 277
+            "value": 356
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "15",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "games",
+            "abbreviation": "GP",
+            "value": 42
+          },
+          {
+            "name": "timeOnIce",
+            "abbreviation": "TOI",
+            "value": 907735
+          },
+          {
+            "name": "timeOnIcePerGame",
+            "abbreviation": "TOI/G",
+            "value": 21612.738095238095
+          },
+          {
+            "name": "plusMinus",
+            "abbreviation": "+/-"
+          },
+          {
+            "name": "production",
+            "abbreviation": "PROD"
+          },
+          {
+            "name": "shifts",
+            "abbreviation": "SHFT",
+            "value": 16255
+          },
+          {
+            "name": "losses",
+            "abbreviation": "L",
+            "value": 12
+          },
+          {
+            "name": "wins",
+            "abbreviation": "WINS",
+            "value": 22
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "goals",
+            "abbreviation": "G",
+            "value": 125
+          },
+          {
+            "name": "assists",
+            "abbreviation": "A",
+            "value": 219
+          },
+          {
+            "name": "faceoffsWon",
+            "abbreviation": "FW",
+            "value": 1141
+          },
+          {
+            "name": "faceoffsLost",
+            "abbreviation": "FL",
+            "value": 1168
+          },
+          {
+            "name": "gameWinningGoals",
+            "abbreviation": "GWG"
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 344
+          },
+          {
+            "name": "powerPlayGoals",
+            "abbreviation": "PPG",
+            "value": 18
+          },
+          {
+            "name": "powerPlayAssists",
+            "abbreviation": "PPA",
+            "value": 36
+          },
+          {
+            "name": "shortHandedGoals",
+            "abbreviation": "SHG",
+            "value": 2
+          },
+          {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 3
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1102
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 19
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 6
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 31.579
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 11.343
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 49.415
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 2.786
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 955
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.896
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 117
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1072
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 8
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 15
+          },
+          {
+            "name": "shootoutShotsAgainst",
+            "abbreviation": "SOSA",
+            "value": 21
+          },
+          {
+            "name": "shootoutSavePct",
+            "abbreviation": "SOSPCT",
+            "value": 0.714
+          }
+        ]
+      },
+      {
+        "name": "penalties",
+        "abbreviation": "p",
+        "stats": [
+          {
+            "name": "penaltyMinutes",
+            "abbreviation": "PIM",
+            "value": 418
           }
         ]
       }
@@ -4564,17 +4564,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 30
+            "value": 42
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 647959
+            "value": 906844
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21598.633333333335
+            "value": 21591.52380952381
           },
           {
             "name": "plusMinus",
@@ -4587,17 +4587,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11260
+            "value": 15817
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 12
+            "value": 14
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 12
+            "value": 20
           }
         ]
       },
@@ -4608,22 +4608,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 74
+            "value": 116
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 134
+            "value": 199
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 768
+            "value": 1109
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 883
+            "value": 1244
           },
           {
             "name": "gameWinningGoals",
@@ -4632,17 +4632,17 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 208
+            "value": 315
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 18
+            "value": 28
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 36
+            "value": 56
           },
           {
             "name": "shortHandedGoals",
@@ -4657,12 +4657,12 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 761
+            "value": 1097
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 6
+            "value": 9
           },
           {
             "name": "shootoutGoals",
@@ -4672,17 +4672,17 @@
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 16.667
+            "value": 11.111
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 9.724
+            "value": 10.574
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 46.517
+            "value": 47.131
           }
         ]
       },
@@ -4693,47 +4693,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3
+            "value": 2.833
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 735
+            "value": 1124
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.899
+            "value": 0.911
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 90
+            "value": 119
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 825
+            "value": 1243
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 6
+            "value": 8
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 7
+            "value": 10
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.429
+            "value": 0.5
           }
         ]
       },
@@ -4744,7 +4744,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 237
+            "value": 328
           }
         ]
       }
@@ -4762,17 +4762,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 34
+            "value": 45
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 730825
+            "value": 965404
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21494.852941176472
+            "value": 21453.422222222223
           },
           {
             "name": "plusMinus",
@@ -4785,17 +4785,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 13078
+            "value": 17356
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 15
+            "value": 20
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 12
+            "value": 17
           }
         ]
       },
@@ -4806,22 +4806,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 86
+            "value": 112
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 147
+            "value": 187
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 922
+            "value": 1226
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 880
+            "value": 1210
           },
           {
             "name": "gameWinningGoals",
@@ -4830,32 +4830,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 233
+            "value": 299
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 17
+            "value": 19
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 33
+            "value": 37
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 2
+            "value": 4
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 859
+            "value": 1115
           },
           {
             "name": "shootoutAttempts",
@@ -4875,12 +4875,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.012
+            "value": 10.045
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 51.165
+            "value": 50.328
           }
         ]
       },
@@ -4891,32 +4891,32 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.559
+            "value": 3.444
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 829
+            "value": 1114
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.879
+            "value": 0.883
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 121
+            "value": 155
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 950
+            "value": 1269
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 7
+            "value": 8
           },
           {
             "name": "shootoutSaves",
@@ -4942,7 +4942,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 261
+            "value": 345
           }
         ]
       }
@@ -4960,17 +4960,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 33
+            "value": 42
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 703465
+            "value": 896188
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21317.121212121212
+            "value": 21337.809523809523
           },
           {
             "name": "plusMinus",
@@ -4983,17 +4983,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 12053
+            "value": 15239
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 12
+            "value": 13
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 18
+            "value": 26
           }
         ]
       },
@@ -5004,22 +5004,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 106
+            "value": 145
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 182
+            "value": 254
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 855
+            "value": 1081
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 994
+            "value": 1265
           },
           {
             "name": "gameWinningGoals",
@@ -5028,32 +5028,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 288
+            "value": 399
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 18
+            "value": 27
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 35
+            "value": 53
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 2
+            "value": 3
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 919
+            "value": 1150
           },
           {
             "name": "shootoutAttempts",
@@ -5073,12 +5073,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.534
+            "value": 12.609
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 46.241
+            "value": 46.078
           }
         ]
       },
@@ -5089,27 +5089,27 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.636
+            "value": 2.643
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 805
+            "value": 1011
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.908
+            "value": 0.905
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 87
+            "value": 111
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 892
+            "value": 1122
           },
           {
             "name": "overtimeLosses",
@@ -5140,205 +5140,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 393
-          }
-        ]
-      }
-    ]
-  }
-},
-{
-  "teamId": "21",
-  "stats": {
-    "categories": [
-      {
-        "name": "general",
-        "abbreviation": "gen",
-        "stats": [
-          {
-            "name": "games",
-            "abbreviation": "GP",
-            "value": 31
-          },
-          {
-            "name": "timeOnIce",
-            "abbreviation": "TOI",
-            "value": 665731
-          },
-          {
-            "name": "timeOnIcePerGame",
-            "abbreviation": "TOI/G",
-            "value": 21475.1935483871
-          },
-          {
-            "name": "plusMinus",
-            "abbreviation": "+/-"
-          },
-          {
-            "name": "production",
-            "abbreviation": "PROD"
-          },
-          {
-            "name": "shifts",
-            "abbreviation": "SHFT",
-            "value": 12240
-          },
-          {
-            "name": "losses",
-            "abbreviation": "L",
-            "value": 12
-          },
-          {
-            "name": "wins",
-            "abbreviation": "WINS",
-            "value": 14
-          }
-        ]
-      },
-      {
-        "name": "offensive",
-        "abbreviation": "off",
-        "stats": [
-          {
-            "name": "goals",
-            "abbreviation": "G",
-            "value": 102
-          },
-          {
-            "name": "assists",
-            "abbreviation": "A",
-            "value": 179
-          },
-          {
-            "name": "faceoffsWon",
-            "abbreviation": "FW",
-            "value": 1018
-          },
-          {
-            "name": "faceoffsLost",
-            "abbreviation": "FL",
-            "value": 774
-          },
-          {
-            "name": "gameWinningGoals",
-            "abbreviation": "GWG"
-          },
-          {
-            "name": "points",
-            "abbreviation": "PTS",
-            "value": 281
-          },
-          {
-            "name": "powerPlayGoals",
-            "abbreviation": "PPG",
-            "value": 11
-          },
-          {
-            "name": "powerPlayAssists",
-            "abbreviation": "PPA",
-            "value": 19
-          },
-          {
-            "name": "shortHandedGoals",
-            "abbreviation": "SHG",
-            "value": 2
-          },
-          {
-            "name": "shortHandedAssists",
-            "abbreviation": "SHA",
-            "value": 1
-          },
-          {
-            "name": "shotsTotal",
-            "abbreviation": "S",
-            "value": 841
-          },
-          {
-            "name": "shootoutAttempts",
-            "abbreviation": "SOA",
-            "value": 3
-          },
-          {
-            "name": "shootoutGoals",
-            "abbreviation": "SOG",
-            "value": 1
-          },
-          {
-            "name": "shootoutShotPct",
-            "abbreviation": "SOPCT",
-            "value": 33.333
-          },
-          {
-            "name": "shootingPct",
-            "abbreviation": "SPCT",
-            "value": 12.128
-          },
-          {
-            "name": "faceoffPercent",
-            "abbreviation": "FO%",
-            "value": 56.808
-          }
-        ]
-      },
-      {
-        "name": "defensive",
-        "abbreviation": "def",
-        "stats": [
-          {
-            "name": "avgGoalsAgainst",
-            "abbreviation": "GAA",
-            "value": 3.258
-          },
-          {
-            "name": "saves",
-            "abbreviation": "SV",
-            "value": 876
-          },
-          {
-            "name": "savePct",
-            "abbreviation": "SV%",
-            "value": 0.901
-          },
-          {
-            "name": "goalsAgainst",
-            "abbreviation": "GA",
-            "value": 101
-          },
-          {
-            "name": "shotsAgainst",
-            "abbreviation": "SA",
-            "value": 977
-          },
-          {
-            "name": "overtimeLosses",
-            "abbreviation": "OTL",
-            "value": 5
-          },
-          {
-            "name": "shootoutSaves",
-            "abbreviation": "SOS",
-            "value": 0
-          },
-          {
-            "name": "shootoutShotsAgainst",
-            "abbreviation": "SOSA",
-            "value": 2
-          },
-          {
-            "name": "shootoutSavePct",
-            "abbreviation": "SOSPCT",
-            "value": 0
-          }
-        ]
-      },
-      {
-        "name": "penalties",
-        "abbreviation": "p",
-        "stats": [
-          {
-            "name": "penaltyMinutes",
-            "abbreviation": "PIM",
-            "value": 248
+            "value": 564
           }
         ]
       }
@@ -5356,17 +5158,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 685195
+            "value": 923931
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21412.34375
+            "value": 21486.767441860466
           },
           {
             "name": "plusMinus",
@@ -5379,17 +5181,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11644
+            "value": 15817
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 17
+            "value": 22
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 12
+            "value": 16
           }
         ]
       },
@@ -5400,22 +5202,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 87
+            "value": 117
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 141
+            "value": 190
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 869
+            "value": 1174
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 925
+            "value": 1239
           },
           {
             "name": "gameWinningGoals",
@@ -5424,57 +5226,57 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 228
+            "value": 307
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 22
+            "value": 30
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 40
+            "value": 56
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 0
+            "value": 1
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 856
+            "value": 1157
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 7
+            "value": 17
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 2
+            "value": 4
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 28.571
+            "value": 23.529
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.164
+            "value": 10.112
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 48.439
+            "value": 48.653
           }
         ]
       },
@@ -5485,42 +5287,42 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.5
+            "value": 3.535
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 814
+            "value": 1107
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.888
+            "value": 0.89
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 112
+            "value": 152
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 926
+            "value": 1259
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 7
+            "value": 17
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 7
+            "value": 17
           },
           {
             "name": "shootoutSavePct",
@@ -5536,7 +5338,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 295
+            "value": 375
           }
         ]
       }
@@ -5554,17 +5356,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 31
+            "value": 42
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 672320
+            "value": 911531
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21687.74193548387
+            "value": 21703.119047619046
           },
           {
             "name": "plusMinus",
@@ -5577,17 +5379,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11540
+            "value": 15504
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 6
+            "value": 11
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 16
+            "value": 19
           }
         ]
       },
@@ -5598,22 +5400,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 95
+            "value": 132
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 168
+            "value": 238
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 956
+            "value": 1232
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 846
+            "value": 1164
           },
           {
             "name": "gameWinningGoals",
@@ -5622,17 +5424,17 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 263
+            "value": 370
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 24
+            "value": 33
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 44
+            "value": 62
           },
           {
             "name": "shortHandedGoals",
@@ -5647,32 +5449,32 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 914
+            "value": 1214
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 10
+            "value": 17
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 3
+            "value": 4
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 30
+            "value": 23.529
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.394
+            "value": 10.873
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 53.052
+            "value": 51.419
           }
         ]
       },
@@ -5683,47 +5485,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.806
+            "value": 3.024
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 687
+            "value": 919
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.893
+            "value": 0.884
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 87
+            "value": 127
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 774
+            "value": 1046
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 9
+            "value": 12
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 6
+            "value": 10
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 10
+            "value": 17
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.6
+            "value": 0.588
           }
         ]
       },
@@ -5734,7 +5536,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 225
+            "value": 300
           }
         ]
       }
@@ -5752,17 +5554,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 34
+            "value": 45
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 725650
+            "value": 959299
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21342.647058823528
+            "value": 21317.755555555555
           },
           {
             "name": "plusMinus",
@@ -5775,17 +5577,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 13168
+            "value": 17455
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 15
+            "value": 20
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 16
+            "value": 22
           }
         ]
       },
@@ -5796,22 +5598,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 106
+            "value": 137
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 167
+            "value": 222
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 930
+            "value": 1243
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 1025
+            "value": 1336
           },
           {
             "name": "gameWinningGoals",
@@ -5820,17 +5622,17 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 273
+            "value": 359
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 15
+            "value": 21
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 29
+            "value": 40
           },
           {
             "name": "shortHandedGoals",
@@ -5845,7 +5647,7 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 978
+            "value": 1269
           },
           {
             "name": "shootoutAttempts",
@@ -5863,12 +5665,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 10.838
+            "value": 10.796
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 47.57
+            "value": 48.197
           }
         ]
       },
@@ -5879,27 +5681,27 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.971
+            "value": 2.822
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 752
+            "value": 1015
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.888
+            "value": 0.893
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 101
+            "value": 127
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 853
+            "value": 1142
           },
           {
             "name": "overtimeLosses",
@@ -5929,7 +5731,205 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 281
+            "value": 395
+          }
+        ]
+      }
+    ]
+  }
+},
+{
+  "teamId": "21",
+  "stats": {
+    "categories": [
+      {
+        "name": "general",
+        "abbreviation": "gen",
+        "stats": [
+          {
+            "name": "games",
+            "abbreviation": "GP",
+            "value": 43
+          },
+          {
+            "name": "timeOnIce",
+            "abbreviation": "TOI",
+            "value": 923689
+          },
+          {
+            "name": "timeOnIcePerGame",
+            "abbreviation": "TOI/G",
+            "value": 21481.13953488372
+          },
+          {
+            "name": "plusMinus",
+            "abbreviation": "+/-"
+          },
+          {
+            "name": "production",
+            "abbreviation": "PROD"
+          },
+          {
+            "name": "shifts",
+            "abbreviation": "SHFT",
+            "value": 17019
+          },
+          {
+            "name": "losses",
+            "abbreviation": "L",
+            "value": 15
+          },
+          {
+            "name": "wins",
+            "abbreviation": "WINS",
+            "value": 21
+          }
+        ]
+      },
+      {
+        "name": "offensive",
+        "abbreviation": "off",
+        "stats": [
+          {
+            "name": "goals",
+            "abbreviation": "G",
+            "value": 143
+          },
+          {
+            "name": "assists",
+            "abbreviation": "A",
+            "value": 239
+          },
+          {
+            "name": "faceoffsWon",
+            "abbreviation": "FW",
+            "value": 1365
+          },
+          {
+            "name": "faceoffsLost",
+            "abbreviation": "FL",
+            "value": 1055
+          },
+          {
+            "name": "gameWinningGoals",
+            "abbreviation": "GWG"
+          },
+          {
+            "name": "points",
+            "abbreviation": "PTS",
+            "value": 382
+          },
+          {
+            "name": "powerPlayGoals",
+            "abbreviation": "PPG",
+            "value": 17
+          },
+          {
+            "name": "powerPlayAssists",
+            "abbreviation": "PPA",
+            "value": 29
+          },
+          {
+            "name": "shortHandedGoals",
+            "abbreviation": "SHG",
+            "value": 3
+          },
+          {
+            "name": "shortHandedAssists",
+            "abbreviation": "SHA",
+            "value": 1
+          },
+          {
+            "name": "shotsTotal",
+            "abbreviation": "S",
+            "value": 1158
+          },
+          {
+            "name": "shootoutAttempts",
+            "abbreviation": "SOA",
+            "value": 3
+          },
+          {
+            "name": "shootoutGoals",
+            "abbreviation": "SOG",
+            "value": 1
+          },
+          {
+            "name": "shootoutShotPct",
+            "abbreviation": "SOPCT",
+            "value": 33.333
+          },
+          {
+            "name": "shootingPct",
+            "abbreviation": "SPCT",
+            "value": 12.349
+          },
+          {
+            "name": "faceoffPercent",
+            "abbreviation": "FO%",
+            "value": 56.405
+          }
+        ]
+      },
+      {
+        "name": "defensive",
+        "abbreviation": "def",
+        "stats": [
+          {
+            "name": "avgGoalsAgainst",
+            "abbreviation": "GAA",
+            "value": 3.233
+          },
+          {
+            "name": "saves",
+            "abbreviation": "SV",
+            "value": 1200
+          },
+          {
+            "name": "savePct",
+            "abbreviation": "SV%",
+            "value": 0.902
+          },
+          {
+            "name": "goalsAgainst",
+            "abbreviation": "GA",
+            "value": 139
+          },
+          {
+            "name": "shotsAgainst",
+            "abbreviation": "SA",
+            "value": 1339
+          },
+          {
+            "name": "overtimeLosses",
+            "abbreviation": "OTL",
+            "value": 7
+          },
+          {
+            "name": "shootoutSaves",
+            "abbreviation": "SOS",
+            "value": 0
+          },
+          {
+            "name": "shootoutShotsAgainst",
+            "abbreviation": "SOSA",
+            "value": 2
+          },
+          {
+            "name": "shootoutSavePct",
+            "abbreviation": "SOSPCT",
+            "value": 0
+          }
+        ]
+      },
+      {
+        "name": "penalties",
+        "abbreviation": "p",
+        "stats": [
+          {
+            "name": "penaltyMinutes",
+            "abbreviation": "PIM",
+            "value": 318
           }
         ]
       }
@@ -5947,17 +5947,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 45
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 685127
+            "value": 964540
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21410.21875
+            "value": 21434.222222222223
           },
           {
             "name": "plusMinus",
@@ -5970,17 +5970,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11400
+            "value": 15974
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 10
+            "value": 16
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 18
+            "value": 23
           }
         ]
       },
@@ -5991,22 +5991,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 106
+            "value": 148
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 174
+            "value": 248
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 812
+            "value": 1183
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 878
+            "value": 1219
           },
           {
             "name": "gameWinningGoals",
@@ -6015,17 +6015,17 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 280
+            "value": 396
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 15
+            "value": 19
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 28
+            "value": 35
           },
           {
             "name": "shortHandedGoals",
@@ -6040,32 +6040,32 @@
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 938
+            "value": 1310
           },
           {
             "name": "shootoutAttempts",
             "abbreviation": "SOA",
-            "value": 15
+            "value": 21
           },
           {
             "name": "shootoutGoals",
             "abbreviation": "SOG",
-            "value": 2
+            "value": 4
           },
           {
             "name": "shootoutShotPct",
             "abbreviation": "SOPCT",
-            "value": 13.333
+            "value": 19.048
           },
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.301
+            "value": 11.298
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 48.047
+            "value": 49.251
           }
         ]
       },
@@ -6076,47 +6076,47 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 2.469
+            "value": 2.778
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 792
+            "value": 1151
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.913
+            "value": 0.908
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 79
+            "value": 125
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 871
+            "value": 1276
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 4
+            "value": 6
           },
           {
             "name": "shootoutSaves",
             "abbreviation": "SOS",
-            "value": 8
+            "value": 11
           },
           {
             "name": "shootoutShotsAgainst",
             "abbreviation": "SOSA",
-            "value": 14
+            "value": 20
           },
           {
             "name": "shootoutSavePct",
             "abbreviation": "SOSPCT",
-            "value": 0.571
+            "value": 0.55
           }
         ]
       },
@@ -6127,7 +6127,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 284
+            "value": 401
           }
         ]
       }
@@ -6145,17 +6145,17 @@
           {
             "name": "games",
             "abbreviation": "GP",
-            "value": 32
+            "value": 43
           },
           {
             "name": "timeOnIce",
             "abbreviation": "TOI",
-            "value": 682256
+            "value": 917867
           },
           {
             "name": "timeOnIcePerGame",
             "abbreviation": "TOI/G",
-            "value": 21320.5
+            "value": 21345.74418604651
           },
           {
             "name": "plusMinus",
@@ -6168,17 +6168,17 @@
           {
             "name": "shifts",
             "abbreviation": "SHFT",
-            "value": 11892
+            "value": 15874
           },
           {
             "name": "losses",
             "abbreviation": "L",
-            "value": 15
+            "value": 22
           },
           {
             "name": "wins",
             "abbreviation": "WINS",
-            "value": 15
+            "value": 16
           }
         ]
       },
@@ -6189,22 +6189,22 @@
           {
             "name": "goals",
             "abbreviation": "G",
-            "value": 97
+            "value": 125
           },
           {
             "name": "assists",
             "abbreviation": "A",
-            "value": 167
+            "value": 214
           },
           {
             "name": "faceoffsWon",
             "abbreviation": "FW",
-            "value": 895
+            "value": 1186
           },
           {
             "name": "faceoffsLost",
             "abbreviation": "FL",
-            "value": 848
+            "value": 1125
           },
           {
             "name": "gameWinningGoals",
@@ -6213,32 +6213,32 @@
           {
             "name": "points",
             "abbreviation": "PTS",
-            "value": 264
+            "value": 339
           },
           {
             "name": "powerPlayGoals",
             "abbreviation": "PPG",
-            "value": 19
+            "value": 23
           },
           {
             "name": "powerPlayAssists",
             "abbreviation": "PPA",
-            "value": 35
+            "value": 42
           },
           {
             "name": "shortHandedGoals",
             "abbreviation": "SHG",
-            "value": 3
+            "value": 5
           },
           {
             "name": "shortHandedAssists",
             "abbreviation": "SHA",
-            "value": 2
+            "value": 4
           },
           {
             "name": "shotsTotal",
             "abbreviation": "S",
-            "value": 857
+            "value": 1139
           },
           {
             "name": "shootoutAttempts",
@@ -6258,12 +6258,12 @@
           {
             "name": "shootingPct",
             "abbreviation": "SPCT",
-            "value": 11.319
+            "value": 10.975
           },
           {
             "name": "faceoffPercent",
             "abbreviation": "FO%",
-            "value": 51.348
+            "value": 51.32
           }
         ]
       },
@@ -6274,32 +6274,32 @@
           {
             "name": "avgGoalsAgainst",
             "abbreviation": "GAA",
-            "value": 3.063
+            "value": 3.116
           },
           {
             "name": "saves",
             "abbreviation": "SV",
-            "value": 825
+            "value": 1064
           },
           {
             "name": "savePct",
             "abbreviation": "SV%",
-            "value": 0.9
+            "value": 0.893
           },
           {
             "name": "goalsAgainst",
             "abbreviation": "GA",
-            "value": 98
+            "value": 134
           },
           {
             "name": "shotsAgainst",
             "abbreviation": "SA",
-            "value": 923
+            "value": 1198
           },
           {
             "name": "overtimeLosses",
             "abbreviation": "OTL",
-            "value": 2
+            "value": 5
           },
           {
             "name": "shootoutSaves",
@@ -6325,7 +6325,7 @@
           {
             "name": "penaltyMinutes",
             "abbreviation": "PIM",
-            "value": 316
+            "value": 419
           }
         ]
       }

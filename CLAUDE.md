@@ -57,14 +57,15 @@ After building, the CLI is available at `dist/cli/index.js`:
 node dist/cli/index.js --help
 node dist/cli/index.js train nba --season 2024 --market moneyline
 node dist/cli/index.js train nba --season 2024 --market spread
-node dist/cli/index.js recommend nba --min-edge 0.03
-node dist/cli/index.js recommend                    # Show all sports and markets
+node dist/cli/index.js recommend                    # All sports, sorted by edge
+node dist/cli/index.js recommend nhl                # Single sport, sorted by edge
+node dist/cli/index.js recommend nba --min-edge 0.06
 node dist/cli/index.js backtest nba --season 2024 --market spread --show-buckets
 ```
 
 Available CLI commands:
 - `train` - Train models (supports `--market moneyline|spread`)
-- `recommend` - Generate betting recommendations for both moneyline and spread markets
+- `recommend` - Generate betting recommendations (unified sorted list, shows EST times)
 - `backtest` - Run historical backtests with probability bucket analysis
 
 ## Architecture
@@ -190,10 +191,9 @@ node dist/cli/index.js recommend nhl \
 
 ## Important Notes
 
-- **Spread Line Display**: Moneyline shows American odds (e.g., +185, -110); spread shows point spread (e.g., -14.5, +5.5)
-- **Dynamic Table Formatting**: Recommend command adjusts column widths based on content length (capped at 50 chars for matchup)
+- **Recommend Output**: Shows unified sorted list (best edge first) with EST times, Market column (ML/SPR), and L/O column (line for spreads, odds for moneyline)
+- **Timezone Filtering**: `getUpcomingGames()` uses full ISO timestamp comparison to correctly filter past games across timezones
 - **Type Shims**: ML libraries lack types; shims in `src/types/` (e.g., `ml-logistic-regression.d.ts`)
 - **ESM Only**: Uses ES modules; import paths require `.js` extensions
 - **Feature Order Critical**: Mismatch between training and prediction causes systematic prediction errors. Double-check `getFeatureOrder()` when modifying features.
-- **NCAAM Spread Model Concern**: Monitor for identical predictions across multiple bets (indicates training issue). If detected, retrain with `npm run build && node dist/cli/index.js train ncaam --market spread --season 2024`
 - **Git Branch**: Main branch is `release` (not `main` or `master`)
