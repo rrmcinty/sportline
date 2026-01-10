@@ -345,9 +345,28 @@ function generateRecommendationsForSport(
       minKelly,
     });
 
-    const totalRecs = moneylineRecs.length + spreadRecs.length;
+    // Combine all recommendations with metadata
+    const allRecs: RecommendationWithMetadata[] = [];
 
-    if (totalRecs === 0) {
+    for (const rec of moneylineRecs) {
+      allRecs.push({
+        ...rec,
+        sport,
+        marketType: 'moneyline',
+        isBestBet: isOptimalBet(rec.modelProbability, optimalBuckets),
+      });
+    }
+
+    for (const rec of spreadRecs) {
+      allRecs.push({
+        ...rec,
+        sport,
+        marketType: 'spread',
+        isBestBet: isOptimalBet(rec.modelProbability, spreadBuckets),
+      });
+    }
+
+    if (allRecs.length === 0) {
       console.log(chalk.yellow('⚠  No value bets found matching criteria.'));
       console.log(
         chalk.dim(
@@ -357,28 +376,21 @@ function generateRecommendationsForSport(
       return;
     }
 
-    // Display moneyline recommendations
-    if (moneylineRecs.length > 0) {
-      console.log(chalk.bold.green(`✓ Moneyline: Found ${moneylineRecs.length} value bet(s)\n`));
-      console.log(
-        formatRecommendations(moneylineRecs, sport, OPTIMAL_BUCKETS[sport] || [], 'moneyline'),
-      );
-      console.log('');
-    } else {
-      console.log(chalk.dim('ℹ No moneyline bets found matching criteria\n'));
-    }
+    // Sort by edge (descending) - best bets first
+    allRecs.sort((a, b) => b.edge - a.edge);
 
-    // Display spread recommendations
-    if (spreadRecs.length > 0) {
-      console.log(chalk.bold.cyan(`ℹ Spread: Found ${spreadRecs.length} value bet(s)\n`));
-      console.log(formatRecommendations(spreadRecs, sport, spreadBuckets, 'spread'));
-      console.log('');
-    } else {
-      console.log(chalk.dim('ℹ No spread bets found matching criteria\n'));
-    }
+    // Display unified table
+    console.log(`${chalk.bold.green(`✓ Found ${allRecs.length} value bet(s) - sorted by edge`)}`);
+    console.log(
+      chalk.dim(
+        `  (Ordered by mathematical edge. "Best?" marks bets in historically profitable probability ranges.)\n`,
+      ),
+    );
+    console.log(formatUnifiedRecommendations(allRecs));
+    console.log('');
 
-    // Show summary statistics
-    printRecommendationsSummary(moneylineRecs, spreadRecs, sport, optimalBuckets);
+    // Show summary
+    printUnifiedSummary(allRecs);
   } catch (error) {
     console.error(`\n${chalk.red('❌ Failed to generate recommendations:')}`, error);
     process.exit(1);
@@ -533,271 +545,4 @@ function printUnifiedSummary(recommendations: RecommendationWithMetadata[]): voi
  */
 function isOptimalBet(prob: number, optimalBuckets: ConfidenceBucket[]): boolean {
   return optimalBuckets.some((b) => prob >= b.min && prob < b.max);
-}
-
-/**
- * Format recommendations as a detailed table with dynamic column widths
- */
-function formatRecommendations(
-  recommendations: ReturnType<typeof generateRecommendations>,
-  sport: string,
-  optimalBuckets: ConfidenceBucket[],
-  market: 'moneyline' | 'spread' = 'moneyline',
-): string {
-  const lines: string[] = [];
-
-  // Calculate matchup column width based on longest matchup
-  let maxMatchupLen = 'Matchup'.length;
-  for (const rec of recommendations) {
-    const matchup = `${rec.awayTeamName} @ ${rec.homeTeamName}`;
-    maxMatchupLen = Math.max(maxMatchupLen, matchup.length);
-  }
-  const matchupWidth = Math.min(maxMatchupLen, 50); // Cap at 50 to avoid excessively wide tables
-
-  // Fixed column widths
-  const cols = {
-    time: 12,
-    matchup: matchupWidth,
-    market: 6,
-    team: 6,
-    modelPct: 8,
-    impliedPct: 8,
-    edge: 7,
-    ev: 6,
-    status: 6,
-    odds: 5,
-  };
-
-  // Build border line
-  const buildBorder = (left: string, mid: string, right: string): string => {
-    const segments = [
-      left,
-      '─'.repeat(cols.time + 2),
-      mid,
-      '─'.repeat(cols.matchup + 2),
-      mid,
-      '─'.repeat(cols.market + 2),
-      mid,
-      '─'.repeat(cols.team + 2),
-      mid,
-      '─'.repeat(cols.modelPct + 2),
-      mid,
-      '─'.repeat(cols.impliedPct + 2),
-      mid,
-      '─'.repeat(cols.edge + 2),
-      mid,
-      '─'.repeat(cols.ev + 2),
-      mid,
-      '─'.repeat(cols.status + 2),
-      mid,
-      '─'.repeat(cols.odds + 2),
-      right,
-    ];
-    return segments.join('');
-  };
-
-  // Build header line
-  const buildHeader = (): string => {
-    const lineHeader = market === 'spread' ? 'Line' : 'Odds';
-    const cells = [
-      'Time (EST)'.padEnd(cols.time),
-      'Matchup'.padEnd(cols.matchup),
-      'Market'.padEnd(cols.market),
-      'Team'.padEnd(cols.team),
-      'Model %'.padEnd(cols.modelPct),
-      'Implied %'.padEnd(cols.impliedPct),
-      'Edge'.padEnd(cols.edge),
-      'EV %'.padEnd(cols.ev),
-      'Status'.padEnd(cols.status),
-      lineHeader.padEnd(cols.odds),
-    ];
-    return '│ ' + cells.join(' │ ') + ' │';
-  };
-
-  // Top border
-  lines.push(buildBorder('┌', '┬', '┐'));
-  // Header
-  lines.push(buildHeader());
-  // Header separator
-  lines.push(buildBorder('├', '┼', '┤'));
-
-  // Data rows
-  for (const rec of recommendations) {
-    const gameTime = formatGameTimeEST(rec.gameDate);
-    const matchup = `${rec.awayTeamName} @ ${rec.homeTeamName}`;
-    const marketLabel = market === 'moneyline' ? 'ML' : 'SPR';
-
-    // Show the team being bet on (use abbreviation for compact display)
-    const betTeamAbbr =
-      rec.side === 'home'
-        ? rec.homeTeamAbbr || rec.homeTeamName
-        : rec.awayTeamAbbr || rec.awayTeamName;
-
-    const modelProb = (rec.modelProbability * 100).toFixed(2);
-    const implProb = (rec.impliedProbability * 100).toFixed(2);
-    const edge = `+${(rec.edge * 100).toFixed(1)}%`;
-    const ev = `+${(rec.ev * 100).toFixed(1)}%`;
-
-    // For spreads, show the line; for moneyline, show the odds
-    let lineOrOdds: string;
-    if (market === 'spread' && rec.line !== undefined && rec.line !== null) {
-      lineOrOdds = `${rec.line > 0 ? '+' : ''}${rec.line}`;
-    } else {
-      lineOrOdds = `${rec.odds > 0 ? '+' : ''}${rec.odds}`;
-    }
-
-    // Color code by edge strength
-    const confidence =
-      rec.edge > 0.1
-        ? chalk.green
-        : rec.edge > 0.06
-          ? chalk.yellow
-          : rec.edge > 0.03
-            ? chalk.cyan
-            : chalk.white;
-
-    // Show bucket status
-    const statusCol = isOptimalBet(rec.modelProbability, optimalBuckets)
-      ? chalk.bold.green('✓ BEST')
-      : chalk.dim('  meh');
-
-    // Build row with proper padding
-    const cells = [
-      gameTime.padEnd(cols.time),
-      matchup.substring(0, cols.matchup).padEnd(cols.matchup), // Truncate if needed
-      marketLabel.padEnd(cols.market),
-      betTeamAbbr.padEnd(cols.team),
-      modelProb.padStart(cols.modelPct),
-      implProb.padStart(cols.impliedPct),
-      confidence(edge.padStart(cols.edge)),
-      chalk.bold(ev.padStart(cols.ev)),
-      statusCol.padEnd(cols.status + 8), // Account for ANSI codes
-      lineOrOdds.padStart(cols.odds),
-    ];
-
-    lines.push('│ ' + cells.join(' │ ') + ' │');
-  }
-
-  // Bottom border
-  lines.push(buildBorder('└', '┴', '┘'));
-
-  return lines.join('\n');
-}
-
-/**
- * Print summary statistics for recommendations
- */
-function printRecommendationsSummary(
-  moneylineRecs: ReturnType<typeof generateRecommendations>,
-  spreadRecs: ReturnType<typeof generateRecommendations>,
-  sport: string,
-  optimalBuckets: ConfidenceBucket[],
-): void {
-  console.log(`\n${chalk.bold('Summary Statistics:')}`);
-
-  // Moneyline summary
-  if (moneylineRecs.length > 0) {
-    const optimalBets = moneylineRecs.filter((r) =>
-      isOptimalBet(r.modelProbability, optimalBuckets),
-    );
-    const suboptimalBets = moneylineRecs.filter(
-      (r) => !isOptimalBet(r.modelProbability, optimalBuckets),
-    );
-
-    const totalEdge = moneylineRecs.reduce((sum, r) => sum + r.edge, 0);
-    const totalEv = moneylineRecs.reduce((sum, r) => sum + r.ev, 0);
-    const optimalEdge = optimalBets.reduce((sum, r) => sum + r.edge, 0);
-    const optimalEv = optimalBets.reduce((sum, r) => sum + r.ev, 0);
-
-    const avgProb =
-      moneylineRecs.reduce((sum, r) => sum + r.modelProbability, 0) / moneylineRecs.length;
-    const avgImpliedProb =
-      moneylineRecs.reduce((sum, r) => sum + r.impliedProbability, 0) / moneylineRecs.length;
-
-    const highConfidence = moneylineRecs.filter((r) => r.edge > 0.1).length;
-    const mediumConfidence = moneylineRecs.filter((r) => r.edge > 0.06 && r.edge <= 0.1).length;
-    const lowConfidence = moneylineRecs.filter((r) => r.edge <= 0.06).length;
-
-    console.log(`${chalk.bold.green('Moneyline:')}`);
-    console.log(
-      `  Total Bets: ${chalk.cyan(moneylineRecs.length)} | ${chalk.bold.green(`Optimal: ${optimalBets.length}`)} | Suboptimal: ${chalk.dim(suboptimalBets.length)}`,
-    );
-    console.log(
-      `  Edge Strength: High (>10%): ${chalk.green(highConfidence)} | Medium (6-10%): ${chalk.yellow(mediumConfidence)} | Low (≤6%): ${chalk.cyan(lowConfidence)}`,
-    );
-    console.log(
-      `  Avg Model Prob: ${chalk.yellow(`${(avgProb * 100).toFixed(1)}%`)} | Avg Implied Prob: ${chalk.dim(`${(avgImpliedProb * 100).toFixed(1)}%`)}`,
-    );
-    console.log(
-      `  Total Edge: ${chalk.bold.green(`+${(totalEdge * 100).toFixed(1)}%`)} | Total EV: ${chalk.bold.green(`+${(totalEv * 100).toFixed(1)}%`)}`,
-    );
-    console.log(
-      `  Expected ROI (backtest): ${chalk.green(`${(EXPECTED_ROI[sport] * 100).toFixed(2)}%`)} | Win Rate: ${chalk.cyan('~70-85%')}`,
-    );
-
-    if (optimalBets.length > 0) {
-      console.log(
-        `  Optimal: +${(optimalEdge * 100).toFixed(1)}% edge | +${(optimalEv * 100).toFixed(1)}% EV`,
-      );
-    }
-    if (suboptimalBets.length > 0) {
-      const bucketRanges = optimalBuckets
-        .map((b) => `${(b.min * 100).toFixed(0)}-${(b.max * 100).toFixed(0)}%`)
-        .join(', ');
-      console.log(chalk.dim(`  Suboptimal fall outside ${bucketRanges}`));
-    }
-  }
-
-  // Spread summary
-  if (spreadRecs.length > 0) {
-    const spreadBuckets = OPTIMAL_BUCKETS_SPREAD[sport] || [];
-    const optimalBets = spreadRecs.filter((r) => isOptimalBet(r.modelProbability, spreadBuckets));
-    const suboptimalBets = spreadRecs.filter(
-      (r) => !isOptimalBet(r.modelProbability, spreadBuckets),
-    );
-
-    const totalEdge = spreadRecs.reduce((sum, r) => sum + r.edge, 0);
-    const totalEv = spreadRecs.reduce((sum, r) => sum + r.ev, 0);
-    const optimalEdge = optimalBets.reduce((sum, r) => sum + r.edge, 0);
-    const optimalEv = optimalBets.reduce((sum, r) => sum + r.ev, 0);
-
-    const avgProb = spreadRecs.reduce((sum, r) => sum + r.modelProbability, 0) / spreadRecs.length;
-    const avgImpliedProb =
-      spreadRecs.reduce((sum, r) => sum + r.impliedProbability, 0) / spreadRecs.length;
-
-    const highConfidence = spreadRecs.filter((r) => r.edge > 0.1).length;
-    const mediumConfidence = spreadRecs.filter((r) => r.edge > 0.06 && r.edge <= 0.1).length;
-    const lowConfidence = spreadRecs.filter((r) => r.edge <= 0.06).length;
-
-    console.log(`\n${chalk.bold.cyan('Spread:')}`);
-    console.log(
-      `  Total Bets: ${chalk.cyan(spreadRecs.length)} | ${chalk.bold.cyan(`Optimal: ${optimalBets.length}`)} | Suboptimal: ${chalk.dim(suboptimalBets.length)}`,
-    );
-    console.log(
-      `  Edge Strength: High (>10%): ${chalk.green(highConfidence)} | Medium (6-10%): ${chalk.yellow(mediumConfidence)} | Low (≤6%): ${chalk.cyan(lowConfidence)}`,
-    );
-    console.log(
-      `  Avg Model Prob: ${chalk.yellow(`${(avgProb * 100).toFixed(1)}%`)} | Avg Implied Prob: ${chalk.dim(`${(avgImpliedProb * 100).toFixed(1)}%`)}`,
-    );
-    console.log(
-      `  Total Edge: ${chalk.bold.green(`+${(totalEdge * 100).toFixed(1)}%`)} | Total EV: ${chalk.bold.green(`+${(totalEv * 100).toFixed(1)}%`)}`,
-    );
-    console.log(
-      `  Expected ROI (backtest): ${chalk.cyan(`${(EXPECTED_ROI_SPREAD[sport] * 100).toFixed(2)}%`)} | Win Rate: ${chalk.cyan('~75-85%')}`,
-    );
-
-    if (optimalBets.length > 0) {
-      console.log(
-        `  Optimal: +${(optimalEdge * 100).toFixed(1)}% edge | +${(optimalEv * 100).toFixed(1)}% EV`,
-      );
-    }
-    if (suboptimalBets.length > 0) {
-      const bucketRanges = spreadBuckets
-        .map((b) => `${(b.min * 100).toFixed(0)}-${(b.max * 100).toFixed(0)}%`)
-        .join(', ');
-      console.log(chalk.dim(`  Suboptimal fall outside ${bucketRanges}`));
-    }
-  }
-
-  console.log('');
 }
