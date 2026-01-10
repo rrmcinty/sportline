@@ -386,12 +386,31 @@ function generateRecommendationsForSport(
 }
 
 /**
+ * Format a UTC date to EST time string like "1/10 7:00p"
+ */
+function formatGameTimeEST(utcDateStr: string): string {
+  const date = new Date(utcDateStr);
+  // Format in EST timezone
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: 'America/New_York',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  };
+  const formatted = date.toLocaleString('en-US', options);
+  // Convert "1/10, 7:00 PM" to "1/10 7:00p" for compactness
+  return formatted.replace(', ', ' ').replace(' PM', 'p').replace(' AM', 'a');
+}
+
+/**
  * Format unified recommendations with sport/market columns using cli-table3
  */
 function formatUnifiedRecommendations(recommendations: RecommendationWithMetadata[]): string {
   const table = new Table({
     head: [
-      chalk.bold('Date'),
+      chalk.bold('Time (EST)'),
       chalk.bold('Matchup'),
       chalk.bold('Sport'),
       chalk.bold('Market'),
@@ -403,7 +422,7 @@ function formatUnifiedRecommendations(recommendations: RecommendationWithMetadat
       chalk.bold('Best?'),
       chalk.bold('L/O'),
     ],
-    colWidths: [12, 24, 8, 8, 8, 10, 10, 10, 8, 7, 8],
+    colWidths: [14, 24, 8, 8, 8, 10, 10, 10, 8, 7, 8],
     wordWrap: true,
     style: {
       head: [],
@@ -414,7 +433,7 @@ function formatUnifiedRecommendations(recommendations: RecommendationWithMetadat
 
   // Add data rows
   for (const rec of recommendations) {
-    const date = new Date(rec.gameDate).toISOString().split('T')[0];
+    const gameTime = formatGameTimeEST(rec.gameDate);
     const matchup = `${rec.awayTeamAbbr || rec.awayTeamName} @ ${rec.homeTeamAbbr || rec.homeTeamName}`;
     const sport = rec.sport.toUpperCase();
     const market = rec.marketType === 'moneyline' ? 'ML' : 'SPR';
@@ -451,7 +470,7 @@ function formatUnifiedRecommendations(recommendations: RecommendationWithMetadat
     const bestBet = rec.isBestBet ? chalk.bold.green('✓') : chalk.dim('·');
 
     table.push([
-      date,
+      gameTime,
       matchup,
       sport,
       market,

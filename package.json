@@ -41,9 +41,9 @@
     "import:cfb:db": "npm run import:sports:db -- cfb",
     "import:ncaam:full": "for y in 2022 2023 2024 2025 2026; do if [ -d \"data/ncaam/$y\" ]; then echo \"Importing NCAAM season $y\"; npm run import:sports:db -- ncaam $y; fi; done",
     "import:nba:full": "for y in 2019 2020 2021 2022 2023 2024 2025 2026; do if [ -d \"data/nba/$y\" ]; then echo \"Importing NBA season $y\"; npm run import:sports:db -- nba $y; fi; done",
-    "import:nhl:full": "for y in 2020 2021 2022 2023 2024 2025 2025; do if [ -d \"data/nhl/$y\" ]; then echo \"Importing NHL season $y\"; npm run import:sports:db -- nhl $y; fi; done",
-    "import:nfl:full": "for y in 2019 2020 2021 2022 2023 2024 2025 2025; do if [ -d \"data/nfl/$y\" ]; then echo \"Importing NFL season $y\"; npm run import:sports:db -- nfl $y; fi; done",
-    "import:cfb:full": "for y in 2020 2021 2022 2023 2024 2025 2025; do if [ -d \"data/cfb/$y\" ]; then echo \"Importing CFB season $y\"; npm run import:sports:db -- cfb $y; fi; done"
+    "import:nhl:full": "for y in 2020 2021 2022 2023 2024 2025 2025 2026; do if [ -d \"data/nhl/$y\" ]; then echo \"Importing NHL season $y\"; npm run import:sports:db -- nhl $y; fi; done",
+    "import:nfl:full": "for y in 2019 2020 2021 2022 2023 2024 2025 2025 2026; do if [ -d \"data/nfl/$y\" ]; then echo \"Importing NFL season $y\"; npm run import:sports:db -- nfl $y; fi; done",
+    "import:cfb:full": "for y in 2020 2021 2022 2023 2024 2025 2025 2026; do if [ -d \"data/cfb/$y\" ]; then echo \"Importing CFB season $y\"; npm run import:sports:db -- cfb $y; fi; done"
   },
   "keywords": [
     "ncaam",
