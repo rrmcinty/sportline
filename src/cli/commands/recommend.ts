@@ -556,7 +556,7 @@ function formatRecommendations(
 
   // Fixed column widths
   const cols = {
-    date: 10,
+    time: 12,
     matchup: matchupWidth,
     modelPct: 8,
     impliedPct: 8,
@@ -571,7 +571,7 @@ function formatRecommendations(
   const buildBorder = (left: string, mid: string, right: string): string => {
     const segments = [
       left,
-      '─'.repeat(cols.date + 2),
+      '─'.repeat(cols.time + 2),
       mid,
       '─'.repeat(cols.matchup + 2),
       mid,
@@ -597,7 +597,7 @@ function formatRecommendations(
   const buildHeader = (): string => {
     const lineHeader = market === 'spread' ? 'Line' : 'Odds';
     const cells = [
-      'Date'.padEnd(cols.date),
+      'Time (EST)'.padEnd(cols.time),
       'Matchup'.padEnd(cols.matchup),
       'Team'.padEnd(cols.team),
       'Model %'.padEnd(cols.modelPct),
@@ -619,7 +619,7 @@ function formatRecommendations(
 
   // Data rows
   for (const rec of recommendations) {
-    const date = new Date(rec.gameDate).toISOString().split('T')[0];
+    const gameTime = formatGameTimeEST(rec.gameDate);
     const matchup = `${rec.awayTeamName} @ ${rec.homeTeamName}`;
 
     // Show the team being bet on (use abbreviation for compact display)
@@ -658,7 +658,7 @@ function formatRecommendations(
 
     // Build row with proper padding
     const cells = [
-      date.padEnd(cols.date),
+      gameTime.padEnd(cols.time),
       matchup.substring(0, cols.matchup).padEnd(cols.matchup), // Truncate if needed
       betTeamAbbr.padEnd(cols.team),
       modelProb.padStart(cols.modelPct),
