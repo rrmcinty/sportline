@@ -7,7 +7,7 @@ import Database from 'better-sqlite3';
 import type { ValueBet, TrainedModel } from '../models/types.js';
 import { loadModel } from '../models/predict.js';
 import { predictHomeWinProbability } from '../models/predict.js';
-import { getUpcomingGames, getLatestOddsForGame, getTeamName } from '../db/queries.js';
+import { getUpcomingGames, getLatestOddsForGame, getTeamName, getTeamAbbr } from '../db/queries.js';
 import { americanToImpliedProb, calculateEV, calculateKellyPercentage } from '../betting/odds.js';
 import { getDatabase } from '../db/queries.js';
 
@@ -95,9 +95,11 @@ export function findValueBets(
 
       const awayWinProb = 1 - homeWinProb;
 
-      // Get team names
+      // Get team names and abbreviations
       const homeTeamName = getTeamName(db, sport, game.home_team_id) ?? 'Unknown';
       const awayTeamName = getTeamName(db, sport, game.away_team_id) ?? 'Unknown';
+      const homeTeamAbbr = getTeamAbbr(db, sport, game.home_team_id) ?? homeTeamName;
+      const awayTeamAbbr = getTeamAbbr(db, sport, game.away_team_id) ?? awayTeamName;
 
       // Check home team bet
       if (odds.price_home !== null) {
@@ -121,11 +123,14 @@ export function findValueBets(
             awayTeamId: game.away_team_id,
             homeTeamName,
             awayTeamName,
+            homeTeamAbbr,
+            awayTeamAbbr,
             market: market as 'moneyline' | 'spread' | 'total',
             side: 'home',
             modelProbability: homeWinProb,
             impliedProbability: impliedProb,
             odds: odds.price_home,
+            line: odds.line,
             ev,
             edge,
             provider: odds.provider,
@@ -155,11 +160,14 @@ export function findValueBets(
             awayTeamId: game.away_team_id,
             homeTeamName,
             awayTeamName,
+            homeTeamAbbr,
+            awayTeamAbbr,
             market: market as 'moneyline' | 'spread' | 'total',
             side: 'away',
             modelProbability: awayWinProb,
             impliedProbability: impliedProb,
             odds: odds.price_away,
+            line: odds.line,
             ev,
             edge,
             provider: odds.provider,

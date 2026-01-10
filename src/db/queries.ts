@@ -236,10 +236,28 @@ export function getLatestOddsForGame(
  * Get team name
  */
 export function getTeamName(db: Database.Database, sport: string, teamId: string): string | null {
-  const row = db.prepare(`SELECT name FROM teams WHERE id = ? AND sport = ?`).get(teamId, sport) as
-    | { name: string }
+  const row = db
+    .prepare(`SELECT display_name, short_display_name, name FROM teams WHERE id = ? AND sport = ?`)
+    .get(teamId, sport) as
+    | { display_name: string | null; short_display_name: string | null; name: string }
     | undefined;
-  return row?.name ?? null;
+
+  // Prefer display_name (full school + mascot), fall back to short_display_name, then name
+  return row?.display_name ?? row?.short_display_name ?? row?.name ?? null;
+}
+
+/**
+ * Get team abbreviation (short identifier for display in tables)
+ */
+export function getTeamAbbr(db: Database.Database, sport: string, teamId: string): string | null {
+  const row = db
+    .prepare(`SELECT abbreviation, short_display_name, name FROM teams WHERE id = ? AND sport = ?`)
+    .get(teamId, sport) as
+    | { abbreviation: string | null; short_display_name: string | null; name: string }
+    | undefined;
+
+  // Prefer abbreviation, fall back to short_display_name, then name
+  return row?.abbreviation ?? row?.short_display_name ?? row?.name ?? null;
 }
 
 /**

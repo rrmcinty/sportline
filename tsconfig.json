@@ -4,6 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "lib": ["ES2022"],
+    "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
@@ -14,11 +15,12 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*", "scripts/**/*"],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "src/train/basketball/ncaam/trainNcaamMoneyline.ts",
     "src/lib/features/featureEngineering.ts",
-    "src/lib/features/basketball/basketballFeatures.ts"
+    "src/lib/features/basketball/basketballFeatures.ts",
+    "scripts/**/*"
   ]
 }
