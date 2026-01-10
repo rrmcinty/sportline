@@ -11,7 +11,7 @@ export function recommendCommand(): Command {
 
   command
     .description('Generate betting recommendations')
-    .argument('<sport>', 'Sport to generate recommendations for (supports: nba, ncaam)')
+    .argument('<sport>', 'Sport to generate recommendations for (supports: nba, ncaam, nhl)')
     .option('-m, --model <path>', 'Path to trained model file')
     .option('-e, --min-edge <number>', 'Minimum edge required (default: 0.03 = 3%)', '0.03')
     .option('-p, --min-prob <number>', 'Minimum model probability (default: 0.5 = 50%)', '0.5')
@@ -41,7 +41,7 @@ export function recommendCommand(): Command {
           minKelly?: string;
         },
       ) => {
-        const supportedSports = ['nba', 'ncaam'];
+        const supportedSports = ['nba', 'ncaam', 'nhl'];
         if (!supportedSports.includes(sport)) {
           console.error(
             `Error: Sport '${sport}' not supported. Choose from: ${supportedSports.join(', ')}`,

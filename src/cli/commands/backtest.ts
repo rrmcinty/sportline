@@ -40,6 +40,7 @@ function filterByBuckets(
 interface BacktestOptions {
   season: string;
   modelPath?: string;
+  market?: string;
   edgeRange?: string;
   evRange?: string;
   maxEv?: string;
@@ -53,9 +54,10 @@ export function backtestCommand(): Command {
 
   command
     .description('Backtest betting strategies on historical data')
-    .argument('<sport>', 'Sport to backtest (supports: nba, ncaam)')
+    .argument('<sport>', 'Sport to backtest (supports: nba, ncaam, nhl)')
     .option('-s, --season <year>', 'Season to backtest on', '2024')
     .option('-m, --model-path <path>', 'Path to trained model (if not provided, uses default)')
+    .option('--market <type>', 'Market type: moneyline or spread (default: moneyline)', 'moneyline')
     .option(
       '--edge-range <values>',
       'Edge threshold range to test (comma-separated)',
@@ -74,7 +76,7 @@ export function backtestCommand(): Command {
       'Only bet in these probability buckets (e.g., "40-70,80-100" to exclude 70-80%)',
     )
     .action(async (sport: string, options: BacktestOptions) => {
-      const supportedSports = ['nba', 'ncaam'];
+      const supportedSports = ['nba', 'ncaam', 'nhl'];
       if (!supportedSports.includes(sport)) {
         console.error(
           `Error: Sport '${sport}' not supported. Choose from: ${supportedSports.join(', ')}`,
@@ -88,13 +90,21 @@ export function backtestCommand(): Command {
         process.exit(1);
       }
 
+      // Validate market
+      const market = options.market || 'moneyline';
+      if (!['moneyline', 'spread'].includes(market)) {
+        console.error(`Error: Invalid market '${market}'. Choose from: moneyline, spread`);
+        process.exit(1);
+      }
+
       // Determine model path
       const modelPath =
         options.modelPath ||
-        path.join(process.cwd(), 'data', 'models', sport, `moneyline-${season}.json`);
+        path.join(process.cwd(), 'data', 'models', sport, `${market}-${season}.json`);
 
-      console.log(`\n=== Backtesting ${sport.toUpperCase()} Model ===`);
+      console.log(`\n=== Backtesting ${sport.toUpperCase()} ${market.toUpperCase()} Model ===`);
       console.log(`Season: ${season}`);
+      console.log(`Market: ${market}`);
       console.log(`Model: ${modelPath}`);
 
       try {
@@ -139,7 +149,7 @@ export function backtestCommand(): Command {
               );
 
               // Get odds for this game
-              const oddsData = getOddsForGame(db, game.id, 'moneyline');
+              const oddsData = getOddsForGame(db, game.id, market);
               const odds = oddsData.length > 0 ? oddsData[0] : null;
 
               // Get team names
@@ -183,6 +193,21 @@ export function backtestCommand(): Command {
                 evAway = edgeAway * awayProfit;
               }
 
+              // Calculate actual result based on market type
+              let actual: number;
+              if (market === 'spread') {
+                const margin = (game.home_score ?? 0) - (game.away_score ?? 0);
+                const spread = odds?.line ?? 0;
+                const adjustedMargin = margin + spread; // spread is negative for home favorite
+                if (adjustedMargin === 0) {
+                  // Push - skip this game
+                  continue;
+                }
+                actual = adjustedMargin > 0 ? 1 : 0; // Home covered
+              } else {
+                actual = (game.home_score ?? 0) > (game.away_score ?? 0) ? 1 : 0;
+              }
+
               recommendations.push({
                 game_id: game.id,
                 date: game.date,
@@ -197,7 +222,7 @@ export function backtestCommand(): Command {
                 edge_home: edgeHome,
                 edge_away: edgeAway,
                 recommended_side: null,
-                actual: (game.home_score ?? 0) > (game.away_score ?? 0) ? 1 : 0,
+                actual,
                 provider: odds?.provider || '',
                 line: odds?.line ?? null,
               });

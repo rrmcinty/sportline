@@ -13,6 +13,8 @@ import {
   trainGradientBoostingModel,
   type GradientBoostingOptions,
 } from '../../models/trainNbaGradientBoosting.js';
+import { trainNhlModel, type NhlTrainingOptions } from '../../models/trainNhlMoneyline.js';
+import { trainSpread, type SpreadTrainingOptions } from '../../models/trainSpread.js';
 import path from 'path';
 
 export function trainCommand(): Command {
@@ -20,7 +22,7 @@ export function trainCommand(): Command {
 
   command
     .description('Train a machine learning model')
-    .argument('<sport>', 'Sport to train model for (supports: nba, ncaam)')
+    .argument('<sport>', 'Sport to train model for (supports: nba, ncaam, nhl)')
     .option(
       '-s, --seasons <years>',
       'Season years to train on (comma-separated for multiple)',
@@ -59,6 +61,7 @@ export function trainCommand(): Command {
     )
     .option('--learning-rate <rate>', 'Learning rate for gradient boosting (default: 0.1)', '0.1')
     .option('--gb-max-depth <depth>', 'Max depth for gradient boosting trees (default: 3)', '3')
+    .option('--market <type>', 'Market type: moneyline or spread (default: moneyline)', 'moneyline')
     .action(
       (
         sport: string,
@@ -80,13 +83,21 @@ export function trainCommand(): Command {
           modelType?: string;
           learningRate?: string;
           gbMaxDepth?: string;
+          market?: string;
         },
       ) => {
-        const supportedSports = ['nba', 'ncaam'];
+        const supportedSports = ['nba', 'ncaam', 'nhl'];
         if (!supportedSports.includes(sport)) {
           console.error(
             `Error: Sport '${sport}' not supported. Choose from: ${supportedSports.join(', ')}`,
           );
+          process.exit(1);
+        }
+
+        // Validate market
+        const market = options.market || 'moneyline';
+        if (!['moneyline', 'spread'].includes(market)) {
+          console.error(`Error: Invalid market '${market}'. Choose from: moneyline, spread`);
           process.exit(1);
         }
 
@@ -99,8 +110,9 @@ export function trainCommand(): Command {
           process.exit(1);
         }
 
-        console.log(`Training ${sport.toUpperCase()} moneyline model...`);
+        console.log(`Training ${sport.toUpperCase()} ${market.toUpperCase()} model...`);
         console.log(`Seasons: ${seasons.join(', ')}`);
+        console.log(`Market: ${market}`);
         if (options.cv) {
           console.log(`Cross-validation: ${options.cvFolds} folds`);
         }
@@ -137,7 +149,38 @@ export function trainCommand(): Command {
         try {
           let modelPath: string;
 
-          if (sport === 'nba') {
+          // Handle spread training for any sport
+          if (market === 'spread') {
+            if (seasons.length > 1) {
+              console.warn(
+                'Warning: Spread training only supports single season. Using first season.',
+              );
+            }
+
+            const spreadOptions: SpreadTrainingOptions = {
+              calibrate: options.calibrate !== undefined,
+              calibrationHoldout: 0.2,
+            };
+
+            // Parse quick mode if provided
+            if (options.quick) {
+              const sampleSize = parseInt(options.sampleSize || '200', 10);
+              const method = options.sampleMethod as 'recent' | 'random';
+
+              if (!['recent', 'random'].includes(method)) {
+                console.error('Error: Invalid sample method. Use "recent" or "random"');
+                process.exit(1);
+              }
+
+              spreadOptions.quickMode = {
+                enabled: true,
+                sampleSize,
+                method,
+              };
+            }
+
+            modelPath = trainSpread(sport, seasons[0], options.output, spreadOptions);
+          } else if (sport === 'nba') {
             // NBA training (single season for now)
             if (seasons.length > 1) {
               console.warn(
@@ -301,6 +344,85 @@ export function trainCommand(): Command {
               // Use simplified wrapper for backward compatibility
               modelPath = trainNcaamModel(seasons, options.output, options.cv);
             }
+          } else if (sport === 'nhl') {
+            // NHL training (single season)
+            if (seasons.length > 1) {
+              console.warn(
+                'Warning: NHL training only supports single season. Using first season.',
+              );
+            }
+
+            const nhlOptions: NhlTrainingOptions = {
+              useWalkForward: options.walkForward,
+              analyzeFeatures: options.analyzeFeatures,
+              calibrate: options.calibrate !== undefined,
+            };
+
+            // Parse quick mode if provided
+            if (options.quick) {
+              const sampleSize = parseInt(options.sampleSize || '200', 10);
+              const method = options.sampleMethod as 'recent' | 'random';
+
+              if (!['recent', 'random'].includes(method)) {
+                console.error('Error: Invalid sample method. Use "recent" or "random"');
+                process.exit(1);
+              }
+
+              if (isNaN(sampleSize) || sampleSize < 1) {
+                console.error(`Error: Invalid sample size: ${options.sampleSize}`);
+                process.exit(1);
+              }
+
+              nhlOptions.quickMode = {
+                enabled: true,
+                sampleSize,
+                method,
+              };
+            }
+
+            // Parse hyperparameter tuning if provided
+            if (options.tune) {
+              const method = options.tune as 'grid' | 'random';
+              if (!['grid', 'random'].includes(method)) {
+                console.error('Error: Invalid tuning method. Use "grid" or "random"');
+                process.exit(1);
+              }
+
+              nhlOptions.tune = {
+                method,
+                nIter: parseInt(options.tuneIter || '10', 10),
+              };
+            }
+
+            // Parse feature selection if provided
+            if (options.selectFeatures) {
+              const parts = options.selectFeatures.split(':');
+              if (parts.length !== 2) {
+                console.error(
+                  'Error: Invalid feature selection format. Use "method:value" (e.g., "top_k:30")',
+                );
+                process.exit(1);
+              }
+
+              const method = parts[0] as 'top_k' | 'threshold' | 'correlation';
+              const value = parseFloat(parts[1]);
+
+              if (!['top_k', 'threshold', 'correlation'].includes(method)) {
+                console.error(
+                  'Error: Invalid feature selection method. Use "top_k", "threshold", or "correlation"',
+                );
+                process.exit(1);
+              }
+
+              if (isNaN(value)) {
+                console.error(`Error: Invalid feature selection value: ${parts[1]}`);
+                process.exit(1);
+              }
+
+              nhlOptions.selectFeatures = { method, value };
+            }
+
+            modelPath = trainNhlModel(seasons[0], options.output, nhlOptions);
           } else {
             throw new Error(`Unknown sport: ${sport}`);
           }

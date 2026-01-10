@@ -143,6 +143,16 @@ node dist/cli/index.js recommend ncaam \
 - **2025 out-of-sample**: +2.85% ROI (817 bets)
 - Key insight: Bet extremes only (very confident or underdog plays)
 
+### NHL
+```bash
+node dist/cli/index.js recommend nhl \
+  --min-edge 0.08 \
+  --max-ev 0.50 \
+  --buckets "60-100"
+```
+- **2025 out-of-sample**: +18.16% ROI (326 bets)
+- Key insight: Avoid low confidence bets (50-60% bucket loses money)
+
 ### Filter Explanations
 - `--max-ev 0.50`: Caps EV at 50% to filter out suspicious outliers/data errors
 - `--buckets`: Only bet in probability ranges with historical profitability
