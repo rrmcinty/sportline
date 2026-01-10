@@ -558,13 +558,14 @@ function formatRecommendations(
   const cols = {
     time: 12,
     matchup: matchupWidth,
+    market: 6,
+    team: 6,
     modelPct: 8,
     impliedPct: 8,
     edge: 7,
     ev: 6,
     status: 6,
     odds: 5,
-    team: 6,
   };
 
   // Build border line
@@ -574,6 +575,8 @@ function formatRecommendations(
       '─'.repeat(cols.time + 2),
       mid,
       '─'.repeat(cols.matchup + 2),
+      mid,
+      '─'.repeat(cols.market + 2),
       mid,
       '─'.repeat(cols.team + 2),
       mid,
@@ -599,6 +602,7 @@ function formatRecommendations(
     const cells = [
       'Time (EST)'.padEnd(cols.time),
       'Matchup'.padEnd(cols.matchup),
+      'Market'.padEnd(cols.market),
       'Team'.padEnd(cols.team),
       'Model %'.padEnd(cols.modelPct),
       'Implied %'.padEnd(cols.impliedPct),
@@ -621,6 +625,7 @@ function formatRecommendations(
   for (const rec of recommendations) {
     const gameTime = formatGameTimeEST(rec.gameDate);
     const matchup = `${rec.awayTeamName} @ ${rec.homeTeamName}`;
+    const marketLabel = market === 'moneyline' ? 'ML' : 'SPR';
 
     // Show the team being bet on (use abbreviation for compact display)
     const betTeamAbbr =
@@ -660,6 +665,7 @@ function formatRecommendations(
     const cells = [
       gameTime.padEnd(cols.time),
       matchup.substring(0, cols.matchup).padEnd(cols.matchup), // Truncate if needed
+      marketLabel.padEnd(cols.market),
       betTeamAbbr.padEnd(cols.team),
       modelProb.padStart(cols.modelPct),
       implProb.padStart(cols.impliedPct),
