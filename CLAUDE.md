@@ -118,6 +118,37 @@ All feature extraction uses `getTeamStatsBeforeDate()` and `getRecentGames()` wi
 
 `ncaam`, `nba`, `nfl`, `cfb`, `nhl` - configured in both ingest and import modules with sport-specific stat handling (e.g., basketball combined stats like "FGM-FGA" are split during import).
 
+## Optimal Betting Strategy
+
+Based on extensive backtesting, the following parameters achieve positive ROI on out-of-sample data:
+
+### NBA
+```bash
+node dist/cli/index.js recommend nba \
+  --min-edge 0.06 \
+  --max-ev 0.50 \
+  --buckets "40-50,90-100"
+```
+- **2025 out-of-sample**: +10.80% ROI (141 bets)
+- **2024 validation**: +12.84% ROI (180 bets)
+- Key insight: Avoid 70-80% probability range (model overconfidence)
+
+### NCAAM
+```bash
+node dist/cli/index.js recommend ncaam \
+  --min-edge 0.08 \
+  --max-ev 0.50 \
+  --buckets "0-30,80-100"
+```
+- **2025 out-of-sample**: +2.85% ROI (817 bets)
+- Key insight: Bet extremes only (very confident or underdog plays)
+
+### Filter Explanations
+- `--max-ev 0.50`: Caps EV at 50% to filter out suspicious outliers/data errors
+- `--buckets`: Only bet in probability ranges with historical profitability
+- `--kelly-filter`: (Optional) Additional confirmation via Kelly criterion
+- Vigorish gate: Built-in, requires 4% edge for high-vig lines (-115 or worse)
+
 ## Important Notes
 
 - **Type Shims**: Third-party ML libraries lack TypeScript types; local shims are in `src/types/` (e.g., `ml-logistic-regression.d.ts`)

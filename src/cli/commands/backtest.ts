@@ -14,6 +14,28 @@ import {
   printBacktestSummary,
 } from '../../lib/backtest/backtester.js';
 import type { Recommendation } from '../../lib/db/types.js';
+import { parseBuckets, type ConfidenceBucket } from '../../recommend/recommendNba.js';
+
+/**
+ * Filter recommendations by probability bucket
+ */
+function filterByBuckets(
+  recommendations: Recommendation[],
+  buckets: ConfidenceBucket[] | undefined,
+): Recommendation[] {
+  if (!buckets || buckets.length === 0) return recommendations;
+
+  return recommendations.filter((rec) => {
+    // Check if home or away probability falls in a bucket
+    const homeInBucket = buckets.some(
+      (b) => rec.model_prob_home >= b.min && rec.model_prob_home < b.max,
+    );
+    const awayInBucket = buckets.some(
+      (b) => rec.model_prob_away >= b.min && rec.model_prob_away < b.max,
+    );
+    return homeInBucket || awayInBucket;
+  });
+}
 
 interface BacktestOptions {
   season: string;
@@ -23,6 +45,7 @@ interface BacktestOptions {
   maxEv?: string;
   minBets?: string;
   showBuckets?: boolean;
+  buckets?: string;
 }
 
 export function backtestCommand(): Command {
@@ -46,6 +69,10 @@ export function backtestCommand(): Command {
     .option('--max-ev <value>', 'Maximum EV threshold (filter out suspiciously high EV)')
     .option('--min-bets <n>', 'Minimum bets required for threshold to be considered', '20')
     .option('--show-buckets', 'Show probability bucket analysis', false)
+    .option(
+      '--buckets <ranges>',
+      'Only bet in these probability buckets (e.g., "40-70,80-100" to exclude 70-80%)',
+    )
     .action(async (sport: string, options: BacktestOptions) => {
       const supportedSports = ['nba', 'ncaam'];
       if (!supportedSports.includes(sport)) {
@@ -182,6 +209,16 @@ export function backtestCommand(): Command {
 
           console.log(`✓ Generated ${recommendations.length} recommendations`);
 
+          // Apply bucket filtering if specified
+          const buckets = parseBuckets(options.buckets);
+          let filteredRecommendations = recommendations;
+          if (buckets && buckets.length > 0) {
+            filteredRecommendations = filterByBuckets(recommendations, buckets);
+            console.log(
+              `✓ Filtered to ${filteredRecommendations.length} recommendations (buckets: ${options.buckets})`,
+            );
+          }
+
           // Parse backtest parameters
           const edgeRange = (options.edgeRange || '0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08')
             .split(',')
@@ -200,7 +237,12 @@ export function backtestCommand(): Command {
           }
 
           // Run grid search
-          const backtestResults = runBacktestGrid(recommendations, edgeRange, evRange, maxEv);
+          const backtestResults = runBacktestGrid(
+            filteredRecommendations,
+            edgeRange,
+            evRange,
+            maxEv,
+          );
 
           // Print summary
           printBacktestSummary(backtestResults, 15);
@@ -216,12 +258,12 @@ export function backtestCommand(): Command {
           // Show probability buckets if requested
           if (options.showBuckets) {
             console.log('\n=== Probability Bucket Analysis ===\n');
-            const buckets = generateProbabilityBuckets(recommendations, 0.1);
+            const bucketAnalysis = generateProbabilityBuckets(filteredRecommendations, 0.1);
 
             console.log('Bucket  | Games | Accuracy | Avg Edge | Avg EV  | ROI      | Profit  ');
             console.log('--------+-------+----------+----------+---------+----------+---------');
 
-            for (const bucket of buckets) {
+            for (const bucket of bucketAnalysis) {
               console.log(
                 `${bucket.bucket.padEnd(7)} | ` +
                   `${bucket.count.toString().padStart(5)} | ` +

@@ -241,3 +241,66 @@ export function getTeamName(db: Database.Database, sport: string, teamId: string
     | undefined;
   return row?.name ?? null;
 }
+
+/**
+ * Get complete odds history for a game (sorted oldest to newest)
+ * Used for line movement analysis
+ */
+export function getOddsHistory(
+  db: Database.Database,
+  gameId: string,
+  market: string = 'moneyline',
+): OddsRow[] {
+  return db
+    .prepare(
+      `SELECT id, game_id, provider, market, line, price_home, price_away, price_over, price_under, timestamp
+      FROM odds
+      WHERE game_id = ? AND market = ?
+      ORDER BY timestamp ASC`,
+    )
+    .all(gameId, market) as OddsRow[];
+}
+
+/**
+ * Get opening and closing odds for a game
+ * Opening = earliest timestamp, Closing = latest timestamp
+ */
+export function getOpeningClosingOdds(
+  db: Database.Database,
+  gameId: string,
+  market: string = 'moneyline',
+): { opening: OddsRow | null; closing: OddsRow | null } {
+  const history = getOddsHistory(db, gameId, market);
+  return {
+    opening: history.length > 0 ? history[0] : null,
+    closing: history.length > 0 ? history[history.length - 1] : null,
+  };
+}
+
+/**
+ * Get head-to-head games between two teams
+ */
+export function getHeadToHeadGames(
+  db: Database.Database,
+  sport: string,
+  team1Id: string,
+  team2Id: string,
+  season: number,
+  beforeDate: string,
+  limit: number = 10,
+): GameRow[] {
+  return db
+    .prepare(
+      `SELECT id, sport, date, season, home_team_id, away_team_id, home_score, away_score, status
+      FROM games
+      WHERE sport = ?
+        AND season = ?
+        AND date < ?
+        AND status = 'post'
+        AND home_score IS NOT NULL
+        AND ((home_team_id = ? AND away_team_id = ?) OR (home_team_id = ? AND away_team_id = ?))
+      ORDER BY date DESC
+      LIMIT ?`,
+    )
+    .all(sport, season, beforeDate, team1Id, team2Id, team2Id, team1Id, limit) as GameRow[];
+}

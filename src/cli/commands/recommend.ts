@@ -3,7 +3,7 @@
  */
 
 import { Command } from 'commander';
-import { generateRecommendations } from '../../recommend/recommendNba.js';
+import { generateRecommendations, parseBuckets } from '../../recommend/recommendNba.js';
 import path from 'path';
 
 export function recommendCommand(): Command {
@@ -16,10 +16,30 @@ export function recommendCommand(): Command {
     .option('-e, --min-edge <number>', 'Minimum edge required (default: 0.03 = 3%)', '0.03')
     .option('-p, --min-prob <number>', 'Minimum model probability (default: 0.5 = 50%)', '0.5')
     .option('--market <type>', 'Market type (default: moneyline)', 'moneyline')
+    .option('--max-ev <number>', 'Maximum EV threshold (filter out suspiciously high EV)')
+    .option(
+      '--buckets <ranges>',
+      'Only bet in these probability buckets (e.g., "60-70,80-90" for 60-70% and 80-90%)',
+    )
+    .option('--kelly-filter', 'Only bet if Kelly criterion suggests positive allocation')
+    .option(
+      '--min-kelly <number>',
+      'Minimum Kelly percentage required (default: 0.01 = 1%)',
+      '0.01',
+    )
     .action(
       (
         sport: string,
-        options: { model?: string; minEdge?: string; minProb?: string; market?: string },
+        options: {
+          model?: string;
+          minEdge?: string;
+          minProb?: string;
+          market?: string;
+          maxEv?: string;
+          buckets?: string;
+          kellyFilter?: boolean;
+          minKelly?: string;
+        },
       ) => {
         const supportedSports = ['nba', 'ncaam'];
         if (!supportedSports.includes(sport)) {
@@ -48,17 +68,33 @@ export function recommendCommand(): Command {
           modelPath = path.join(process.cwd(), 'data', 'models', sport, 'moneyline-2024.json');
         }
 
+        // Parse new filter options
+        const maxEV = options.maxEv ? parseFloat(options.maxEv) : undefined;
+        const profitableBuckets = parseBuckets(options.buckets);
+        const useKellyFilter = options.kellyFilter ?? false;
+        const minKelly = options.minKelly ? parseFloat(options.minKelly) : 0.01;
+
         console.log(`Generating recommendations for ${sport.toUpperCase()}...`);
         console.log(`Using model: ${modelPath}`);
         console.log(`Minimum edge: ${(minEdge * 100).toFixed(1)}%`);
         console.log(`Minimum probability: ${(minProb * 100).toFixed(0)}%`);
-        console.log(`Market: ${options.market || 'moneyline'}\n`);
+        console.log(`Market: ${options.market || 'moneyline'}`);
+        if (maxEV !== undefined) console.log(`Max EV: ${(maxEV * 100).toFixed(0)}%`);
+        if (profitableBuckets)
+          console.log(`Buckets: ${options.buckets} (only betting in these ranges)`);
+        if (useKellyFilter)
+          console.log(`Kelly filter: enabled (min ${(minKelly * 100).toFixed(0)}%)`);
+        console.log('');
 
         try {
           const recommendations = generateRecommendations(modelPath, {
             minEdge,
             minProb,
             market: options.market || 'moneyline',
+            maxEV,
+            profitableBuckets,
+            useKellyFilter,
+            minKelly,
           });
 
           if (recommendations.length === 0) {
