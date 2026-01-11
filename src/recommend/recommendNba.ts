@@ -55,6 +55,7 @@ export function findValueBets(
     profitableBuckets?: ConfidenceBucket[]; // Only bet in these probability ranges
     useKellyFilter?: boolean; // Only bet if Kelly suggests positive allocation
     minKelly?: number; // Minimum Kelly percentage required
+    dateFilter?: string; // Filter to specific date (YYYY-MM-DD)
   } = {},
 ): ValueBet[] {
   const minEdge = options.minEdge ?? 0.03; // Default 3% edge
@@ -65,9 +66,19 @@ export function findValueBets(
   const useKellyFilter = options.useKellyFilter ?? false;
   const minKelly = options.minKelly ?? 0.01; // Default 1% Kelly
   const sport = modelData.sport || 'nba'; // Get sport from model metadata
+  const dateFilter = options.dateFilter;
 
   // Get upcoming games for this sport
-  const upcomingGames = getUpcomingGames(db, sport);
+  let upcomingGames = getUpcomingGames(db, sport);
+
+  // Filter by date if specified
+  if (dateFilter) {
+    upcomingGames = upcomingGames.filter((game) => {
+      // Extract date portion from UTC timestamp (games stored as YYYY-MM-DDTHH:MMZ)
+      const gameDateUTC = game.date.substring(0, 10);
+      return gameDateUTC === dateFilter;
+    });
+  }
 
   console.log(`Evaluating ${upcomingGames.length} upcoming games...`);
 
@@ -198,6 +209,7 @@ export function generateRecommendations(
     profitableBuckets?: ConfidenceBucket[];
     useKellyFilter?: boolean;
     minKelly?: number;
+    dateFilter?: string;
   } = {},
 ): ValueBet[] {
   const modelData = loadModel(modelPath);

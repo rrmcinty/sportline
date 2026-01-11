@@ -13,47 +13,77 @@ import {
 import path from 'path';
 
 /**
- * Optimal bucket ranges by sport based on backtesting results
+ * Parse date string to YYYY-MM-DD format in EST timezone
+ */
+function parseDateFilter(dateStr: string | undefined): string | undefined {
+  if (!dateStr) return undefined;
+
+  const now = new Date();
+
+  if (dateStr.toLowerCase() === 'today') {
+    return now.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  }
+
+  if (dateStr.toLowerCase() === 'tomorrow') {
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    return tomorrow.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  }
+
+  // Assume YYYY-MM-DD format
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return dateStr;
+  }
+
+  console.error(`Invalid date format: ${dateStr}. Use YYYY-MM-DD, "today", or "tomorrow".`);
+  process.exit(1);
+}
+
+/**
+ * Optimal bucket ranges by sport based on backtesting results (2025 training, 2026 validation)
+ * Updated: 2026-01-11 optimization run
  */
 const OPTIMAL_BUCKETS: Record<string, ConfidenceBucket[]> = {
+  // NBA: 4.79% ROI - profitable in 30-40, 60-70, 80-100
   nba: [
-    { min: 0.4, max: 0.5 },
-    { min: 0.9, max: 1.0 },
-  ],
-  ncaam: [
-    { min: 0.0, max: 0.3 },
+    { min: 0.3, max: 0.4 },
+    { min: 0.6, max: 0.7 },
     { min: 0.8, max: 1.0 },
   ],
-  nhl: [{ min: 0.6, max: 1.0 }],
+  // NCAAM: 2.95% ROI - profitable in 20-30 (underdogs), 80-100 (favorites)
+  ncaam: [
+    { min: 0.2, max: 0.3 },
+    { min: 0.8, max: 1.0 },
+  ],
+  // NHL: 21.40% ROI - almost all buckets profitable, best at extremes
+  nhl: [
+    { min: 0.0, max: 0.5 }, // Underdogs are gold
+    { min: 0.6, max: 0.7 },
+    { min: 0.8, max: 1.0 },
+  ],
 };
 
 /**
- * Expected ROI by sport (from backtesting)
- * Moneyline models
+ * Expected ROI by sport (from backtesting on 2026 season)
+ * Moneyline models trained on 2025
  */
 const EXPECTED_ROI: Record<string, number> = {
-  nba: 0.1084, // 10.84%
-  ncaam: 0.0285, // 2.85%
-  nhl: 0.1816, // 18.16%
+  nba: 0.0479, // 4.79%
+  ncaam: 0.0295, // 2.95%
+  nhl: 0.214, // 21.40% - NHL full model is the winner!
 };
 
 /**
  * Optimal bucket ranges for spread markets (from backtesting)
+ * Only NHL spread is profitable - NBA/NCAAM spread disabled
  */
 const OPTIMAL_BUCKETS_SPREAD: Record<string, ConfidenceBucket[]> = {
-  nba: [
-    { min: 0.5, max: 0.6 },
-    { min: 0.6, max: 0.7 },
-  ],
-  ncaam: [
-    { min: 0.6, max: 0.7 },
-    { min: 0.7, max: 0.8 },
-    { min: 0.8, max: 0.9 },
-    { min: 0.9, max: 1.0 },
-  ],
+  // NBA spread: -1.14% ROI - not profitable, use restrictive bucket
+  nba: [],
+  // NCAAM spread: -3.29% ROI - not profitable, use restrictive bucket
+  ncaam: [],
+  // NHL spread: 13.03% ROI - profitable when model favors away team covering
   nhl: [
-    { min: 0.7, max: 0.8 },
-    { min: 0.8, max: 0.9 },
+    { min: 0.1, max: 0.3 }, // Bet away to cover when model says 10-30% home covers
   ],
 };
 
@@ -61,9 +91,9 @@ const OPTIMAL_BUCKETS_SPREAD: Record<string, ConfidenceBucket[]> = {
  * Expected ROI for spread models (from backtesting)
  */
 const EXPECTED_ROI_SPREAD: Record<string, number> = {
-  nba: 0.6539, // 65.39%
-  ncaam: 0.3679, // 36.79%
-  nhl: 0.4864, // 48.64%
+  nba: -0.0114, // -1.14% (not recommended)
+  ncaam: -0.0329, // -3.29% (not recommended)
+  nhl: 0.1303, // 13.03%
 };
 
 export function recommendCommand(): Command {
@@ -92,6 +122,8 @@ export function recommendCommand(): Command {
       'Minimum Kelly percentage required (default: 0.01 = 1%)',
       '0.01',
     )
+    .option('-d, --date <date>', 'Filter games by date (YYYY-MM-DD, "today", or "tomorrow")')
+    .option('--raw', 'Disable all bucket filters - show all potential value bets')
     .action(
       (
         sport: string | undefined,
@@ -103,6 +135,8 @@ export function recommendCommand(): Command {
           moneylineBuckets?: string;
           kellyFilter?: boolean;
           minKelly?: string;
+          date?: string;
+          raw?: boolean;
         },
       ) => {
         const supportedSports = ['nba', 'ncaam', 'nhl'];
@@ -149,6 +183,8 @@ function generateAllRecommendations(
     moneylineBuckets?: string;
     kellyFilter?: boolean;
     minKelly?: string;
+    date?: string;
+    raw?: boolean;
   },
 ): void {
   const minEdge = parseFloat(options.minEdge || '0.03');
@@ -156,26 +192,30 @@ function generateAllRecommendations(
   const maxEV = options.maxEv ? parseFloat(options.maxEv) : undefined;
   const useKellyFilter = options.kellyFilter ?? false;
   const minKelly = options.minKelly ? parseFloat(options.minKelly) : 0.01;
+  const dateFilter = parseDateFilter(options.date);
 
   console.log(`\n${chalk.bold.cyan('⚽ Generating Recommendations - All Sports & Markets')}`);
+  const dateDisplay = dateFilter ? ` | Date: ${chalk.yellow(dateFilter)}` : '';
+  const rawDisplay = options.raw ? ` | ${chalk.magenta('RAW MODE')}` : '';
   console.log(
-    `${chalk.bold('Filters:')}\n  Min Edge: ${chalk.green(`${(minEdge * 100).toFixed(1)}%`)} | Min Prob: ${chalk.green(`${(minProb * 100).toFixed(0)}%`)} | Max EV: ${maxEV ? chalk.green(`${(maxEV * 100).toFixed(0)}%`) : chalk.dim('none')}\n`,
+    `${chalk.bold('Filters:')}\n  Min Edge: ${chalk.green(`${(minEdge * 100).toFixed(1)}%`)} | Min Prob: ${chalk.green(`${(minProb * 100).toFixed(0)}%`)} | Max EV: ${maxEV ? chalk.green(`${(maxEV * 100).toFixed(0)}%`) : chalk.dim('none')}${dateDisplay}${rawDisplay}\n`,
   );
 
   // Collect all recommendations
   const allRecs: RecommendationWithMetadata[] = [];
 
   for (const sport of supportedSports) {
-    const moneylineBuckets = parseBuckets(options.moneylineBuckets);
-    const spreadBuckets = OPTIMAL_BUCKETS_SPREAD[sport] || [];
+    // In raw mode, skip bucket filtering entirely
+    const moneylineBuckets = options.raw ? undefined : parseBuckets(options.moneylineBuckets);
+    const spreadBuckets = options.raw ? undefined : OPTIMAL_BUCKETS_SPREAD[sport] || [];
     const optimalBuckets = OPTIMAL_BUCKETS[sport] || [];
     const modelBasePath = options.model
       ? options.model
       : path.join(process.cwd(), 'data', 'models', sport);
 
     try {
-      const moneylineModelPath = path.join(modelBasePath, 'moneyline-2024.json');
-      const spreadModelPath = path.join(modelBasePath, 'spread-2024.json');
+      const moneylineModelPath = path.join(modelBasePath, 'moneyline-2025.json');
+      const spreadModelPath = path.join(modelBasePath, 'spread-2025.json');
 
       // Moneyline recs
       const moneylineRecs = generateRecommendations(moneylineModelPath, {
@@ -186,6 +226,7 @@ function generateAllRecommendations(
         profitableBuckets: moneylineBuckets,
         useKellyFilter,
         minKelly,
+        dateFilter,
       });
 
       for (const rec of moneylineRecs) {
@@ -206,6 +247,7 @@ function generateAllRecommendations(
         profitableBuckets: spreadBuckets,
         useKellyFilter,
         minKelly,
+        dateFilter,
       });
 
       for (const rec of spreadRecs) {
@@ -259,6 +301,8 @@ function generateRecommendationsForSport(
     moneylineBuckets?: string;
     kellyFilter?: boolean;
     minKelly?: string;
+    date?: string;
+    raw?: boolean;
   },
 ): void {
   const minEdge = parseFloat(options.minEdge || '0.03');
@@ -280,33 +324,39 @@ function generateRecommendationsForSport(
 
   // Parse filter options
   const maxEV = options.maxEv ? parseFloat(options.maxEv) : undefined;
-  const moneylineBuckets = parseBuckets(options.moneylineBuckets);
+  const moneylineBuckets = options.raw ? undefined : parseBuckets(options.moneylineBuckets);
   const useKellyFilter = options.kellyFilter ?? false;
   const minKelly = options.minKelly ? parseFloat(options.minKelly) : 0.01;
+  const dateFilter = parseDateFilter(options.date);
 
   console.log(`\n${chalk.bold.cyan('⚽ Generating Recommendations')}`);
   console.log(`Sport: ${chalk.yellow(sport.toUpperCase())}`);
+  if (options.raw) console.log(`Mode: ${chalk.magenta('RAW (no bucket filters)')}`);
   console.log(`Models: ${chalk.dim(`${modelBasePath}/moneyline-*.json and spread-*.json`)}`);
   console.log(
     `Expected ROI (from backtesting): ${chalk.bold.green(`${(EXPECTED_ROI[sport] * 100).toFixed(2)}%`)}`,
   );
 
-  console.log(`\n${chalk.bold('Moneyline - Optimal Probability Ranges:')}`);
   const optimalBuckets = OPTIMAL_BUCKETS[sport] || [];
-  if (optimalBuckets.length > 0) {
-    const bucketRanges = optimalBuckets
-      .map((b) => `${(b.min * 100).toFixed(0)}-${(b.max * 100).toFixed(0)}%`)
-      .join(', ');
-    console.log(`  ${chalk.green('✓')} ${bucketRanges} (historically profitable)`);
-  }
+  const spreadBuckets = options.raw ? undefined : OPTIMAL_BUCKETS_SPREAD[sport] || [];
 
-  console.log(`${chalk.bold('Spread - Optimal Probability Ranges:')}`);
-  const spreadBuckets = OPTIMAL_BUCKETS_SPREAD[sport] || [];
-  if (spreadBuckets.length > 0) {
-    const bucketRanges = spreadBuckets
-      .map((b) => `${(b.min * 100).toFixed(0)}-${(b.max * 100).toFixed(0)}%`)
-      .join(', ');
-    console.log(`  ${chalk.cyan('ℹ')} ${bucketRanges} (historically profitable)`);
+  if (!options.raw) {
+    console.log(`\n${chalk.bold('Moneyline - Optimal Probability Ranges:')}`);
+    if (optimalBuckets.length > 0) {
+      const bucketRanges = optimalBuckets
+        .map((b) => `${(b.min * 100).toFixed(0)}-${(b.max * 100).toFixed(0)}%`)
+        .join(', ');
+      console.log(`  ${chalk.green('✓')} ${bucketRanges} (historically profitable)`);
+    }
+
+    console.log(`${chalk.bold('Spread - Optimal Probability Ranges:')}`);
+    const spreadBucketsDisplay = OPTIMAL_BUCKETS_SPREAD[sport] || [];
+    if (spreadBucketsDisplay.length > 0) {
+      const bucketRanges = spreadBucketsDisplay
+        .map((b) => `${(b.min * 100).toFixed(0)}-${(b.max * 100).toFixed(0)}%`)
+        .join(', ');
+      console.log(`  ${chalk.cyan('ℹ')} ${bucketRanges} (historically profitable)`);
+    }
   }
 
   console.log(`\n${chalk.bold('Current Filters:')}`);
@@ -314,6 +364,7 @@ function generateRecommendationsForSport(
   console.log(`  Min Probability: ${chalk.green(`${(minProb * 100).toFixed(0)}%`)}`);
   console.log(`  Markets: ${chalk.green('moneyline + spread')}`);
   if (maxEV !== undefined) console.log(`  Max EV: ${chalk.green(`${(maxEV * 100).toFixed(0)}%`)}`);
+  if (dateFilter) console.log(`  Date: ${chalk.yellow(dateFilter)}`);
   if (moneylineBuckets)
     console.log(`  Moneyline Buckets: ${chalk.green(options.moneylineBuckets)} (custom override)`);
   if (useKellyFilter)
@@ -322,8 +373,8 @@ function generateRecommendationsForSport(
 
   try {
     // Generate recommendations for both markets
-    const moneylineModelPath = path.join(modelBasePath, 'moneyline-2024.json');
-    const spreadModelPath = path.join(modelBasePath, 'spread-2024.json');
+    const moneylineModelPath = path.join(modelBasePath, 'moneyline-2025.json');
+    const spreadModelPath = path.join(modelBasePath, 'spread-2025.json');
 
     const moneylineRecs = generateRecommendations(moneylineModelPath, {
       minEdge,
@@ -333,6 +384,7 @@ function generateRecommendationsForSport(
       profitableBuckets: moneylineBuckets,
       useKellyFilter,
       minKelly,
+      dateFilter,
     });
 
     const spreadRecs = generateRecommendations(spreadModelPath, {
@@ -343,6 +395,7 @@ function generateRecommendationsForSport(
       profitableBuckets: spreadBuckets,
       useKellyFilter,
       minKelly,
+      dateFilter,
     });
 
     // Combine all recommendations with metadata
@@ -446,7 +499,13 @@ function formatUnifiedRecommendations(recommendations: RecommendationWithMetadat
   // Add data rows
   for (const rec of recommendations) {
     const gameTime = formatGameTimeEST(rec.gameDate);
-    const matchup = `${rec.awayTeamAbbr || rec.awayTeamName} @ ${rec.homeTeamAbbr || rec.homeTeamName}`;
+    // Highlight the team we're betting on in the matchup
+    const awayDisplay = rec.awayTeamAbbr || rec.awayTeamName;
+    const homeDisplay = rec.homeTeamAbbr || rec.homeTeamName;
+    const matchup =
+      rec.side === 'away'
+        ? `${chalk.bold.green(awayDisplay)} @ ${homeDisplay}`
+        : `${awayDisplay} @ ${chalk.bold.green(homeDisplay)}`;
     const sport = rec.sport.toUpperCase();
     const market = rec.marketType === 'moneyline' ? 'ML' : 'SPR';
 
@@ -543,6 +602,7 @@ function printUnifiedSummary(recommendations: RecommendationWithMetadata[]): voi
 /**
  * Check if probability falls in optimal bucket
  */
-function isOptimalBet(prob: number, optimalBuckets: ConfidenceBucket[]): boolean {
+function isOptimalBet(prob: number, optimalBuckets: ConfidenceBucket[] | undefined): boolean {
+  if (!optimalBuckets || optimalBuckets.length === 0) return false;
   return optimalBuckets.some((b) => prob >= b.min && prob < b.max);
 }

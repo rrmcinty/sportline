@@ -1,0 +1,12 @@
+=== MODEL OPTIMIZATION SUMMARY ===
+Generated: Sun Jan 11 17:07:58 EST 2026
+
+Training: 2025 season
+Validation: 2026 season
+
+Review the log file for detailed results:
+  /Users/ryanmcintyre/Github/sportline/optimization-results-20260111-111615.log
+
+To find ROI results:
+  grep -E 'ROI|Expected' /Users/ryanmcintyre/Github/sportline/optimization-results-20260111-111615.log
+
