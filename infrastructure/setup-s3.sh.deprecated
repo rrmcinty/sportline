@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#
+# Setup S3 bucket for Sportline dashboard
+# Creates bucket, enables versioning, and sets lifecycle rules
+#
+
+set -e
+
+# Get environment (username or 'prod')
+ENV=${1:-$(whoami)}
+BUCKET="sportline-data-${ENV}"
+REGION=${AWS_REGION:-us-east-1}
+
+echo "🪣  Setting up S3 bucket for Sportline"
+echo "   Environment: $ENV"
+echo "   Bucket: $BUCKET"
+echo "   Region: $REGION"
+echo ""
+
+# Check if bucket exists
+if aws s3 ls "s3://${BUCKET}" 2>&1 | grep -q 'NoSuchBucket'; then
+  echo "Creating bucket..."
+  aws s3 mb "s3://${BUCKET}" --region "$REGION"
+  echo "✓ Bucket created"
+else
+  echo "✓ Bucket already exists"
+fi
+
+# Enable versioning (optional, useful for rollback)
+echo ""
+echo "Configuring bucket..."
+aws s3api put-bucket-versioning \
+  --bucket "$BUCKET" \
+  --versioning-configuration Status=Enabled
+
+echo "✓ Versioning enabled"
+
+# Set lifecycle rules
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket "$BUCKET" \
+  --lifecycle-configuration "file://${SCRIPT_DIR}/lifecycle.json"
+
+echo "✓ Lifecycle rules applied (2-day TTL for daily/ prefix)"
+
+# Create folder structure (optional, just for visualization)
+echo ""
+echo "Creating folder structure..."
+touch /tmp/.gitkeep
+aws s3 cp /tmp/.gitkeep "s3://${BUCKET}/models/.gitkeep" --quiet || true
+aws s3 cp /tmp/.gitkeep "s3://${BUCKET}/features/.gitkeep" --quiet || true
+aws s3 cp /tmp/.gitkeep "s3://${BUCKET}/daily/.gitkeep" --quiet || true
+rm /tmp/.gitkeep
+
+echo "✓ Folder structure created"
+
+echo ""
+echo "✅ S3 setup complete!"
+echo "   Bucket: s3://${BUCKET}"
+echo ""
+echo "Next steps:"
+echo "  1. Run 'npm run sync' to upload models and features"
+echo "  2. Deploy Lambda functions with './infrastructure/deploy-lambda.sh'"

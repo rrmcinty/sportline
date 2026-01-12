@@ -43,7 +43,20 @@
     "import:nba:full": "for y in 2019 2020 2021 2022 2023 2024 2025 2026; do if [ -d \"data/nba/$y\" ]; then echo \"Importing NBA season $y\"; npm run import:sports:db -- nba $y; fi; done",
     "import:nhl:full": "for y in 2020 2021 2022 2023 2024 2025 2025 2026; do if [ -d \"data/nhl/$y\" ]; then echo \"Importing NHL season $y\"; npm run import:sports:db -- nhl $y; fi; done",
     "import:nfl:full": "for y in 2019 2020 2021 2022 2023 2024 2025 2025 2026; do if [ -d \"data/nfl/$y\" ]; then echo \"Importing NFL season $y\"; npm run import:sports:db -- nfl $y; fi; done",
-    "import:cfb:full": "for y in 2020 2021 2022 2023 2024 2025 2025 2026; do if [ -d \"data/cfb/$y\" ]; then echo \"Importing CFB season $y\"; npm run import:sports:db -- cfb $y; fi; done"
+    "import:cfb:full": "for y in 2020 2021 2022 2023 2024 2025 2025 2026; do if [ -d \"data/cfb/$y\" ]; then echo \"Importing CFB season $y\"; npm run import:sports:db -- cfb $y; fi; done",
+    "sync": "npm run build && node dist/cli/index.js sync",
+    "sync:local": "npm run build && node dist/cli/index.js sync --no-upload",
+    "lambda:build": "cd lambda/update && npm run build && cd ../dashboard && npm run build && cd ../..",
+    "cdk:install": "cd infrastructure && npm install && cd ..",
+    "cdk:build": "cd infrastructure && npm run build && cd ..",
+    "cdk:synth": "cd infrastructure && npm run cdk synth && cd ..",
+    "cdk:deploy": "npm run lambda:build && cd infrastructure && npm run cdk deploy -- --require-approval never && cd ..",
+    "cdk:deploy:prod": "npm run lambda:build && cd infrastructure && npm run cdk deploy -- -c env=prod --require-approval never && cd ..",
+    "cdk:destroy": "cd infrastructure && npm run cdk destroy && cd ..",
+    "cdk:diff": "cd infrastructure && npm run cdk diff && cd ..",
+    "lambda:install": "cd lambda/update && npm install && cd ../dashboard && npm install && cd ../..",
+    "all": "npm ci && npm run lambda:install && npm run cdk:install && npm run build && npm run lambda:build && npm run cdk:deploy && npm run sync",
+    "all:prod": "npm ci && npm run lambda:install && npm run cdk:install && npm run build && npm run lambda:build && npm run cdk:deploy:prod && ENV=prod npm run sync"
   },
   "keywords": [
     "ncaam",

@@ -1,0 +1,14 @@
+{
+  "Rules": [
+    {
+      "ID": "DeleteDailyDataAfter2Days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "daily/"
+      },
+      "Expiration": {
+        "Days": 2
+      }
+    }
+  ]
+}

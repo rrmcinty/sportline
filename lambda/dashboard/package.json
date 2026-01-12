@@ -1,0 +1,28 @@
+{
+  "name": "sportline-dashboard-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function serving mobile dashboard",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "format": "npx prettier --write \"src/**/*.ts\"",
+    "lint": "npx eslint src --fix",
+    "build:frontend": "esbuild src/frontend/app.ts --bundle --platform=browser --target=es2020 --format=iife --global-name=SportlineApp --outfile=dist/app.js --minify",
+    "build:lambda": "esbuild src/index.ts --bundle --platform=node --target=node20 --format=esm --outfile=dist/index.js --external:@aws-sdk/*",
+    "build": "npm run format && npm run lint && npm run build:frontend && npm run build:lambda && cp package.json dist/",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.700.0",
+    "@aws-sdk/client-lambda": "^3.700.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.3.0"
+  }
+}

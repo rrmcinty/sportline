@@ -16,6 +16,8 @@ export default [
       '*.js.map',
       '*.d.ts',
       '*.d.ts.map',
+      'lambda/*/dist/**',
+      'infrastructure/cdk.out/**',
     ],
   },
   js.configs.recommended,

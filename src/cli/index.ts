@@ -10,6 +10,7 @@ import { trainCommand } from './commands/train.js';
 import { recommendCommand } from './commands/recommend.js';
 import { backtestCommand } from './commands/backtest.js';
 import { updateCommand } from './commands/update.js';
+import { syncCommand } from './commands/sync.js';
 
 const program = new Command();
 
@@ -46,6 +47,7 @@ program.addCommand(trainCommand());
 program.addCommand(recommendCommand());
 program.addCommand(backtestCommand());
 program.addCommand(updateCommand());
+program.addCommand(syncCommand());
 
 // Parse arguments
 program.parse();
