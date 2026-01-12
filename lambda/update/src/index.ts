@@ -75,6 +75,7 @@ interface ConfigData {
 
 const BUCKET = process.env.BUCKET || `sportline-data-${process.env.USER || 'dev'}`;
 const MIN_EDGE = 0.03; // 3% minimum edge
+const MAX_EV = 0.5; // 50% maximum EV (filters outliers)
 
 /**
  * Convert American odds to implied probability
@@ -230,7 +231,7 @@ export async function handler(event: unknown) {
           }
           gamesProcessed++;
 
-          if (edge >= MIN_EDGE && passesJuiceGate(odds.priceHome, edge)) {
+          if (edge >= MIN_EDGE && ev <= MAX_EV && passesJuiceGate(odds.priceHome, edge)) {
             const baseRec = {
               gameId: game.id,
               gameDate: game.date,
@@ -258,7 +259,7 @@ export async function handler(event: unknown) {
           const edge = awayWinProb - impliedProb;
           const ev = calculateEV(awayWinProb, odds.priceAway);
 
-          if (edge >= MIN_EDGE && passesJuiceGate(odds.priceAway, edge)) {
+          if (edge >= MIN_EDGE && ev <= MAX_EV && passesJuiceGate(odds.priceAway, edge)) {
             const baseRec = {
               gameId: game.id,
               gameDate: game.date,
@@ -288,7 +289,7 @@ export async function handler(event: unknown) {
           const edge = homeCoversProb - impliedProb;
           const ev = calculateEV(homeCoversProb, spreadOdds);
 
-          if (edge >= MIN_EDGE && passesJuiceGate(spreadOdds, edge)) {
+          if (edge >= MIN_EDGE && ev <= MAX_EV && passesJuiceGate(spreadOdds, edge)) {
             const baseRec = {
               gameId: game.id,
               gameDate: game.date,
