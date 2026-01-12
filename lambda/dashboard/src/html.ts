@@ -68,10 +68,20 @@ export function getHtmlTemplate(appJs: string): string {
       border-radius: 0.5rem;
       font-size: 0.9rem;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     button:active {
       opacity: 0.8;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #update-odds-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     }
 
     .meta {
@@ -200,6 +210,7 @@ export function getHtmlTemplate(appJs: string): string {
         <option value="spread">Spread</option>
       </select>
       <button id="refresh-btn">↻</button>
+      <button id="update-odds-btn">Update Odds</button>
     </div>
   </div>
   <div class="meta">

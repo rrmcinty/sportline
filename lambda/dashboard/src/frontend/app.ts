@@ -30,9 +30,34 @@ class SportlineDashboard {
       this.filterAndRender();
     });
 
-    // Refresh button
+    // Refresh button (reload current data)
     document.getElementById('refresh-btn')?.addEventListener('click', () => {
       this.loadData();
+    });
+
+    // Update Odds button (trigger Lambda to fetch fresh odds)
+    document.getElementById('update-odds-btn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('update-odds-btn') as HTMLButtonElement;
+      if (!btn) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Updating...';
+
+      try {
+        const response = await fetch('/api/refresh', { method: 'POST' });
+        if (!response.ok) throw new Error('Failed to trigger update');
+
+        // Wait 3 seconds for Lambda to run, then reload data
+        setTimeout(() => {
+          this.loadData();
+          btn.disabled = false;
+          btn.textContent = 'Update Odds';
+        }, 3000);
+      } catch (error) {
+        alert(`Failed to update odds: ${error}`);
+        btn.disabled = false;
+        btn.textContent = 'Update Odds';
+      }
     });
 
     // Pull to refresh
