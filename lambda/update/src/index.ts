@@ -33,6 +33,9 @@ interface Recommendation {
   sport: string;
   homeTeamId: string;
   awayTeamId: string;
+  homeTeamName: string;
+  awayTeamName: string;
+  pickTeamName: string;
   market: string;
   side: 'home' | 'away';
   modelProbability: number;
@@ -42,11 +45,32 @@ interface Recommendation {
   edge: number;
   ev: number;
   provider: string;
+  isBest: boolean;
 }
 
 interface RecommendationsOutput {
   generatedAt: string;
   recommendations: Recommendation[];
+}
+
+interface TeamsData {
+  [sport: string]: {
+    [teamId: string]: string;
+  };
+}
+
+interface BucketRange {
+  min: number;
+  max: number;
+}
+
+interface ConfigData {
+  optimalBuckets: {
+    [sport: string]: {
+      moneyline: BucketRange[];
+      spread: BucketRange[];
+    };
+  };
 }
 
 const BUCKET = process.env.BUCKET || `sportline-data-${process.env.USER || 'dev'}`;
@@ -83,6 +107,52 @@ function passesJuiceGate(betOdds: number, betEdge: number): boolean {
 }
 
 /**
+ * Check if probability is in optimal bucket
+ */
+function isInOptimalBucket(
+  config: ConfigData,
+  sport: string,
+  market: 'moneyline' | 'spread',
+  probability: number,
+): boolean {
+  const sportBuckets = config.optimalBuckets[sport];
+  if (!sportBuckets) return false;
+
+  const buckets = sportBuckets[market];
+  const probPercent = probability * 100;
+
+  return buckets.some((bucket) => probPercent >= bucket.min && probPercent <= bucket.max);
+}
+
+/**
+ * Enrich recommendation with team names and isBest indicator
+ */
+function enrichRecommendation(
+  rec: Omit<Recommendation, 'homeTeamName' | 'awayTeamName' | 'pickTeamName' | 'isBest'>,
+  teamsData: TeamsData,
+  configData: ConfigData,
+): Recommendation {
+  const sportTeams = teamsData[rec.sport] || {};
+  const homeTeamName = sportTeams[rec.homeTeamId] || `Team ${rec.homeTeamId}`;
+  const awayTeamName = sportTeams[rec.awayTeamId] || `Team ${rec.awayTeamId}`;
+  const pickTeamName = rec.side === 'home' ? homeTeamName : awayTeamName;
+  const isBest = isInOptimalBucket(
+    configData,
+    rec.sport,
+    rec.market as 'moneyline' | 'spread',
+    rec.modelProbability,
+  );
+
+  return {
+    ...rec,
+    homeTeamName,
+    awayTeamName,
+    pickTeamName,
+    isBest,
+  };
+}
+
+/**
  * Lambda handler
  */
 export async function handler(event: unknown) {
@@ -90,6 +160,10 @@ export async function handler(event: unknown) {
 
   const sports = ['nba', 'ncaam', 'nhl'];
   const allRecommendations: Recommendation[] = [];
+
+  // Load teams and config (shared across all sports)
+  const teamsData = await getJsonFromS3<TeamsData>(BUCKET, 'features/teams.json');
+  const configData = await getJsonFromS3<ConfigData>(BUCKET, 'features/config.json');
 
   for (const sport of sports) {
     try {
@@ -157,14 +231,14 @@ export async function handler(event: unknown) {
           gamesProcessed++;
 
           if (edge >= MIN_EDGE && passesJuiceGate(odds.priceHome, edge)) {
-            allRecommendations.push({
+            const baseRec = {
               gameId: game.id,
               gameDate: game.date,
               sport,
               homeTeamId: game.homeTeamId,
               awayTeamId: game.awayTeamId,
               market: 'moneyline',
-              side: 'home',
+              side: 'home' as const,
               modelProbability: homeWinProb,
               impliedProbability: homeImpliedProb,
               odds: odds.priceHome,
@@ -172,7 +246,8 @@ export async function handler(event: unknown) {
               edge,
               ev,
               provider: odds.provider,
-            });
+            };
+            allRecommendations.push(enrichRecommendation(baseRec, teamsData, configData));
           }
         }
 
@@ -184,14 +259,14 @@ export async function handler(event: unknown) {
           const ev = calculateEV(awayWinProb, odds.priceAway);
 
           if (edge >= MIN_EDGE && passesJuiceGate(odds.priceAway, edge)) {
-            allRecommendations.push({
+            const baseRec = {
               gameId: game.id,
               gameDate: game.date,
               sport,
               homeTeamId: game.homeTeamId,
               awayTeamId: game.awayTeamId,
               market: 'moneyline',
-              side: 'away',
+              side: 'away' as const,
               modelProbability: awayWinProb,
               impliedProbability: impliedProb,
               odds: odds.priceAway,
@@ -199,7 +274,8 @@ export async function handler(event: unknown) {
               edge,
               ev,
               provider: odds.provider,
-            });
+            };
+            allRecommendations.push(enrichRecommendation(baseRec, teamsData, configData));
           }
         }
 
@@ -213,14 +289,14 @@ export async function handler(event: unknown) {
           const ev = calculateEV(homeCoversProb, spreadOdds);
 
           if (edge >= MIN_EDGE && passesJuiceGate(spreadOdds, edge)) {
-            allRecommendations.push({
+            const baseRec = {
               gameId: game.id,
               gameDate: game.date,
               sport,
               homeTeamId: game.homeTeamId,
               awayTeamId: game.awayTeamId,
               market: 'spread',
-              side: homeCoversProb >= 0.5 ? 'home' : 'away',
+              side: (homeCoversProb >= 0.5 ? 'home' : 'away') as 'home' | 'away',
               modelProbability: homeCoversProb >= 0.5 ? homeCoversProb : 1 - homeCoversProb,
               impliedProbability: impliedProb,
               odds: spreadOdds,
@@ -228,7 +304,8 @@ export async function handler(event: unknown) {
               edge,
               ev,
               provider: odds.provider,
-            });
+            };
+            allRecommendations.push(enrichRecommendation(baseRec, teamsData, configData));
           }
         }
       }

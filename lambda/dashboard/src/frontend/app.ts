@@ -100,7 +100,7 @@ class SportlineDashboard {
 
   renderRec(rec: Recommendation): string {
     const gameTime = this.formatGameTime(rec.gameDate);
-    const teamDisplay = rec.side === 'home' ? rec.homeTeamId : rec.awayTeamId;
+    const matchup = `${rec.awayTeamName} @ ${rec.homeTeamName}`;
     const market = rec.market === 'moneyline' ? 'ML' : 'SPR';
     const lineOrOdds =
       rec.line !== null
@@ -108,6 +108,7 @@ class SportlineDashboard {
         : `${rec.odds > 0 ? '+' : ''}${rec.odds}`;
 
     const edgeClass = rec.edge > 0.1 ? 'high' : rec.edge > 0.06 ? 'medium' : 'low';
+    const bestBadge = rec.isBest ? '<span class="best-badge">✓ Best</span>' : '';
 
     return `
       <div class="rec-card">
@@ -115,8 +116,10 @@ class SportlineDashboard {
           <span class="time">${gameTime}</span>
           <span class="sport ${rec.sport}">${rec.sport.toUpperCase()}</span>
           <span class="market">${market}</span>
+          ${bestBadge}
         </div>
-        <div class="rec-team">${teamDisplay}</div>
+        <div class="rec-matchup">${matchup}</div>
+        <div class="rec-pick">Pick: <strong>${rec.pickTeamName}</strong></div>
         <div class="rec-stats">
           <div class="stat">
             <div class="label">Model</div>

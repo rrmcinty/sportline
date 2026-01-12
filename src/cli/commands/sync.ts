@@ -15,6 +15,7 @@ import {
   getRecentGames,
 } from '../../db/queries.js';
 import type { GameRow } from '../../models/types.js';
+import { OPTIMAL_BUCKETS } from '../../config/optimalBuckets.js';
 
 interface TeamFeatures {
   [teamId: string]: Record<string, number | string>;
@@ -116,6 +117,40 @@ function exportUpcomingGames(db: any, sport: string): GamesBySpor {
 
   return {
     games: exportedGames,
+    exportedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Export all teams (ID -> name mapping) for all sports
+ */
+function exportAllTeams(db: any, sports: string[]): Record<string, Record<string, string>> {
+  console.log(`\n  Exporting team names for all sports...`);
+  const allTeams: Record<string, Record<string, string>> = {};
+
+  for (const sport of sports) {
+    const teams = db.prepare('SELECT id, name FROM teams WHERE sport = ?').all(sport) as Array<{
+      id: string;
+      name: string;
+    }>;
+
+    allTeams[sport] = {};
+    for (const team of teams) {
+      allTeams[sport][team.id] = team.name;
+    }
+    console.log(`    ${sport}: ${teams.length} teams`);
+  }
+
+  return allTeams;
+}
+
+/**
+ * Export configuration (optimal buckets, etc.)
+ */
+function exportConfig(): Record<string, unknown> {
+  console.log(`\n  Exporting configuration...`);
+  return {
+    optimalBuckets: OPTIMAL_BUCKETS,
     exportedAt: new Date().toISOString(),
   };
 }
@@ -230,6 +265,17 @@ export function syncCommand(): Command {
 
         console.log('');
       }
+
+      // 5. Export teams and config (shared across all sports)
+      const teamsData = exportAllTeams(db, supportedSports);
+      const teamsPath = path.join(featuresDir, 'teams.json');
+      fs.writeFileSync(teamsPath, JSON.stringify(teamsData, null, 2));
+      console.log(chalk.green(`  ✓ Saved teams to ${teamsPath}`));
+
+      const configData = exportConfig();
+      const configPath = path.join(featuresDir, 'config.json');
+      fs.writeFileSync(configPath, JSON.stringify(configData, null, 2));
+      console.log(chalk.green(`  ✓ Saved config to ${configPath}`));
 
       db.close();
 

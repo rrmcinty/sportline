@@ -122,10 +122,30 @@ export function getHtmlTemplate(appJs: string): string {
       color: #999;
     }
 
-    .rec-team {
-      font-size: 1.25rem;
+    .best-badge {
+      padding: 0.125rem 0.5rem;
+      background: #4ade80;
+      color: #0a0a0a;
+      border-radius: 0.25rem;
       font-weight: 600;
+      margin-left: auto;
+    }
+
+    .rec-matchup {
+      font-size: 1.05rem;
+      color: #999;
+      margin-bottom: 0.5rem;
+    }
+
+    .rec-pick {
+      font-size: 1.25rem;
+      font-weight: 400;
       margin-bottom: 0.75rem;
+    }
+
+    .rec-pick strong {
+      font-weight: 700;
+      color: #667eea;
     }
 
     .rec-stats {

@@ -8,6 +8,9 @@ export interface Recommendation {
   sport: string;
   homeTeamId: string;
   awayTeamId: string;
+  homeTeamName: string;
+  awayTeamName: string;
+  pickTeamName: string;
   market: string;
   side: 'home' | 'away';
   modelProbability: number;
@@ -17,6 +20,7 @@ export interface Recommendation {
   edge: number;
   ev: number;
   provider: string;
+  isBest: boolean;
 }
 
 export interface RecommendationsData {
