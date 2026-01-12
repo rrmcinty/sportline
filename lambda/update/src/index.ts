@@ -4,27 +4,13 @@
  */
 
 import { getJsonFromS3, putJsonToS3 } from './s3.js';
-import { fetchOddsForGames } from './espn.js';
+import { fetchOddsForGames, fetchUpcomingGames, type UpcomingGame } from './espn.js';
 import { predict, type TrainedModel, type TeamFeatures } from './predict.js';
-
-interface UpcomingGame {
-  id: string;
-  sport: string;
-  date: string;
-  season: number;
-  homeTeamId: string;
-  awayTeamId: string;
-}
 
 interface SportFeatures {
   teams: Record<string, TeamFeatures>;
   exportedAt: string;
   season: number;
-}
-
-interface GamesBySpor {
-  games: UpcomingGame[];
-  exportedAt: string;
 }
 
 interface Recommendation {
@@ -186,23 +172,23 @@ export async function handler(event: unknown) {
         `features/${sport}-features.json`,
       );
 
-      // 3. Load upcoming games
-      const gamesData = await getJsonFromS3<GamesBySpor>(BUCKET, `features/${sport}-games.json`);
+      // 3. Fetch upcoming games from ESPN
+      const upcomingGames = await fetchUpcomingGames(sport);
 
-      console.log(`  Found ${gamesData.games.length} upcoming games`);
+      console.log(`  Found ${upcomingGames.length} upcoming games`);
 
-      if (gamesData.games.length === 0) {
+      if (upcomingGames.length === 0) {
         continue;
       }
 
       // 4. Fetch fresh odds from ESPN
-      const gameIds = gamesData.games.map((g) => g.id);
+      const gameIds = upcomingGames.map((g) => g.id);
       const oddsMap = await fetchOddsForGames(sport, gameIds);
       console.log(`  Fetched odds for ${oddsMap.size} games`);
 
       // 5. Generate recommendations
       let gamesProcessed = 0;
-      for (const game of gamesData.games) {
+      for (const game of upcomingGames) {
         const odds = oddsMap.get(game.id);
         if (!odds) {
           continue;

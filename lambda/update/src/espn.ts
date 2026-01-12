@@ -1,5 +1,5 @@
 /**
- * ESPN API client for fetching odds
+ * ESPN API client for fetching odds and schedules
  */
 
 export interface OddsData {
@@ -8,6 +8,15 @@ export interface OddsData {
   priceAway: number | null;
   line: number | null;
   provider: string;
+}
+
+export interface UpcomingGame {
+  id: string;
+  sport: string;
+  date: string;
+  season: number;
+  homeTeamId: string;
+  awayTeamId: string;
 }
 
 /**
@@ -108,4 +117,85 @@ export async function fetchOddsForGames(
   }
 
   return oddsMap;
+}
+
+/**
+ * Fetch upcoming games from ESPN scoreboard API
+ * Returns games that are scheduled but not yet started (next 7 days)
+ */
+export async function fetchUpcomingGames(sport: string): Promise<UpcomingGame[]> {
+  const espnSport = getEspnSport(sport);
+  const league = getLeague(sport);
+
+  // Format dates for ESPN API (YYYYMMDD-YYYYMMDD)
+  const today = new Date();
+  const endDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 days
+  const formatDate = (d: Date) =>
+    `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+
+  const dates = `${formatDate(today)}-${formatDate(endDate)}`;
+  let url = `https://site.api.espn.com/apis/site/v2/sports/${espnSport}/${league}/scoreboard?dates=${dates}`;
+
+  try {
+    let response = await fetch(url);
+
+    // If dates parameter fails (404 or empty), try without dates (college sports limitation)
+    if (!response.ok || response.status === 404) {
+      console.log(`  Dates parameter not supported for ${sport}, trying without dates`);
+      url = `https://site.api.espn.com/apis/site/v2/sports/${espnSport}/${league}/scoreboard`;
+      response = await fetch(url);
+
+      if (!response.ok) {
+        console.error(`Failed to fetch scoreboard for ${sport}: ${response.status}`);
+        return [];
+      }
+    }
+
+    const data = await response.json();
+    const events = data.events || [];
+
+    // If dates query returned empty, try without dates
+    if (events.length === 0 && url.includes('dates=')) {
+      console.log(`  No events with dates parameter, trying without dates for ${sport}`);
+      url = `https://site.api.espn.com/apis/site/v2/sports/${espnSport}/${league}/scoreboard`;
+      response = await fetch(url);
+      if (response.ok) {
+        const fallbackData = await response.json();
+        events.push(...(fallbackData.events || []));
+      }
+    }
+
+    const upcomingGames: UpcomingGame[] = [];
+
+    for (const event of events) {
+      // Only include games that are scheduled (not in-progress or completed)
+      const status = event.status?.type?.name;
+      if (status !== 'STATUS_SCHEDULED') {
+        continue;
+      }
+
+      const competition = event.competitions?.[0];
+      if (!competition) continue;
+
+      const homeTeam = competition.competitors?.find((c: any) => c.homeAway === 'home');
+      const awayTeam = competition.competitors?.find((c: any) => c.homeAway === 'away');
+
+      if (!homeTeam || !awayTeam) continue;
+
+      upcomingGames.push({
+        id: event.id,
+        sport,
+        date: event.date,
+        season: event.season?.year || new Date().getFullYear(),
+        homeTeamId: homeTeam.team.id,
+        awayTeamId: awayTeam.team.id,
+      });
+    }
+
+    console.log(`  Found ${upcomingGames.length} upcoming ${sport.toUpperCase()} games`);
+    return upcomingGames;
+  } catch (error) {
+    console.error(`Error fetching upcoming games for ${sport}:`, error);
+    return [];
+  }
 }
