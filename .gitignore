@@ -27,3 +27,4 @@ coverage/
 
 # Local test scripts
 test-*.ts
+data/export/
