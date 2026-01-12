@@ -24,3 +24,6 @@ coverage/
 !prettier.config.cjs
 
 !scripts/trainNcaamMoneyline.runs.log.json
+
+# Local test scripts
+test-*.ts

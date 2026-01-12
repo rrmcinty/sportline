@@ -7,6 +7,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Node.js 20+
 - `sqlite3` CLI installed (used by `npm run db:*` helpers)
 
+## Development Workflow (CRITICAL)
+
+**ALWAYS follow these steps when making changes:**
+
+1. **Build after every change**
+   ```bash
+   npm run build
+   ```
+   - Do NOT assume TypeScript compiled correctly
+   - Check for compilation errors in the output
+   - Verify the change appears in `dist/`
+
+2. **Test locally before claiming "fixed"**
+   - Run the actual CLI command to verify behavior
+   - For Lambda changes: write a local test script (e.g., `test-*.ts`) that mimics Lambda logic
+   - For complex bugs: create minimal reproduction scripts
+   - NEVER say something is fixed without actually running it
+
+3. **Test script pattern for Lambda debugging**
+   ```typescript
+   // test-feature.ts - mimics Lambda logic locally
+   import fs from 'fs';
+
+   const data = JSON.parse(fs.readFileSync('data/export/features/nba-features.json', 'utf-8'));
+   // ... test the exact logic from Lambda
+   console.log('Result:', result);
+   ```
+   Run with: `npx ts-node test-feature.ts`
+
+4. **Verify end-to-end for cloud changes**
+   - After deploying Lambda: actually invoke it and check logs
+   - Don't trust "it should work" - confirm it does work
+
 ## Build and Development Commands
 
 ```bash
