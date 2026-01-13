@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Node.js 20+
 - `sqlite3` CLI installed (used by `npm run db:*` helpers)
+- AWS CLI configured for cloud deployment (`aws configure`)
 
 ## Development Workflow (CRITICAL)
 
@@ -94,12 +95,42 @@ node dist/cli/index.js recommend                    # All sports, sorted by edge
 node dist/cli/index.js recommend nhl                # Single sport, sorted by edge
 node dist/cli/index.js recommend nba --min-edge 0.06
 node dist/cli/index.js backtest nba --season 2024 --market spread --show-buckets
+node dist/cli/index.js sync                         # Export and sync to S3
 ```
 
 Available CLI commands:
 - `train` - Train models (supports `--market moneyline|spread`)
 - `recommend` - Generate betting recommendations (unified sorted list, shows EST times)
 - `backtest` - Run historical backtests with probability bucket analysis
+- `sync` - Export features/models/predictions and upload to S3 for Lambda
+
+## Cloud Deployment (AWS CDK)
+
+```bash
+# One-command setup (dev environment - uses your username)
+npm run all
+
+# Production environment
+npm run all:prod
+
+# Individual deployment steps
+npm run lambda:build      # Build Lambda functions
+npm run sync              # Export data and upload to S3
+npm run cdk:deploy        # Deploy CDK stack
+npm run cdk:deploy:prod   # Deploy to production
+
+# Utilities
+npm run cdk:diff          # Show differences before deploying
+npm run cdk:destroy       # Delete entire stack
+```
+
+The CDK stack creates:
+- **S3 bucket** (`sportline-data-{env}`) for models, features, and recommendations
+- **Update Lambda** (`Sportline-Update-{env}`) - Runs daily at 8am EST, fetches odds and generates recommendations
+- **Dashboard Lambda** (`Sportline-Dashboard-{env}`) - Serves mobile-optimized UI with public Function URL
+- **EventBridge rule** - Triggers Update Lambda on cron schedule
+
+See `infrastructure/README.md` for detailed CDK documentation.
 
 ## Architecture
 
@@ -110,6 +141,9 @@ Available CLI commands:
 4. **Predict** (`src/models/predict.ts`) - Loads model weights, applies activation function to feature vectors
 5. **Recommend** (`src/recommend/recommendNba.ts`) - Compares model probabilities to odds, finds value bets
 6. **Backtest** (`src/lib/backtest/backtester.ts`) - Evaluates strategies on historical data with spread grading
+7. **Sync** (`src/cli/commands/sync.ts`) - Exports features and predictions to S3 for cloud Lambda
+8. **Cloud Update** (`lambda/update/`) - Lambda fetches fresh odds from ESPN, loads predictions, writes recommendations to S3
+9. **Dashboard** (`lambda/dashboard/`) - Lambda serves mobile UI that displays recommendations from S3
 
 ### Project Structure
 
@@ -117,7 +151,8 @@ Available CLI commands:
 src/
 ├── betting/          # Odds conversion, EV calculation, Kelly criterion
 ├── cli/              # CLI entry point and command definitions
-│   └── commands/     # train, recommend, backtest commands
+│   └── commands/     # train, recommend, backtest, sync commands
+├── config/           # Optimal bucket configurations
 ├── db/               # Database schema, queries, import scripts
 ├── ingest/           # ESPN API data fetching to JSON
 ├── lib/              # Shared utilities (newer modular architecture)
@@ -129,6 +164,29 @@ src/
 ├── models/           # Feature extraction, training, prediction, normalization
 ├── recommend/        # Recommendation generation (sport-agnostic, uses ValueBet interface)
 └── types/            # TypeScript type shims for third-party libraries
+
+lambda/
+├── update/           # Update Lambda (fetches odds, generates recommendations)
+│   ├── src/
+│   │   ├── index.ts  # Lambda handler
+│   │   ├── espn.ts   # ESPN API client
+│   │   └── s3.ts     # S3 helpers
+│   └── dist/         # Built code (deployed to AWS)
+└── dashboard/        # Dashboard Lambda (serves mobile UI)
+    ├── src/
+    │   ├── index.ts  # Lambda handler
+    │   ├── html.ts   # HTML template with CSS
+    │   └── frontend/
+    │       ├── app.ts    # TypeScript dashboard logic
+    │       └── types.ts  # Type definitions
+    └── dist/         # Built code (deployed to AWS)
+
+infrastructure/
+├── bin/
+│   └── app.ts                    # CDK app entry point
+├── lib/
+│   └── sportline-stack.ts        # Main stack definition
+└── cdk.json                      # CDK configuration
 ```
 
 ### Key Modules
@@ -137,8 +195,12 @@ src/
 - **`src/betting/odds.ts`** - American to implied probability conversion, EV and Kelly criterion calculations
 - **`src/db/queries.ts`** - Database queries with `getTeamStatsBeforeDate()` to prevent data leakage
 - **`src/models/trainSpread.ts`** - Spread model training with push handling (excludes pushes from training data)
-- **`src/cli/commands/backtest.ts`** - Spread grading logic at lines 198-206: `adjustedMargin = actual_margin + spread; home_covered = adjustedMargin > 0`
-- **`src/cli/commands/recommend.ts`** - Separate optimal buckets for moneyline (`OPTIMAL_BUCKETS`) and spread (`OPTIMAL_BUCKETS_SPREAD`); displays line for spreads, odds for moneyline
+- **`src/cli/commands/backtest.ts`** - Spread grading logic: `adjustedMargin = actual_margin + spread; home_covered = adjustedMargin > 0`
+- **`src/cli/commands/recommend.ts`** - Separate optimal buckets for moneyline (`OPTIMAL_BUCKETS`) and spread (`OPTIMAL_BUCKETS_SPREAD`); displays line for spreads, odds for moneyline; default max EV is 50%
+- **`src/cli/commands/sync.ts`** - Exports team features, models, and pre-computed predictions to S3 for Lambda consumption
+- **`lambda/update/src/index.ts`** - Update Lambda handler; uses pre-computed predictions from S3, fetches fresh odds from ESPN, generates recommendations; default max EV is 50%
+- **`lambda/dashboard/src/html.ts`** - Dashboard HTML/CSS template with GitHub-inspired dark theme, filter pills, and mobile-optimized layout
+- **`lambda/dashboard/src/frontend/app.ts`** - Dashboard frontend logic with filter management, data fetching, and card rendering
 
 ### Database Schema (`src/db/schema.sql`)
 
@@ -162,6 +224,32 @@ Pushes (adjustedMargin == 0) are excluded during training and backtest.
 
 All feature extraction uses `getTeamStatsBeforeDate()` and `getRecentGames()` with strict date filtering. Backtest respects chronological order: train on early games, backtest on later games.
 
+### Cloud Architecture (Lambda + S3)
+
+The system uses a **sync-then-predict** architecture:
+
+1. **Local CLI** (`sync` command) pre-computes predictions for all upcoming games and exports to S3:
+   - `features/teams.json` - Team name mappings
+   - `features/config.json` - Optimal bucket configurations
+   - `features/{sport}-predictions.json` - Pre-computed moneyline and spread predictions
+   - `models/{sport}/moneyline-2025.json` - Trained models (not used by Lambda, only for reference)
+   - `models/{sport}/spread-2025.json` - Trained models (not used by Lambda, only for reference)
+
+2. **Update Lambda** (runs daily at 8am EST or on-demand):
+   - Loads pre-computed predictions from S3
+   - Fetches fresh odds from ESPN API
+   - Generates recommendations by comparing predictions to odds
+   - Applies filters (min edge, max EV, juice gate, optimal buckets)
+   - Writes `daily/recs.json` to S3
+
+3. **Dashboard Lambda** (on-demand via public Function URL):
+   - Serves mobile-optimized HTML/CSS/JS
+   - Frontend fetches `daily/recs.json` from S3 via `/api/recs` endpoint
+   - Supports filtering by sport and market
+   - Triggers Update Lambda refresh via `/api/refresh` endpoint
+
+This architecture minimizes Lambda cold start time by avoiding ML computations in Lambda - predictions are pre-computed locally where performance is not critical.
+
 ## Supported Sports
 
 `ncaam`, `nba`, `nhl` (primary focus)
@@ -177,7 +265,7 @@ Based on backtesting with separate moneyline and spread models:
 ```bash
 node dist/cli/index.js recommend nba \
   --min-edge 0.06 \
-  --max-ev 0.75 \
+  --max-ev 0.5 \
   --buckets "40-50,90-100"
 ```
 - Expected ROI: **10.84%** | Win rate: ~71-78%
@@ -191,7 +279,7 @@ node dist/cli/index.js recommend nba \
 ```bash
 node dist/cli/index.js recommend ncaam \
   --min-edge 0.08 \
-  --max-ev 0.75 \
+  --max-ev 0.5 \
   --buckets "0-30,80-100"
 ```
 - Expected ROI: **2.85%** | Win rate: ~70-85%
@@ -206,7 +294,7 @@ node dist/cli/index.js recommend ncaam \
 ```bash
 node dist/cli/index.js recommend nhl \
   --min-edge 0.08 \
-  --max-ev 0.75 \
+  --max-ev 0.5 \
   --buckets "60-100"
 ```
 - Expected ROI: **18.16%** | Win rate: ~70-85%
@@ -217,7 +305,7 @@ node dist/cli/index.js recommend nhl \
 
 ### Filter Explanations
 - `--min-edge X`: Minimum model edge required (default 3%)
-- `--max-ev 0.75`: Caps EV at 75% to filter extreme outliers (recommended)
+- `--max-ev 0.5`: Caps EV at 50% to filter extreme outliers (default in both CLI and Lambda as of 2026-01-12)
 - `--buckets "A-B,C-D"`: Only bet probability ranges with historical profitability
 - Built-in vigorish gate: Requires 4% edge for high-vig lines (-115 or worse)
 - `--market moneyline|spread`: Show recommendations for specific market (command shows both by default)
@@ -230,3 +318,6 @@ node dist/cli/index.js recommend nhl \
 - **ESM Only**: Uses ES modules; import paths require `.js` extensions
 - **Feature Order Critical**: Mismatch between training and prediction causes systematic prediction errors. Double-check `getFeatureOrder()` when modifying features.
 - **Git Branch**: Main branch is `release` (not `main` or `master`)
+- **Max EV Default**: Both CLI and Lambda default to 50% max EV (can be overridden with `--max-ev` flag in CLI)
+- **Lambda Architecture**: Lambda does NOT perform ML predictions - it loads pre-computed predictions from S3 (generated by `sync` command) and only fetches fresh odds
+- **Dashboard UI**: GitHub-inspired dark theme with filter pills, color-coded edges, and mobile-first design; built with TypeScript + esbuild

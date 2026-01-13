@@ -19,15 +19,30 @@ class SportlineDashboard {
   }
 
   setupEventListeners() {
-    // Filter listeners
-    document.getElementById('sport-filter')?.addEventListener('change', (e) => {
-      this.filters.sport = (e.target as HTMLSelectElement).value;
-      this.filterAndRender();
-    });
+    // Filter pill listeners
+    document.querySelectorAll('.filter-pill').forEach((pill) => {
+      pill.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const filterType = target.getAttribute('data-filter');
+        const value = target.getAttribute('data-value');
 
-    document.getElementById('market-filter')?.addEventListener('change', (e) => {
-      this.filters.market = (e.target as HTMLSelectElement).value;
-      this.filterAndRender();
+        if (!filterType || !value) return;
+
+        // Update active state
+        document.querySelectorAll(`[data-filter="${filterType}"]`).forEach((p) => {
+          p.classList.remove('active');
+        });
+        target.classList.add('active');
+
+        // Update filter
+        if (filterType === 'sport') {
+          this.filters.sport = value;
+        } else if (filterType === 'market') {
+          this.filters.market = value;
+        }
+
+        this.filterAndRender();
+      });
     });
 
     // Refresh button (reload current data)
@@ -41,7 +56,8 @@ class SportlineDashboard {
       if (!btn) return;
 
       btn.disabled = true;
-      btn.textContent = 'Updating...';
+      const originalContent = btn.innerHTML;
+      btn.innerHTML = '<span>⏳</span><span>Updating...</span>';
 
       try {
         const response = await fetch('/api/refresh', { method: 'POST' });
@@ -51,33 +67,63 @@ class SportlineDashboard {
         setTimeout(() => {
           this.loadData();
           btn.disabled = false;
-          btn.textContent = 'Update Odds';
+          btn.innerHTML = originalContent;
         }, 3000);
       } catch (error) {
         alert(`Failed to update odds: ${error}`);
         btn.disabled = false;
-        btn.textContent = 'Update Odds';
+        btn.innerHTML = originalContent;
       }
     });
 
     // Pull to refresh
     let startY = 0;
+    const ptrIndicator = document.querySelector('.ptr-indicator');
+
     document.addEventListener('touchstart', (e) => {
       startY = e.touches[0].pageY;
     });
 
     document.addEventListener('touchmove', (e) => {
       const y = e.touches[0].pageY;
-      if (window.scrollY === 0 && y > startY + 50) {
+      const pullDistance = y - startY;
+
+      if (window.scrollY === 0 && pullDistance > 50) {
+        ptrIndicator?.classList.add('active');
+      }
+    });
+
+    document.addEventListener('touchend', (e) => {
+      const y = e.changedTouches[0].pageY;
+      const pullDistance = y - startY;
+
+      if (window.scrollY === 0 && pullDistance > 50) {
         this.loadData();
       }
+
+      setTimeout(() => {
+        ptrIndicator?.classList.remove('active');
+      }, 300);
     });
   }
 
   async loadData() {
     const container = document.getElementById('recs-container');
     if (container) {
-      container.innerHTML = '<div class="loading">Loading...</div>';
+      container.innerHTML = `
+        <div class="loading-state">
+          <div class="skeleton">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line"></div>
+          </div>
+          <div class="skeleton">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        </div>
+      `;
     }
 
     try {
@@ -87,7 +133,13 @@ class SportlineDashboard {
       this.filterAndRender();
     } catch (error) {
       if (container) {
-        container.innerHTML = `<div class="error">Failed to load recommendations: ${error}</div>`;
+        container.innerHTML = `
+          <div class="error-state">
+            <h3>Failed to Load</h3>
+            <p>Could not load recommendations. Please try again.</p>
+            <p style="margin-top: 1rem; font-size: 0.85rem;">${error}</p>
+          </div>
+        `;
       }
     }
   }
@@ -101,6 +153,21 @@ class SportlineDashboard {
       return true;
     });
 
+    // Update filter pills with counts
+    const sportCounts = {
+      all: this.data.recommendations.length,
+      nba: this.data.recommendations.filter((r) => r.sport === 'nba').length,
+      ncaam: this.data.recommendations.filter((r) => r.sport === 'ncaam').length,
+      nhl: this.data.recommendations.filter((r) => r.sport === 'nhl').length,
+    };
+
+    document.querySelectorAll('[data-filter="sport"]').forEach((pill) => {
+      const value = pill.getAttribute('data-value');
+      const count = sportCounts[value as keyof typeof sportCounts];
+      const baseText = pill.textContent?.split(' (')[0] || '';
+      pill.textContent = count > 0 ? `${baseText} (${count})` : baseText;
+    });
+
     this.render();
   }
 
@@ -112,55 +179,90 @@ class SportlineDashboard {
 
     if (timestamp) {
       const date = new Date(this.data.generatedAt);
-      timestamp.textContent = `Last updated: ${date.toLocaleString()}`;
+      timestamp.textContent = this.formatRelativeTime(date);
     }
 
     if (this.filteredRecs.length === 0) {
-      container.innerHTML = '<div class="no-data">No recommendations matching filters</div>';
+      container.innerHTML = `
+        <div class="empty-state">
+          <h3>No Recommendations</h3>
+          <p>No recommendations match your current filters. Try adjusting your filters or check back later.</p>
+        </div>
+      `;
       return;
     }
 
-    container.innerHTML = this.filteredRecs.map((rec) => this.renderRec(rec)).join('');
+    // Add staggered animation delay
+    const cards = this.filteredRecs.map((rec, index) => {
+      const card = this.renderRec(rec);
+      return card.replace(
+        '<div class="rec-card"',
+        `<div class="rec-card" style="animation-delay: ${index * 0.05}s"`,
+      );
+    });
+
+    container.innerHTML = cards.join('');
   }
 
   renderRec(rec: Recommendation): string {
     const gameTime = this.formatGameTime(rec.gameDate);
     const matchup = `${rec.awayTeamName} @ ${rec.homeTeamName}`;
-    const market = rec.market === 'moneyline' ? 'ML' : 'SPR';
+    const marketLabel = rec.market === 'moneyline' ? 'Moneyline' : 'Spread';
     const lineOrOdds =
       rec.line !== null
         ? `${rec.line > 0 ? '+' : ''}${rec.line}`
         : `${rec.odds > 0 ? '+' : ''}${rec.odds}`;
 
-    const edgeClass = rec.edge > 0.1 ? 'high' : rec.edge > 0.06 ? 'medium' : 'low';
+    const edgeClass = rec.edge > 0.1 ? 'edge-high' : rec.edge > 0.06 ? 'edge-medium' : 'edge-low';
     const bestBadge = rec.isBest ? '<span class="best-badge">✓ Best</span>' : '';
 
     return `
       <div class="rec-card">
-        <div class="rec-header">
-          <span class="time">${gameTime}</span>
-          <span class="sport ${rec.sport}">${rec.sport.toUpperCase()}</span>
-          <span class="market">${market}</span>
-          ${bestBadge}
+        <div class="rec-card-header">
+          <div class="rec-meta">
+            <span class="sport-badge ${rec.sport}">${rec.sport.toUpperCase()}</span>
+            <span class="market-badge">${marketLabel}</span>
+          </div>
+          <div class="rec-time">${gameTime}</div>
         </div>
+
+        ${bestBadge ? `<div style="margin-bottom: 0.75rem;">${bestBadge}</div>` : ''}
+
         <div class="rec-matchup">${matchup}</div>
-        <div class="rec-pick">Pick: <strong>${rec.pickTeamName}</strong></div>
-        <div class="rec-stats">
+
+        <div class="rec-pick">
+          <span class="rec-pick-icon">▸</span>
+          <span>BET:</span>
+          <span class="rec-pick-team">${rec.pickTeamName}</span>
+        </div>
+
+        <div class="rec-stats-main">
           <div class="stat">
-            <div class="label">Model</div>
-            <div class="value">${(rec.modelProbability * 100).toFixed(1)}%</div>
+            <div class="stat-label">Model</div>
+            <div class="stat-value">${(rec.modelProbability * 100).toFixed(1)}%</div>
           </div>
           <div class="stat">
-            <div class="label">Edge</div>
-            <div class="value edge-${edgeClass}">+${(rec.edge * 100).toFixed(1)}%</div>
+            <div class="stat-label">Edge</div>
+            <div class="stat-value ${edgeClass}">+${(rec.edge * 100).toFixed(1)}%</div>
           </div>
           <div class="stat">
-            <div class="label">EV</div>
-            <div class="value">+${(rec.ev * 100).toFixed(1)}%</div>
+            <div class="stat-label">${rec.line !== null ? 'Line' : 'Odds'}</div>
+            <div class="stat-value">${lineOrOdds}</div>
           </div>
-          <div class="stat">
-            <div class="label">Line/Odds</div>
-            <div class="value">${lineOrOdds}</div>
+        </div>
+
+        <div class="rec-stats-secondary">
+          <div class="stat-secondary">
+            <span class="stat-secondary-label">Implied:</span>
+            <span class="stat-secondary-value">${(rec.impliedProbability * 100).toFixed(1)}%</span>
+          </div>
+          <div class="stat-secondary">
+            <span class="stat-secondary-label">EV:</span>
+            <span class="stat-secondary-value">+${(rec.ev * 100).toFixed(1)}%</span>
+          </div>
+          <div class="stat-secondary">
+            <span class="stat-secondary-label">Provider:</span>
+            <span class="stat-secondary-value">${rec.provider}</span>
           </div>
         </div>
       </div>
@@ -179,6 +281,24 @@ class SportlineDashboard {
     };
     const formatted = date.toLocaleString('en-US', options);
     return formatted.replace(', ', ' ').replace(' PM', 'p').replace(' AM', 'a');
+  }
+
+  formatRelativeTime(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
   }
 }
 

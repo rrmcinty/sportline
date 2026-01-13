@@ -112,7 +112,7 @@ export function recommendCommand(): Command {
     )
     .option('-e, --min-edge <number>', 'Minimum edge required (default: 0.03 = 3%)', '0.03')
     .option('-p, --min-prob <number>', 'Minimum model probability (default: 0.5 = 50%)', '0.5')
-    .option('--max-ev <number>', 'Maximum EV threshold (filter out suspiciously high EV)')
+    .option('--max-ev <number>', 'Maximum EV threshold (default: 0.5 = 50%)', '0.5')
     .option(
       '--moneyline-buckets <ranges>',
       'Custom bucket ranges for moneyline (overrides defaults)',
@@ -190,7 +190,7 @@ function generateAllRecommendations(
 ): void {
   const minEdge = parseFloat(options.minEdge || '0.03');
   const minProb = parseFloat(options.minProb || '0.5');
-  const maxEV = options.maxEv ? parseFloat(options.maxEv) : undefined;
+  const maxEV = options.maxEv ? parseFloat(options.maxEv) : 0.5;
   const useKellyFilter = options.kellyFilter ?? false;
   const minKelly = options.minKelly ? parseFloat(options.minKelly) : 0.01;
   const dateFilter = parseDateFilter(options.date);
@@ -324,7 +324,7 @@ function generateRecommendationsForSport(
     : path.join(process.cwd(), 'data', 'models', sport);
 
   // Parse filter options
-  const maxEV = options.maxEv ? parseFloat(options.maxEv) : undefined;
+  const maxEV = options.maxEv ? parseFloat(options.maxEv) : 0.5;
   const moneylineBuckets = options.raw ? undefined : parseBuckets(options.moneylineBuckets);
   const useKellyFilter = options.kellyFilter ?? false;
   const minKelly = options.minKelly ? parseFloat(options.minKelly) : 0.01;

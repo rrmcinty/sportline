@@ -67,7 +67,7 @@ interface ConfigData {
 
 const BUCKET = process.env.BUCKET || `sportline-data-${process.env.USER || 'dev'}`;
 const MIN_EDGE = 0.03; // 3% minimum edge
-const MAX_EV = 0.75; // 75% maximum EV (filters extreme outliers)
+const MAX_EV = 0.5; // 50% maximum EV (filters extreme outliers)
 
 /**
  * Convert American odds to implied probability
