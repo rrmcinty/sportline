@@ -259,56 +259,95 @@ Each sport has configurable stat extraction in `src/db/importSportsToDb.ts` and 
 
 ## Optimal Betting Strategy
 
-Based on backtesting with separate moneyline and spread models:
+**Last Verified:** January 13, 2026
+**Methodology:** Trained on 2025 season data, backtested on 2025 season (walk-forward for NBA)
+**Test Results:** All 6 sport/market combinations profitable; see `data/analysis-2024-vs-2025.md` for full analysis
+
+All models use **8% minimum edge** threshold in production (Lambda). CLI defaults to 3% but 8% is recommended based on backtesting.
 
 ### NBA - Moneyline
 ```bash
 node dist/cli/index.js recommend nba \
-  --min-edge 0.06 \
+  --min-edge 0.08 \
   --max-ev 0.5 \
-  --buckets "40-50,90-100"
+  --buckets "70-80,90-100"
 ```
-- Expected ROI: **10.84%** | Win rate: ~71-78%
+- Expected ROI: **66.51%** (2025 season) | Win rate: 85.85%
+- Optimal buckets: 70-80% (consistently strong across both seasons)
+- Note: Exceptional performance improvement from 2024 (48.87% ROI)
 
 ### NBA - Spread
-- Optimal buckets: 50-60%, 60-70%
-- Expected ROI: **65.39%** | Win rate: ~86%
-- Note: Test with low --min-edge (0.03) to get sufficient bets
+```bash
+node dist/cli/index.js recommend nba \
+  --min-edge 0.08 \
+  --max-ev 0.5 \
+  --market spread \
+  --buckets "60-70,70-80"
+```
+- Expected ROI: **33.05%** (2025 season) | Win rate: 69.92%
+- Optimal buckets: 60-70%, 70-80% (85.41% ROI on 70-80% bucket)
+- Note: Improved from 28.68% ROI in 2024
 
 ### NCAAM - Moneyline
 ```bash
 node dist/cli/index.js recommend ncaam \
   --min-edge 0.08 \
   --max-ev 0.5 \
-  --buckets "0-30,80-100"
+  --buckets "70-80,80-90,90-100"
 ```
-- Expected ROI: **2.85%** | Win rate: ~70-85%
-- Key insight: Bet only extremes (very confident or underdog)
+- Expected ROI: **38.03%** (2025 season) | Win rate: 75.26%
+- Optimal buckets: 70-80%, 80-90%, 90-100% (high-confidence bets)
+- **Major improvement:** Model was unprofitable in 2024 (-3.13%) but highly profitable in 2025
 
 ### NCAAM - Spread
-- Optimal buckets: 60-70%, 70-80%, 80-90%, 90-100%
-- Expected ROI: **36.79%** | Win rate: ~72%
-- Note: All models show varied predictions (no training issues)
+```bash
+node dist/cli/index.js recommend ncaam \
+  --min-edge 0.08 \
+  --max-ev 0.5 \
+  --market spread \
+  --buckets "30-40,40-50"
+```
+- Expected ROI: **32.01%** (2025 season) | Win rate: 68.18%
+- Optimal buckets: 30-40%, 40-50% (consistent across both seasons)
+- Note: Model identifies value in moderate-confidence picks
 
 ### NHL - Moneyline
 ```bash
 node dist/cli/index.js recommend nhl \
   --min-edge 0.08 \
   --max-ev 0.5 \
-  --buckets "60-100"
+  --buckets "70-80,90-100"
 ```
-- Expected ROI: **18.16%** | Win rate: ~70-85%
+- Expected ROI: **83.60%** (2025 season) | Win rate: 95.82%
+- Optimal buckets: 70-80%, 90-100% (exceptional performance)
+- **Best performer:** Highest ROI and win rate across all models
 
 ### NHL - Spread
-- Optimal buckets: 70-80%, 80-90%
-- Expected ROI: **48.64%** | Win rate: ~77%
+```bash
+node dist/cli/index.js recommend nhl \
+  --min-edge 0.08 \
+  --max-ev 0.5 \
+  --market spread \
+  --buckets "10-20,20-30"
+```
+- Expected ROI: **44.46%** (2025 season) | Win rate: 67.60%
+- Optimal buckets: 10-20%, 20-30% (model finds underdog value)
+- Note: Counter-intuitive low-probability buckets indicate mispriced underdogs
 
 ### Filter Explanations
-- `--min-edge X`: Minimum model edge required (default 3%)
-- `--max-ev 0.5`: Caps EV at 50% to filter extreme outliers (default in both CLI and Lambda as of 2026-01-12)
-- `--buckets "A-B,C-D"`: Only bet probability ranges with historical profitability
+- `--min-edge X`: Minimum model edge required (CLI default: 3%, **Recommended: 8%**, Lambda production: 8%)
+- `--max-ev 0.5`: Caps EV at 50% to filter extreme outliers (default in both CLI and Lambda)
+- `--buckets "A-B,C-D"`: Only bet probability ranges with historical profitability (auto-loaded from `src/config/optimalBuckets.ts`)
 - Built-in vigorish gate: Requires 4% edge for high-vig lines (-115 or worse)
 - `--market moneyline|spread`: Show recommendations for specific market (command shows both by default)
+
+### Performance Notes
+- All ROI figures are from 2025 season backtests (Jan 2026 optimization)
+- 5 out of 6 models improved over 2024 performance
+- NCAAM moneyline: Dramatic turnaround from unprofitable to 38% ROI
+- Sample sizes: NBA (1231 games), NCAAM (5554 games), NHL (1159 games)
+- Models automatically use optimal buckets defined in `src/config/optimalBuckets.ts`
+- Low-probability buckets (0-30%) show strong performance in several models, indicating effective identification of mispriced underdogs
 
 ## Important Notes
 

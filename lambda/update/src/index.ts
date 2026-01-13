@@ -66,7 +66,7 @@ interface ConfigData {
 }
 
 const BUCKET = process.env.BUCKET || `sportline-data-${process.env.USER || 'dev'}`;
-const MIN_EDGE = 0.03; // 3% minimum edge
+const MIN_EDGE = 0.08; // 8% minimum edge (optimized from 2024/2025 backtests - Jan 2026)
 const MAX_EV = 0.5; // 50% maximum EV (filters extreme outliers)
 
 /**

@@ -72,7 +72,7 @@ describe('spreadGrading', () => {
     });
 
     describe('edge cases', () => {
-      it('should handle spread of 0 (pick\'em)', () => {
+      it("should handle spread of 0 (pick'em)", () => {
         // Pick'em game, home wins by 1
         const actualMargin = 1;
         const spread = 0;
