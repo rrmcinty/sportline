@@ -16,7 +16,8 @@ import path from 'path';
  * Parse date string to YYYY-MM-DD format in EST timezone
  */
 function parseDateFilter(dateStr: string | undefined): string | undefined {
-  if (!dateStr) return undefined;
+  // Default to 'today' if no date specified
+  if (!dateStr) dateStr = 'today';
 
   const now = new Date();
 

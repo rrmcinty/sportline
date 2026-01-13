@@ -177,7 +177,7 @@ Based on backtesting with separate moneyline and spread models:
 ```bash
 node dist/cli/index.js recommend nba \
   --min-edge 0.06 \
-  --max-ev 0.50 \
+  --max-ev 0.75 \
   --buckets "40-50,90-100"
 ```
 - Expected ROI: **10.84%** | Win rate: ~71-78%
@@ -191,7 +191,7 @@ node dist/cli/index.js recommend nba \
 ```bash
 node dist/cli/index.js recommend ncaam \
   --min-edge 0.08 \
-  --max-ev 0.50 \
+  --max-ev 0.75 \
   --buckets "0-30,80-100"
 ```
 - Expected ROI: **2.85%** | Win rate: ~70-85%
@@ -206,7 +206,7 @@ node dist/cli/index.js recommend ncaam \
 ```bash
 node dist/cli/index.js recommend nhl \
   --min-edge 0.08 \
-  --max-ev 0.50 \
+  --max-ev 0.75 \
   --buckets "60-100"
 ```
 - Expected ROI: **18.16%** | Win rate: ~70-85%
@@ -217,7 +217,7 @@ node dist/cli/index.js recommend nhl \
 
 ### Filter Explanations
 - `--min-edge X`: Minimum model edge required (default 3%)
-- `--max-ev 0.50`: Caps EV at 50% to filter outliers (recommended)
+- `--max-ev 0.75`: Caps EV at 75% to filter extreme outliers (recommended)
 - `--buckets "A-B,C-D"`: Only bet probability ranges with historical profitability
 - Built-in vigorish gate: Requires 4% edge for high-vig lines (-115 or worse)
 - `--market moneyline|spread`: Show recommendations for specific market (command shows both by default)

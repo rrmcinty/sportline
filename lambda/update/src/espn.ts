@@ -128,7 +128,9 @@ export async function fetchUpcomingGames(sport: string): Promise<UpcomingGame[]>
   const league = getLeague(sport);
 
   // Format dates for ESPN API (YYYYMMDD-YYYYMMDD)
-  const today = new Date();
+  // IMPORTANT: Use EST timezone for "today" since Lambda runs in UTC
+  const todayEST = new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York' });
+  const today = new Date(todayEST);
   const endDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 days
   const formatDate = (d: Date) =>
     `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;

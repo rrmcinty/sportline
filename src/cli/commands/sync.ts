@@ -16,6 +16,12 @@ import {
 } from '../../db/queries.js';
 import type { GameRow } from '../../models/types.js';
 import { OPTIMAL_BUCKETS } from '../../config/optimalBuckets.js';
+import {
+  calculateWinStreak,
+  calculateRestDays,
+  calculateStrengthOfSchedule,
+} from '../../models/advancedFeatures.js';
+import { loadModel, predictHomeWinProbability } from '../../models/predict.js';
 
 interface TeamFeatures {
   [teamId: string]: Record<string, number | string>;
@@ -43,6 +49,19 @@ interface GamesBySpor {
   exportedAt: string;
 }
 
+interface GamePrediction {
+  homeTeamId: string;
+  awayTeamId: string;
+  moneyline: number;
+  spread: number;
+}
+
+interface PredictionsExport {
+  predictions: Record<string, GamePrediction>;
+  exportedAt: string;
+  season: number;
+}
+
 /**
  * Get environment name (username or 'prod')
  */
@@ -67,29 +86,86 @@ function exportTeamFeatures(
     const stats = getTeamStatsBeforeDate(db, sport, teamId, season, now);
     const recentGames = getRecentGames(db, sport, teamId, season, now, 10);
 
-    // Calculate derived features (same as extractGameFeatures)
-    teams[teamId] = {
-      pointsPerGame: parseFloat(stats.avgPoints || '0'),
-      pointsAllowed:
-        parseFloat(stats.avgOpponentPoints || '0') || parseFloat(stats.avgPoints || '0') * 0.95, // fallback
-      fieldGoalPct: parseFloat(stats.fieldGoalPct || '0'),
-      threePointPct: parseFloat(stats.threePointPct || '0'),
-      freeThrowPct: parseFloat(stats.freeThrowPct || '0'),
-      scoringEfficiency: parseFloat(stats.scoringEfficiency || '0'),
-      shootingEfficiency: parseFloat(stats.shootingEfficiency || '0'),
-      assistsPerGame: parseFloat(stats.avgAssists || '0'),
-      turnoversPerGame: parseFloat(stats.avgTurnovers || '0'),
-      assistTurnoverRatio: parseFloat(stats.assistTurnoverRatio || '0'),
-      reboundsPerGame: parseFloat(stats.avgRebounds || '0'),
-      offensiveReboundsPerGame: parseFloat(stats.avgOffensiveRebounds || '0'),
-      defensiveReboundsPerGame: parseFloat(stats.avgDefensiveRebounds || '0'),
-      reboundMargin: parseFloat(stats.reboundMargin || '0'),
-      stealsPerGame: parseFloat(stats.avgSteals || '0'),
-      blocksPerGame: parseFloat(stats.avgBlocks || '0'),
-      foulsPerGame: parseFloat(stats.avgFouls || '0'),
-      winPct: recentGames.filter((g: any) => g.won).length / Math.max(recentGames.length, 1),
-      pace: parseFloat(stats.pace || '0'),
-    };
+    // Calculate win percentage from recent games
+    let wins = 0;
+    for (const game of recentGames) {
+      if (game.home_score === null || game.away_score === null) continue;
+      const isHome = game.home_team_id === teamId;
+      const won = isHome ? game.home_score > game.away_score : game.away_score > game.home_score;
+      if (won) wins++;
+    }
+    const winPct = recentGames.length > 0 ? wins / recentGames.length : 0.5;
+
+    // Sport-specific feature extraction
+    if (sport === 'nhl') {
+      // Hockey-specific features
+      const goalsPerGame = parseFloat(stats.avgGoals || '0');
+      const goalsAgainstPerGame = parseFloat(stats.avgGoalsAgainst || '0');
+      const shotsPerGame = parseFloat(stats.avgShots || '0');
+      const shotsAgainstPerGame = parseFloat(stats.avgShotsAgainst || '0');
+
+      // Calculate shooting and save percentages (same as features.ts)
+      const shootingPct = shotsPerGame > 0 ? (goalsPerGame / shotsPerGame) * 100 : 0;
+      const savePct =
+        shotsAgainstPerGame > 0
+          ? ((shotsAgainstPerGame - goalsAgainstPerGame) / shotsAgainstPerGame) * 100
+          : 0;
+
+      // Advanced features (calculated from recent games)
+      const winStreak = calculateWinStreak(recentGames, teamId);
+      const restDays = calculateRestDays(now, recentGames);
+      const backToBack = restDays <= 1 ? 1 : 0;
+      const strengthOfSchedule = calculateStrengthOfSchedule(db, sport, teamId, season, now, 10);
+
+      teams[teamId] = {
+        goalsPerGame,
+        goalsAgainstPerGame,
+        shotsPerGame,
+        shotsAgainstPerGame,
+        shootingPct,
+        savePct,
+        powerPlayPct: parseFloat(stats.powerPlayPct || '0'),
+        penaltyKillPct: parseFloat(stats.penaltyKillPct || '0'),
+        powerPlayGoals: parseFloat(stats.powerPlayGoals || '0'),
+        shortHandedGoals: parseFloat(stats.shortHandedGoals || '0'),
+        hitsPerGame: parseFloat(stats.hits || '0'),
+        blockedShotsPerGame: parseFloat(stats.blockedShots || '0'),
+        penaltyMinutes: parseFloat(stats.penaltyMinutes || stats.penalties || '0'),
+        faceoffPct: parseFloat(stats.faceoffPercent || '0'),
+        takeaways: parseFloat(stats.takeaways || '0'),
+        giveaways: parseFloat(stats.giveaways || '0'),
+        winPct,
+        winPercentage: winPct, // Alias for model compatibility
+        winStreak,
+        restDays,
+        backToBack,
+        strengthOfSchedule,
+      };
+    } else {
+      // Basketball features (NBA/NCAAM)
+      teams[teamId] = {
+        pointsPerGame: parseFloat(stats.avgPoints || '0'),
+        pointsAllowed:
+          parseFloat(stats.avgOpponentPoints || '0') || parseFloat(stats.avgPoints || '0') * 0.95,
+        fieldGoalPct: parseFloat(stats.fieldGoalPct || '0'),
+        threePointPct: parseFloat(stats.threePointPct || '0'),
+        freeThrowPct: parseFloat(stats.freeThrowPct || '0'),
+        scoringEfficiency: parseFloat(stats.scoringEfficiency || '0'),
+        shootingEfficiency: parseFloat(stats.shootingEfficiency || '0'),
+        assistsPerGame: parseFloat(stats.avgAssists || '0'),
+        turnoversPerGame: parseFloat(stats.avgTurnovers || '0'),
+        assistTurnoverRatio: parseFloat(stats.assistTurnoverRatio || '0'),
+        reboundsPerGame: parseFloat(stats.avgRebounds || '0'),
+        offensiveReboundsPerGame: parseFloat(stats.avgOffensiveRebounds || '0'),
+        defensiveReboundsPerGame: parseFloat(stats.avgDefensiveRebounds || '0'),
+        reboundMargin: parseFloat(stats.reboundMargin || '0'),
+        stealsPerGame: parseFloat(stats.avgSteals || '0'),
+        blocksPerGame: parseFloat(stats.avgBlocks || '0'),
+        foulsPerGame: parseFloat(stats.avgFouls || '0'),
+        winPct,
+        pace: parseFloat(stats.pace || '0'),
+      };
+    }
   }
 
   return {
@@ -122,6 +198,107 @@ function exportUpcomingGames(db: any, sport: string): GamesBySpor {
 }
 
 /**
+ * Export game predictions for upcoming games
+ * Uses the EXACT same prediction code as CLI recommend command
+ */
+function exportGamePredictions(
+  db: any,
+  sport: string,
+  season: number,
+  games: UpcomingGame[],
+): PredictionsExport {
+  console.log(`  Computing predictions for ${games.length} games...`);
+
+  // Load models (same as CLI recommend command)
+  const moneylineModelPath = path.join(
+    process.cwd(),
+    'data',
+    'models',
+    sport,
+    `moneyline-${season}.json`,
+  );
+  const spreadModelPath = path.join(
+    process.cwd(),
+    'data',
+    'models',
+    sport,
+    `spread-${season}.json`,
+  );
+
+  let moneylineModel;
+  let spreadModel;
+
+  try {
+    moneylineModel = loadModel(moneylineModelPath);
+    console.log(`    ✓ Loaded moneyline model`);
+  } catch (error) {
+    console.log(chalk.yellow(`    ⚠ No moneyline model for ${sport}`));
+  }
+
+  try {
+    spreadModel = loadModel(spreadModelPath);
+    console.log(`    ✓ Loaded spread model`);
+  } catch (error) {
+    console.log(chalk.yellow(`    ⚠ No spread model for ${sport}`));
+  }
+
+  const predictions: Record<string, GamePrediction> = {};
+
+  for (const game of games) {
+    let moneylineProb = 0.5; // Default neutral
+    let spreadProb = 0.5;
+
+    // Use EXACT same prediction function as CLI recommend
+    if (moneylineModel) {
+      try {
+        moneylineProb = predictHomeWinProbability(
+          db,
+          moneylineModel,
+          game.id,
+          game.homeTeamId,
+          game.awayTeamId,
+          game.season,
+          game.date,
+        );
+      } catch (error) {
+        console.warn(`    ⚠ Failed to predict moneyline for game ${game.id}: ${error}`);
+      }
+    }
+
+    if (spreadModel) {
+      try {
+        spreadProb = predictHomeWinProbability(
+          db,
+          spreadModel,
+          game.id,
+          game.homeTeamId,
+          game.awayTeamId,
+          game.season,
+          game.date,
+        );
+      } catch (error) {
+        console.warn(`    ⚠ Failed to predict spread for game ${game.id}: ${error}`);
+      }
+    }
+
+    predictions[game.id] = {
+      homeTeamId: game.homeTeamId,
+      awayTeamId: game.awayTeamId,
+      moneyline: moneylineProb,
+      spread: spreadProb,
+    };
+  }
+
+  console.log(`    ✓ Generated ${Object.keys(predictions).length} predictions`);
+
+  return {
+    predictions,
+    exportedAt: new Date().toISOString(),
+    season,
+  };
+}
+
+/**
  * Export all teams (ID -> name mapping) for all sports
  */
 function exportAllTeams(db: any, sports: string[]): Record<string, Record<string, string>> {
@@ -129,14 +306,16 @@ function exportAllTeams(db: any, sports: string[]): Record<string, Record<string
   const allTeams: Record<string, Record<string, string>> = {};
 
   for (const sport of sports) {
-    const teams = db.prepare('SELECT id, name FROM teams WHERE sport = ?').all(sport) as Array<{
+    const teams = db
+      .prepare('SELECT id, display_name FROM teams WHERE sport = ?')
+      .all(sport) as Array<{
       id: string;
-      name: string;
+      display_name: string;
     }>;
 
     allTeams[sport] = {};
     for (const team of teams) {
-      allTeams[sport][team.id] = team.name;
+      allTeams[sport][team.id] = team.display_name;
     }
     console.log(`    ${sport}: ${teams.length} teams`);
   }
@@ -191,7 +370,7 @@ export function syncCommand(): Command {
     .option('-s, --sports <sports>', 'Comma-separated list of sports (default: nba,ncaam,nhl)')
     .option('-b, --bucket <bucket>', 'S3 bucket name (overrides default naming)')
     .option('--no-upload', 'Skip S3 upload (just export locally)')
-    .option('--season <season>', 'Season year to export (default: 2026)', '2026')
+    .option('--season <season>', 'Season year to export (default: 2025)', '2025')
     .action((options: { sports?: string; bucket?: string; upload: boolean; season: string }) => {
       console.log(`\n${chalk.bold.cyan('📦 Syncing Data to S3')}\n`);
 
@@ -237,18 +416,25 @@ export function syncCommand(): Command {
           }
 
           if (teamIds.size === 0) {
-            console.log(chalk.yellow(`    ⚠ No upcoming games, skipping feature export`));
+            console.log(chalk.yellow(`    ⚠ No upcoming games, skipping exports`));
             continue;
           }
 
-          // 3. Export team features
+          // 3. Export game predictions (NEW - uses CLI prediction code!)
+          console.log(`  ${chalk.cyan('→')} Computing game predictions...`);
+          const predictionsData = exportGamePredictions(db, sport, season, gamesData.games);
+          const predictionsPath = path.join(featuresDir, `${sport}-predictions.json`);
+          fs.writeFileSync(predictionsPath, JSON.stringify(predictionsData, null, 2));
+          console.log(chalk.green(`    ✓ Saved to ${predictionsPath}`));
+
+          // 4. Export team features
           console.log(`  ${chalk.cyan('→')} Exporting team features...`);
           const featuresData = exportTeamFeatures(db, sport, season, teamIds);
           const featuresPath = path.join(featuresDir, `${sport}-features.json`);
           fs.writeFileSync(featuresPath, JSON.stringify(featuresData, null, 2));
           console.log(chalk.green(`    ✓ Saved to ${featuresPath}`));
 
-          // 4. Check for models
+          // 5. Check for models
           const modelsDir = path.join(process.cwd(), 'data', 'models', sport);
           if (fs.existsSync(modelsDir)) {
             console.log(chalk.green(`    ✓ Models found at ${modelsDir}`));

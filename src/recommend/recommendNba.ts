@@ -74,9 +74,10 @@ export function findValueBets(
   // Filter by date if specified
   if (dateFilter) {
     upcomingGames = upcomingGames.filter((game) => {
-      // Extract date portion from UTC timestamp (games stored as YYYY-MM-DDTHH:MMZ)
-      const gameDateUTC = game.date.substring(0, 10);
-      return gameDateUTC === dateFilter;
+      // Convert game date to EST and extract date portion
+      const gameDate = new Date(game.date);
+      const gameDateEST = gameDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+      return gameDateEST === dateFilter;
     });
   }
 
