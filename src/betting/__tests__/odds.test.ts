@@ -5,6 +5,7 @@ import {
   calculateEV,
   calculateKellyPercentage,
   decimalToAmerican,
+  removeVig,
 } from '../odds.js';
 
 describe('odds', () => {
@@ -145,6 +146,70 @@ describe('odds', () => {
       const kelly = calculateKellyPercentage(0.7, -200);
       expect(kelly).toBeGreaterThan(0);
       expect(kelly).toBeLessThanOrEqual(0.25);
+    });
+  });
+
+  describe('removeVig', () => {
+    it('removes standard vig from -110/-110 line', () => {
+      // -110 on both sides = 0.524 each (1.048 total = 4.8% vig)
+      const homeImplied = americanToImpliedProb(-110);
+      const awayImplied = americanToImpliedProb(-110);
+
+      const result = removeVig(homeImplied, awayImplied);
+
+      expect(result.homeTrue).toBeCloseTo(0.5, 2);
+      expect(result.awayTrue).toBeCloseTo(0.5, 2);
+      expect(result.homeTrue + result.awayTrue).toBeCloseTo(1.0, 5);
+    });
+
+    it('removes vig from asymmetric lines', () => {
+      // -200 = 0.6667, +150 = 0.4
+      // Total = 1.0667 (6.67% vig)
+      const homeImplied = americanToImpliedProb(-200);
+      const awayImplied = americanToImpliedProb(150);
+
+      const result = removeVig(homeImplied, awayImplied);
+
+      // After normalization: 0.6667 / 1.0667 = 0.625, 0.4 / 1.0667 = 0.375
+      expect(result.homeTrue).toBeCloseTo(0.625, 2);
+      expect(result.awayTrue).toBeCloseTo(0.375, 2);
+      expect(result.homeTrue + result.awayTrue).toBeCloseTo(1.0, 5);
+    });
+
+    it('handles high vig lines', () => {
+      // -120 = 0.545, -120 = 0.545
+      // Total = 1.09 (9% vig)
+      const homeImplied = americanToImpliedProb(-120);
+      const awayImplied = americanToImpliedProb(-120);
+
+      const result = removeVig(homeImplied, awayImplied);
+
+      expect(result.homeTrue).toBeCloseTo(0.5, 2);
+      expect(result.awayTrue).toBeCloseTo(0.5, 2);
+      expect(result.homeTrue + result.awayTrue).toBeCloseTo(1.0, 5);
+    });
+
+    it('handles very asymmetric lines', () => {
+      // Favorite -400 = 0.8, Underdog +300 = 0.25
+      const homeImplied = americanToImpliedProb(-400);
+      const awayImplied = americanToImpliedProb(300);
+
+      const result = removeVig(homeImplied, awayImplied);
+
+      // After normalization: 0.8 / 1.05 = 0.762, 0.25 / 1.05 = 0.238
+      expect(result.homeTrue).toBeCloseTo(0.762, 2);
+      expect(result.awayTrue).toBeCloseTo(0.238, 2);
+      expect(result.homeTrue + result.awayTrue).toBeCloseTo(1.0, 5);
+    });
+
+    it('preserves proportions after vig removal', () => {
+      const homeImplied = 0.6;
+      const awayImplied = 0.5; // Total = 1.1 (10% vig)
+
+      const result = removeVig(homeImplied, awayImplied);
+
+      // Ratio should be preserved: 6:5 before, 6:5 after
+      expect(result.homeTrue / result.awayTrue).toBeCloseTo(homeImplied / awayImplied, 2);
     });
   });
 });
