@@ -424,6 +424,462 @@ Before claiming models are profitable:
 - **`data/proper-backtests/`** - All 6 out-of-sample backtest logs
 - **`src/config/optimalBuckets.ts`** - Current bucket configurations with warnings
 
+---
+
+## Iterative Model Improvement Protocol
+
+**Purpose:** When tasked with improving unprofitable models (e.g., NCAAM, NBA), follow this protocol to ensure rigorous testing and prevent false positives.
+
+**Context:** We've had false positives from in-sample testing that produced inflated ROI numbers. This protocol prevents repeating that mistake.
+
+### Non-Negotiable Verification Rules
+
+Before claiming ANY improvement, these rules are **mandatory**:
+
+1. **OUT-OF-SAMPLE ONLY**
+   - Train on seasons {A, B}, test on season {C}
+   - NEVER train and test on the same season
+   - Example: Train on 2023+2024, test on 2025
+
+2. **MULTI-SEASON VALIDATION**
+   - If claiming success on 2025, MUST also validate on 2024
+   - Both test seasons must show positive ROI
+   - If only one season is profitable, consider it UNPROFITABLE
+
+3. **CALCULATION AUDIT**
+   - Show exact formula: `ROI = (total_profit / total_staked) * 100`
+   - Show raw numbers: `ROI = ($342 / $2,850) * 100 = 12.0%`
+   - Never round before final percentage
+
+4. **BASELINE COMPARISON**
+   - Compare to naive strategies:
+     - Betting all favorites
+     - Random selection
+     - Kelly criterion with uncalibrated model
+   - Must beat baseline by at least 5% to be considered meaningful
+
+5. **INDEPENDENT VERIFICATION**
+   - Run each backtest TWICE independently
+   - Confirm identical results both times
+   - If results differ, investigate non-determinism
+
+6. **BUCKET-LEVEL ANALYSIS**
+   - Don't just report overall ROI
+   - Show bucket-by-bucket breakdown
+   - Identify which probability ranges are profitable
+   - Flag suspiciously high ROI (>40%) for extra scrutiny
+
+7. **CALIBRATION TRACKING**
+   - Monitor ECE (Expected Calibration Error)
+   - ECE > 0.15 indicates poor probability estimates
+   - ROI without calibration is meaningless
+
+### Results Registry
+
+Maintain a **living document** tracking all experiments. Create `data/experiments-{sport}-{market}.md`:
+
+```markdown
+# NCAAM Moneyline Optimization Experiments
+
+**Goal:** Improve from -7.95% ROI (baseline, 2024→2025) to positive ROI
+
+## Experiments
+
+| # | Date | Model | Features | Train | Test | ROI | Win% | Bets | ECE | Verified | Notes |
+|---|------|-------|----------|-------|------|-----|------|------|-----|----------|-------|
+| 0 | 2026-01-13 | RF | baseline | 2024 | 2025 | -7.95% | 47.2% | 425 | 0.08 | ✓✓ | Baseline |
+| 1 | 2026-01-14 | RF | +injuries | 2024 | 2025 | +2.3% | 51.8% | 425 | 0.07 | ✓✓ | Validated 2024: -1.2% ❌ |
+| 2 | 2026-01-14 | XGBoost | baseline | 2024 | 2025 | +5.1% | 52.4% | 425 | 0.06 | ✓✓ | Validated 2024: +3.8% ✓ |
+| 3 | 2026-01-14 | XGBoost | +rest | 2024 | 2025 | +8.7% | 54.1% | 425 | 0.05 | ✓✓ | Validated 2024: +7.2% ✓ |
+
+**Legend:**
+- ✓✓ = Verified (ran backtest twice, identical results)
+- ❌ = Failed validation (not profitable on both seasons)
+- ✓ = Passed validation (profitable on both seasons)
+
+## Best Model (as of 2026-01-14)
+- **Experiment #3**: XGBoost with rest-day features
+- **Train**: 2024 season
+- **Test 2025**: +8.7% ROI (54.1% win rate, 425 bets)
+- **Test 2024**: +7.2% ROI (53.2% win rate, 389 bets)
+- **ECE**: 0.05 (well-calibrated)
+- **Commands**:
+  ```bash
+  node dist/cli/index.js train ncaam --season 2024 --market moneyline --calibrate
+  node dist/cli/index.js backtest ncaam --season 2025 --market moneyline --show-buckets
+  node dist/cli/index.js backtest ncaam --season 2024 --market moneyline --show-buckets
+  ```
+```
+
+### Verification Checklist (Before Each Claim)
+
+When claiming an improvement, complete this checklist:
+
+- [ ] **Show exact command used**
+  ```bash
+  node dist/cli/index.js backtest ncaam --season 2025 --market moneyline --show-buckets
+  ```
+
+- [ ] **Paste raw terminal output** (not interpreted summary)
+  ```
+  Backtest Results:
+  Total Bets: 425
+  Wins: 230 (54.1%)
+  Total Staked: $4,250.00
+  Total Profit: $369.75
+  ROI: 8.70%
+  ```
+
+- [ ] **Run same test AGAIN** and confirm identical results
+  ```bash
+  # Run 2: Same command
+  node dist/cli/index.js backtest ncaam --season 2025 --market moneyline --show-buckets
+  # Verify ROI matches: 8.70% ✓
+  ```
+
+- [ ] **Validate on different season**
+  ```bash
+  node dist/cli/index.js backtest ncaam --season 2024 --market moneyline --show-buckets
+  # Result: ROI = 7.20% ✓ (both seasons profitable)
+  ```
+
+- [ ] **Show bucket breakdown** (which probability ranges work?)
+  ```
+  60-70%: +15.2% ROI (156 bets)
+  70-80%: +11.8% ROI (98 bets)
+  80-90%: -2.1% ROI (87 bets)
+  90-100%: +8.4% ROI (84 bets)
+  ```
+
+- [ ] **Compare to baseline**
+  ```
+  Baseline (Exp #0): -7.95% ROI
+  This model (Exp #3): +8.7% ROI
+  Improvement: +16.65 percentage points ✓
+  ```
+
+- [ ] **Check calibration**
+  ```
+  ECE: 0.05 (excellent)
+  Brier Score: 0.21
+  Log Loss: 0.58
+  ```
+
+- [ ] **Update results registry** (`data/experiments-ncaam-moneyline.md`)
+
+### Anti-False-Positive Code Implementation
+
+Create `src/lib/verification/verify.ts`:
+
+```typescript
+/**
+ * Verification utilities to prevent false positive ROI claims
+ * MUST be used before reporting any model improvements
+ */
+
+interface BacktestResult {
+  roi: number;
+  winRate: number;
+  totalBets: number;
+  totalProfit: number;
+  totalStaked: number;
+  ece: number;
+  buckets: Record<string, { roi: number; bets: number }>;
+}
+
+export async function verifyBacktestClaim(
+  sport: string,
+  market: string,
+  trainSeasons: number[],
+  testSeason: number,
+  claimedROI: number
+): Promise<{
+  confirmed: boolean;
+  actualROI: number;
+  discrepancy: number;
+  validatedOnMultipleSeasons: boolean;
+  bucketBreakdown: object;
+  timestamp: string;
+}> {
+  console.log('🔍 VERIFICATION: Running independent backtest...');
+
+  // Run backtest twice to ensure deterministic results
+  const result1 = await runBacktest(sport, market, trainSeasons, testSeason);
+  const result2 = await runBacktest(sport, market, trainSeasons, testSeason);
+
+  if (Math.abs(result1.roi - result2.roi) > 0.01) {
+    throw new Error(`❌ VERIFICATION FAILED: Non-deterministic results!
+      Run 1: ${result1.roi.toFixed(2)}%
+      Run 2: ${result2.roi.toFixed(2)}%
+      These should be identical. Check for randomness in model training.`);
+  }
+
+  const discrepancy = Math.abs(claimedROI - result1.roi);
+  if (discrepancy > 0.5) {
+    throw new Error(`❌ VERIFICATION FAILED: Claimed ROI doesn't match actual!
+      Claimed: ${claimedROI.toFixed(2)}%
+      Actual:  ${result1.roi.toFixed(2)}%
+      Diff:    ${discrepancy.toFixed(2)} percentage points`);
+  }
+
+  // Validate on previous season
+  const validationSeason = testSeason - 1;
+  const validationResult = await runBacktest(sport, market, trainSeasons, validationSeason);
+  const validatedOnMultiple = validationResult.roi > 0;
+
+  if (!validatedOnMultiple) {
+    console.warn(`⚠️  WARNING: Model is profitable on ${testSeason} (+${result1.roi.toFixed(2)}%) but UNPROFITABLE on ${validationSeason} (${validationResult.roi.toFixed(2)}%). Consider this model UNRELIABLE.`);
+  }
+
+  // Check for suspiciously high ROI
+  if (result1.roi > 40) {
+    console.warn(`⚠️  WARNING: ROI of ${result1.roi.toFixed(2)}% is suspiciously high. Verify:
+      - Are we testing on training data?
+      - Is sample size too small? (n=${result1.totalBets})
+      - Is ECE terrible? (ECE=${result1.ece.toFixed(3)})`);
+  }
+
+  return {
+    confirmed: true,
+    actualROI: result1.roi,
+    discrepancy,
+    validatedOnMultipleSeasons: validatedOnMultiple,
+    bucketBreakdown: result1.buckets,
+    timestamp: new Date().toISOString()
+  };
+}
+
+async function runBacktest(
+  sport: string,
+  market: string,
+  trainSeasons: number[],
+  testSeason: number
+): Promise<BacktestResult> {
+  // Implementation calls actual backtest command
+  // This is a placeholder - actual implementation would exec CLI command
+  throw new Error('Not implemented - see src/cli/commands/backtest.ts');
+}
+```
+
+### Iteration Strategy
+
+Follow this systematic approach when improving models:
+
+#### Phase 1: Establish Baseline (MANDATORY FIRST STEP)
+
+```bash
+# 1. Run current model on out-of-sample test
+node dist/cli/index.js train ncaam --season 2024 --market moneyline --calibrate
+node dist/cli/index.js backtest ncaam --season 2025 --market moneyline --show-buckets
+
+# 2. Validate on previous season
+node dist/cli/index.js backtest ncaam --season 2024 --market moneyline --show-buckets
+
+# 3. Document in results registry as Experiment #0
+# This is the benchmark ALL improvements must beat
+```
+
+#### Phase 2: Feature Engineering (Incremental)
+
+Add features **one at a time**, test each:
+
+```bash
+# Example: Add injury tracking
+# 1. Implement new feature extraction in src/models/features.ts
+# 2. Retrain with new features
+node dist/cli/index.js train ncaam --season 2024 --market moneyline --calibrate
+
+# 3. Test on both seasons
+node dist/cli/index.js backtest ncaam --season 2025 --market moneyline --show-buckets
+node dist/cli/index.js backtest ncaam --season 2024 --market moneyline --show-buckets
+
+# 4. Document as Experiment #1
+# 5. Only keep feature if BOTH seasons improve
+```
+
+**Feature ideas:**
+- Injury reports (starters vs bench)
+- Rest days (back-to-back games)
+- Travel distance (cross-country vs local)
+- Home court advantage (venue-specific stats)
+- Referee tendencies (foul rates, home bias)
+- Momentum features (last 5 games trend)
+- Matchup history (head-to-head records)
+- Conference strength (opponent adjusted stats)
+
+#### Phase 3: Model Architecture (If Features Plateau)
+
+Test different ML architectures:
+
+```bash
+# Try XGBoost (better for complex interactions)
+# Modify src/models/trainNcaamMoneyline.ts to use XGBoost
+node dist/cli/index.js train ncaam --season 2024 --market moneyline --calibrate
+
+# Try ensemble (blend Random Forest + XGBoost + Logistic Regression)
+# Implement ensemble prediction in src/models/predict.ts
+
+# Try neural network (if dataset is large enough, >5000 games)
+```
+
+**Architecture options:**
+- Random Forest (current default)
+- XGBoost (gradient boosting)
+- LightGBM (faster gradient boosting)
+- Neural network (MLP with 2-3 hidden layers)
+- Ensemble (weighted average of multiple models)
+- Stacking (meta-learner combines base models)
+
+#### Phase 4: Hyperparameter Tuning
+
+Once architecture is chosen, optimize hyperparameters:
+
+```bash
+# Grid search on validation set (2023 data)
+# Test final model on held-out set (2024, 2025)
+
+# Random Forest hyperparameters:
+# - n_estimators: [100, 200, 500]
+# - max_depth: [10, 20, 30, None]
+# - min_samples_split: [2, 5, 10]
+# - min_samples_leaf: [1, 2, 4]
+
+# XGBoost hyperparameters:
+# - learning_rate: [0.01, 0.05, 0.1]
+# - max_depth: [3, 5, 7]
+# - n_estimators: [100, 200, 500]
+# - subsample: [0.8, 0.9, 1.0]
+```
+
+#### Phase 5: Calibration Optimization
+
+Improve probability calibration:
+
+```bash
+# Try different calibration methods
+# See src/lib/model/calibration.ts
+
+# Test isotonic regression, Platt scaling, beta calibration
+# Choose method with lowest ECE on validation set
+```
+
+### Success Criteria
+
+A model improvement is considered **successful** when:
+
+- [ ] Profitable on test season A (e.g., 2025): ROI > 0%
+- [ ] Profitable on test season B (e.g., 2024): ROI > 0%
+- [ ] Beats baseline by at least 5 percentage points
+- [ ] Sample size is adequate (>100 bets per season)
+- [ ] Calibration is reasonable (ECE < 0.10)
+- [ ] Backtest is deterministic (ran twice, identical results)
+- [ ] Bucket breakdown shows consistency (multiple buckets profitable)
+- [ ] Documented in results registry
+- [ ] Code changes committed to git
+
+### Failure Modes to Avoid
+
+**Red Flags - Stop and Investigate:**
+
+1. **Too-Good-To-Be-True ROI (>40%)**
+   - Likely testing on training data
+   - Or sample size too small
+   - Or calculation error
+
+2. **Profitable on One Season Only**
+   - Model is overfitting to that season's patterns
+   - Consider it UNPROFITABLE
+
+3. **Terrible Calibration (ECE > 0.15)**
+   - Probabilities are wrong even if ROI looks good
+   - Model is likely getting lucky, not skilled
+
+4. **Single Bucket Drives All Profit**
+   - If only 90-100% bucket is profitable with huge ROI
+   - Likely only a few bets, could be variance
+
+5. **Non-Deterministic Results**
+   - If re-running gives different ROI
+   - There's randomness in training (set seed!)
+   - Or data is leaking from different timestamps
+
+6. **Forgot to Verify on Second Season**
+   - ALWAYS validate on multiple seasons
+   - One season is never enough
+
+### What to Do When Stuck
+
+If you've tried 10+ experiments and nothing works:
+
+1. **Check for data leakage**
+   - Review feature extraction code
+   - Ensure `getTeamStatsBeforeDate()` is used correctly
+   - Verify no future data leaks into training
+
+2. **Simplify the model**
+   - Try logistic regression with just 5-10 features
+   - See if basic model can be profitable
+   - Complexity might be hurting, not helping
+
+3. **Analyze failure patterns**
+   - Which games is the model losing on?
+   - Home favorites? Road underdogs?
+   - Early season? Late season?
+   - Specific conferences?
+
+4. **Consider the sport might not be predictable**
+   - NCAAM has 350+ teams with huge talent disparity
+   - Roster turnover is massive year-to-year
+   - Odds makers might be too efficient
+   - Some sports are just harder to beat
+
+5. **Document the negative results**
+   - Failed experiments are valuable
+   - Update CLAUDE.md with findings
+   - Help future iterations avoid same mistakes
+
+### Example Planning Mode Prompt
+
+When starting an improvement task, use this template:
+
+```markdown
+# Task: Improve NCAAM Moneyline to Positive ROI
+
+## Context
+Current baseline (train 2024, test 2025): -7.95% ROI
+Goal: Achieve positive ROI (>0%) validated on multiple seasons
+
+## Constraints
+- Follow "Iterative Model Improvement Protocol" in CLAUDE.md
+- Use out-of-sample testing ONLY (train 2024, test 2025 AND 2024)
+- Document all experiments in data/experiments-ncaam-moneyline.md
+- Run verification checks before claiming success
+- Must be profitable on BOTH test seasons (2024 and 2025)
+
+## Approach
+1. Establish verified baseline (Experiment #0)
+2. Try feature engineering (one feature at a time)
+3. If features plateau, try model architectures
+4. Tune hyperparameters on best model
+5. Optimize calibration
+
+## Success Criteria
+- ROI > 0% on both 2024 and 2025 test seasons
+- Beats baseline by >5 percentage points
+- ECE < 0.10
+- Sample size >100 bets per season
+- All results verified (ran tests 2x)
+- Documented in results registry
+
+IMPORTANT: If I claim success, verify by:
+1. Running the exact commands I used
+2. Confirming results match
+3. Checking validation on both seasons
+4. Reviewing calibration quality
+```
+
+---
+
 ## Important Notes
 
 - **Recommend Output**: Shows unified sorted list (best edge first) with EST times, Market column (ML/SPR), and L/O column (line for spreads, odds for moneyline)
