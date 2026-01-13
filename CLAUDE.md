@@ -257,97 +257,172 @@ This architecture minimizes Lambda cold start time by avoiding ML computations i
 
 Each sport has configurable stat extraction in `src/db/importSportsToDb.ts` and feature order in `src/models/features.ts`.
 
-## Optimal Betting Strategy
+## Model Validation & Performance (CRITICAL)
 
 **Last Verified:** January 13, 2026
-**Methodology:** Trained on 2025 season data, backtested on 2025 season (walk-forward for NBA)
-**Test Results:** All 6 sport/market combinations profitable; see `data/analysis-2024-vs-2025.md` for full analysis
+**Methodology:** Proper out-of-sample testing (train 2024 → test 2025)
+**Critical Documentation:** `data/REAL-OUT-OF-SAMPLE-RESULTS.md` and `READY-FOR-PRODUCTION.md`
 
-All models use **8% minimum edge** threshold in production (Lambda). CLI defaults to 3% but 8% is recommended based on backtesting.
+### ⚠️ CRITICAL LESSON: Avoid In-Sample Testing Mistakes
 
-### NBA - Moneyline
+**What Went Wrong (January 2026):**
+Initial backtests trained and tested on the SAME season data (in-sample testing), producing artificially inflated ROI numbers:
+- NHL Moneyline appeared to have 83.60% ROI
+- NBA Moneyline appeared to have 66.51% ROI
+- All 6 models appeared profitable
+
+**The Fix:**
+Proper out-of-sample validation was implemented: **train on 2024 season, test on 2025 season**. This revealed the truth:
+- **Only 1 of 6 models is actually profitable**
+- 5 models lose money when properly validated
+
+**For Future AI: ALWAYS use out-of-sample testing**
 ```bash
-node dist/cli/index.js recommend nba \
-  --min-edge 0.08 \
-  --max-ev 0.5 \
-  --buckets "70-80,90-100"
-```
-- Expected ROI: **66.51%** (2025 season) | Win rate: 85.85%
-- Optimal buckets: 70-80% (consistently strong across both seasons)
-- Note: Exceptional performance improvement from 2024 (48.87% ROI)
+# CORRECT: Train on one season, test on a different season
+node dist/cli/index.js train nba --season 2024 --market moneyline
+node dist/cli/index.js backtest nba --season 2025 --market moneyline --show-buckets
 
-### NBA - Spread
-```bash
-node dist/cli/index.js recommend nba \
-  --min-edge 0.08 \
-  --max-ev 0.5 \
-  --market spread \
-  --buckets "60-70,70-80"
+# WRONG: Training and testing on same data
+node dist/cli/index.js train nba --season 2025 --market moneyline
+node dist/cli/index.js backtest nba --season 2025 --market moneyline  # ❌ Inflated results
 ```
-- Expected ROI: **33.05%** (2025 season) | Win rate: 69.92%
-- Optimal buckets: 60-70%, 70-80% (85.41% ROI on 70-80% bucket)
-- Note: Improved from 28.68% ROI in 2024
 
-### NCAAM - Moneyline
-```bash
-node dist/cli/index.js recommend ncaam \
-  --min-edge 0.08 \
-  --max-ev 0.5 \
-  --buckets "70-80,80-90,90-100"
-```
-- Expected ROI: **38.03%** (2025 season) | Win rate: 75.26%
-- Optimal buckets: 70-80%, 80-90%, 90-100% (high-confidence bets)
-- **Major improvement:** Model was unprofitable in 2024 (-3.13%) but highly profitable in 2025
+### Verified Model Performance (Out-of-Sample)
 
-### NCAAM - Spread
+#### ✅ PROFITABLE: NHL Moneyline ONLY
 ```bash
-node dist/cli/index.js recommend ncaam \
-  --min-edge 0.08 \
-  --max-ev 0.5 \
-  --market spread \
-  --buckets "30-40,40-50"
+node dist/cli/index.js recommend nhl --min-edge 0.07
 ```
-- Expected ROI: **32.01%** (2025 season) | Win rate: 68.18%
-- Optimal buckets: 30-40%, 40-50% (consistent across both seasons)
-- Note: Model identifies value in moderate-confidence picks
+- **ROI:** +13.40% (verified on 425 bets, 2025 season)
+- **Win Rate:** 56.71%
+- **Optimal Buckets:** 60-70% (+11.93% ROI), 70-80% (+27.76% ROI)
+- **Threshold:** 7% minimum edge (production setting)
+- **Model:** `data/models/nhl/moneyline-2024.json` (2024 trained, works on 2025)
 
-### NHL - Moneyline
-```bash
-node dist/cli/index.js recommend nhl \
-  --min-edge 0.08 \
-  --max-ev 0.5 \
-  --buckets "70-80,90-100"
-```
-- Expected ROI: **83.60%** (2025 season) | Win rate: 95.82%
-- Optimal buckets: 70-80%, 90-100% (exceptional performance)
-- **Best performer:** Highest ROI and win rate across all models
+#### ❌ UNPROFITABLE: Do Not Use
+All other models lose money when properly validated (train 2024 → test 2025):
 
-### NHL - Spread
+| Sport/Market | Out-of-Sample ROI | Status |
+|--------------|-------------------|--------|
+| NBA Moneyline | -13.23% | ❌ Loses money |
+| NBA Spread | -9.38% | ❌ Loses money |
+| NCAAM Moneyline | -7.95% | ❌ Loses money |
+| NCAAM Spread | -9.18% | ❌ Loses money |
+| NHL Spread | -35.40% | ❌ Worst performer |
+
+### Current Production Configuration
+
+**Lambda Settings** (`lambda/update/src/index.ts`):
+- `MIN_EDGE = 0.07` (7%, optimized for NHL ML)
+- `MAX_EV = 0.5` (50%, filters outliers)
+- Dashboard shows all sports but only NHL ML is profitable
+
+**Optimal Buckets** (`src/config/optimalBuckets.ts`):
+- Contains warnings for each unprofitable model
+- Only NHL Moneyline buckets are verified profitable
+- Other buckets retained for research/tracking only
+
+### Why Most Models Failed
+
+**Sports betting models struggle with:**
+1. **Season-to-season changes:** Roster turnover, coaching changes, rule changes
+2. **Small sample sizes:** Even full seasons may not capture all patterns
+3. **Meta-game shifts:** Playing styles and strategies evolve
+4. **Overfitting:** Complex features that work on training data don't generalize
+
+**Why NHL Moneyline works:**
+- More games per season (82 vs 30-40 for basketball)
+- Less roster volatility
+- More predictable playing styles
+- Simpler scoring dynamics
+
+### How to Improve Models (Future Work)
+
+#### 1. Better Validation Methodology
 ```bash
-node dist/cli/index.js recommend nhl \
-  --min-edge 0.08 \
-  --max-ev 0.5 \
-  --market spread \
-  --buckets "10-20,20-30"
+# Use multiple seasons for training
+node dist/cli/index.js train nba --season 2023 --market moneyline
+# Combine 2023 + 2024 data, then test on 2025
+
+# Walk-forward validation within season (partially implemented for NBA)
+# Train on first 70% of games, test on last 30% of same season
 ```
-- Expected ROI: **44.46%** (2025 season) | Win rate: 67.60%
-- Optimal buckets: 10-20%, 20-30% (model finds underdog value)
-- Note: Counter-intuitive low-probability buckets indicate mispriced underdogs
+
+#### 2. Feature Engineering Improvements
+- **Injuries:** Currently not tracked; significant impact on outcomes
+- **Rest days:** Back-to-back games affect performance
+- **Travel distance:** Cross-country games vs divisional games
+- **Referee assignments:** Different officials call games differently
+- **Weather:** Outdoor sports (NFL, CFB) affected by conditions
+- **Line movement:** Track how odds change over time
+- **Public betting percentages:** Fade or follow the public
+
+#### 3. Model Architecture Experiments
+```bash
+# Current: Random Forest (spread), Logistic Regression (some moneyline)
+# Try:
+# - XGBoost (better handling of complex interactions)
+# - Neural networks (deeper feature learning)
+# - Ensemble methods (combine multiple models)
+# - Separate models by conference/division (NBA East vs West)
+```
+
+#### 4. Calibration Improvements
+Current calibration uses temperature scaling or beta calibration. Consider:
+- **Isotonic regression:** Non-parametric, more flexible
+- **Platt scaling:** Effective for some classifiers
+- **Evaluate ECE (Expected Calibration Error):** Current backtests show this but don't optimize for it
+
+#### 5. Live Monitoring & Retraining
+```bash
+# Track real-world performance
+# If ROI drops significantly, retrain immediately
+
+# Monthly retraining schedule
+node dist/cli/index.js train nhl --season 2025 --market moneyline --calibrate
+node dist/cli/index.js backtest nhl --season 2025 --market moneyline --show-buckets
+npm run sync && npm run cdk:deploy
+```
+
+#### 6. Odds Shopping
+Currently uses ESPN odds only. To improve:
+- Scrape multiple sportsbooks (DraftKings, FanDuel, BetMGM, etc.)
+- Find line discrepancies between books
+- Take best available odds for each bet
+- Track which books consistently offer better value
+
+#### 7. Advanced Strategies
+- **Arbitrage detection:** Guaranteed profit across different books
+- **Middle opportunities:** Bet both sides at different lines
+- **Hedging strategies:** Lock in profits before games end
+- **Correlation analysis:** Parlay detection (which bets are independent?)
+
+### Testing Checklist for Future Updates
+
+Before claiming models are profitable:
+
+- [ ] Train on season N, test on season N+1 (out-of-sample)
+- [ ] Verify sample size (>100 bets minimum per bucket)
+- [ ] Check calibration (ECE < 0.10 acceptable, < 0.05 ideal)
+- [ ] Test on multiple seasons if available (2023→2024, 2024→2025)
+- [ ] Compare to baseline (betting favorites, random selection)
+- [ ] Document exact commands and results in `data/` directory
+- [ ] Update `src/config/optimalBuckets.ts` with verified buckets
+- [ ] Run `npm test` to ensure no regressions
+- [ ] Sync and deploy: `npm run sync && npm run cdk:deploy`
 
 ### Filter Explanations
-- `--min-edge X`: Minimum model edge required (CLI default: 3%, **Recommended: 8%**, Lambda production: 8%)
-- `--max-ev 0.5`: Caps EV at 50% to filter extreme outliers (default in both CLI and Lambda)
-- `--buckets "A-B,C-D"`: Only bet probability ranges with historical profitability (auto-loaded from `src/config/optimalBuckets.ts`)
+- `--min-edge X`: Minimum model edge required (default 3%, production uses 7% for NHL)
+- `--max-ev 0.5`: Caps EV at 50% to filter extreme outliers
+- `--buckets "A-B,C-D"`: Only bet probability ranges with historical profitability
 - Built-in vigorish gate: Requires 4% edge for high-vig lines (-115 or worse)
-- `--market moneyline|spread`: Show recommendations for specific market (command shows both by default)
+- `--market moneyline|spread`: Filter to specific market
 
-### Performance Notes
-- All ROI figures are from 2025 season backtests (Jan 2026 optimization)
-- 5 out of 6 models improved over 2024 performance
-- NCAAM moneyline: Dramatic turnaround from unprofitable to 38% ROI
-- Sample sizes: NBA (1231 games), NCAAM (5554 games), NHL (1159 games)
-- Models automatically use optimal buckets defined in `src/config/optimalBuckets.ts`
-- Low-probability buckets (0-30%) show strong performance in several models, indicating effective identification of mispriced underdogs
+### References
+- **`data/REAL-OUT-OF-SAMPLE-RESULTS.md`** - Comprehensive validation results
+- **`READY-FOR-PRODUCTION.md`** - Production deployment summary
+- **`data/proper-backtests/`** - All 6 out-of-sample backtest logs
+- **`src/config/optimalBuckets.ts`** - Current bucket configurations with warnings
 
 ## Important Notes
 

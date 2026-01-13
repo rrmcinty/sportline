@@ -66,8 +66,12 @@ interface ConfigData {
 }
 
 const BUCKET = process.env.BUCKET || `sportline-data-${process.env.USER || 'dev'}`;
-const MIN_EDGE = 0.08; // 8% minimum edge (optimized from 2024/2025 backtests - Jan 2026)
+const MIN_EDGE = 0.07; // 7% minimum edge (verified profitable for NHL ML - Jan 13, 2026)
 const MAX_EV = 0.5; // 50% maximum EV (filters extreme outliers)
+
+// IMPORTANT: Only NHL Moneyline is verified profitable (+13.40% ROI out-of-sample)
+// All other models (NBA, NCAAM, NHL Spread) lose money when properly tested
+// See data/REAL-OUT-OF-SAMPLE-RESULTS.md for details
 
 /**
  * Convert American odds to implied probability
