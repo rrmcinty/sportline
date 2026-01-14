@@ -117,6 +117,19 @@ export function backtestCommand(): Command {
           console.log(`  Calibration: ${model.calibration.method}`);
         }
 
+        // Warn if testing on same season as training (in-sample testing)
+        if (model.season === season) {
+          console.warn(
+            `\n⚠️  WARNING: Model was trained on season ${model.season}, but you are backtesting on the SAME season.`,
+          );
+          console.warn(`   This is IN-SAMPLE testing and will produce artificially inflated ROI.`);
+          console.warn(
+            `   For proper validation, train on one season and backtest on a DIFFERENT season.`,
+          );
+          console.warn(`   Example: train on 2024, backtest on 2025`);
+          console.warn(`   Use --model-path to specify a model trained on a different season.\n`);
+        }
+
         // Load test season games
         const dbPath = path.join(process.cwd(), 'data', 'sportline.db');
         const db = new Database(dbPath);
