@@ -79,6 +79,12 @@ export interface BacktestResult {
   losses: number;
   avg_odds: number;
   sharpe_ratio: number | null;
+  // Kelly betting metrics (optional)
+  final_bankroll?: number;
+  min_bankroll?: number;
+  max_bankroll?: number;
+  max_bet_size?: number;
+  bankroll_roi?: number; // (final_bankroll - starting_bankroll) / starting_bankroll
 }
 
 export interface ProbabilityBucket {

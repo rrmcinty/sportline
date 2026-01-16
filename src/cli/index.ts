@@ -11,6 +11,7 @@ import { recommendCommand } from './commands/recommend.js';
 import { backtestCommand } from './commands/backtest.js';
 import { updateCommand } from './commands/update.js';
 import { syncCommand } from './commands/sync.js';
+import { optimizeBucketsCommand } from './commands/optimizeBuckets.js';
 
 const program = new Command();
 
@@ -48,6 +49,7 @@ program.addCommand(recommendCommand());
 program.addCommand(backtestCommand());
 program.addCommand(updateCommand());
 program.addCommand(syncCommand());
+program.addCommand(optimizeBucketsCommand());
 
 // Parse arguments
 program.parse();

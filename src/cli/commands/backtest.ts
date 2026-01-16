@@ -47,6 +47,8 @@ interface BacktestOptions {
   minBets?: string;
   showBuckets?: boolean;
   buckets?: string;
+  betSizing?: string;
+  startingBankroll?: string;
 }
 
 export function backtestCommand(): Command {
@@ -74,6 +76,16 @@ export function backtestCommand(): Command {
     .option(
       '--buckets <ranges>',
       'Only bet in these probability buckets (e.g., "40-70,80-100" to exclude 70-80%)',
+    )
+    .option(
+      '--bet-sizing <mode>',
+      'Bet sizing mode: flat (fixed $100) or kelly (Kelly criterion)',
+      'flat',
+    )
+    .option(
+      '--starting-bankroll <amount>',
+      'Starting bankroll for Kelly bet sizing (default: $10,000)',
+      '10000',
     )
     .action(async (sport: string, options: BacktestOptions) => {
       const supportedSports = ['nba', 'ncaam', 'nhl'];
@@ -266,10 +278,24 @@ export function backtestCommand(): Command {
             .map((s) => parseFloat(s.trim()));
           const maxEv = options.maxEv ? parseFloat(options.maxEv) : undefined;
           const minBets = parseInt(options.minBets || '20', 10);
+          const betSizing = (options.betSizing || 'flat') as 'flat' | 'kelly';
+          const startingBankroll = parseInt(options.startingBankroll || '10000', 10);
+
+          // Validate bet sizing mode
+          if (betSizing !== 'flat' && betSizing !== 'kelly') {
+            console.error(
+              `Error: Invalid bet sizing mode '${betSizing}'. Choose from: flat, kelly`,
+            );
+            process.exit(1);
+          }
 
           console.log('\nRunning backtest grid search...');
           console.log(`Edge range: ${edgeRange.map((e) => `${(e * 100).toFixed(1)}%`).join(', ')}`);
           console.log(`EV range: ${evRange.map((e) => `${(e * 100).toFixed(1)}%`).join(', ')}`);
+          console.log(`Bet sizing: ${betSizing}`);
+          if (betSizing === 'kelly') {
+            console.log(`Starting bankroll: $${startingBankroll.toLocaleString()}`);
+          }
           if (maxEv !== undefined) {
             console.log(`Max EV: ${(maxEv * 100).toFixed(1)}%`);
           }
@@ -280,6 +306,8 @@ export function backtestCommand(): Command {
             edgeRange,
             evRange,
             maxEv,
+            betSizing,
+            startingBankroll,
           );
 
           // Print summary
@@ -292,6 +320,34 @@ export function backtestCommand(): Command {
           console.log(`\n✅ Optimal Strategy:`);
           console.log(`   Min Edge: ${(optimal.min_edge * 100).toFixed(1)}%`);
           console.log(`   Min EV: ${(optimal.min_ev * 100).toFixed(1)}%`);
+
+          // Show Kelly-specific metrics if using Kelly bet sizing
+          if (betSizing === 'kelly') {
+            const optimalResult = backtestResults.find(
+              (r) => r.threshold_edge === optimal.min_edge && r.threshold_ev === optimal.min_ev,
+            );
+            if (optimalResult && optimalResult.final_bankroll !== undefined) {
+              console.log(`\n💰 Kelly Criterion Metrics:`);
+              console.log(
+                `   Starting Bankroll: $${startingBankroll.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              );
+              console.log(
+                `   Final Bankroll: $${optimalResult.final_bankroll.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              );
+              console.log(
+                `   Bankroll Growth: ${((optimalResult.bankroll_roi ?? 0) * 100).toFixed(2)}%`,
+              );
+              console.log(
+                `   Max Bet Size: $${(optimalResult.max_bet_size ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              );
+              console.log(
+                `   Min Bankroll: $${(optimalResult.min_bankroll ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              );
+              console.log(
+                `   Max Bankroll: $${(optimalResult.max_bankroll ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              );
+            }
+          }
 
           // Show probability buckets if requested
           if (options.showBuckets) {

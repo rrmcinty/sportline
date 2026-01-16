@@ -422,7 +422,11 @@ export function trainCommand(): Command {
               nhlOptions.selectFeatures = { method, value };
             }
 
-            modelPath = trainNhlModel(seasons[0], options.output, nhlOptions);
+            modelPath = trainNhlModel(
+              seasons.length === 1 ? seasons[0] : seasons,
+              options.output,
+              nhlOptions,
+            );
           } else {
             throw new Error(`Unknown sport: ${sport}`);
           }

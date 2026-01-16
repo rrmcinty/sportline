@@ -9,6 +9,7 @@ import type {
   ProbabilityBucket,
 } from '../db/types.js';
 import { calculateBettingMetrics } from '../odds/evCalculator.js';
+import { calculateKellyBet } from '../../betting/kelly.js';
 
 function selectDeterministicOddsRow(
   oddsArr: Array<{
@@ -122,6 +123,8 @@ export function runBacktestForThreshold(
   minEV: number,
   unitSize: number = 100,
   maxEV?: number,
+  betSizing: 'flat' | 'kelly' = 'flat',
+  startingBankroll: number = 10000,
 ): BacktestResult {
   let totalBets = 0;
   let totalStaked = 0;
@@ -129,11 +132,16 @@ export function runBacktestForThreshold(
   let wins = 0;
   let losses = 0;
   let oddsSum = 0;
+  let currentBankroll = startingBankroll;
+  let maxBetSize = 0;
+  let minBankroll = startingBankroll;
+  let maxBankroll = startingBankroll;
 
   for (const rec of recommendations) {
     let betSide: 'home' | 'away' | null = null;
     let betOdds: number | null = null;
     let betEdge: number | null = null;
+    let betProbability: number | null = null;
 
     // Determine if we should bet
     if (
@@ -150,6 +158,7 @@ export function runBacktestForThreshold(
         const _betEV = rec.ev_home;
         betEdge = rec.edge_home;
         betOdds = rec.odds_home;
+        betProbability = rec.model_prob_home;
       }
     }
 
@@ -168,6 +177,7 @@ export function runBacktestForThreshold(
         const _betEV = rec.ev_away;
         betEdge = rec.edge_away;
         betOdds = rec.odds_away;
+        betProbability = rec.model_prob_away;
       }
     }
 
@@ -178,9 +188,19 @@ export function runBacktestForThreshold(
 
     if (!passesJuiceGate(betOdds, betEdge)) continue;
 
+    // Calculate bet size
+    let betAmount: number;
+    if (betSizing === 'kelly' && betProbability !== null) {
+      betAmount = calculateKellyBet(betProbability, betOdds, currentBankroll);
+      if (betAmount === 0) continue; // Skip if Kelly says not to bet
+      maxBetSize = Math.max(maxBetSize, betAmount);
+    } else {
+      betAmount = unitSize;
+    }
+
     // Place bet
     totalBets++;
-    totalStaked += unitSize;
+    totalStaked += betAmount;
 
     const won =
       (betSide === 'home' && rec.actual === 1) || (betSide === 'away' && rec.actual === 0);
@@ -188,11 +208,24 @@ export function runBacktestForThreshold(
     if (won) {
       wins++;
       const payout = betOdds > 0 ? betOdds / 100 : 100 / Math.abs(betOdds);
-      totalProfit += unitSize * payout;
+      const profit = betAmount * payout;
+      totalProfit += profit;
+      currentBankroll += profit;
       oddsSum += betOdds;
     } else {
       losses++;
-      totalProfit -= unitSize;
+      totalProfit -= betAmount;
+      currentBankroll -= betAmount;
+    }
+
+    // Track bankroll extremes
+    minBankroll = Math.min(minBankroll, currentBankroll);
+    maxBankroll = Math.max(maxBankroll, currentBankroll);
+
+    // Prevent bankruptcy
+    if (currentBankroll <= 0) {
+      console.warn(`⚠️  Bankrupt after ${totalBets} bets (started with $${startingBankroll})`);
+      break;
     }
   }
 
@@ -216,7 +249,7 @@ export function runBacktestForThreshold(
     sharpeRatio = stdDev > 0 ? avgProfit / stdDev : null;
   }
 
-  return {
+  const result: BacktestResult = {
     threshold_edge: minEdge,
     threshold_ev: minEV,
     total_bets: totalBets,
@@ -229,6 +262,17 @@ export function runBacktestForThreshold(
     avg_odds: avgOdds,
     sharpe_ratio: sharpeRatio,
   };
+
+  // Add Kelly-specific metrics if using Kelly bet sizing
+  if (betSizing === 'kelly') {
+    result.final_bankroll = currentBankroll;
+    result.min_bankroll = minBankroll;
+    result.max_bankroll = maxBankroll;
+    result.max_bet_size = maxBetSize;
+    result.bankroll_roi = (currentBankroll - startingBankroll) / startingBankroll;
+  }
+
+  return result;
 }
 
 /**
@@ -239,12 +283,22 @@ export function runBacktestGrid(
   edgeRange: number[] = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08],
   evRange: number[] = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03],
   maxEV?: number,
+  betSizing: 'flat' | 'kelly' = 'flat',
+  startingBankroll: number = 10000,
 ): BacktestResult[] {
   const results: BacktestResult[] = [];
 
   for (const minEdge of edgeRange) {
     for (const minEV of evRange) {
-      const result = runBacktestForThreshold(recommendations, minEdge, minEV, 100, maxEV);
+      const result = runBacktestForThreshold(
+        recommendations,
+        minEdge,
+        minEV,
+        100,
+        maxEV,
+        betSizing,
+        startingBankroll,
+      );
       results.push(result);
     }
   }
