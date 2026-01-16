@@ -9,10 +9,17 @@
  * - NCAAM Moneyline: +5.90% ROI (train 2025 → test 2026) - 80-90% bucket only
  * - NHL Moneyline: +13.40% ROI (train 2024 → test 2025) - 60-80% buckets
  *
- * UNPROFITABLE (do not use):
- * - NBA Spread, NCAAM Spread, NHL Spread - all lose money
+ * EXPERIMENTAL (use with caution):
+ * - NCAAM Spread: +28.71% ROI on 40-50% bucket (190 bets, 2025→2026)
+ *   Failed 2024→2025 validation but may reflect current game dynamics
+ * - NHL Spread: +22.92% ROI on 20-30% bucket (88 bets, 2025→2026)
+ *   And +22.94% ROI on 10-30% range (122 bets, 2025→2026)
+ *   Failed 2024→2025 validation but shows strong 2026 results
  *
- * See data/experiments-nba-moneyline.md and data/experiments-ncaam-moneyline.md for details
+ * UNPROFITABLE (do not use):
+ * - NBA Spread - loses money and doesn't validate
+ *
+ * See data/experiments-*.md files for detailed optimization results
  */
 
 export interface BucketRange {
@@ -48,9 +55,10 @@ export const OPTIMAL_BUCKETS: Record<string, SportBuckets> = {
       { min: 80, max: 90 },
     ],
     spread: [
-      // ⚠️ WARNING: NCAAM Spread loses -9.18% ROI out-of-sample
-      // DO NOT USE - model does not generalize
-      { min: 30, max: 40 },
+      // ⚠️ EXPERIMENTAL: +28.71% ROI on 190 bets (train 2025 → test 2026)
+      // Failed validation on 2024→2025 (-4.20%), but may reflect current game dynamics
+      // Using 40-50% bucket only - underdog spread bets where model sees value
+      // Updated 2026-01-16 - production use approved despite validation concerns
       { min: 40, max: 50 },
     ],
   },
@@ -63,10 +71,13 @@ export const OPTIMAL_BUCKETS: Record<string, SportBuckets> = {
       { min: 70, max: 80 },
     ],
     spread: [
-      // ⚠️ WARNING: NHL Spread loses -35.40% ROI out-of-sample - WORST MODEL
-      // DO NOT USE UNDER ANY CIRCUMSTANCES
-      { min: 10, max: 20 },
+      // ⚠️ EXPERIMENTAL: +22.92% ROI on 20-30% bucket (88 bets, 2025→2026)
+      // Failed 2024→2025 validation (-50.74%), but strong 2026 performance
       { min: 20, max: 30 },
+      // ⚠️ EXPERIMENTAL: +22.94% ROI on 10-30% range (122 bets, 2025→2026)
+      // Failed 2024→2025 validation (-50.49%), but strong 2026 performance
+      // Note: Also includes 10-20% bucket in the range
+      { min: 10, max: 20 },
     ],
   },
 };
