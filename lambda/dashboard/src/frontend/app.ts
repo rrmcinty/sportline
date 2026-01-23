@@ -214,7 +214,7 @@ class SportlineDashboard {
         : `${rec.odds > 0 ? '+' : ''}${rec.odds}`;
 
     const edgeClass = rec.edge > 0.1 ? 'edge-high' : rec.edge > 0.06 ? 'edge-medium' : 'edge-low';
-    const bestBadge = rec.isBest ? '<span class="best-badge">✓ Best</span>' : '';
+    const bucketBadge = this.renderBucketBadge(rec);
 
     return `
       <div class="rec-card">
@@ -226,7 +226,7 @@ class SportlineDashboard {
           <div class="rec-time">${gameTime}</div>
         </div>
 
-        ${bestBadge ? `<div style="margin-bottom: 0.75rem;">${bestBadge}</div>` : ''}
+        ${bucketBadge ? `<div style="margin-bottom: 0.75rem;">${bucketBadge}</div>` : ''}
 
         <div class="rec-matchup">${matchup}</div>
 
@@ -266,6 +266,30 @@ class SportlineDashboard {
           </div>
         </div>
       </div>
+    `;
+  }
+
+  renderBucketBadge(rec: Recommendation): string {
+    if (!rec.bucketInfo) return '';
+
+    const roiPercent = (rec.bucketInfo.roi * 100).toFixed(1);
+    const roiClass =
+      rec.bucketInfo.roi > 0.2
+        ? 'roi-excellent'
+        : rec.bucketInfo.roi > 0.1
+          ? 'roi-good'
+          : rec.bucketInfo.roi > 0
+            ? 'roi-positive'
+            : 'roi-neutral';
+
+    return `
+      <span class="bucket-badge">
+        <span class="bucket-range">${rec.bucketInfo.range}</span>
+        <span class="bucket-separator">•</span>
+        <span class="bucket-roi ${roiClass}">+${roiPercent}%</span>
+        <span class="bucket-separator">•</span>
+        <span class="bucket-sample">${rec.bucketInfo.sampleSize} bets</span>
+      </span>
     `;
   }
 

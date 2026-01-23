@@ -265,15 +265,60 @@ export function getHtmlTemplate(appJs: string): string {
       font-weight: 500;
     }
 
-    .best-badge {
-      padding: 0.25rem 0.625rem;
-      background: var(--success-green);
-      color: var(--bg-primary);
+    .bucket-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
       border-radius: 0.375rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .bucket-range {
       font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .bucket-separator {
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    .bucket-roi {
+      font-weight: 600;
+    }
+
+    .bucket-roi.roi-excellent {
+      color: var(--success-green);
+    }
+
+    .bucket-roi.roi-good {
+      color: var(--warning-yellow);
+    }
+
+    .bucket-roi.roi-positive {
+      color: var(--accent-blue);
+    }
+
+    .bucket-roi.roi-neutral {
+      color: var(--text-secondary);
+    }
+
+    .bucket-sample {
+      color: var(--text-muted);
       font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
+    }
+
+    /* Responsive: stack on very small screens */
+    @media (max-width: 360px) {
+      .bucket-badge {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
     }
 
     .rec-matchup {

@@ -224,10 +224,10 @@ function generateAllRecommendations(
         minProb,
         market: 'moneyline',
         maxEV,
-        profitableBuckets: moneylineBuckets,
         useKellyFilter,
         minKelly,
         dateFilter,
+        disableBucketFilter: options.raw,
       });
 
       for (const rec of moneylineRecs) {
@@ -245,10 +245,10 @@ function generateAllRecommendations(
         minProb,
         market: 'spread',
         maxEV,
-        profitableBuckets: spreadBuckets,
         useKellyFilter,
         minKelly,
         dateFilter,
+        disableBucketFilter: options.raw,
       });
 
       for (const rec of spreadRecs) {
@@ -382,10 +382,10 @@ function generateRecommendationsForSport(
       minProb,
       market: 'moneyline',
       maxEV,
-      profitableBuckets: moneylineBuckets,
       useKellyFilter,
       minKelly,
       dateFilter,
+      disableBucketFilter: options.raw,
     });
 
     const spreadRecs = generateRecommendations(spreadModelPath, {
@@ -393,10 +393,10 @@ function generateRecommendationsForSport(
       minProb,
       market: 'spread',
       maxEV,
-      profitableBuckets: spreadBuckets,
       useKellyFilter,
       minKelly,
       dateFilter,
+      disableBucketFilter: options.raw,
     });
 
     // Combine all recommendations with metadata

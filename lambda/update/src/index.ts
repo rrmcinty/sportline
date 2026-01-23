@@ -19,6 +19,12 @@ interface PredictionsData {
   season: number;
 }
 
+interface BucketInfo {
+  range: string; // Display label (e.g., "70-80%")
+  roi: number; // ROI as decimal (e.g., 0.2776)
+  sampleSize: number; // Number of bets used for calculation
+}
+
 interface Recommendation {
   gameId: string;
   gameDate: string;
@@ -37,7 +43,7 @@ interface Recommendation {
   edge: number;
   ev: number;
   provider: string;
-  isBest: boolean;
+  bucketInfo: BucketInfo | null; // Optimal bucket info or null if not in profitable bucket
 }
 
 interface RecommendationsOutput {
@@ -54,6 +60,9 @@ interface TeamsData {
 interface BucketRange {
   min: number;
   max: number;
+  roi: number; // ROI as decimal (e.g., 0.2776 for 27.76%)
+  sampleSize: number; // Number of bets this was calculated on
+  label: string; // Display label (e.g., "70-80%")
 }
 
 interface ConfigData {
@@ -104,28 +113,38 @@ function passesJuiceGate(betOdds: number, betEdge: number): boolean {
 }
 
 /**
- * Check if probability is in optimal bucket
+ * Get optimal bucket info for a probability (returns null if not in any optimal bucket)
  */
-function isInOptimalBucket(
+function getOptimalBucket(
   config: ConfigData,
   sport: string,
   market: 'moneyline' | 'spread',
   probability: number,
-): boolean {
+): BucketInfo | null {
   const sportBuckets = config.optimalBuckets[sport];
-  if (!sportBuckets) return false;
+  if (!sportBuckets) return null;
 
   const buckets = sportBuckets[market];
   const probPercent = probability * 100;
 
-  return buckets.some((bucket) => probPercent >= bucket.min && probPercent <= bucket.max);
+  const matchedBucket = buckets.find(
+    (bucket) => probPercent >= bucket.min && probPercent <= bucket.max,
+  );
+
+  if (!matchedBucket) return null;
+
+  return {
+    range: matchedBucket.label,
+    roi: matchedBucket.roi,
+    sampleSize: matchedBucket.sampleSize,
+  };
 }
 
 /**
- * Enrich recommendation with team names and isBest indicator
+ * Enrich recommendation with team names and bucket info
  */
 function enrichRecommendation(
-  rec: Omit<Recommendation, 'homeTeamName' | 'awayTeamName' | 'pickTeamName' | 'isBest'>,
+  rec: Omit<Recommendation, 'homeTeamName' | 'awayTeamName' | 'pickTeamName' | 'bucketInfo'>,
   teamsData: TeamsData,
   configData: ConfigData,
 ): Recommendation {
@@ -133,7 +152,7 @@ function enrichRecommendation(
   const homeTeamName = sportTeams[rec.homeTeamId] || `Team ${rec.homeTeamId}`;
   const awayTeamName = sportTeams[rec.awayTeamId] || `Team ${rec.awayTeamId}`;
   const pickTeamName = rec.side === 'home' ? homeTeamName : awayTeamName;
-  const isBest = isInOptimalBucket(
+  const bucketInfo = getOptimalBucket(
     configData,
     rec.sport,
     rec.market as 'moneyline' | 'spread',
@@ -145,7 +164,7 @@ function enrichRecommendation(
     homeTeamName,
     awayTeamName,
     pickTeamName,
-    isBest,
+    bucketInfo,
   };
 }
 
@@ -309,24 +328,30 @@ export async function handler(event: unknown) {
     }
   }
 
+  // Filter to only include recommendations in optimal buckets (bucketInfo !== null)
+  const profitableBets = allRecommendations.filter((rec) => rec.bucketInfo !== null);
+
   // Sort by edge descending
-  allRecommendations.sort((a, b) => b.edge - a.edge);
+  profitableBets.sort((a, b) => b.edge - a.edge);
 
   // Write to S3
   const output: RecommendationsOutput = {
     generatedAt: new Date().toISOString(),
-    recommendations: allRecommendations,
+    recommendations: profitableBets,
   };
 
   await putJsonToS3(BUCKET, 'daily/recs.json', output);
 
-  console.log(`Update complete: ${allRecommendations.length} recommendations`);
+  console.log(
+    `Update complete: ${profitableBets.length}/${allRecommendations.length} recommendations in profitable buckets`,
+  );
 
   return {
     statusCode: 200,
     body: JSON.stringify({
       success: true,
-      count: allRecommendations.length,
+      count: profitableBets.length,
+      total: allRecommendations.length,
       generatedAt: output.generatedAt,
     }),
   };

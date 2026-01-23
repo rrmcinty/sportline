@@ -2,6 +2,12 @@
  * TypeScript types for dashboard frontend
  */
 
+export interface BucketInfo {
+  range: string; // Display label (e.g., "70-80%")
+  roi: number; // ROI as decimal (e.g., 0.2776)
+  sampleSize: number; // Number of bets used for calculation
+}
+
 export interface Recommendation {
   gameId: string;
   gameDate: string;
@@ -20,7 +26,7 @@ export interface Recommendation {
   edge: number;
   ev: number;
   provider: string;
-  isBest: boolean;
+  bucketInfo: BucketInfo | null; // Optimal bucket info or null if not in profitable bucket
 }
 
 export interface RecommendationsData {
