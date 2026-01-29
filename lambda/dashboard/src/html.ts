@@ -527,6 +527,12 @@ export function getHtmlTemplate(appJs: string): string {
         <button class="filter-pill" data-filter="market" data-value="moneyline">ML</button>
         <button class="filter-pill" data-filter="market" data-value="spread">Spread</button>
       </div>
+
+      <div class="filter-group">
+        <button class="filter-pill active" data-filter="date" data-value="all">All Days</button>
+        <button class="filter-pill" data-filter="date" data-value="today">Today</button>
+        <button class="filter-pill" data-filter="date" data-value="tomorrow">Tomorrow</button>
+      </div>
     </div>
 
     <div class="action-btns">

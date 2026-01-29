@@ -10,6 +10,7 @@ class SportlineDashboard {
   private filters = {
     sport: 'all',
     market: 'all',
+    date: 'all', // 'all', 'today', 'tomorrow'
   };
 
   async init() {
@@ -39,6 +40,8 @@ class SportlineDashboard {
           this.filters.sport = value;
         } else if (filterType === 'market') {
           this.filters.market = value;
+        } else if (filterType === 'date') {
+          this.filters.date = value;
         }
 
         this.filterAndRender();
@@ -147,9 +150,22 @@ class SportlineDashboard {
   filterAndRender() {
     if (!this.data) return;
 
+    const now = new Date();
+    const todayEST = now.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrowEST = tomorrow.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+
     this.filteredRecs = this.data.recommendations.filter((rec) => {
       if (this.filters.sport !== 'all' && rec.sport !== this.filters.sport) return false;
       if (this.filters.market !== 'all' && rec.market !== this.filters.market) return false;
+
+      // Date filter
+      if (this.filters.date !== 'all') {
+        const gameDate = new Date(rec.gameDate);
+        const gameDateEST = gameDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+        if (this.filters.date === 'today' && gameDateEST !== todayEST) return false;
+        if (this.filters.date === 'tomorrow' && gameDateEST !== tomorrowEST) return false;
+      }
       return true;
     });
 
@@ -164,6 +180,27 @@ class SportlineDashboard {
     document.querySelectorAll('[data-filter="sport"]').forEach((pill) => {
       const value = pill.getAttribute('data-value');
       const count = sportCounts[value as keyof typeof sportCounts];
+      const baseText = pill.textContent?.split(' (')[0] || '';
+      pill.textContent = count > 0 ? `${baseText} (${count})` : baseText;
+    });
+
+    const dateCounts = {
+      all: this.data.recommendations.length,
+      today: this.data.recommendations.filter((r) => {
+        const gameDate = new Date(r.gameDate);
+        const gameDateEST = gameDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+        return gameDateEST === todayEST;
+      }).length,
+      tomorrow: this.data.recommendations.filter((r) => {
+        const gameDate = new Date(r.gameDate);
+        const gameDateEST = gameDate.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+        return gameDateEST === tomorrowEST;
+      }).length,
+    };
+
+    document.querySelectorAll('[data-filter="date"]').forEach((pill) => {
+      const value = pill.getAttribute('data-value');
+      const count = dateCounts[value as keyof typeof dateCounts];
       const baseText = pill.textContent?.split(' (')[0] || '';
       pill.textContent = count > 0 ? `${baseText} (${count})` : baseText;
     });
