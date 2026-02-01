@@ -54,12 +54,7 @@ export const OPTIMAL_BUCKETS: Record<string, SportBuckets> = {
         label: 'All ranges',
       },
     ],
-    spread: [
-      // ⚠️ WARNING: NBA Spread loses money out-of-sample
-      // DO NOT USE - model does not generalize
-      { min: 60, max: 70, roi: 0.035, sampleSize: 339, label: '60-70%' },
-      { min: 70, max: 80, roi: 0.274, sampleSize: 7, label: '70-80%' },
-    ],
+    spread: [], // Disabled - loses money out-of-sample (see CLAUDE.md)
   },
   ncaam: {
     moneyline: [

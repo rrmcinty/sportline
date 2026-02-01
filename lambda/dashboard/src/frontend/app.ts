@@ -156,6 +156,9 @@ class SportlineDashboard {
     const tomorrowEST = tomorrow.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
     this.filteredRecs = this.data.recommendations.filter((rec) => {
+      // Exclude NBA spread bets (unprofitable - see CLAUDE.md)
+      if (rec.sport === 'nba' && rec.market === 'spread') return false;
+
       if (this.filters.sport !== 'all' && rec.sport !== this.filters.sport) return false;
       if (this.filters.market !== 'all' && rec.market !== this.filters.market) return false;
 
